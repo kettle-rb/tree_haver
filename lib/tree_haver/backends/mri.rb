@@ -40,13 +40,14 @@ module TreeHaver
       # @return [Hash{Symbol => Object}] capability map
       # @example
       #   TreeHaver::Backends::MRI.capabilities
-      #   # => { backend: :mri, query: true, bytes_field: true }
+      #   # => { backend: :mri, query: true, bytes_field: true, incremental: true }
       def self.capabilities
         return {} unless available?
         {
           backend: :mri,
           query: true,
           bytes_field: true,
+          incremental: true,
         }
       end
 
@@ -94,6 +95,15 @@ module TreeHaver
         # @return [::TreeSitter::Tree] the parsed syntax tree
         def parse(source)
           @parser.parse(source)
+        end
+
+        # Parse source code with optional incremental parsing
+        #
+        # @param old_tree [::TreeSitter::Tree, nil] previous tree for incremental parsing
+        # @param source [String] the source code to parse
+        # @return [::TreeSitter::Tree] the parsed syntax tree
+        def parse_string(old_tree, source)
+          @parser.parse_string(old_tree, source)
         end
       end
 

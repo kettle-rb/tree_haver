@@ -13,6 +13,19 @@ module TreeHaver
   # (toml-merge, json-merge, bash-merge, etc.) without requiring TreeHaver
   # to have knowledge of each specific language.
   #
+  # == Security Considerations
+  #
+  # Loading shared libraries is inherently dangerous as it executes arbitrary
+  # native code. GrammarFinder performs the following security validations:
+  #
+  # - Language names are validated to contain only safe characters
+  # - Paths from environment variables are validated before use
+  # - Path traversal attempts (../) are rejected
+  # - Only files with expected extensions (.so, .dylib, .dll) are accepted
+  #
+  # For additional security, use {#find_library_path_safe} which only returns
+  # paths from trusted system directories.
+  #
   # @example Basic usage
   #   finder = TreeHaver::GrammarFinder.new(:toml)
   #   path = finder.find_library_path
@@ -31,6 +44,12 @@ module TreeHaver
   #
   # @example With custom search paths
   #   finder = TreeHaver::GrammarFinder.new(:toml, extra_paths: ["/opt/custom/lib"])
+  #
+  # @example Secure mode (trusted directories only)
+  #   finder = TreeHaver::GrammarFinder.new(:toml)
+  #   path = finder.find_library_path_safe  # Only returns paths in trusted dirs
+  #
+  # @see PathValidator For details on security validations
   class GrammarFinder
     # Common base directories where tree-sitter libraries are installed
     # Platform-specific extensions are appended automatically
@@ -51,8 +70,17 @@ module TreeHaver
     #
     # @param language_name [Symbol, String] the tree-sitter language name (e.g., :toml, :json, :bash)
     # @param extra_paths [Array<String>] additional paths to search (searched first after ENV)
-    def initialize(language_name, extra_paths: [])
-      @language_name = language_name.to_sym
+    # @param validate [Boolean] if true, validates the language name (default: true)
+    # @raise [ArgumentError] if language_name is invalid and validate is true
+    def initialize(language_name, extra_paths: [], validate: true)
+      name_str = language_name.to_s.downcase
+
+      if validate && !PathValidator.safe_language_name?(name_str)
+        raise ArgumentError, "Invalid language name: #{language_name.inspect}. " \
+          "Language names must start with a letter and contain only lowercase letters, numbers, and underscores."
+      end
+
+      @language_name = name_str.to_sym
       @extra_paths = Array(extra_paths)
     end
 
@@ -102,18 +130,39 @@ module TreeHaver
     # Find the grammar library path
     #
     # Searches in order:
-    # 1. Environment variable override
+    # 1. Environment variable override (validated for safety)
     # 2. Extra paths provided at initialization
     # 3. Common system installation paths
     #
+    # @note Paths from ENV are validated using {PathValidator.safe_library_path?}
+    #   to prevent path traversal and other attacks. Invalid ENV paths are ignored.
+    #
     # @return [String, nil] the path to the library, or nil if not found
+    # @see #find_library_path_safe For stricter validation (trusted directories only)
     def find_library_path
       # Check environment variable first (highest priority)
       env_path = ENV[env_var_name]
-      return env_path if env_path && File.exist?(env_path)
+      if env_path && PathValidator.safe_library_path?(env_path) && File.exist?(env_path)
+        return env_path
+      end
 
-      # Search all paths
+      # Search all paths (these are constructed from trusted base dirs)
       search_paths.find { |path| File.exist?(path) }
+    end
+
+    # Find the grammar library path with strict security validation
+    #
+    # This method only returns paths that are in trusted system directories.
+    # Use this when you want maximum security and don't need to support
+    # custom installation locations.
+    #
+    # @return [String, nil] the path to the library, or nil if not found
+    # @see PathValidator::TRUSTED_DIRECTORIES For the list of trusted directories
+    def find_library_path_safe
+      # Environment variable is NOT checked in safe mode - only trusted system paths
+      search_paths.find do |path|
+        File.exist?(path) && PathValidator.in_trusted_directory?(path)
+      end
     end
 
     # Check if the grammar library is available
@@ -121,6 +170,14 @@ module TreeHaver
     # @return [Boolean] true if the library can be found
     def available?
       !find_library_path.nil?
+    end
+
+    # Check if the grammar library is available in a trusted directory
+    #
+    # @return [Boolean] true if the library can be found in a trusted directory
+    # @see #find_library_path_safe
+    def available_safe?
+      !find_library_path_safe.nil?
     end
 
     # Register this language with TreeHaver

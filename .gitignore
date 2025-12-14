@@ -2,6 +2,7 @@
 /pkg/
 /tmp/
 *.gem
+/vendor/jars/
 
 # Bundler
 /vendor/bundle/

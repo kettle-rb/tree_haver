@@ -81,26 +81,42 @@ module TreeHaver
   #
   # TreeHaver provides multiple backends to support different Ruby implementations:
   # - {Backends::MRI} - Uses ruby_tree_sitter (MRI C extension)
+  # - {Backends::Rust} - Uses tree_stump (Rust extension with precompiled binaries)
   # - {Backends::FFI} - Uses Ruby FFI to call libtree-sitter directly
   # - {Backends::Java} - Uses JRuby's Java integration (planned)
   module Backends
     autoload :MRI, File.join(__dir__, "tree_haver", "backends", "mri")
+    autoload :Rust, File.join(__dir__, "tree_haver", "backends", "rust")
     autoload :FFI, File.join(__dir__, "tree_haver", "backends", "ffi")
     autoload :Java, File.join(__dir__, "tree_haver", "backends", "java")
   end
 
-  # Generic grammar finder utility
+  # Security utilities for validating paths before loading shared libraries
+  #
+  # @example Validate a path
+  #   TreeHaver::PathValidator.safe_library_path?("/usr/lib/libtree-sitter-toml.so")
+  #   # => true
+  #
+  # @see PathValidator
+  autoload :PathValidator, File.join(__dir__, "tree_haver", "path_validator")
+
+  # Generic grammar finder utility with built-in security validations
   #
   # GrammarFinder provides platform-aware discovery of tree-sitter grammar
-  # libraries for any language. It's used by language-specific merge gems
-  # to locate grammar shared libraries.
+  # libraries for any language. It validates paths from environment variables
+  # to prevent path traversal and other attacks.
   #
   # @example Find and register a language
   #   finder = TreeHaver::GrammarFinder.new(:toml)
   #   finder.register! if finder.available?
   #   language = TreeHaver::Language.toml
   #
+  # @example Secure mode (trusted directories only)
+  #   finder = TreeHaver::GrammarFinder.new(:toml)
+  #   path = finder.find_library_path_safe  # Ignores ENV, only trusted dirs
+  #
   # @see GrammarFinder
+  # @see PathValidator
   autoload :GrammarFinder, File.join(__dir__, "tree_haver", "grammar_finder")
 
   # Get the current backend selection
@@ -113,6 +129,7 @@ module TreeHaver
     @backend ||= begin
       case (ENV["TREE_HAVER_BACKEND"] || :auto).to_s
       when "mri" then :mri
+      when "rust" then :rust
       when "ffi" then :ffi
       when "java" then :java
       else :auto
@@ -122,10 +139,12 @@ module TreeHaver
 
   # Set the backend to use
   #
-  # @param name [Symbol, String, nil] backend name (:auto, :mri, :ffi, :java)
+  # @param name [Symbol, String, nil] backend name (:auto, :mri, :rust, :ffi, :java)
   # @return [Symbol, nil] the backend that was set
   # @example Force FFI backend
   #   TreeHaver.backend = :ffi
+  # @example Force Rust backend
+  #   TreeHaver.backend = :rust
   def self.backend=(name)
     @backend = name&.to_sym
   end
@@ -148,9 +167,9 @@ module TreeHaver
   #
   # This method performs backend auto-selection when backend is :auto.
   # On JRuby, prefers Java backend if available, then FFI.
-  # On MRI, prefers MRI backend if available, then FFI.
+  # On MRI, prefers MRI backend if available, then Rust, then FFI.
   #
-  # @return [Module, nil] the backend module (Backends::MRI, Backends::FFI, or Backends::Java), or nil if none available
+  # @return [Module, nil] the backend module (Backends::MRI, Backends::Rust, Backends::FFI, or Backends::Java), or nil if none available
   # @example
   #   mod = TreeHaver.backend_module
   #   if mod
@@ -160,16 +179,20 @@ module TreeHaver
     case backend
     when :mri
       Backends::MRI
+    when :rust
+      Backends::Rust
     when :ffi
       Backends::FFI
     when :java
       Backends::Java
     else
-      # auto-select: on JRuby prefer Java backend if available; on MRI prefer MRI; otherwise FFI
+      # auto-select: on JRuby prefer Java backend if available; on MRI prefer MRI, then Rust; otherwise FFI
       if defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby" && Backends::Java.available?
         Backends::Java
       elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ruby" && Backends::MRI.available?
         Backends::MRI
+      elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ruby" && Backends::Rust.available?
+        Backends::Rust
       elsif Backends::FFI.available?
         Backends::FFI
       else
@@ -183,10 +206,11 @@ module TreeHaver
   #
   # Returns a hash describing what features the selected backend supports.
   # Common keys include:
-  # - :backend - Symbol identifying the backend (:mri, :ffi, :java)
+  # - :backend - Symbol identifying the backend (:mri, :rust, :ffi, :java)
   # - :parse - Whether parsing is implemented
   # - :query - Whether the Query API is available
   # - :bytes_field - Whether byte position fields are available
+  # - :incremental - Whether incremental parsing is supported
   #
   # @return [Hash{Symbol => Object}] capability map, or empty hash if no backend available
   # @example
@@ -274,12 +298,14 @@ module TreeHaver
     #
     # @param name [String] the language name (e.g., "toml")
     # @param path [String] absolute path to the language shared library
+    # @param validate [Boolean] if true, validates the path for safety (default: true)
     # @return [Language] loaded language handle
     # @raise [NotAvailable] if the library cannot be loaded
+    # @raise [ArgumentError] if the path fails security validation
     # @example
     #   language = TreeHaver::Language.load("toml", "/usr/local/lib/libtree-sitter-toml.so")
-    def self.load(name, path)
-      from_library(path, symbol: "tree_sitter_#{name}", name: name)
+    def self.load(name, path, validate: true)
+      from_library(path, symbol: "tree_sitter_#{name}", name: name, validate: validate)
     end
 
     # Load a language grammar from a shared library
@@ -287,18 +313,38 @@ module TreeHaver
     # The library must export a function that returns a pointer to a TSLanguage struct.
     # By default, TreeHaver looks for a symbol named "tree_sitter_<name>".
     #
+    # == Security
+    #
+    # By default, paths are validated using {PathValidator} to prevent path traversal
+    # and other attacks. Set `validate: false` to skip validation (not recommended
+    # unless you've already validated the path).
+    #
     # @param path [String] absolute path to the language shared library (.so/.dylib/.dll)
     # @param symbol [String, nil] name of the exported function (defaults to auto-detection)
     # @param name [String, nil] logical name for the language (used in caching)
+    # @param validate [Boolean] if true, validates path and symbol for safety (default: true)
     # @return [Language] loaded language handle
     # @raise [NotAvailable] if the library cannot be loaded or the symbol is not found
+    # @raise [ArgumentError] if path or symbol fails security validation
     # @example
     #   language = TreeHaver::Language.from_library(
     #     "/usr/local/lib/libtree-sitter-toml.so",
     #     symbol: "tree_sitter_toml",
     #     name: "toml"
     #   )
-    def self.from_library(path, symbol: nil, name: nil)
+    def self.from_library(path, symbol: nil, name: nil, validate: true)
+      if validate
+        unless PathValidator.safe_library_path?(path)
+          errors = PathValidator.validation_errors(path)
+          raise ArgumentError, "Unsafe library path: #{path.inspect}. Errors: #{errors.join('; ')}"
+        end
+
+        if symbol && !PathValidator.safe_symbol_name?(symbol)
+          raise ArgumentError, "Unsafe symbol name: #{symbol.inspect}. " \
+            "Symbol names must be valid C identifiers."
+        end
+      end
+
       mod = TreeHaver.backend_module
       raise NotAvailable, "No TreeHaver backend is available" unless mod
       # Backend must implement .from_library; fallback to .from_path for older impls
@@ -396,30 +442,77 @@ module TreeHaver
       Tree.new(tree_impl)
     end
 
-    # Parse source code into a syntax tree (ruby_tree_sitter compatibility)
+    # Parse source code into a syntax tree (with optional incremental parsing)
     #
     # This method provides API compatibility with ruby_tree_sitter which uses
-    # `parse_string(old_tree, source)`. The old_tree parameter is ignored in
-    # this implementation.
+    # `parse_string(old_tree, source)`.
     #
-    # @param _old_tree [Tree, nil] ignored for compatibility
+    # == Incremental Parsing
+    #
+    # Tree-sitter supports **incremental parsing** where you can pass a previously
+    # parsed tree along with edit information to efficiently re-parse only the
+    # changed portions of source code. This is a major performance optimization
+    # for editors and IDEs that need to re-parse on every keystroke.
+    #
+    # The workflow for incremental parsing is:
+    # 1. Parse the initial source: `tree = parser.parse_string(nil, source)`
+    # 2. User edits the source (e.g., inserts a character)
+    # 3. Call `tree.edit(...)` to update the tree's position data
+    # 4. Re-parse with the old tree: `new_tree = parser.parse_string(tree, new_source)`
+    # 5. Tree-sitter reuses unchanged nodes, only re-parsing affected regions
+    #
+    # TreeHaver passes through to the underlying backend if it supports incremental
+    # parsing (MRI and Rust backends do). Check `TreeHaver.capabilities[:incremental]`
+    # to see if the current backend supports it.
+    #
+    # @param old_tree [Tree, nil] previously parsed tree for incremental parsing, or nil for fresh parse
     # @param source [String] the source code to parse (should be UTF-8)
     # @return [Tree] the parsed syntax tree
-    # @example
+    # @see https://tree-sitter.github.io/tree-sitter/using-parsers#editing Tree-sitter incremental parsing docs
+    # @see Tree#edit For marking edits before incremental re-parsing
+    # @example First parse (no old tree)
     #   tree = parser.parse_string(nil, "x = 1")
-    def parse_string(_old_tree, source)
-      parse(source)
+    # @example Incremental parse
+    #   tree.edit(start_byte: 4, old_end_byte: 5, new_end_byte: 6, ...)
+    #   new_tree = parser.parse_string(tree, "x = 42")
+    def parse_string(old_tree, source)
+      # Pass through to backend if it supports incremental parsing
+      if old_tree && @impl.respond_to?(:parse_string)
+        # Extract the underlying implementation from our Tree wrapper
+        old_impl = old_tree.is_a?(Tree) ? old_tree.instance_variable_get(:@impl) : old_tree
+        tree_impl = @impl.parse_string(old_impl, source)
+        Tree.new(tree_impl)
+      elsif @impl.respond_to?(:parse_string)
+        tree_impl = @impl.parse_string(nil, source)
+        Tree.new(tree_impl)
+      else
+        # Fallback for backends that don't support parse_string
+        parse(source)
+      end
     end
   end
 
   # Represents a parsed syntax tree
   #
   # A Tree is the result of parsing source code. It provides access to
-  # the root node of the AST.
+  # the root node of the AST and supports incremental parsing via the
+  # {#edit} method.
   #
-  # @example
+  # @example Basic usage
   #   tree = parser.parse(source)
   #   root = tree.root_node
+  #
+  # @example Incremental parsing
+  #   tree = parser.parse_string(nil, original_source)
+  #   tree.edit(
+  #     start_byte: 10,
+  #     old_end_byte: 15,
+  #     new_end_byte: 20,
+  #     start_point: { row: 0, column: 10 },
+  #     old_end_point: { row: 0, column: 15 },
+  #     new_end_point: { row: 0, column: 20 }
+  #   )
+  #   new_tree = parser.parse_string(tree, edited_source)
   class Tree
     # @api private
     def initialize(impl)
@@ -434,6 +527,56 @@ module TreeHaver
     #   puts root.type  # => "document" or similar
     def root_node
       Node.new(@impl.root_node)
+    end
+
+    # Mark the tree as edited for incremental re-parsing
+    #
+    # Call this method after the source code has been modified but before
+    # re-parsing. This tells Tree-sitter which parts of the tree are
+    # invalidated so it can efficiently re-parse only the affected regions.
+    #
+    # @param start_byte [Integer] byte offset where the edit starts
+    # @param old_end_byte [Integer] byte offset where the old text ended
+    # @param new_end_byte [Integer] byte offset where the new text ends
+    # @param start_point [Hash] starting position as `{ row:, column: }`
+    # @param old_end_point [Hash] old ending position as `{ row:, column: }`
+    # @param new_end_point [Hash] new ending position as `{ row:, column: }`
+    # @return [void]
+    # @raise [NotAvailable] if the backend doesn't support incremental parsing
+    # @see https://tree-sitter.github.io/tree-sitter/using-parsers#editing
+    #
+    # @example
+    #   # Original: "x = 1"
+    #   # Edited:   "x = 42"  (replaced "1" with "42" at byte 4)
+    #   tree.edit(
+    #     start_byte: 4,
+    #     old_end_byte: 5,
+    #     new_end_byte: 6,
+    #     start_point: { row: 0, column: 4 },
+    #     old_end_point: { row: 0, column: 5 },
+    #     new_end_point: { row: 0, column: 6 }
+    #   )
+    def edit(start_byte:, old_end_byte:, new_end_byte:, start_point:, old_end_point:, new_end_point:)
+      unless @impl.respond_to?(:edit)
+        raise NotAvailable, "Incremental parsing not supported by current backend. " \
+          "Use MRI (ruby_tree_sitter) or Rust (tree_stump) backend."
+      end
+
+      @impl.edit(
+        start_byte: start_byte,
+        old_end_byte: old_end_byte,
+        new_end_byte: new_end_byte,
+        start_point: start_point,
+        old_end_point: old_end_point,
+        new_end_point: new_end_point
+      )
+    end
+
+    # Check if the underlying implementation supports incremental parsing
+    #
+    # @return [Boolean] true if {#edit} can be called on this tree
+    def supports_editing?
+      @impl.respond_to?(:edit)
     end
   end
 

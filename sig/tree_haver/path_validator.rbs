@@ -1,0 +1,31 @@
+# Type signatures for TreeHaver::PathValidator
+module TreeHaver
+  # Security utilities for validating paths before loading shared libraries
+  module PathValidator
+    ALLOWED_EXTENSIONS: Array[String]
+    DEFAULT_TRUSTED_DIRECTORIES: Array[String]
+    TRUSTED_DIRS_ENV_VAR: String
+    MAX_PATH_LENGTH: Integer
+    VALID_FILENAME_PATTERN: Regexp
+    VALID_LANGUAGE_PATTERN: Regexp
+    VALID_SYMBOL_PATTERN: Regexp
+
+    # Trusted directory management
+    def self.trusted_directories: () -> Array[String]
+    def self.add_trusted_directory: (String directory) -> void
+    def self.remove_trusted_directory: (String directory) -> void
+    def self.clear_custom_trusted_directories!: () -> void
+    def self.custom_trusted_directories: () -> Array[String]
+
+    # Validation methods
+    def self.safe_library_path?: (String? path, ?require_trusted_dir: bool) -> bool
+    def self.in_trusted_directory?: (String? path) -> bool
+    def self.safe_language_name?: (String | Symbol | nil name) -> bool
+    def self.safe_symbol_name?: (String? symbol) -> bool
+    def self.safe_backend_name?: (String | Symbol | nil backend) -> bool
+    def self.sanitize_language_name: (String | Symbol | nil name) -> Symbol?
+    def self.validation_errors: (String? path) -> Array[String]
+    def self.windows_absolute_path?: (String path) -> bool
+  end
+end
+

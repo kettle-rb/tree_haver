@@ -56,13 +56,39 @@
 
 TreeHaver is a cross-Ruby adapter for the [Tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsing library that works seamlessly across MRI Ruby, JRuby, and TruffleRuby. It provides a unified API for parsing source code using Tree-sitter grammars, regardless of your Ruby implementation.
 
+### The Adapter Pattern: Like Faraday, but for Parsing
+
+If you've used [Faraday](https://github.com/lostisland/faraday), [multi_json](https://github.com/intridea/multi_json), or [multi_xml](https://github.com/sferik/multi_xml), you'll feel right at home with TreeHaver. These gems share a common philosophy:
+
+| Gem | Unified API for | Backend Examples |
+|-----|-----------------|------------------|
+| **Faraday** | HTTP requests | Net::HTTP, Typhoeus, Patron, Excon |
+| **multi_json** | JSON parsing | Oj, Yajl, JSON gem |
+| **multi_xml** | XML parsing | Nokogiri, LibXML, Ox |
+| **TreeHaver** | Tree-sitter parsing | ruby_tree_sitter, tree_stump, FFI, Java |
+
+**Write once, run anywhere.** Just as Faraday lets you swap HTTP adapters without changing your code, TreeHaver lets you swap Tree-sitter backends. Your parsing code remains the same whether you're running on MRI with native C extensions, JRuby with FFI, or TruffleRuby.
+
+```ruby
+# Your code stays the same regardless of backend
+parser = TreeHaver::Parser.new
+parser.language = TreeHaver::Language.from_library("/path/to/grammar.so")
+tree = parser.parse(source_code)
+
+# TreeHaver automatically picks the best backend:
+# - MRI → ruby_tree_sitter (C extension)
+# - JRuby → FFI (system's libtree-sitter)
+# - TruffleRuby → FFI or MRI backend
+```
+
 ### Key Features
 
 - **Universal Ruby Support**: Works on MRI Ruby, JRuby, and TruffleRuby
 - **Multiple Backends**: 
-  - **MRI Backend**: Leverages the excellent [`ruby_tree_sitter`](https://github.com/Faveod/ruby-tree-sitter) gem
+  - **MRI Backend**: Leverages the excellent [`ruby_tree_sitter`](https://github.com/Faveod/ruby-tree-sitter) gem (C extension)
+  - **Rust Backend**: Uses [`tree_stump`](https://github.com/anthropics/tree_stump) gem (Rust extension with precompiled binaries)
   - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby)
-  - **Java Backend**: Planned support for JRuby's native Java integration
+  - **Java Backend**: Support for JRuby's native Java integration, and native java-tree-sitter grammar JARs
 - **Automatic Backend Selection**: Intelligently selects the best backend for your Ruby implementation
 - **Language Agnostic**: Load any Tree-sitter grammar dynamically (TOML, JSON, Ruby, JavaScript, etc.)
 - **Grammar Discovery**: Built-in `GrammarFinder` utility for platform-aware grammar library discovery
@@ -78,6 +104,50 @@ Tree-sitter is a powerful parser generator that creates incremental parsers for 
 - Managing different backends for different Ruby implementations is cumbersome
 
 TreeHaver solves these problems by providing a unified API that automatically selects the appropriate backend for your Ruby implementation, allowing you to write code once and run it anywhere.
+
+### Comparison with Other Ruby Tree-sitter Bindings
+
+| Feature                   | TreeHaver                      | [ruby_tree_sitter] | [tree_stump]   |
+|---------------------------|--------------------------------|--------------------|----------------|
+| **MRI Ruby**              | ✅ Yes                          | ✅ Yes              | ✅ Yes          |
+| **JRuby**                 | ✅ Yes (FFI or Java\* backend)  | ❌ No               | ❌ No           |
+| **TruffleRuby**           | ✅ Yes (FFI)                    | ❌ No               | ❓ Unknown      |
+| **Backend**               | Multi (MRI C, Rust, FFI, Java) | C extension only   | Rust extension |
+| **Incremental Parsing**   | ✅ Via MRI C/Rust backend       | ✅ Yes              | ✅ Yes          |
+| **Query API**             | ⚡ Via MRI/Rust backend         | ✅ Yes              | ✅ Yes          |
+| **Grammar Discovery**     | ✅ Built-in `GrammarFinder`     | ❌ Manual           | ❌ Manual       |
+| **Security Validations**  | ✅ `PathValidator`              | ❌ No               | ❌ No           |
+| **Language Registration** | ✅ Thread-safe registry         | ❌ No               | ❌ No           |
+| **Native Performance**    | ⚡ Backend-dependent            | ✅ Native C         | ✅ Native Rust  |
+| **Precompiled Binaries**  | ⚡ Via Rust backend             | ✅ Yes              | ✅ Yes          |
+| **Minimum Ruby**          | 3.2+                           | 3.0+               | 3.1+           |
+
+[ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
+[tree_stump]: https://github.com/anthropics/tree_stump
+
+**Note:** Java backend works with grammar JARs built specifically for java-tree-sitter, or grammar .so files that statically link tree-sitter. This is why FFI is recommended for JRuby & TruffleRuby.
+**Note:** TreeHaver can use `ruby_tree_sitter` or `tree_stump` as backends, giving you TreeHaver's unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.
+
+#### When to Use Each
+
+**Choose TreeHaver when:**
+- You need JRuby or TruffleRuby support
+- You're building a library that should work across Ruby implementations
+- You want automatic grammar discovery and security validations
+- You want flexibility to switch backends without code changes
+- You need incremental parsing with a unified API
+
+**Choose ruby_tree_sitter directly when:**
+- You only target MRI Ruby
+- You need the full Query API without abstraction
+- You want the most battle-tested C bindings
+- You don't need TreeHaver's grammar discovery
+
+**Choose tree_stump directly when:**
+- You only target MRI Ruby
+- You prefer Rust-based native extensions
+- You want precompiled binaries without system dependencies
+- You don't need TreeHaver's grammar discovery
 
 ## 💡 Info you can shake a stick at
 
@@ -192,6 +262,89 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 
 ## ⚙️ Configuration
 
+### Security Considerations
+
+**⚠️ Loading shared libraries (.so/.dylib/.dll) executes arbitrary native code.**
+
+TreeHaver provides defense-in-depth validations, but you should understand the risks:
+
+#### Attack Vectors Mitigated
+
+TreeHaver's `PathValidator` module protects against:
+
+- **Path traversal**: Paths containing `/../` or `/./` are rejected
+- **Null byte injection**: Paths containing null bytes are rejected
+- **Non-absolute paths**: Relative paths are rejected to prevent CWD-based attacks
+- **Invalid extensions**: Only `.so`, `.dylib`, and `.dll` files are accepted
+- **Malicious filenames**: Filenames must match a safe pattern (alphanumeric, hyphens, underscores)
+- **Invalid language names**: Language names must be lowercase alphanumeric with underscores
+- **Invalid symbol names**: Symbol names must be valid C identifiers
+
+#### Secure Usage
+
+```ruby
+# Standard usage - paths from ENV are validated
+finder = TreeHaver::GrammarFinder.new(:toml)
+path = finder.find_library_path  # Validates ENV path before returning
+
+# Maximum security - only trusted system directories
+path = finder.find_library_path_safe  # Ignores ENV, only /usr/lib etc.
+
+# Manual validation
+if TreeHaver::PathValidator.safe_library_path?(user_provided_path)
+  language = TreeHaver::Language.from_library(user_provided_path)
+end
+
+# Get validation errors for debugging
+errors = TreeHaver::PathValidator.validation_errors(path)
+# => ["Path is not absolute", "Path contains traversal sequence"]
+```
+
+#### Trusted Directories
+
+The `find_library_path_safe` method only returns paths in trusted directories.
+
+**Default trusted directories:**
+
+- `/usr/lib`, `/usr/lib64`
+- `/usr/lib/x86_64-linux-gnu`, `/usr/lib/aarch64-linux-gnu`
+- `/usr/local/lib`
+- `/opt/homebrew/lib`, `/opt/local/lib`
+
+**Adding custom trusted directories:**
+
+For non-standard installations (Homebrew on Linux, luarocks, mise, asdf, etc.), register additional trusted directories:
+
+```ruby
+# Programmatically at application startup
+TreeHaver::PathValidator.add_trusted_directory("/home/linuxbrew/.linuxbrew/Cellar")
+TreeHaver::PathValidator.add_trusted_directory("~/.local/share/mise/installs/lua")
+
+# Or via environment variable (comma-separated, in your shell profile)
+export TREE_HAVER_TRUSTED_DIRS="/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua"
+```
+
+**Example: Fedora Silverblue with Homebrew and luarocks**
+
+```bash
+# In ~/.bashrc or ~/.zshrc
+export TREE_HAVER_TRUSTED_DIRS="/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua"
+
+# tree-sitter runtime library
+export TREE_SITTER_RUNTIME_LIB=/home/linuxbrew/.linuxbrew/Cellar/tree-sitter/0.26.3/lib/libtree-sitter.so
+
+# Language grammar (luarocks-installed)
+export TREE_SITTER_TOML_PATH=~/.local/share/mise/installs/lua/5.4.8/luarocks/lib/luarocks/rocks-5.4/tree-sitter-toml/0.0.31-1/parser/toml.so
+```
+
+#### Recommendations
+
+1. **Production**: Consider using `find_library_path_safe` to ignore ENV overrides
+2. **Development**: Standard `find_library_path` is convenient for testing
+3. **User Input**: Always validate paths before passing to `Language.from_library`
+4. **CI/CD**: Be cautious of ENV vars that could be set by untrusted sources
+5. **Custom installs**: Register trusted directories via `TREE_HAVER_TRUSTED_DIRS` or `add_trusted_directory`
+
 ### Backend Selection
 
 TreeHaver automatically selects the best backend for your Ruby implementation, but you can override this behavior:
@@ -201,20 +354,35 @@ TreeHaver automatically selects the best backend for your Ruby implementation, b
 TreeHaver.backend = :auto
 
 # Force a specific backend
-TreeHaver.backend = :mri   # Use ruby_tree_sitter (MRI only)
+TreeHaver.backend = :mri   # Use ruby_tree_sitter (MRI only, C extension)
+TreeHaver.backend = :rust  # Use tree_stump (MRI, Rust extension with precompiled binaries)
 TreeHaver.backend = :ffi   # Use FFI bindings (works on MRI and JRuby)
 TreeHaver.backend = :java  # Use Java bindings (JRuby only, coming soon)
 ```
 
+**Auto-selection priority on MRI:** MRI → Rust → FFI
+
 You can also set the backend via environment variable:
 
 ```bash
-export TREE_HAVER_BACKEND=ffi
+export TREE_HAVER_BACKEND=rust
 ```
 
 ### Environment Variables
 
 TreeHaver recognizes several environment variables for configuration:
+
+**Note**: All path-based environment variables are validated before use. Invalid paths are ignored.
+
+#### Security Configuration
+
+- **`TREE_HAVER_TRUSTED_DIRS`**: Comma-separated list of additional trusted directories for grammar libraries
+  ```bash
+  # For Homebrew on Linux and luarocks
+  export TREE_HAVER_TRUSTED_DIRS="/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua"
+  ```
+  
+  Tilde (`~`) is expanded to the user's home directory. Directories listed here are considered safe for `find_library_path_safe`.
 
 #### Core Runtime Library
 
@@ -499,6 +667,42 @@ end
 walk_tree(root)
 ```
 
+### Incremental Parsing
+
+TreeHaver supports incremental parsing when using the MRI or Rust backends. This is a major performance optimization for editors and IDEs that need to re-parse on every keystroke.
+
+```ruby
+# Check if current backend supports incremental parsing
+if TreeHaver.capabilities[:incremental]
+  puts "Incremental parsing is available!"
+end
+
+# Initial parse
+parser = TreeHaver::Parser.new
+parser.language = language
+tree = parser.parse_string(nil, "x = 1")
+
+# User edits the source: "x = 1" -> "x = 42"
+# Mark the tree as edited (tell tree-sitter what changed)
+tree.edit(
+  start_byte: 4,           # edit starts at byte 4
+  old_end_byte: 5,         # old text "1" ended at byte 5
+  new_end_byte: 6,         # new text "42" ends at byte 6
+  start_point: { row: 0, column: 4 },
+  old_end_point: { row: 0, column: 5 },
+  new_end_point: { row: 0, column: 6 }
+)
+
+# Re-parse incrementally - tree-sitter reuses unchanged nodes
+new_tree = parser.parse_string(tree, "x = 42")
+```
+
+**Note:** Incremental parsing requires the MRI (`ruby_tree_sitter`), Rust (`tree_stump`), or Java (`java-tree-sitter`) backend. The FFI backend does not currently support incremental parsing. You can check support with:
+
+```ruby
+tree.supports_editing?  # => true if edit() is available
+```
+
 ### Error Handling
 
 ```ruby
@@ -532,12 +736,14 @@ parser = TreeHaver::Parser.new
 
 #### JRuby
 
-On JRuby, TreeHaver uses the FFI backend:
+On JRuby, TreeHaver can use either the FFI backend or the Java backend:
+
+**Option 1: FFI Backend (simpler setup)**
 
 ```ruby
 # Gemfile
 gem "tree_haver"
-gem "ffi"  # Required for JRuby backend
+gem "ffi"  # Required for FFI backend
 
 # Ensure libtree-sitter is installed on your system
 # On macOS with Homebrew:
@@ -546,9 +752,56 @@ gem "ffi"  # Required for JRuby backend
 # On Ubuntu/Debian:
 #   sudo apt-get install libtree-sitter0 libtree-sitter-dev
 
-# Code - no changes needed, TreeHaver auto-selects FFI backend
+# Code - TreeHaver auto-selects FFI backend on JRuby
 parser = TreeHaver::Parser.new
 ```
+
+**Option 2: Java Backend (native JVM performance)**
+
+```bash
+# 1. Download java-tree-sitter JAR from Maven Central
+mkdir -p vendor/jars
+curl -fSL -o vendor/jars/jtreesitter-0.23.2.jar \
+  "https://repo1.maven.org/maven2/io/github/tree-sitter/jtreesitter/0.23.2/jtreesitter-0.23.2.jar"
+
+# 2. Set environment variables
+export solu="$(pwd)/vendor/jars"
+export LD_LIBRARY_PATH="/path/to/libtree-sitter/lib:$LD_LIBRARY_PATH"
+
+# 3. Run with JRuby (requires Java 22+ for Foreign Function API)
+JAVA_OPTS="--enable-native-access=ALL-UNNAMED" jruby your_script.rb
+```
+
+```ruby
+# Force Java backend
+TreeHaver.backend = :java
+
+# Check if Java backend is available
+if TreeHaver::Backends::Java.available?
+  puts "Java backend is ready!"
+  puts TreeHaver.capabilities
+  # => { backend: :java, parse: true, query: true, bytes_field: true, incremental: true }
+end
+```
+
+**⚠️ Java Backend Limitation: Symbol Resolution**
+
+The Java backend uses Java's Foreign Function & Memory (FFM) API which loads libraries in isolation. Unlike the system's dynamic linker (`dlopen`), FFM's `SymbolLookup.or()` chains symbol lookups but doesn't resolve dynamic library dependencies.
+
+This means grammar `.so` files with unresolved references to `libtree-sitter.so` symbols won't load correctly. Most grammars from luarocks, npm, or other sources have these dependencies.
+
+**Recommended approach for JRuby:** Use the **FFI backend**:
+
+```ruby
+# On JRuby, use FFI backend (recommended)
+TreeHaver.backend = :ffi
+```
+
+The FFI backend uses Ruby's FFI gem which relies on the system's dynamic linker, correctly resolving symbol dependencies between `libtree-sitter.so` and grammar libraries.
+
+The Java backend will work with:
+- Grammar JARs built specifically for java-tree-sitter (self-contained)
+- Grammar `.so` files that statically link tree-sitter
 
 #### TruffleRuby
 

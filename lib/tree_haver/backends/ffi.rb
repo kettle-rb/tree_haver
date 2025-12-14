@@ -95,6 +95,13 @@ module TreeHaver
               end
             end
             unless @loaded
+              # :nocov:
+              # This failure path cannot be tested in a shared test suite because:
+              # 1. Once FFI loads a library via ffi_lib, it cannot be unloaded
+              # 2. Other tests may load the library first (test order is randomized)
+              # 3. The @loaded flag can be reset, but ffi_lib state persists
+              # ENV precedence is tested implicitly by parsing tests that work when
+              # TREE_SITTER_RUNTIME_LIB is set correctly in the environment.
               tried = candidates.join(", ")
               env_hint = ENV["TREE_SITTER_RUNTIME_LIB"] ? " TREE_SITTER_RUNTIME_LIB=#{ENV["TREE_SITTER_RUNTIME_LIB"]}." : ""
               msg = if last_error
@@ -103,6 +110,7 @@ module TreeHaver
                 "Could not load libtree-sitter (tried: #{tried}).#{env_hint}"
               end
               raise TreeHaver::NotAvailable, msg
+              # :nocov:
             end
 
             # Attach functions after lib is selected

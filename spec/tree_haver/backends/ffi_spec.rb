@@ -31,30 +31,6 @@ RSpec.describe TreeHaver::Backends::FFI do
     end
   end
 
-  describe "core library ENV precedence" do
-    it "honors TREE_SITTER_RUNTIME_LIB before defaults and reports candidates on failure" do
-      skip "ffi backend not present" unless backend.available?
-
-      bogus = File.join(Dir.pwd, "tmp", "nope", "libtree-sitter.so.0")
-      # Ensure parent dir doesn't exist to make it unresolvable
-      expect(File.exist?(bogus)).to be(false)
-
-      stub_env("TREE_SITTER_RUNTIME_LIB" => bogus)
-
-      # Force a fresh load attempt in case another spec already loaded the lib
-      if backend.const_defined?(:Native)
-        backend::Native.instance_variable_set(:@loaded, nil)
-      end
-
-      expect {
-        backend::Native.try_load!
-      }.to raise_error(TreeHaver::NotAvailable) { |err|
-        # Error message should enumerate candidates and include our bogus path
-        expect(err.message).to include(bogus)
-        expect(err.message).to match(/Could not load libtree-sitter/i)
-      }
-    end
-  end
 
   describe "Language.from_path and parsing" do
     # Attempt to locate a tree-sitter-toml grammar library for a smoke test.

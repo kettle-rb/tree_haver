@@ -31,11 +31,13 @@ GEM
     backports (3.25.2)
     benchmark (0.5.0)
     bigdecimal (3.3.1)
+    bigdecimal (3.3.1-java)
     bundler-audit (0.9.3)
       bundler (>= 1.2.0)
       thor (~> 1.0)
     concurrent-ruby (1.3.6)
     date (3.5.1)
+    date (3.5.1-java)
     debug (1.11.0)
       irb (~> 1.10)
       reline (>= 0.3.8)
@@ -73,6 +75,8 @@ GEM
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
     erb (5.1.3)
+    erb (5.1.3-java)
+    ffi (1.17.2-java)
     ffi (1.17.2-x86_64-linux-gnu)
     gem_bench (2.0.5)
       bundler (>= 1.14)
@@ -80,11 +84,14 @@ GEM
     gitmoji-regex (1.0.3)
       version_gem (~> 1.1, >= 1.1.8)
     io-console (0.8.2)
+    io-console (0.8.2-java)
     irb (1.15.3)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
+    jar-dependencies (0.5.5)
     json (2.18.0)
+    json (2.18.0-java)
     kettle-dev (1.2.4)
     kettle-soup-cover (1.0.10)
       simplecov (~> 0.22)
@@ -115,6 +122,8 @@ GEM
     logger (1.7.0)
     matrix (0.4.3)
     mutex_m (0.3.0)
+    nokogiri (1.18.10-java)
+      racc (~> 1.4)
     nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
     ostruct (0.6.3)
@@ -134,8 +143,12 @@ GEM
     psych (5.3.0)
       date
       stringio
+    psych (5.3.0-java)
+      date
+      jar-dependencies (>= 0.1.7)
     public_suffix (7.0.0)
     racc (1.8.1)
+    racc (1.8.1-java)
     rainbow (3.1.1)
     rake (13.3.1)
     rbs (3.9.5)
@@ -279,6 +292,7 @@ GEM
     stone_checksums (1.0.3)
       version_gem (~> 1.1, >= 1.1.9)
     stringio (3.1.9)
+    stringio (3.1.9-java)
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)
     thor (1.4.0)
@@ -317,6 +331,7 @@ GEM
     zlib (3.2.2)
 
 PLATFORMS
+  universal-java-25
   x86_64-linux
 
 DEPENDENCIES
@@ -366,9 +381,11 @@ CHECKSUMS
   backports (3.25.2) sha256=4852613b0336f950a811b545a447ac273823578bb7bd1d3126a6ff9d5f840ff7
   benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
   bigdecimal (3.3.1) sha256=eaa01e228be54c4f9f53bf3cc34fe3d5e845c31963e7fcc5bedb05a4e7d52218
+  bigdecimal (3.3.1-java) sha256=ed496e9c075dd501d58a519707bf704dba82a0cef658c719c929789551ec7d85
   bundler-audit (0.9.3) sha256=81c8766c71e47d0d28a0f98c7eed028539f21a6ea3cd8f685eb6f42333c9b4e9
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
+  date (3.5.1-java) sha256=12e09477dc932afe45bf768cd362bf73026804e0db1e6c314186d6cd0bee3344
   debug (1.11.0) sha256=1425db64cfa0130c952684e3dc974985be201dd62899bf4bbe3f8b5d6cf1aef2
   delegate (0.4.0) sha256=e4e38bc7c52883714fec69d481988be7dd81a868bc069d672305cf27e4024e02
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
@@ -382,12 +399,17 @@ CHECKSUMS
   dry-schema (1.14.1) sha256=2fcd7539a7099cacae6a22f6a3a2c1846fe5afeb1c841cde432c89c6cb9b9ff1
   dry-types (1.8.3) sha256=b5d97a45e0ed273131c0c3d5bc9f5633c2d1242e092ee47401ce7d5eab65c1bc
   erb (5.1.3) sha256=566e53057b6ba48699f824b578473b391fa8aef100aa14afad1c46725fae0e67
+  erb (5.1.3-java) sha256=ee38dbaf7bd3c4a9b67ea51cc0b5ca8debd8223009cecac9918aa017fcdc8581
+  ffi (1.17.2-java) sha256=94c8516d7c97b21915497b994e41f69e7e8e21d5fc085c498b68e52044e191ec
   ffi (1.17.2-x86_64-linux-gnu) sha256=05d2026fc9dbb7cfd21a5934559f16293815b7ce0314846fee2ac8efbdb823ea
   gem_bench (2.0.5) sha256=0dc0fb44a5a5eb7b2f5c1c68a5b0164d72007132822c012bac3abe976b199ead
   gitmoji-regex (1.0.3) sha256=538c6f49f5af6dc36d1630edb89a5a66f6e14ec5850d7fd071e0331f940e553f
   io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
+  io-console (0.8.2-java) sha256=837efefe96084c13ae91114917986ae6c6d1cf063b27b8419cc564a722a38af8
   irb (1.15.3) sha256=4349edff1efa7ff7bfd34cb9df74a133a588ba88c2718098b3b4468b81184aaa
+  jar-dependencies (0.5.5) sha256=2972b9fcba4b014e6446a84b5c09674a3e8648b95b71768e729f0e8e40568059
   json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
+  json (2.18.0-java) sha256=74706f684baeb1a40351ed26fc8fe6e958afa861320d1c28ff4eb7073b29c7aa
   kettle-dev (1.2.4) sha256=71373c67fe7eb0a9656e70dfd10cf226a15083b6d1be18dafcb5360f21ee98b6
   kettle-soup-cover (1.0.10) sha256=2674fe2d87cbe2961847396f4f8d1e5c0165ae9999ffa8e94e8491215e0b8c3d
   kettle-test (1.0.7) sha256=16fcb8b1bc12366f443d0ec9d125c1865249865c7afff7ef856e602436d4cdc7
@@ -398,6 +420,7 @@ CHECKSUMS
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
   matrix (0.4.3) sha256=a0d5ab7ddcc1973ff690ab361b67f359acbb16958d1dc072b8b956a286564c5b
   mutex_m (0.3.0) sha256=cfcb04ac16b69c4813777022fdceda24e9f798e48092a2b817eb4c0a782b0751
+  nokogiri (1.18.10-java) sha256=cd431a09c45d84a2f870ba0b7e8f571199b3727d530f2b4888a73639f76510b5
   nokogiri (1.18.10-x86_64-linux-gnu) sha256=ff5ba26ba2dbce5c04b9ea200777fd225061d7a3930548806f31db907e500f72
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   parallel (1.27.0) sha256=4ac151e1806b755fb4e2dc2332cbf0e54f2e24ba821ff2d3dcf86bf6dc4ae130
@@ -408,8 +431,10 @@ CHECKSUMS
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
   prism (1.6.0) sha256=bfc0281a81718c4872346bc858dc84abd3a60cae78336c65ad35c8fbff641c6b
   psych (5.3.0) sha256=8976a41ae29ea38c88356e862629345290347e3bfe27caf654f7c5a920e95eeb
+  psych (5.3.0-java) sha256=b4139ebbf9aff9823a09bd5a773b0c0eb90f7584ddc6eb97822eb7f0ec39f82d
   public_suffix (7.0.0) sha256=f7090b5beb0e56f9f10d79eed4d5fbe551b3b425da65877e075dad47a6a1b095
   racc (1.8.1) sha256=4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f
+  racc (1.8.1-java) sha256=54f2e6d1e1b91c154013277d986f52a90e5ececbe91465d29172e49342732b98
   rainbow (3.1.1) sha256=039491aa3a89f42efa1d6dec2fc4e62ede96eb6acd95e52f1ad581182b79bc6a
   rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
   rbs (3.9.5) sha256=eabaaf60aee84e38cbf94839c6e1b9cd145c7295fc3cc0e88c92e4069b1119b0
@@ -458,6 +483,7 @@ CHECKSUMS
   standard-rubocop-lts (1.0.10) sha256=bdce3407fb6683a305f7f2e186858033dc88013d95bdc6ec4de8df0be55a0e47
   stone_checksums (1.0.3) sha256=1d7ee38b7c766c523cbf12ab886ffbae519a2c48288f9d8ecc7ca0deed0701fe
   stringio (3.1.9) sha256=c111af13d3a73eab96a3bc2655ecf93788d13d28cb8e25c1dcbff89ace885121
+  stringio (3.1.9-java) sha256=b78f8357ea642c9779a22e655d883bd844e0c77296285aa829c61f7ccc4c807b
   terminal-table (4.0.0) sha256=f504793203f8251b2ea7c7068333053f0beeea26093ec9962e62ea79f94301d2
   thor (1.4.0) sha256=8763e822ccb0f1d7bee88cde131b19a65606657b847cc7b7b4b82e772bcd8a3d
   timecop (0.9.10) sha256=12ba45ce57cdcf6b1043cb6cdffa6381fd89ce10d369c28a7f6f04dc1b0cd8eb

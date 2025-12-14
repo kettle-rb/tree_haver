@@ -25,6 +25,9 @@ module TreeHaver
         # Parse source code
         def parse: (String source) -> untyped
 
+        # Parse source code with optional incremental parsing
+        def parse_string: (untyped? old_tree, String source) -> untyped
+
         private
 
         @parser: untyped
@@ -145,28 +148,131 @@ module TreeHaver
       end
     end
 
-    # Java backend for JRuby
+    # Java backend for JRuby using java-tree-sitter
     module Java
+      JAVA_PACKAGE: String
+
       # Attempt to append JARs from ENV to JRuby classpath
       def self.add_jars_from_env!: () -> void
 
       # Check if the Java backend is available
       def self.available?: () -> bool
 
+      # Reset the load state (for testing)
+      def self.reset!: () -> void
+
+      # Get the loaded Java classes
+      def self.java_classes: () -> Hash[Symbol, untyped]
+
       # Get capabilities supported by this backend
       def self.capabilities: () -> Hash[Symbol, untyped]
 
       class Language
-        # Load a language from a shared library (not yet implemented)
-        def self.from_library: (String _path, ?symbol: String?, ?name: String?) -> Language
+        attr_reader impl: untyped
 
-        # Alias for from_library
-        def self.from_path: (String _path, ?symbol: String?, ?name: String?) -> Language
+        def initialize: (untyped impl) -> void
+
+        def self.from_library: (String path, ?symbol: String?, ?name: String?) -> Language
+
+        def self.from_path: (String path, ?symbol: String?, ?name: String?) -> Language
       end
 
       class Parser
-        # Create a new parser instance (not yet implemented)
         def initialize: () -> void
+
+        def language=: (Language | untyped lang) -> void
+
+        def parse: (String source) -> Tree
+
+        def parse_string: (Tree? old_tree, String source) -> Tree
+
+        private
+
+        @parser: untyped
+      end
+
+      class Tree
+        attr_reader impl: untyped
+
+        def initialize: (untyped impl) -> void
+
+        def root_node: () -> Node
+
+        def edit: (
+          start_byte: Integer,
+          old_end_byte: Integer,
+          new_end_byte: Integer,
+          start_point: Hash[Symbol, Integer],
+          old_end_point: Hash[Symbol, Integer],
+          new_end_point: Hash[Symbol, Integer]
+        ) -> void
+      end
+
+      class Node
+        attr_reader impl: untyped
+
+        def initialize: (untyped impl) -> void
+
+        def type: () -> String
+
+        def child_count: () -> Integer
+
+        def child: (Integer index) -> Node
+
+        def each: () { (Node) -> void } -> void
+               | () -> Enumerator[Node, nil]
+
+        def start_byte: () -> Integer
+
+        def end_byte: () -> Integer
+
+        def start_point: () -> Hash[Symbol, Integer]
+
+        def end_point: () -> Hash[Symbol, Integer]
+
+        def has_error?: () -> bool
+
+        def missing?: () -> bool
+
+        def text: () -> String
+      end
+    end
+
+    # Rust backend using tree_stump
+    module Rust
+      # Check if the Rust backend is available
+      def self.available?: () -> bool
+
+      # Reset the load state (for testing)
+      def self.reset!: () -> void
+
+      # Get capabilities supported by this backend
+      def self.capabilities: () -> Hash[Symbol, untyped]
+
+      class Language
+        # Load a language from a shared library path
+        def self.from_library: (String path, ?symbol: String?, ?name: String?) -> untyped
+
+        # Alias for from_library
+        def self.from_path: (String path) -> untyped
+      end
+
+      class Parser
+        # Create a new parser instance
+        def initialize: () -> void
+
+        # Set the language for this parser
+        def language=: (untyped lang) -> untyped
+
+        # Parse source code
+        def parse: (String source) -> untyped
+
+        # Parse source code with optional incremental parsing
+        def parse_string: (untyped? old_tree, String source) -> untyped
+
+        private
+
+        @parser: untyped
       end
 
       class Tree
@@ -177,4 +283,3 @@ module TreeHaver
     end
   end
 end
-
