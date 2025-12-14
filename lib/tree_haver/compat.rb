@@ -1,11 +1,40 @@
 # frozen_string_literal: true
 
-# Opt-in compatibility shim to satisfy code that expects `TreeSitter`
-# When required, it maps TreeSitter constants to TreeHaver equivalents,
-# but does not override if a real TreeSitter is already loaded.
+# Compatibility shim for code that expects TreeSitter constants
+#
+# When required, this file creates a TreeSitter module that maps to TreeHaver
+# equivalents, allowing code written for ruby_tree_sitter to work with TreeHaver
+# without modification.
+#
+# This shim is safe and idempotent:
+# - If TreeSitter is already defined (real ruby_tree_sitter is loaded), this does nothing
+# - If TreeSitter is not defined, it creates aliases to TreeHaver
+#
+# @example Using the compatibility shim
+#   require "tree_haver/compat"
+#
+#   # Now code expecting TreeSitter will work
+#   parser = TreeSitter::Parser.new  # Actually creates TreeHaver::Parser
+#   tree = parser.parse(source)
+#
+# @note This is an opt-in feature. Only require this file if you need compatibility
+# @see TreeHaver The main module this aliases to
 
 unless defined?(::TreeSitter)
+  # Compatibility module aliasing TreeHaver classes to TreeSitter
+  #
+  # @note Only defined if TreeSitter doesn't already exist
   module TreeSitter; end
+
+  # @!parse
+  #   module TreeSitter
+  #     Error = TreeHaver::Error
+  #     Parser = TreeHaver::Parser
+  #     Tree = TreeHaver::Tree
+  #     Node = TreeHaver::Node
+  #     Language = TreeHaver::Language
+  #   end
+
   TreeSitter::Error = TreeHaver::Error
   TreeSitter::Parser = TreeHaver::Parser
   TreeSitter::Tree   = TreeHaver::Tree
