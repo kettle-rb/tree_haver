@@ -2,9 +2,19 @@
 
 module TreeHaver
   # Version information for TreeHaver
+  #
+  # This module contains version constants following Semantic Versioning 2.0.0.
+  #
+  # @see https://semver.org/ Semantic Versioning
   module Version
     # Current version of the tree_haver gem
+    #
+    # @return [String] the version string (e.g., "1.0.0")
     VERSION = "1.0.0"
   end
-  VERSION = Version::VERSION # traditional location
+
+  # Traditional location for VERSION constant
+  #
+  # @return [String] the version string
+  VERSION = Version::VERSION
 end
