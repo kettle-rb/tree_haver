@@ -1,0 +1,24 @@
+PATH
+  remote: .
+  specs:
+    tree_haver (0.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    kettle-dev (1.1.60)
+
+PLATFORMS
+  ruby
+  x86_64-linux
+
+DEPENDENCIES
+  kettle-dev (~> 1.1.60)
+  tree_haver!
+
+CHECKSUMS
+  kettle-dev (1.1.60) sha256=e155e60912c171b4fab24cfce1dc6f00e87cb3e62803a235c8524516d1ba1850
+  tree_haver (0.1.0)
+
+BUNDLED WITH
+  4.0.1
