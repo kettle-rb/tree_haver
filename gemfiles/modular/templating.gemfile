@@ -1,0 +1,8 @@
+# To retain during kettle-dev templating:
+#     kettle-dev:freeze
+#     # ... your code
+#     kettle-dev:unfreeze
+# Ruby parsing for advanced templating
+
+gem "prism", "~> 1.6"
+gem "unparser", "~> 0.8", ">= 0.8.1"
