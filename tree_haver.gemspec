@@ -104,6 +104,8 @@ Gem::Specification.new do |spec|
 
   # Utilities
   spec.add_dependency("version_gem", "~> 1.1", ">= 1.1.9")              # ruby >= 2.2.0
+  # FFI is required at runtime so the FFI backend can load on all Rubies
+  spec.add_dependency("ffi", ">= 1.15", "< 2.0")
 
   # NOTE: It is preferable to list development dependencies in the gemspec due to increased
   #       visibility and discoverability.
