@@ -134,12 +134,28 @@ module TreeHaver
         end
       end
 
+      # Check if the FFI backend is available
+      #
+      # Returns true if the `ffi` gem is present. The actual runtime library
+      # (libtree-sitter) is loaded lazily when needed.
+      #
+      # @return [Boolean] true if FFI gem is available
+      # @example
+      #   if TreeHaver::Backends::FFI.available?
+      #     puts "FFI backend is ready"
+      #   end
       def self.available?
         return false unless FFI_AVAILABLE && defined?(::FFI)
         # We report available when ffi is present; loading lib happens lazily
         true
       end
 
+      # Get capabilities supported by this backend
+      #
+      # @return [Hash{Symbol => Object}] capability map
+      # @example
+      #   TreeHaver::Backends::FFI.capabilities
+      #   # => { backend: :ffi, parse: true, query: false, bytes_field: true }
       def self.capabilities
         return {} unless available?
         {
@@ -150,24 +166,46 @@ module TreeHaver
         }
       end
 
+      # Represents a Tree-sitter language loaded via FFI
+      #
+      # Holds a pointer to a TSLanguage struct from a loaded shared library.
       class Language
-        # pointer to TSLanguage
+        # The FFI pointer to the TSLanguage struct
+        # @return [FFI::Pointer]
         attr_reader :pointer
 
+        # @api private
+        # @param ptr [FFI::Pointer] pointer to TSLanguage
         def initialize(ptr)
           @pointer = ptr
         end
 
+        # Convert to FFI pointer for passing to native functions
+        #
+        # @return [FFI::Pointer]
         def to_ptr
           @pointer
         end
 
-        # Load a language from a shared library that exports a function returning TSLanguage*
-        # Options:
-        #   symbol: explicit exported function name to use (highest precedence)
-        #   name:   an optional logical name (not used here, but accepted for facade compatibility)
-        # Symbol resolution precedence (when symbol: not given):
-        #   ENV["TREE_SITTER_LANG_SYMBOL"] → ENV["TREE_HAVER_LANG_SYMBOL"] → guessed → default("tree_sitter_toml")
+        # Load a language from a shared library
+        #
+        # The library must export a function that returns a pointer to a TSLanguage struct.
+        # Symbol resolution uses this precedence (when symbol: not provided):
+        # 1. ENV["TREE_SITTER_LANG_SYMBOL"]
+        # 2. ENV["TREE_HAVER_LANG_SYMBOL"]
+        # 3. Guessed from filename (e.g., "libtree-sitter-toml.so" → "tree_sitter_toml")
+        # 4. Default fallback ("tree_sitter_toml")
+        #
+        # @param path [String] absolute path to the language shared library
+        # @param symbol [String, nil] explicit exported function name (highest precedence)
+        # @param name [String, nil] optional logical name (accepted for compatibility, not used)
+        # @return [Language] loaded language handle
+        # @raise [TreeHaver::NotAvailable] if FFI not available or library cannot be loaded
+        # @example
+        #   lang = TreeHaver::Backends::FFI::Language.from_library(
+        #     "/usr/local/lib/libtree-sitter-toml.so",
+        #     symbol: "tree_sitter_toml"
+        #   )
         def self.from_library(path, symbol: nil, name: nil)
           raise TreeHaver::NotAvailable, "FFI not available" unless Backends::FFI.available?
           begin
