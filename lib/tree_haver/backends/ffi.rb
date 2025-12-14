@@ -9,17 +9,44 @@ end
 
 module TreeHaver
   module Backends
-    # JRuby-/FFI-oriented backend. Calls native libtree-sitter via Ruby-FFI
-    # (JNR-FFI on JRuby). Does not require MRI C extensions.
+    # FFI-based backend for calling libtree-sitter directly
+    #
+    # This backend uses Ruby FFI (JNR-FFI on JRuby) to call the native Tree-sitter
+    # C library without requiring MRI C extensions. This makes it compatible with
+    # JRuby, TruffleRuby, and other Ruby implementations that support FFI.
+    #
+    # The FFI backend currently supports:
+    # - Parsing source code
+    # - AST node traversal
+    # - Accessing node types and children
+    #
+    # Not yet supported:
+    # - Query API (Tree-sitter queries/patterns)
+    #
+    # @note Requires the `ffi` gem and libtree-sitter shared library to be installed
+    # @see https://github.com/ffi/ffi Ruby FFI
+    # @see https://tree-sitter.github.io/tree-sitter/ Tree-sitter
     module FFI
-      # Native bindings loader
+      # Native FFI bindings to libtree-sitter
+      #
+      # This module handles loading the Tree-sitter runtime library and defining
+      # FFI function attachments for the core Tree-sitter API.
+      #
+      # @api private
       module Native
         if FFI_AVAILABLE && defined?(::FFI)
           extend ::FFI::Library
 
-        # Build list of core runtime candidates at call-time so ENV stubbing in tests
-        # (and late configuration) is reflected in diagnostics.
-        # NOTE: We intentionally do NOT support TREE_SITTER_LIB; only TREE_SITTER_RUNTIME_LIB
+        # Get list of candidate library names for loading libtree-sitter
+        #
+        # The list is built dynamically to respect environment variables set at runtime.
+        # If TREE_SITTER_RUNTIME_LIB is set, it is tried first.
+        #
+        # @note TREE_SITTER_LIB is intentionally NOT supported
+        # @return [Array<String>] list of library names to try
+        # @example
+        #   Native.lib_candidates
+        #   # => ["tree-sitter", "libtree-sitter.so.0", "libtree-sitter.so", ...]
         def self.lib_candidates
           [
             ENV["TREE_SITTER_RUNTIME_LIB"],
