@@ -192,9 +192,8 @@ module TreeHaver
         # The library must export a function that returns a pointer to a TSLanguage struct.
         # Symbol resolution uses this precedence (when symbol: not provided):
         # 1. ENV["TREE_SITTER_LANG_SYMBOL"]
-        # 2. ENV["TREE_HAVER_LANG_SYMBOL"]
-        # 3. Guessed from filename (e.g., "libtree-sitter-toml.so" → "tree_sitter_toml")
-        # 4. Default fallback ("tree_sitter_toml")
+        # 2. Guessed from filename (e.g., "libtree-sitter-toml.so" → "tree_sitter_toml")
+        # 3. Default fallback ("tree_sitter_toml")
         #
         # @param path [String] absolute path to the language shared library
         # @param symbol [String, nil] explicit exported function name (highest precedence)
@@ -214,7 +213,7 @@ module TreeHaver
             raise TreeHaver::NotAvailable, "Could not open language library at #{path}: #{e.message}"
           end
 
-          requested = symbol || ENV["TREE_SITTER_LANG_SYMBOL"] || ENV["TREE_HAVER_LANG_SYMBOL"]
+          requested = symbol || ENV["TREE_SITTER_LANG_SYMBOL"]
           base = File.basename(path)
           guessed_lang = base.sub(/^libtree[-_]sitter[-_]/, "").sub(/\.(so(\.\d+)?)|\.dylib|\.dll\z/, "")
           # If an override was provided (arg or ENV), treat it as strict and do not fall back.
@@ -239,7 +238,6 @@ module TreeHaver
           unless func
             env_used = []
             env_used << "TREE_SITTER_LANG_SYMBOL=#{ENV["TREE_SITTER_LANG_SYMBOL"]}" if ENV["TREE_SITTER_LANG_SYMBOL"]
-            env_used << "TREE_HAVER_LANG_SYMBOL=#{ENV["TREE_HAVER_LANG_SYMBOL"]}" if ENV["TREE_HAVER_LANG_SYMBOL"]
             detail = env_used.empty? ? "" : " Env overrides: #{env_used.join(", ")}."
             raise TreeHaver::NotAvailable, "Could not resolve language symbol in #{path} (tried: #{candidates.join(", ")}).#{detail} #{last_err&.message}"
           end

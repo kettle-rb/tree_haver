@@ -1,0 +1,27 @@
+# Type signatures for TreeHaver::GrammarFinder
+module TreeHaver
+  # Generic utility for finding tree-sitter grammar shared libraries
+  class GrammarFinder
+    BASE_SEARCH_DIRS: Array[String]
+
+    attr_reader language_name: Symbol
+    attr_reader extra_paths: Array[String]
+
+    def initialize: (Symbol | String language_name, ?extra_paths: Array[String]) -> void
+
+    def env_var_name: () -> String
+    def symbol_name: () -> String
+    def library_filename: () -> String
+    def search_paths: () -> Array[String]
+    def find_library_path: () -> String?
+    def available?: () -> bool
+    def register!: (?raise_on_missing: bool) -> bool
+    def search_info: () -> Hash[Symbol, untyped]
+    def not_found_message: () -> String
+
+    private
+
+    def platform_extension: () -> String
+  end
+end
+

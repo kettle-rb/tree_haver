@@ -65,6 +65,7 @@ TreeHaver is a cross-Ruby adapter for the [Tree-sitter](https://tree-sitter.gith
   - **Java Backend**: Planned support for JRuby's native Java integration
 - **Automatic Backend Selection**: Intelligently selects the best backend for your Ruby implementation
 - **Language Agnostic**: Load any Tree-sitter grammar dynamically (TOML, JSON, Ruby, JavaScript, etc.)
+- **Grammar Discovery**: Built-in `GrammarFinder` utility for platform-aware grammar library discovery
 - **Thread-Safe**: Built-in language registry with thread-safe caching
 - **Minimal API Surface**: Simple, focused API that covers the most common Tree-sitter use cases
 
@@ -234,14 +235,11 @@ If not set, TreeHaver tries these names in order:
 When loading a language grammar, if you don't specify the `symbol:` parameter, TreeHaver resolves it in this precedence:
 
 1. **`TREE_SITTER_LANG_SYMBOL`**: Explicit symbol override
-2. **`TREE_HAVER_LANG_SYMBOL`**: TreeHaver-specific symbol override
-3. Guessed from filename (e.g., `libtree-sitter-toml.so` → `tree_sitter_toml`)
-4. Default fallback (`tree_sitter_toml`)
+2. Guessed from filename (e.g., `libtree-sitter-toml.so` → `tree_sitter_toml`)
+3. Default fallback (`tree_sitter_toml`)
 
 ```bash
 export TREE_SITTER_LANG_SYMBOL=tree_sitter_toml
-# or
-export TREE_HAVER_LANG_SYMBOL=tree_sitter_toml
 ```
 
 #### Language Library Paths
@@ -280,6 +278,97 @@ language = TreeHaver::Language.toml
 language = TreeHaver::Language.toml(
   path: "/custom/path/libtree-sitter-toml.so"
 )
+```
+
+### Grammar Discovery with GrammarFinder
+
+For libraries that need to automatically locate tree-sitter grammars (like the `*-merge` family of gems), TreeHaver provides the `GrammarFinder` utility class. It handles platform-aware grammar discovery without requiring language-specific code in TreeHaver itself.
+
+```ruby
+# Create a finder for any language
+finder = TreeHaver::GrammarFinder.new(:toml)
+
+# Check if the grammar is available
+if finder.available?
+  puts "TOML grammar found at: #{finder.find_library_path}"
+else
+  puts finder.not_found_message
+  # => "Tree-sitter toml grammar not found. Searched: /usr/lib/libtree-sitter-toml.so, ..."
+end
+
+# Register the language if available
+finder.register! if finder.available?
+
+# Now use the registered language
+language = TreeHaver::Language.toml
+```
+
+#### GrammarFinder Automatic Derivation
+
+Given just the language name, `GrammarFinder` automatically derives:
+
+| Property | Derived Value (for `:toml`) |
+|----------|----------------------------|
+| ENV var  | `TREE_SITTER_TOML_PATH` |
+| Library filename | `libtree-sitter-toml.so` (Linux) or `.dylib` (macOS) |
+| Symbol name | `tree_sitter_toml` |
+
+#### Search Order
+
+`GrammarFinder` searches for grammars in this order:
+
+1. **Environment variable**: `TREE_SITTER_<LANG>_PATH` (highest priority)
+2. **Extra paths**: Custom paths provided at initialization
+3. **System paths**: Common installation directories (`/usr/lib`, `/usr/local/lib`, `/opt/homebrew/lib`, etc.)
+
+#### Usage in *-merge Gems
+
+The `GrammarFinder` pattern enables clean integration in language-specific merge gems:
+
+```ruby
+# In toml-merge
+finder = TreeHaver::GrammarFinder.new(:toml)
+finder.register! if finder.available?
+
+# In json-merge  
+finder = TreeHaver::GrammarFinder.new(:json)
+finder.register! if finder.available?
+
+# In bash-merge
+finder = TreeHaver::GrammarFinder.new(:bash)
+finder.register! if finder.available?
+```
+
+Each gem uses the same API—only the language name changes.
+
+#### Adding Custom Search Paths
+
+For non-standard installations, provide extra search paths:
+
+```ruby
+finder = TreeHaver::GrammarFinder.new(:toml, extra_paths: [
+  "/opt/custom/lib",
+  "/home/user/.local/lib"
+])
+```
+
+#### Debug Information
+
+Get detailed information about the grammar search:
+
+```ruby
+finder = TreeHaver::GrammarFinder.new(:toml)
+puts finder.search_info
+# => {
+#      language: :toml,
+#      env_var: "TREE_SITTER_TOML_PATH",
+#      env_value: nil,
+#      symbol: "tree_sitter_toml",
+#      library_filename: "libtree-sitter-toml.so",
+#      search_paths: ["/usr/lib/libtree-sitter-toml.so", ...],
+#      found_path: "/usr/lib/libtree-sitter-toml.so",
+#      available: true
+#    }
 ```
 
 ### Checking Capabilities

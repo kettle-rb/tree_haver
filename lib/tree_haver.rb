@@ -34,12 +34,28 @@ require_relative "tree_haver/language_registry"
 #   TreeHaver.register_language(:toml, path: "/usr/local/lib/libtree-sitter-toml.so")
 #   language = TreeHaver::Language.toml
 #
+# @example Using GrammarFinder for automatic discovery
+#   # GrammarFinder automatically locates grammar libraries on the system
+#   finder = TreeHaver::GrammarFinder.new(:toml)
+#   finder.register! if finder.available?
+#   language = TreeHaver::Language.toml
+#
+# @example Using GrammarFinder in a *-merge gem
+#   # Each merge gem (toml-merge, json-merge, bash-merge) uses the same pattern
+#   finder = TreeHaver::GrammarFinder.new(:toml)  # or :json, :bash, etc.
+#   if finder.available?
+#     finder.register!
+#   else
+#     warn finder.not_found_message
+#   end
+#
 # @example Selecting a backend
 #   TreeHaver.backend = :ffi  # Force FFI backend
 #   TreeHaver.backend = :mri  # Force MRI backend
 #   TreeHaver.backend = :auto # Auto-select (default)
 #
 # @see https://tree-sitter.github.io/tree-sitter/ Tree-sitter documentation
+# @see GrammarFinder For automatic grammar library discovery
 module TreeHaver
   # Base error class for TreeHaver exceptions
   #
@@ -72,6 +88,20 @@ module TreeHaver
     autoload :FFI, File.join(__dir__, "tree_haver", "backends", "ffi")
     autoload :Java, File.join(__dir__, "tree_haver", "backends", "java")
   end
+
+  # Generic grammar finder utility
+  #
+  # GrammarFinder provides platform-aware discovery of tree-sitter grammar
+  # libraries for any language. It's used by language-specific merge gems
+  # to locate grammar shared libraries.
+  #
+  # @example Find and register a language
+  #   finder = TreeHaver::GrammarFinder.new(:toml)
+  #   finder.register! if finder.available?
+  #   language = TreeHaver::Language.toml
+  #
+  # @see GrammarFinder
+  autoload :GrammarFinder, File.join(__dir__, "tree_haver", "grammar_finder")
 
   # Get the current backend selection
   #
@@ -237,6 +267,21 @@ module TreeHaver
   #   TreeHaver.register_language(:toml, path: "/path/to/libtree-sitter-toml.so")
   #   language = TreeHaver::Language.toml
   class Language
+    # Load a language grammar from a shared library (ruby_tree_sitter compatibility)
+    #
+    # This method provides API compatibility with ruby_tree_sitter which uses
+    # `Language.load(name, path)`.
+    #
+    # @param name [String] the language name (e.g., "toml")
+    # @param path [String] absolute path to the language shared library
+    # @return [Language] loaded language handle
+    # @raise [NotAvailable] if the library cannot be loaded
+    # @example
+    #   language = TreeHaver::Language.load("toml", "/usr/local/lib/libtree-sitter-toml.so")
+    def self.load(name, path)
+      from_library(path, symbol: "tree_sitter_#{name}", name: name)
+    end
+
     # Load a language grammar from a shared library
     #
     # The library must export a function that returns a pointer to a TSLanguage struct.
@@ -257,7 +302,8 @@ module TreeHaver
       mod = TreeHaver.backend_module
       raise NotAvailable, "No TreeHaver backend is available" unless mod
       # Backend must implement .from_library; fallback to .from_path for older impls
-      key = [path, symbol, name]
+      # Include ENV vars in cache key since they affect symbol resolution
+      key = [path, symbol, name, ENV["TREE_SITTER_LANG_SYMBOL"]]
       LanguageRegistry.fetch(key) do
         if mod::Language.respond_to?(:from_library)
           mod::Language.from_library(path, symbol: symbol, name: name)
@@ -349,6 +395,21 @@ module TreeHaver
       tree_impl = @impl.parse(source)
       Tree.new(tree_impl)
     end
+
+    # Parse source code into a syntax tree (ruby_tree_sitter compatibility)
+    #
+    # This method provides API compatibility with ruby_tree_sitter which uses
+    # `parse_string(old_tree, source)`. The old_tree parameter is ignored in
+    # this implementation.
+    #
+    # @param _old_tree [Tree, nil] ignored for compatibility
+    # @param source [String] the source code to parse (should be UTF-8)
+    # @return [Tree] the parsed syntax tree
+    # @example
+    #   tree = parser.parse_string(nil, "x = 1")
+    def parse_string(_old_tree, source)
+      parse(source)
+    end
   end
 
   # Represents a parsed syntax tree
@@ -417,6 +478,87 @@ module TreeHaver
     def each(&blk)
       return enum_for(:each) unless block_given?
       @impl.each { |child_impl| blk.call(Node.new(child_impl)) }
+    end
+
+    # Get the start position of this node in the source
+    #
+    # @return [Object] point object with row and column
+    # @example
+    #   node.start_point.row     # => 0
+    #   node.start_point.column  # => 4
+    def start_point
+      @impl.start_point
+    end
+
+    # Get the end position of this node in the source
+    #
+    # @return [Object] point object with row and column
+    # @example
+    #   node.end_point.row     # => 0
+    #   node.end_point.column  # => 10
+    def end_point
+      @impl.end_point
+    end
+
+    # Get the start byte offset of this node in the source
+    #
+    # @return [Integer] byte offset from beginning of source
+    def start_byte
+      @impl.start_byte
+    end
+
+    # Get the end byte offset of this node in the source
+    #
+    # @return [Integer] byte offset from beginning of source
+    def end_byte
+      @impl.end_byte
+    end
+
+    # Check if this node or any descendant has a parse error
+    #
+    # @return [Boolean] true if there is an error in the subtree
+    def has_error?
+      @impl.respond_to?(:has_error?) && @impl.has_error?
+    end
+
+    # Check if this node is a MISSING node (inserted by error recovery)
+    #
+    # @return [Boolean] true if this is a missing node
+    def missing?
+      @impl.respond_to?(:missing?) && @impl.missing?
+    end
+
+    # Get string representation of this node
+    #
+    # @return [String] string representation
+    def to_s
+      @impl.to_s
+    end
+
+    # Check if node responds to a method (includes delegation to @impl)
+    #
+    # @param method_name [Symbol] method to check
+    # @param include_private [Boolean] include private methods
+    # @return [Boolean]
+    def respond_to_missing?(method_name, include_private = false)
+      @impl.respond_to?(method_name, include_private) || super
+    end
+
+    # Delegate unknown methods to the underlying implementation
+    #
+    # This provides full compatibility with ruby_tree_sitter nodes
+    # for methods not explicitly wrapped.
+    #
+    # @param method_name [Symbol] method to call
+    # @param args [Array] arguments to pass
+    # @param block [Proc] block to pass
+    # @return [Object] result from the underlying implementation
+    def method_missing(method_name, *args, **kwargs, &block)
+      if @impl.respond_to?(method_name)
+        @impl.public_send(method_name, *args, **kwargs, &block)
+      else
+        super
+      end
     end
   end
 end

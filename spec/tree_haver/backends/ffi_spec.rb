@@ -112,7 +112,7 @@ RSpec.describe TreeHaver::Backends::FFI do
 
       # Use rspec-stubbed_env helper to temporarily override ENV safely
       invalid = "totally_nonexistent_symbol_#{rand(1_000_000)}"
-      stub_env("TREE_HAVER_LANG_SYMBOL" => invalid)
+      stub_env("TREE_SITTER_LANG_SYMBOL" => invalid)
       expect {
         TreeHaver::Language.from_path(lang_path)
       }.to raise_error(TreeHaver::NotAvailable, /Could not resolve language symbol/i)
