@@ -1,8 +1,13 @@
-AllCops:
-  TargetRubyVersion: 3.2
+inherit_gem:
+  rubocop-lts: config/rubygem_rspec.yml
 
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
+inherit_from:
+  - .rubocop_rspec.yml
 
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
+plugins: rubocop-on-rbs
+
+RBS:
+  Enabled: true
+
+Layout/IndentationConsistency:
+  Exclude: ['*.md']
