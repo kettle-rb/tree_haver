@@ -1,4 +1,133 @@
+# Type definitions for TreeHaver
+#
+# TreeHaver is a cross-Ruby adapter for the Tree-sitter parsing library
+
 module TreeHaver
   VERSION: String
-  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+
+  # Base error class
+  class Error < StandardError
+  end
+
+  # Raised when a backend or feature is not available
+  class NotAvailable < Error
+  end
+
+  # Module namespace for backend implementations
+  module Backends
+  end
+
+  # Get the current backend selection
+  def self.backend: () -> Symbol
+
+  # Set the backend to use
+  def self.backend=: (Symbol | String | nil name) -> (Symbol | nil)
+
+  # Reset backend selection memoization
+  def self.reset_backend!: (?to: Symbol | String | nil) -> void
+
+  # Determine the concrete backend module to use
+  def self.backend_module: () -> Module?
+
+  # Get capabilities of the current backend
+  def self.capabilities: () -> Hash[Symbol, untyped]
+
+  # Register a language helper by name
+  def self.register_language: (Symbol | String name, path: String, ?symbol: String?) -> void
+
+  # Unregister a previously registered language helper
+  def self.unregister_language: (Symbol | String name) -> void
+
+  # Clear all registered languages
+  def self.clear_languages!: () -> void
+
+  # Fetch a registered language entry
+  def self.registered_language: (Symbol | String name) -> Hash[Symbol, String?]?
+
+  # Represents a Tree-sitter language grammar
+  class Language
+    # Load a language grammar from a shared library
+    def self.from_library: (String path, ?symbol: String?, ?name: String?) -> Language
+
+    # Alias for from_library
+    def self.from_path: (String path, ?symbol: String?, ?name: String?) -> Language
+
+    private
+
+    def self.method_missing: (Symbol method_name, *untyped args, **untyped kwargs) ?{ () -> untyped } -> Language
+
+    def self.respond_to_missing?: (Symbol method_name, ?bool include_private) -> bool
+  end
+
+  # Represents a Tree-sitter parser instance
+  class Parser
+    # Create a new parser instance
+    def initialize: () -> void
+
+    # Set the language grammar for this parser
+    def language=: (Language lang) -> Language
+
+    # Parse source code into a syntax tree
+    def parse: (String source) -> Tree
+
+    private
+
+    @impl: untyped
+  end
+
+  # Represents a parsed syntax tree
+  class Tree
+    # Get the root node of the syntax tree
+    def root_node: () -> Node
+
+    private
+
+    def initialize: (untyped impl) -> void
+
+    @impl: untyped
+  end
+
+  # Represents a node in the syntax tree
+  class Node
+    # Get the type name of this node
+    def type: () -> String
+
+    # Iterate over child nodes
+    def each: () { (Node child) -> void } -> nil
+            | () -> Enumerator[Node, nil]
+
+    private
+
+    def initialize: (untyped impl) -> void
+
+    @impl: untyped
+  end
+
+  # Thread-safe language registrations and cache
+  module LanguageRegistry
+    # Register a language helper by name
+    def self.register: (Symbol | String name, path: String, ?symbol: String?) -> void
+
+    # Unregister a previously registered language helper
+    def self.unregister: (Symbol | String name) -> void
+
+    # Fetch a registration entry
+    def self.registered: (Symbol | String name) -> Hash[Symbol, String?]?
+
+    # Clear all registrations
+    def self.clear_registrations!: () -> void
+
+    # Fetch a cached language by key or compute and store it
+    def self.fetch: [T] (Array[untyped] key) { () -> T } -> T
+
+    # Clear the language cache
+    def self.clear_cache!: () -> void
+
+    # Clear everything (registrations and cache)
+    def self.clear_all!: () -> void
+  end
+
+  module Version
+    VERSION: String
+  end
 end

@@ -1,0 +1,180 @@
+# Type definitions for TreeHaver backends
+
+module TreeHaver
+  module Backends
+    # MRI backend using ruby_tree_sitter
+    module MRI
+      # Check if the MRI backend is available
+      def self.available?: () -> bool
+
+      # Get capabilities supported by this backend
+      def self.capabilities: () -> Hash[Symbol, untyped]
+
+      class Language
+        # Load a language from a shared library path
+        def self.from_path: (String path) -> untyped
+      end
+
+      class Parser
+        # Create a new parser instance
+        def initialize: () -> void
+
+        # Set the language for this parser
+        def language=: (untyped lang) -> untyped
+
+        # Parse source code
+        def parse: (String source) -> untyped
+
+        private
+
+        @parser: untyped
+      end
+
+      class Tree
+      end
+
+      class Node
+      end
+    end
+
+    # FFI-based backend for calling libtree-sitter directly
+    module FFI
+      # Native FFI bindings to libtree-sitter
+      module Native
+        # Get list of candidate library names
+        def self.lib_candidates: () -> Array[String]
+
+        # Load the Tree-sitter runtime library
+        def self.try_load!: () -> void
+
+        # Check if the library is loaded
+        def self.loaded?: () -> bool
+
+        # FFI struct representation of TSNode
+        class TSNode < ::FFI::Struct
+        end
+
+        def self.ts_parser_new: () -> ::FFI::Pointer
+
+        def self.ts_parser_delete: (::FFI::Pointer ptr) -> void
+
+        def self.ts_parser_set_language: (::FFI::Pointer parser, ::FFI::Pointer language) -> bool
+
+        def self.ts_parser_parse_string: (::FFI::Pointer parser, ::FFI::Pointer old_tree, String source, Integer length) -> ::FFI::Pointer
+
+        def self.ts_tree_delete: (::FFI::Pointer ptr) -> void
+
+        def self.ts_tree_root_node: (::FFI::Pointer tree) -> TSNode
+
+        def self.ts_node_type: (TSNode node) -> String
+
+        def self.ts_node_child_count: (TSNode node) -> Integer
+
+        def self.ts_node_child: (TSNode node, Integer index) -> TSNode
+      end
+
+      # Check if the FFI backend is available
+      def self.available?: () -> bool
+
+      # Get capabilities supported by this backend
+      def self.capabilities: () -> Hash[Symbol, untyped]
+
+      class Language
+        # The FFI pointer to the TSLanguage struct
+        attr_reader pointer: ::FFI::Pointer
+
+        # Load a language from a shared library
+        def self.from_library: (String path, ?symbol: String?, ?name: String?) -> Language
+
+        # Alias for from_library
+        def self.from_path: (String path, ?symbol: String?, ?name: String?) -> Language
+
+        # Convert to FFI pointer
+        def to_ptr: () -> ::FFI::Pointer
+
+        private
+
+        def initialize: (::FFI::Pointer ptr) -> void
+      end
+
+      class Parser
+        # Create a new parser instance
+        def initialize: () -> void
+
+        # Get finalizer for cleanup
+        def self.finalizer: (::FFI::Pointer ptr) -> Proc
+
+        # Set the language for this parser
+        def language=: (Language lang) -> Language
+
+        # Parse source code into a syntax tree
+        def parse: (String source) -> Tree
+
+        private
+
+        @parser: ::FFI::Pointer
+      end
+
+      class Tree
+        # Get finalizer for cleanup
+        def self.finalizer: (::FFI::Pointer ptr) -> Proc
+
+        # Get the root node of the syntax tree
+        def root_node: () -> Node
+
+        private
+
+        def initialize: (::FFI::Pointer ptr) -> void
+
+        @ptr: ::FFI::Pointer
+      end
+
+      class Node
+        # Get the type name of this node
+        def type: () -> String
+
+        # Iterate over child nodes
+        def each: () { (Node child) -> void } -> nil
+                | () -> Enumerator[Node, nil]
+
+        private
+
+        def initialize: (Native::TSNode ts_node_value) -> void
+
+        @val: Native::TSNode
+      end
+    end
+
+    # Java backend for JRuby
+    module Java
+      # Attempt to append JARs from ENV to JRuby classpath
+      def self.add_jars_from_env!: () -> void
+
+      # Check if the Java backend is available
+      def self.available?: () -> bool
+
+      # Get capabilities supported by this backend
+      def self.capabilities: () -> Hash[Symbol, untyped]
+
+      class Language
+        # Load a language from a shared library (not yet implemented)
+        def self.from_library: (String _path, ?symbol: String?, ?name: String?) -> Language
+
+        # Alias for from_library
+        def self.from_path: (String _path, ?symbol: String?, ?name: String?) -> Language
+      end
+
+      class Parser
+        # Create a new parser instance (not yet implemented)
+        def initialize: () -> void
+      end
+
+      class Tree
+      end
+
+      class Node
+      end
+    end
+  end
+end
+
