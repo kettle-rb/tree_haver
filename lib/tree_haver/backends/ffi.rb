@@ -257,7 +257,13 @@ module TreeHaver
         end
       end
 
+      # FFI-based Tree-sitter parser
+      #
+      # Wraps a TSParser pointer and manages its lifecycle with a finalizer.
       class Parser
+        # Create a new parser instance
+        #
+        # @raise [TreeHaver::NotAvailable] if FFI not available or parser creation fails
         def initialize
           raise TreeHaver::NotAvailable, "FFI not available" unless Backends::FFI.available?
           Native.try_load!
@@ -266,16 +272,29 @@ module TreeHaver
           ObjectSpace.define_finalizer(self, self.class.finalizer(@parser))
         end
 
+        # @api private
+        # @param ptr [FFI::Pointer] pointer to TSParser
+        # @return [Proc] finalizer that deletes the parser
         def self.finalizer(ptr)
           proc { Native.ts_parser_delete(ptr) rescue nil }
         end
 
+        # Set the language for this parser
+        #
+        # @param lang [Language] the language to use for parsing
+        # @return [Language] the language that was set
+        # @raise [TreeHaver::NotAvailable] if setting the language fails
         def language=(lang)
           ok = Native.ts_parser_set_language(@parser, lang.to_ptr)
           raise TreeHaver::NotAvailable, "Failed to set language on parser" unless ok
           lang
         end
 
+        # Parse source code into a syntax tree
+        #
+        # @param source [String] the source code to parse (should be UTF-8)
+        # @return [Tree] the parsed syntax tree
+        # @raise [TreeHaver::NotAvailable] if parsing fails
         def parse(source)
           src = String(source)
           tree_ptr = Native.ts_parser_parse_string(@parser, ::FFI::Pointer::NULL, src, src.bytesize)
@@ -284,32 +303,56 @@ module TreeHaver
         end
       end
 
+      # FFI-based Tree-sitter tree
+      #
+      # Wraps a TSTree pointer and manages its lifecycle with a finalizer.
       class Tree
+        # @api private
+        # @param ptr [FFI::Pointer] pointer to TSTree
         def initialize(ptr)
           @ptr = ptr
           ObjectSpace.define_finalizer(self, self.class.finalizer(@ptr))
         end
 
+        # @api private
+        # @param ptr [FFI::Pointer] pointer to TSTree
+        # @return [Proc] finalizer that deletes the tree
         def self.finalizer(ptr)
           proc { Native.ts_tree_delete(ptr) rescue nil }
         end
 
+        # Get the root node of the syntax tree
+        #
+        # @return [Node] the root node
         def root_node
           node_val = Native.ts_tree_root_node(@ptr)
           Node.new(node_val)
         end
       end
 
+      # FFI-based Tree-sitter node
+      #
+      # Wraps a TSNode by-value struct. TSNode is passed by value in the
+      # Tree-sitter C API, so we store the struct value directly.
       class Node
+        # @api private
+        # @param ts_node_value [Native::TSNode] the TSNode struct (by value)
         def initialize(ts_node_value)
           # Store by-value struct (FFI will copy); methods pass it back by value
           @val = ts_node_value
         end
 
+        # Get the type name of this node
+        #
+        # @return [String] the node type (e.g., "document", "table", "pair")
         def type
           Native.ts_node_type(@val)
         end
 
+        # Iterate over child nodes
+        #
+        # @yieldparam child [Node] each child node
+        # @return [Enumerator, nil] an enumerator if no block given, nil otherwise
         def each
           return enum_for(:each) unless block_given?
           count = Native.ts_node_child_count(@val)
