@@ -32,5 +32,6 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency("kettle-dev", "~> 1.1.60")                           # ruby >= 2.3.0
+  spec.add_development_dependency("kettle-dev", "~> 1.2")                           # ruby >= 2.3.0
+                           # ruby >= 2.3.0
 end
