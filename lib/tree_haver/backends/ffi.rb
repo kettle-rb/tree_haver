@@ -58,6 +58,12 @@ module TreeHaver
           ].compact
         end
 
+        # FFI struct representation of TSNode
+        #
+        # Mirrors the C struct layout used by Tree-sitter. TSNode is passed
+        # by value in the Tree-sitter C API.
+        #
+        # @api private
         class TSNode < ::FFI::Struct
           layout :context, [:uint32, 4],
                  :id,      :pointer,
@@ -66,6 +72,15 @@ module TreeHaver
 
         typedef TSNode.by_value, :ts_node
 
+          # Load the Tree-sitter runtime library
+          #
+          # Tries each candidate library name in order until one succeeds.
+          # After loading, attaches FFI function definitions for the Tree-sitter API.
+          #
+          # @raise [TreeHaver::NotAvailable] if no library can be loaded
+          # @return [void]
+          # @example
+          #   TreeHaver::Backends::FFI::Native.try_load!
           def self.try_load!
             return if @loaded
             last_error = nil
