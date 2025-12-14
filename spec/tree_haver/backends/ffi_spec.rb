@@ -3,6 +3,15 @@
 RSpec.describe TreeHaver::Backends::FFI do
   let(:backend) { described_class }
 
+  # Force FFI backend for these tests
+  before do
+    TreeHaver.reset_backend!(to: :ffi)
+  end
+
+  after do
+    TreeHaver.reset_backend!(to: :auto)
+  end
+
   describe "::available?" do
     it "reports availability when the ffi gem can be required" do
       expect([true, false]).to include(backend.available?)
