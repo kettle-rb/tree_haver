@@ -54,7 +54,29 @@
 
 ## 🌻 Synopsis
 
+TreeHaver is a cross-Ruby adapter for the [Tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsing library that works seamlessly across MRI Ruby, JRuby, and TruffleRuby. It provides a unified API for parsing source code using Tree-sitter grammars, regardless of your Ruby implementation.
 
+### Key Features
+
+- **Universal Ruby Support**: Works on MRI Ruby, JRuby, and TruffleRuby
+- **Multiple Backends**: 
+  - **MRI Backend**: Leverages the excellent [`ruby_tree_sitter`](https://github.com/Faveod/ruby-tree-sitter) gem
+  - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby)
+  - **Java Backend**: Planned support for JRuby's native Java integration
+- **Automatic Backend Selection**: Intelligently selects the best backend for your Ruby implementation
+- **Language Agnostic**: Load any Tree-sitter grammar dynamically (TOML, JSON, Ruby, JavaScript, etc.)
+- **Thread-Safe**: Built-in language registry with thread-safe caching
+- **Minimal API Surface**: Simple, focused API that covers the most common Tree-sitter use cases
+
+### Why TreeHaver?
+
+Tree-sitter is a powerful parser generator that creates incremental parsers for many programming languages. However, integrating it into Ruby applications can be challenging:
+
+- MRI-based C extensions don't work on JRuby
+- FFI-based solutions may not be optimal for MRI
+- Managing different backends for different Ruby implementations is cumbersome
+
+TreeHaver solves these problems by providing a unified API that automatically selects the appropriate backend for your Ruby implementation, allowing you to write code once and run it anywhere.
 
 ## 💡 Info you can shake a stick at
 
@@ -169,11 +191,355 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 
 ## ⚙️ Configuration
 
+### Backend Selection
 
+TreeHaver automatically selects the best backend for your Ruby implementation, but you can override this behavior:
+
+```ruby
+# Automatic backend selection (default)
+TreeHaver.backend = :auto
+
+# Force a specific backend
+TreeHaver.backend = :mri   # Use ruby_tree_sitter (MRI only)
+TreeHaver.backend = :ffi   # Use FFI bindings (works on MRI and JRuby)
+TreeHaver.backend = :java  # Use Java bindings (JRuby only, coming soon)
+```
+
+You can also set the backend via environment variable:
+
+```bash
+export TREE_HAVER_BACKEND=ffi
+```
+
+### Environment Variables
+
+TreeHaver recognizes several environment variables for configuration:
+
+#### Core Runtime Library
+
+- **`TREE_SITTER_RUNTIME_LIB`**: Absolute path to the core `libtree-sitter` shared library
+  ```bash
+  export TREE_SITTER_RUNTIME_LIB=/usr/local/lib/libtree-sitter.so
+  ```
+  
+If not set, TreeHaver tries these names in order:
+  - `tree-sitter`
+  - `libtree-sitter.so.0`
+  - `libtree-sitter.so`
+  - `libtree-sitter.dylib`
+  - `libtree-sitter.dll`
+
+#### Language Symbol Resolution
+
+When loading a language grammar, if you don't specify the `symbol:` parameter, TreeHaver resolves it in this precedence:
+
+1. **`TREE_SITTER_LANG_SYMBOL`**: Explicit symbol override
+2. **`TREE_HAVER_LANG_SYMBOL`**: TreeHaver-specific symbol override
+3. Guessed from filename (e.g., `libtree-sitter-toml.so` → `tree_sitter_toml`)
+4. Default fallback (`tree_sitter_toml`)
+
+```bash
+export TREE_SITTER_LANG_SYMBOL=tree_sitter_toml
+# or
+export TREE_HAVER_LANG_SYMBOL=tree_sitter_toml
+```
+
+#### Language Library Paths
+
+For specific languages, you can set environment variables to point to grammar libraries:
+
+```bash
+export TREE_SITTER_TOML_PATH=/usr/local/lib/libtree-sitter-toml.so
+export TREE_SITTER_JSON_PATH=/usr/local/lib/libtree-sitter-json.so
+```
+
+#### JRuby-Specific: Java Backend JARs
+
+For the Java backend on JRuby:
+
+```bash
+export TREE_SITTER_JAVA_JARS_DIR=/path/to/java-tree-sitter/jars
+```
+
+### Language Registration
+
+Register languages once at application startup for convenient access:
+
+```ruby
+# Register a TOML grammar
+TreeHaver.register_language(
+  :toml,
+  path: "/usr/local/lib/libtree-sitter-toml.so",
+  symbol: "tree_sitter_toml"  # optional, will be inferred if omitted
+)
+
+# Now you can use the convenient helper
+language = TreeHaver::Language.toml
+
+# Or still override path/symbol per-call
+language = TreeHaver::Language.toml(
+  path: "/custom/path/libtree-sitter-toml.so"
+)
+```
+
+### Checking Capabilities
+
+Different backends may support different features:
+
+```ruby
+TreeHaver.capabilities
+# => { backend: :mri, query: true, bytes_field: true }
+# or
+# => { backend: :ffi, parse: true, query: false, bytes_field: true }
+```
+
+### Compatibility Mode
+
+For codebases migrating from `ruby_tree_sitter`, TreeHaver provides a compatibility shim:
+
+```ruby
+require "tree_haver/compat"
+
+# Now TreeSitter constants map to TreeHaver
+parser = TreeSitter::Parser.new  # Actually creates TreeHaver::Parser
+```
+
+This is safe and idempotent—if the real `TreeSitter` module is already loaded, the shim does nothing.
 
 ## 🔧 Basic Usage
 
+### Quick Start
 
+Here's a complete example of parsing TOML with TreeHaver:
+
+```ruby
+require "tree_haver"
+
+# Load a language grammar
+language = TreeHaver::Language.from_library(
+  "/usr/local/lib/libtree-sitter-toml.so",
+  symbol: "tree_sitter_toml"
+)
+
+# Create a parser
+parser = TreeHaver::Parser.new
+parser.language = language
+
+# Parse some source code
+source = <<~TOML
+  [package]
+  name = "my-app"
+  version = "1.0.0"
+TOML
+
+tree = parser.parse(source)
+
+# Access the root node
+root = tree.root_node
+puts "Root node type: #{root.type}"  # => "document"
+
+# Traverse the tree
+root.each do |child|
+  puts "Child type: #{child.type}"
+  child.each do |grandchild|
+    puts "  Grandchild type: #{grandchild.type}"
+  end
+end
+```
+
+### Using Language Registration
+
+For cleaner code, register languages at startup:
+
+```ruby
+# At application initialization
+TreeHaver.register_language(
+  :toml,
+  path: "/usr/local/lib/libtree-sitter-toml.so"
+)
+
+TreeHaver.register_language(
+  :json,
+  path: "/usr/local/lib/libtree-sitter-json.so"
+)
+
+# Later in your code
+toml_language = TreeHaver::Language.toml
+json_language = TreeHaver::Language.json
+
+parser = TreeHaver::Parser.new
+parser.language = toml_language
+tree = parser.parse(toml_source)
+```
+
+### Parsing Different Languages
+
+TreeHaver works with any Tree-sitter grammar:
+
+```ruby
+# Parse Ruby code
+ruby_lang = TreeHaver::Language.from_library(
+  "/path/to/libtree-sitter-ruby.so"
+)
+parser = TreeHaver::Parser.new
+parser.language = ruby_lang
+tree = parser.parse("class Foo; end")
+
+# Parse JavaScript
+js_lang = TreeHaver::Language.from_library(
+  "/path/to/libtree-sitter-javascript.so"
+)
+parser.language = js_lang  # Reuse the same parser
+tree = parser.parse("const x = 42;")
+```
+
+### Walking the AST
+
+TreeHaver provides simple node traversal:
+
+```ruby
+tree = parser.parse(source)
+root = tree.root_node
+
+# Recursive tree walk
+def walk_tree(node, depth = 0)
+  puts "#{"  " * depth}#{node.type}"
+  node.each { |child| walk_tree(child, depth + 1) }
+end
+
+walk_tree(root)
+```
+
+### Error Handling
+
+```ruby
+begin
+  language = TreeHaver::Language.from_library("/path/to/grammar.so")
+rescue TreeHaver::NotAvailable => e
+  puts "Failed to load grammar: #{e.message}"
+end
+
+# Check if a backend is available
+if TreeHaver.backend_module.nil?
+  puts "No TreeHaver backend is available!"
+  puts "Install ruby_tree_sitter (MRI) or ensure ffi gem and libtree-sitter are present"
+end
+```
+
+### Platform-Specific Examples
+
+#### MRI Ruby
+
+On MRI, TreeHaver uses `ruby_tree_sitter` by default:
+
+```ruby
+# Gemfile
+gem "tree_haver"
+gem "ruby_tree_sitter"  # MRI backend
+
+# Code - no changes needed, TreeHaver auto-selects MRI backend
+parser = TreeHaver::Parser.new
+```
+
+#### JRuby
+
+On JRuby, TreeHaver uses the FFI backend:
+
+```ruby
+# Gemfile
+gem "tree_haver"
+gem "ffi"  # Required for JRuby backend
+
+# Ensure libtree-sitter is installed on your system
+# On macOS with Homebrew:
+#   brew install tree-sitter
+
+# On Ubuntu/Debian:
+#   sudo apt-get install libtree-sitter0 libtree-sitter-dev
+
+# Code - no changes needed, TreeHaver auto-selects FFI backend
+parser = TreeHaver::Parser.new
+```
+
+#### TruffleRuby
+
+TruffleRuby can use either the MRI or FFI backend:
+
+```ruby
+# Use FFI backend (recommended)
+TreeHaver.backend = :ffi
+
+# Or try MRI backend if ruby_tree_sitter compiles on your TruffleRuby version
+TreeHaver.backend = :mri
+```
+
+### Advanced: Testing with Multiple Backends
+
+If you're developing a library that uses TreeHaver, you can test against different backends:
+
+```ruby
+# In your test setup
+RSpec.describe "MyParser" do
+  before do
+    TreeHaver.reset_backend!(to: :ffi)
+  end
+  
+  after do
+    TreeHaver.reset_backend!(to: :auto)
+  end
+  
+  it "parses correctly with FFI backend" do
+    # Your test code
+  end
+end
+```
+
+### Complete Real-World Example
+
+Here's a practical example that extracts package names from a TOML file:
+
+```ruby
+require "tree_haver"
+
+# Setup
+TreeHaver.register_language(
+  :toml,
+  path: "/usr/local/lib/libtree-sitter-toml.so"
+)
+
+def extract_package_name(toml_content)
+  # Create parser
+  parser = TreeHaver::Parser.new
+  parser.language = TreeHaver::Language.toml
+  
+  # Parse
+  tree = parser.parse(toml_content)
+  root = tree.root_node
+  
+  # Find [package] table
+  root.each do |child|
+    next unless child.type == "table"
+    
+    child.each do |table_elem|
+      if table_elem.type == "pair"
+        # Look for name = "..." pair
+        key = table_elem.each.first&.type
+        # In a real implementation, you'd extract the text value
+        # This is simplified for demonstration
+      end
+    end
+  end
+end
+
+# Usage
+toml = <<~TOML
+  [package]
+  name = "awesome-app"
+  version = "2.0.0"
+TOML
+
+package_name = extract_package_name(toml)
+```
 
 ## 🦷 FLOSS Funding
 

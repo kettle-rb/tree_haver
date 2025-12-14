@@ -7,20 +7,78 @@ require "version_gem"
 require_relative "tree_haver/version"
 require_relative "tree_haver/language_registry"
 
+# TreeHaver is a cross-Ruby adapter for the Tree-sitter parsing library.
+#
+# It provides a unified API for parsing source code using Tree-sitter grammars,
+# working seamlessly across MRI Ruby, JRuby, and TruffleRuby.
+#
+# @example Basic usage with TOML
+#   # Load a language grammar
+#   language = TreeHaver::Language.from_library(
+#     "/usr/local/lib/libtree-sitter-toml.so",
+#     symbol: "tree_sitter_toml"
+#   )
+#
+#   # Create and configure a parser
+#   parser = TreeHaver::Parser.new
+#   parser.language = language
+#
+#   # Parse source code
+#   tree = parser.parse("[package]\nname = \"my-app\"")
+#   root = tree.root_node
+#
+#   # Traverse the AST
+#   root.each { |child| puts child.type }
+#
+# @example Using language registration
+#   TreeHaver.register_language(:toml, path: "/usr/local/lib/libtree-sitter-toml.so")
+#   language = TreeHaver::Language.toml
+#
+# @example Selecting a backend
+#   TreeHaver.backend = :ffi  # Force FFI backend
+#   TreeHaver.backend = :mri  # Force MRI backend
+#   TreeHaver.backend = :auto # Auto-select (default)
+#
+# @see https://tree-sitter.github.io/tree-sitter/ Tree-sitter documentation
 module TreeHaver
-  # Base error class for TreeHaver
+  # Base error class for TreeHaver exceptions
+  #
+  # @abstract Subclass to create specific error types
   class Error < StandardError; end
 
   # Raised when a requested backend or feature is not available
+  #
+  # This can occur when:
+  # - Required native libraries are not installed
+  # - The selected backend is not compatible with the current Ruby implementation
+  # - A language grammar cannot be loaded
+  #
+  # @example Handling unavailable backends
+  #   begin
+  #     language = TreeHaver::Language.from_library("/path/to/grammar.so")
+  #   rescue TreeHaver::NotAvailable => e
+  #     puts "Grammar not available: #{e.message}"
+  #   end
   class NotAvailable < Error; end
 
+  # Namespace for backend implementations
+  #
+  # TreeHaver provides multiple backends to support different Ruby implementations:
+  # - {Backends::MRI} - Uses ruby_tree_sitter (MRI C extension)
+  # - {Backends::FFI} - Uses Ruby FFI to call libtree-sitter directly
+  # - {Backends::Java} - Uses JRuby's Java integration (planned)
   module Backends
     autoload :MRI, File.join(__dir__, "tree_haver", "backends", "mri")
     autoload :FFI, File.join(__dir__, "tree_haver", "backends", "ffi")
     autoload :Java, File.join(__dir__, "tree_haver", "backends", "java")
   end
 
-  # Select backend: :auto (default), :mri, :ffi, :java
+  # Get the current backend selection
+  #
+  # @return [Symbol] one of :auto, :mri, :ffi, or :java
+  # @note Can be set via ENV["TREE_HAVER_BACKEND"]
+  # @example
+  #   TreeHaver.backend  # => :auto
   def self.backend
     @backend ||= begin
       case (ENV["TREE_HAVER_BACKEND"] || :auto).to_s
@@ -32,19 +90,42 @@ module TreeHaver
     end
   end
 
+  # Set the backend to use
+  #
+  # @param name [Symbol, String, nil] backend name (:auto, :mri, :ffi, :java)
+  # @return [Symbol, nil] the backend that was set
+  # @example Force FFI backend
+  #   TreeHaver.backend = :ffi
   def self.backend=(name)
     @backend = name&.to_sym
   end
 
-  # Test/helper: reset backend selection memoization.
-  # Allows specs to switch backends without cross-example leakage.
+  # Reset backend selection memoization
+  #
+  # Primarily useful in tests to switch backends without cross-example leakage.
+  #
   # @param to [Symbol, String, nil] backend name or nil to clear (defaults to :auto)
   # @return [void]
+  # @example Reset to auto-selection
+  #   TreeHaver.reset_backend!
+  # @example Reset to specific backend
+  #   TreeHaver.reset_backend!(to: :ffi)
   def self.reset_backend!(to: :auto)
     @backend = (to && to.to_sym)
   end
 
-  # Determine the concrete backend module to use, without eagerly requiring
+  # Determine the concrete backend module to use
+  #
+  # This method performs backend auto-selection when backend is :auto.
+  # On JRuby, prefers Java backend if available, then FFI.
+  # On MRI, prefers MRI backend if available, then FFI.
+  #
+  # @return [Module, nil] the backend module (Backends::MRI, Backends::FFI, or Backends::Java), or nil if none available
+  # @example
+  #   mod = TreeHaver.backend_module
+  #   if mod
+  #     puts "Using #{mod.capabilities[:backend]} backend"
+  #   end
   def self.backend_module
     case backend
     when :mri
@@ -68,7 +149,19 @@ module TreeHaver
     end
   end
 
-  # A simple capability map exposed at runtime
+  # Get capabilities of the current backend
+  #
+  # Returns a hash describing what features the selected backend supports.
+  # Common keys include:
+  # - :backend - Symbol identifying the backend (:mri, :ffi, :java)
+  # - :parse - Whether parsing is implemented
+  # - :query - Whether the Query API is available
+  # - :bytes_field - Whether byte position fields are available
+  #
+  # @return [Hash{Symbol => Object}] capability map, or empty hash if no backend available
+  # @example
+  #   TreeHaver.capabilities
+  #   # => { backend: :mri, query: true, bytes_field: true }
   def self.capabilities
     mod = backend_module
     return {} unless mod
@@ -80,31 +173,51 @@ module TreeHaver
   # Allows opting-in dynamic helpers like TreeHaver::Language.toml without
   # advertising all names by default.
 
-  # Register a language helper by name.
-  # @param name [Symbol, String]
+  # Register a language helper by name
+  #
+  # After registration, you can use dynamic helpers like `TreeHaver::Language.toml`
+  # to load the registered language.
+  #
+  # @param name [Symbol, String] language identifier (e.g., :toml, :json)
   # @param path [String] absolute path to the language shared library
-  # @param symbol [String, nil] optional exported factory symbol (e.g. "tree_sitter_toml")
+  # @param symbol [String, nil] optional exported factory symbol (e.g., "tree_sitter_toml")
   # @return [void]
+  # @example Register TOML grammar
+  #   TreeHaver.register_language(
+  #     :toml,
+  #     path: "/usr/local/lib/libtree-sitter-toml.so",
+  #     symbol: "tree_sitter_toml"
+  #   )
   def self.register_language(name, path:, symbol: nil)
     LanguageRegistry.register(name, path: path, symbol: symbol)
   end
 
-  # Unregister a previously registered language helper.
-  # @param name [Symbol, String]
+  # Unregister a previously registered language helper
+  #
+  # @param name [Symbol, String] language identifier to unregister
   # @return [void]
+  # @example
+  #   TreeHaver.unregister_language(:toml)
   def self.unregister_language(name)
     LanguageRegistry.unregister(name)
   end
 
-  # Clear all registered languages (intended for test cleanup).
+  # Clear all registered languages
+  #
+  # Primarily intended for test cleanup and resetting state.
+  #
   # @return [void]
+  # @example
+  #   TreeHaver.clear_languages!
   def self.clear_languages!
     LanguageRegistry.clear_registrations!
   end
 
-  # Fetch a registered language entry.
+  # Fetch a registered language entry
+  #
   # @api private
-  # @return [Hash, nil] with keys :path and :symbol
+  # @param name [Symbol, String] language identifier
+  # @return [Hash, nil] registration hash with keys :path and :symbol, or nil if not registered
   def self.registered_language(name)
     LanguageRegistry.registered(name)
   end
