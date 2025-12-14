@@ -222,8 +222,37 @@ module TreeHaver
     LanguageRegistry.registered(name)
   end
 
-  # Public API types delegating to the selected backend implementation
+  # Represents a Tree-sitter language grammar
+  #
+  # A Language object is an opaque handle to a TSLanguage* that defines
+  # the grammar rules for parsing a specific programming language.
+  #
+  # @example Load a language from a shared library
+  #   language = TreeHaver::Language.from_library(
+  #     "/usr/local/lib/libtree-sitter-toml.so",
+  #     symbol: "tree_sitter_toml"
+  #   )
+  #
+  # @example Use a registered language
+  #   TreeHaver.register_language(:toml, path: "/path/to/libtree-sitter-toml.so")
+  #   language = TreeHaver::Language.toml
   class Language
+    # Load a language grammar from a shared library
+    #
+    # The library must export a function that returns a pointer to a TSLanguage struct.
+    # By default, TreeHaver looks for a symbol named "tree_sitter_<name>".
+    #
+    # @param path [String] absolute path to the language shared library (.so/.dylib/.dll)
+    # @param symbol [String, nil] name of the exported function (defaults to auto-detection)
+    # @param name [String, nil] logical name for the language (used in caching)
+    # @return [Language] loaded language handle
+    # @raise [NotAvailable] if the library cannot be loaded or the symbol is not found
+    # @example
+    #   language = TreeHaver::Language.from_library(
+    #     "/usr/local/lib/libtree-sitter-toml.so",
+    #     symbol: "tree_sitter_toml",
+    #     name: "toml"
+    #   )
     def self.from_library(path, symbol: nil, name: nil)
       mod = TreeHaver.backend_module
       raise NotAvailable, "No TreeHaver backend is available" unless mod
@@ -239,9 +268,27 @@ module TreeHaver
     end
 
     class << self
+      # Alias for {from_library}
+      # @see from_library
       alias from_path from_library
 
-      # Dynamic helper to load a language by name, e.g. Language.toml(path: "/path/libtree-sitter-toml.so")
+      # Dynamic helper to load a registered language by name
+      #
+      # After registering a language with {TreeHaver.register_language},
+      # you can load it using a method call:
+      #
+      # @example
+      #   TreeHaver.register_language(:toml, path: "/path/to/libtree-sitter-toml.so")
+      #   language = TreeHaver::Language.toml
+      #
+      # @example With overrides
+      #   language = TreeHaver::Language.toml(path: "/custom/path.so")
+      #
+      # @param method_name [Symbol] the registered language name
+      # @param args [Array] positional arguments (first is used as path if provided)
+      # @param kwargs [Hash] keyword arguments (:path, :symbol, :name)
+      # @return [Language] loaded language handle
+      # @raise [NoMethodError] if the language name is not registered
       def method_missing(method_name, *args, **kwargs, &block)
         # Resolve only if the language name was registered
         reg = TreeHaver.registered_language(method_name)
@@ -255,48 +302,118 @@ module TreeHaver
         return from_library(path, symbol: symbol, name: name)
       end
 
+      # @api private
       def respond_to_missing?(method_name, include_private = false)
         !!TreeHaver.registered_language(method_name) || super
       end
     end
   end
 
+  # Represents a Tree-sitter parser instance
+  #
+  # A Parser is used to parse source code into a syntax tree. You must
+  # set a language before parsing.
+  #
+  # @example Basic parsing
+  #   parser = TreeHaver::Parser.new
+  #   parser.language = TreeHaver::Language.toml
+  #   tree = parser.parse("[package]\nname = \"foo\"")
   class Parser
+    # Create a new parser instance
+    #
+    # @raise [NotAvailable] if no backend is available
     def initialize
       mod = TreeHaver.backend_module
       raise NotAvailable, "No TreeHaver backend is available" unless mod
       @impl = mod::Parser.new
     end
 
+    # Set the language grammar for this parser
+    #
+    # @param lang [Language] the language to use for parsing
+    # @return [Language] the language that was set
+    # @example
+    #   parser.language = TreeHaver::Language.from_library("/path/to/grammar.so")
     def language=(lang)
       @impl.language = lang
     end
 
+    # Parse source code into a syntax tree
+    #
+    # @param source [String] the source code to parse (should be UTF-8)
+    # @return [Tree] the parsed syntax tree
+    # @example
+    #   tree = parser.parse("x = 1")
+    #   puts tree.root_node.type
     def parse(source)
       tree_impl = @impl.parse(source)
       Tree.new(tree_impl)
     end
   end
 
+  # Represents a parsed syntax tree
+  #
+  # A Tree is the result of parsing source code. It provides access to
+  # the root node of the AST.
+  #
+  # @example
+  #   tree = parser.parse(source)
+  #   root = tree.root_node
   class Tree
+    # @api private
     def initialize(impl)
       @impl = impl
     end
 
+    # Get the root node of the syntax tree
+    #
+    # @return [Node] the root node
+    # @example
+    #   root = tree.root_node
+    #   puts root.type  # => "document" or similar
     def root_node
       Node.new(@impl.root_node)
     end
   end
 
+  # Represents a node in the syntax tree
+  #
+  # A Node represents a single element in the parsed AST. Each node has
+  # a type (like "string", "number", "table", etc.) and may have child nodes.
+  #
+  # @example Traversing nodes
+  #   root = tree.root_node
+  #   root.each do |child|
+  #     puts "Child type: #{child.type}"
+  #     child.each { |grandchild| puts "  Grandchild: #{grandchild.type}" }
+  #   end
   class Node
+    # @api private
     def initialize(impl)
       @impl = impl
     end
 
+    # Get the type name of this node
+    #
+    # The type corresponds to the grammar rule that produced this node
+    # (e.g., "document", "table", "string_literal", "pair", etc.).
+    #
+    # @return [String] the node type
+    # @example
+    #   node.type  # => "table"
     def type
       @impl.type
     end
 
+    # Iterate over child nodes
+    #
+    # @yieldparam child [Node] each child node
+    # @return [Enumerator, nil] an enumerator if no block given, nil otherwise
+    # @example With a block
+    #   node.each { |child| puts child.type }
+    #
+    # @example Without a block
+    #   children = node.each.to_a
     def each(&blk)
       return enum_for(:each) unless block_given?
       @impl.each { |child_impl| blk.call(Node.new(child_impl)) }
