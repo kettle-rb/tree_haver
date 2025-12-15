@@ -65,6 +65,11 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
       let(:simple_tree) { double("tree", root_node: double("node")) }
       let(:tree_wrapper) { described_class.new(simple_tree, source: source) }
 
+      before do
+        # Stub edit to raise NoMethodError as it would if the method doesn't exist
+        allow(simple_tree).to receive(:edit).and_raise(NoMethodError.new("undefined method `edit'", :edit))
+      end
+
       it "raises NotAvailable error" do
         expect {
           tree_wrapper.edit(

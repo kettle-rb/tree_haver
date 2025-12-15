@@ -107,12 +107,6 @@ module TreeHaver
     #   # Re-parse with the edited tree for incremental parsing
     #   new_tree = parser.parse_string(tree, "x = 42")
     def edit(start_byte:, old_end_byte:, new_end_byte:, start_point:, old_end_point:, new_end_point:)
-      unless @inner_tree.respond_to?(:edit)
-        raise TreeHaver::NotAvailable,
-          "Incremental parsing not supported by current backend. " \
-            "Use MRI (ruby_tree_sitter), Rust (tree_stump), or Java (java-tree-sitter) backend."
-      end
-
       @inner_tree.edit(
         start_byte: start_byte,
         old_end_byte: old_end_byte,
@@ -121,6 +115,12 @@ module TreeHaver
         old_end_point: old_end_point,
         new_end_point: new_end_point,
       )
+    rescue NoMethodError => e
+      # Re-raise as NotAvailable if it's about the edit method
+      raise unless e.name == :edit || e.message.include?("edit")
+      raise TreeHaver::NotAvailable,
+        "Incremental parsing not supported by current backend. " \
+          "Use MRI (ruby_tree_sitter), Rust (tree_stump), or Java (java-tree-sitter) backend."
     end
 
     # Check if the current backend supports incremental parsing
@@ -139,9 +139,12 @@ module TreeHaver
     #     new_tree = parser.parse(edited_source)
     #   end
     def supports_editing?
-      # Check if inner_tree has edit method
-      # This must use the exact same logic as the edit method to ensure consistency
-      @inner_tree.respond_to?(:edit)
+      # Try to get the edit method to verify it exists
+      # This is more reliable than respond_to? with Delegator wrappers
+      @inner_tree.method(:edit)
+      true
+    rescue NameError, NoMethodError
+      false
     end
 
     # String representation

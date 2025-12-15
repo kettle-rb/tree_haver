@@ -530,7 +530,8 @@ RSpec.describe TreeHaver do
         let(:non_editable_impl) { double("NonEditableTree", root_node: fake_root_node) }
 
         before do
-          allow(non_editable_impl).to receive(:respond_to?).with(:edit).and_return(false)
+          # Stub edit to raise NoMethodError as it would if the method doesn't exist
+          allow(non_editable_impl).to receive(:edit).and_raise(NoMethodError.new("undefined method `edit'", :edit))
         end
 
         it "raises NotAvailable" do
@@ -550,16 +551,17 @@ RSpec.describe TreeHaver do
     end
 
     describe "#supports_editing?" do
-      it "returns true when impl responds to edit" do
-        editable_impl = double("EditableTree", root_node: fake_root_node, edit: nil)
-        allow(editable_impl).to receive(:respond_to?).with(:edit).and_return(true)
+      it "returns true when impl has edit method" do
+        editable_impl = double("EditableTree", root_node: fake_root_node)
+        edit_method = double("Method")
+        allow(editable_impl).to receive(:method).with(:edit).and_return(edit_method)
         tree = TreeHaver::Tree.new(editable_impl)
         expect(tree.supports_editing?).to be true
       end
 
-      it "returns false when impl doesn't respond to edit" do
+      it "returns false when impl doesn't have edit method" do
         non_editable_impl = double("NonEditableTree", root_node: fake_root_node)
-        allow(non_editable_impl).to receive(:respond_to?).with(:edit).and_return(false)
+        allow(non_editable_impl).to receive(:method).with(:edit).and_raise(NameError.new("undefined method `edit'", :edit))
         tree = TreeHaver::Tree.new(non_editable_impl)
         expect(tree.supports_editing?).to be false
       end
