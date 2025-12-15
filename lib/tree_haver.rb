@@ -518,7 +518,6 @@ module TreeHaver
   #
   # These provide a unified interface across all backends (MRI, Rust, FFI, Java, Citrus).
   # All backends now return properly wrapped TreeHaver::Tree and TreeHaver::Node objects.
-
 end # end module TreeHaver
 
 TreeHaver::Version.class_eval do

@@ -98,9 +98,11 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
 
     context "when backend lacks text but source is provided" do
       let(:mock_node) do
-        double("node",
+        double(
+          "node",
           start_byte: 0,
-          end_byte: 6)
+          end_byte: 6,
+        )
       end
 
       it "extracts text from source using byte offsets" do
@@ -134,10 +136,12 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
 
     context "when backend doesn't support missing?" do
       let(:simple_node) do
-        double("node",
+        double(
+          "node",
           has_error?: false,
           child_count: 0,
-          type: "test")
+          type: "test",
+        )
       end
 
       it "returns false by default" do
@@ -154,10 +158,12 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
 
     context "when backend uses is_named?" do
       let(:treestump_node) do
-        double("node",
+        double(
+          "node",
           is_named?: true,
           child_count: 0,
-          type: "test")
+          type: "test",
+        )
       end
 
       it "maps is_named? to named?" do
@@ -168,9 +174,11 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
 
     context "when backend supports neither named? nor is_named?" do
       let(:simple_node) do
-        double("node",
+        double(
+          "node",
           child_count: 0,
-          type: "test")
+          type: "test",
+        )
       end
 
       it "defaults to true" do
@@ -211,15 +219,11 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
     it "returns an array of wrapped Nodes" do
       children = root_node.children
       expect(children).to be_an(Array)
-      children.each do |child|
-        expect(child).to be_a(TreeHaver::Node)
-      end
+      expect(children).to all(be_a(TreeHaver::Node))
     end
 
     it "passes source to all children" do
-      root_node.children.each do |child|
-        expect(child).to respond_to(:source)
-      end
+      expect(root_node.children).to all(respond_to(:source))
     end
   end
 
@@ -270,9 +274,11 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
 
     context "when backend doesn't support field names" do
       let(:simple_node) do
-        double("node",
+        double(
+          "node",
           child_count: 0,
-          type: "test")
+          type: "test",
+        )
       end
 
       it "returns nil" do
@@ -301,9 +307,11 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
 
     context "when backend doesn't support parent" do
       let(:simple_node) do
-        double("node",
+        double(
+          "node",
           child_count: 0,
-          type: "test")
+          type: "test",
+        )
       end
 
       it "returns nil" do
@@ -326,9 +334,11 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
 
     context "when backend doesn't support next_sibling" do
       let(:simple_node) do
-        double("node",
+        double(
+          "node",
           child_count: 0,
-          type: "test")
+          type: "test",
+        )
       end
 
       it "returns nil" do
@@ -351,9 +361,11 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
 
     context "when backend doesn't support prev_sibling" do
       let(:simple_node) do
-        double("node",
+        double(
+          "node",
           child_count: 0,
-          type: "test")
+          type: "test",
+        )
       end
 
       it "returns nil" do
@@ -440,7 +452,7 @@ RSpec.describe TreeHaver::Point do
 
   describe "#to_h" do
     it "converts to a hash" do
-      expect(point.to_h).to eq({ row: 5, column: 10 })
+      expect(point.to_h).to eq({row: 5, column: 10})
     end
   end
 

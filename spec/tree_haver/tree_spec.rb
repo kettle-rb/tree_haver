@@ -47,15 +47,15 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
         unless tree.supports_editing?
           skip "Backend doesn't support incremental parsing"
         end
-        
+
         expect {
           tree.edit(
             start_byte: 0,
             old_end_byte: 1,
             new_end_byte: 2,
-            start_point: { row: 0, column: 0 },
-            old_end_point: { row: 0, column: 1 },
-            new_end_point: { row: 0, column: 2 }
+            start_point: {row: 0, column: 0},
+            old_end_point: {row: 0, column: 1},
+            new_end_point: {row: 0, column: 2},
           )
         }.not_to raise_error
       end
@@ -71,9 +71,9 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
             start_byte: 0,
             old_end_byte: 1,
             new_end_byte: 2,
-            start_point: { row: 0, column: 0 },
-            old_end_point: { row: 0, column: 1 },
-            new_end_point: { row: 0, column: 2 }
+            start_point: {row: 0, column: 0},
+            old_end_point: {row: 0, column: 1},
+            new_end_point: {row: 0, column: 2},
           )
         }.to raise_error(TreeHaver::NotAvailable, /Incremental parsing not supported/)
       end
@@ -147,7 +147,7 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
     it "passes arguments and blocks through" do
       # Mock a backend-specific method
       allow(tree.inner_tree).to receive(:custom_method).with(:arg1, key: :value).and_return(:result)
-      
+
       result = tree.custom_method(:arg1, key: :value)
       expect(result).to eq(:result)
     end

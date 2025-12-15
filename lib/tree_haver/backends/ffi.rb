@@ -401,7 +401,7 @@ module TreeHaver
         # @param index [Integer] child index
         # @return [Node, nil] child node or nil if index out of bounds
         def child(index)
-          return nil if index >= child_count || index < 0
+          return if index >= child_count || index < 0
           child_node = Native.ts_node_child(@val, index)
           Node.new(child_node)
         end

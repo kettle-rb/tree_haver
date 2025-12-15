@@ -214,19 +214,32 @@ RSpec.describe TreeHaver::Backends::Citrus do
       end
 
       context "when parse fails" do
-        before do
-          # Define Citrus::ParseError if not already defined
-          unless defined?(Citrus::ParseError)
+        let(:parse_error) do
+          # Create an appropriate error based on whether Citrus is loaded
+          if defined?(Citrus::ParseError)
+            # Real Citrus::ParseError requires an input object with various methods
+            input_stub = double("input",
+              max_offset: 100,
+              string: "test",
+              line_offset: 0,
+              line_number: 1,
+              line: "test",
+              column_number: 1)
+            Citrus::ParseError.new(input_stub)
+          else
+            # Mock Citrus::ParseError for when Citrus isn't loaded
             citrus_module = Module.new
             error_class = Class.new(StandardError)
             citrus_module.const_set(:ParseError, error_class)
-            stub_const('Citrus', citrus_module)
+            stub_const("Citrus", citrus_module)
+            Citrus::ParseError.new("test error")
           end
         end
 
         let(:failing_grammar) do
+          error = parse_error
           double("grammar").tap do |g|
-            allow(g).to receive(:parse).and_raise(Citrus::ParseError.new("test error"))
+            allow(g).to receive(:parse).and_raise(error)
           end
         end
 
@@ -292,12 +305,14 @@ RSpec.describe TreeHaver::Backends::Citrus do
     let(:source) { "hello world" }
     let(:child_match) { double("child", offset: 6, length: 5, string: "world", events: [:child], matches: []) }
     let(:mock_match) do
-      double("match",
+      double(
+        "match",
         offset: 0,
         length: 11,
         string: source,
         events: [:root],
-        matches: [child_match])
+        matches: [child_match],
+      )
     end
     let(:node) { backend::Node.new(mock_match, source) }
 

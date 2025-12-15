@@ -19,12 +19,11 @@ module TreeHaver
       case key
       when :row, "row" then @row
       when :column, "column" then @column
-      else nil
       end
     end
 
     def to_h
-      { row: @row, column: @column }
+      {row: @row, column: @column}
     end
 
     def to_s
@@ -239,7 +238,7 @@ module TreeHaver
     # @return [Node, nil] Wrapped child node
     def child(index)
       child_node = @inner_node.child(index)
-      return nil if child_node.nil?
+      return if child_node.nil?
       Node.new(child_node, source: @source)
     end
 
@@ -273,7 +272,7 @@ module TreeHaver
     def child_by_field_name(name)
       if @inner_node.respond_to?(:child_by_field_name)
         child_node = @inner_node.child_by_field_name(name.to_s)
-        return nil if child_node.nil?
+        return if child_node.nil?
         Node.new(child_node, source: @source)
       else
         # Not all backends support field names
@@ -288,9 +287,9 @@ module TreeHaver
     #
     # @return [Node, nil] The parent node
     def parent
-      return nil unless @inner_node.respond_to?(:parent)
+      return unless @inner_node.respond_to?(:parent)
       parent_node = @inner_node.parent
-      return nil if parent_node.nil?
+      return if parent_node.nil?
       Node.new(parent_node, source: @source)
     end
 
@@ -298,9 +297,9 @@ module TreeHaver
     #
     # @return [Node, nil]
     def next_sibling
-      return nil unless @inner_node.respond_to?(:next_sibling)
+      return unless @inner_node.respond_to?(:next_sibling)
       sibling = @inner_node.next_sibling
-      return nil if sibling.nil?
+      return if sibling.nil?
       Node.new(sibling, source: @source)
     end
 
@@ -308,9 +307,9 @@ module TreeHaver
     #
     # @return [Node, nil]
     def prev_sibling
-      return nil unless @inner_node.respond_to?(:prev_sibling)
+      return unless @inner_node.respond_to?(:prev_sibling)
       sibling = @inner_node.prev_sibling
-      return nil if sibling.nil?
+      return if sibling.nil?
       Node.new(sibling, source: @source)
     end
 
@@ -375,4 +374,3 @@ module TreeHaver
     end
   end
 end
-

@@ -27,6 +27,11 @@ Please file a bug if you notice a violation of semantic versioning.
 - Added passthrough mechanism via `method_missing` for accessing backend-specific features
 - Added `inner_node` accessor on `TreeHaver::Node` for advanced backend-specific usage
 - Added `inner_tree` accessor on `TreeHaver::Tree` for advanced backend-specific usage
+- Added comprehensive test suite for `TreeHaver::Node` wrapper class (88 examples)
+- Added comprehensive test suite for `TreeHaver::Tree` wrapper class (17 examples)
+- Added comprehensive test suite for `TreeHaver::Parser` class (12 examples)
+- Added complete test coverage for Citrus backend (41 examples)
+- Enhanced `TreeHaver::Language` tests for dynamic language helpers
 
 ### Changed
 

@@ -94,8 +94,8 @@ module TreeHaver
         def initialize(grammar_module)
           unless grammar_module.respond_to?(:parse)
             raise TreeHaver::NotAvailable,
-                  "Grammar module must respond to :parse. " \
-                  "Expected a Citrus grammar module (e.g., TomlRB::Document)."
+              "Grammar module must respond to :parse. " \
+                "Expected a Citrus grammar module (e.g., TomlRB::Document)."
           end
           @grammar_module = grammar_module
         end
@@ -109,8 +109,8 @@ module TreeHaver
         class << self
           def from_library(path, symbol: nil, name: nil)
             raise TreeHaver::NotAvailable,
-                  "Citrus backend doesn't use shared libraries. " \
-                  "Use Citrus::Language.new(GrammarModule) instead."
+              "Citrus backend doesn't use shared libraries. " \
+                "Use Citrus::Language.new(GrammarModule) instead."
           end
 
           alias_method :from_path, :from_library
@@ -145,8 +145,8 @@ module TreeHaver
             grammar
           else
             raise ArgumentError,
-                  "Expected Citrus grammar module or Language wrapper, " \
-                  "got #{grammar.class}"
+              "Expected Citrus grammar module or Language wrapper, " \
+                "got #{grammar.class}"
           end
           grammar
         end
@@ -260,8 +260,8 @@ module TreeHaver
         end
 
         def child(index)
-          return nil unless @match.respond_to?(:matches)
-          return nil if index >= @match.matches.size
+          return unless @match.respond_to?(:matches)
+          return if index >= @match.matches.size
 
           Node.new(@match.matches[index], @source)
         end
@@ -294,10 +294,9 @@ module TreeHaver
           lines_before = @source[0...offset].count("\n")
           line_start = @source.rindex("\n", offset - 1) || -1
           column = offset - line_start - 1
-          { row: lines_before, column: column }
+          {row: lines_before, column: column}
         end
       end
     end
   end
 end
-

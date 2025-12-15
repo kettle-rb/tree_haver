@@ -36,7 +36,7 @@ RSpec.describe TreeHaver::Parser, :toml_grammar do
       parser = described_class.new
       path = TreeHaverDependencies.find_toml_grammar_path
       language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-      
+
       expect {
         parser.language = language
       }.not_to raise_error
@@ -90,7 +90,7 @@ RSpec.describe TreeHaver::Parser, :toml_grammar do
     context "with an old tree (incremental parsing)" do
       it "supports incremental parsing when backend supports it" do
         old_tree = parser.parse("key = \"old\"")
-        
+
         # Falls back to regular parsing if backend doesn't support it
         new_tree = parser.parse_string(old_tree, "key = \"new\"")
         expect(new_tree).to be_a(TreeHaver::Tree)

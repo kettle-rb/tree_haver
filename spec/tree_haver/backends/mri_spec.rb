@@ -192,21 +192,21 @@ RSpec.describe TreeHaver::Backends::MRI do
     end
   end
 
-    context "Tree" do
-      it "doesn't define a separate Tree class (passes through to TreeSitter::Tree)" do
-        # MRI backend doesn't define Tree/Node - it passes through to ruby_tree_sitter
-        # The public API returns TreeHaver::Tree which wraps ::TreeSitter::Tree
-        expect(defined?(backend::Tree)).to be_nil
-      end
+  context "Tree" do
+    it "doesn't define a separate Tree class (passes through to TreeSitter::Tree)" do
+      # MRI backend doesn't define Tree/Node - it passes through to ruby_tree_sitter
+      # The public API returns TreeHaver::Tree which wraps ::TreeSitter::Tree
+      expect(defined?(backend::Tree)).to be_nil
     end
+  end
 
-    context "Node" do
-      it "doesn't define a separate Node class (passes through to TreeSitter::Node)" do
-        # MRI backend doesn't define Tree/Node - it passes through to ruby_tree_sitter
-        # The public API returns TreeHaver::Node which wraps ::TreeSitter::Node
-        expect(defined?(backend::Node)).to be_nil
-      end
+  context "Node" do
+    it "doesn't define a separate Node class (passes through to TreeSitter::Node)" do
+      # MRI backend doesn't define Tree/Node - it passes through to ruby_tree_sitter
+      # The public API returns TreeHaver::Node which wraps ::TreeSitter::Node
+      expect(defined?(backend::Node)).to be_nil
     end
+  end
 
   describe "full parsing workflow", :mri_backend, :toml_grammar do
     it "can parse TOML and traverse the AST" do

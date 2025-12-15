@@ -67,7 +67,7 @@ module TreeHaver
     # @return [Node] Wrapped root node
     def root_node
       root = @inner_tree.root_node
-      return nil if root.nil?
+      return if root.nil?
       Node.new(root, source: @source)
     end
 
@@ -109,8 +109,8 @@ module TreeHaver
     def edit(start_byte:, old_end_byte:, new_end_byte:, start_point:, old_end_point:, new_end_point:)
       unless @inner_tree.respond_to?(:edit)
         raise TreeHaver::NotAvailable,
-              "Incremental parsing not supported by current backend. " \
-              "Use MRI (ruby_tree_sitter), Rust (tree_stump), or Java (java-tree-sitter) backend."
+          "Incremental parsing not supported by current backend. " \
+            "Use MRI (ruby_tree_sitter), Rust (tree_stump), or Java (java-tree-sitter) backend."
       end
 
       @inner_tree.edit(
@@ -119,7 +119,7 @@ module TreeHaver
         new_end_byte: new_end_byte,
         start_point: start_point,
         old_end_point: old_end_point,
-        new_end_point: new_end_point
+        new_end_point: new_end_point,
       )
     end
 
@@ -145,7 +145,7 @@ module TreeHaver
     # String representation
     # @return [String]
     def inspect
-      "#<#{self.class} source_length=#{@source&.bytesize || 'unknown'}>"
+      "#<#{self.class} source_length=#{@source&.bytesize || "unknown"}>"
     end
 
     # Check if tree responds to a method (includes delegation to inner_tree)
@@ -197,4 +197,3 @@ module TreeHaver
     end
   end
 end
-

@@ -85,7 +85,7 @@ RSpec.describe TreeHaver::Language do
       expect(TreeHaver::Language).to receive(:from_library).with(
         "/path.so",
         symbol: "tree_sitter_nosymbol",
-        name: "nosymbol"
+        name: "nosymbol",
       )
       described_class.nosymbol
     end
@@ -95,7 +95,7 @@ RSpec.describe TreeHaver::Language do
       expect(TreeHaver::Language).to receive(:from_library).with(
         "/path.so",
         symbol: "tree_sitter_test",
-        name: "custom_name"
+        name: "custom_name",
       )
       described_class.test(name: "custom_name")
     end
@@ -105,7 +105,7 @@ RSpec.describe TreeHaver::Language do
       expect(TreeHaver::Language).to receive(:from_library).with(
         "/path.so",
         symbol: "custom_sym",
-        name: "test2"
+        name: "test2",
       )
       described_class.test2(symbol: "custom_sym")
     end
