@@ -143,7 +143,8 @@ module TreeHaver
       # This is more reliable than respond_to? with Delegator wrappers
       @inner_tree.method(:edit)
       true
-    rescue NameError, NoMethodError
+    rescue NameError
+      # NameError is the parent class of NoMethodError, so this catches both
       false
     end
 

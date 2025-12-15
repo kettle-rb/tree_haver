@@ -55,10 +55,10 @@
     [91, 7, 307, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 99.", 3525463571],
     [99, 7, 231, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 91.", 4265376501]
   ],
-  "spec/tree_haver/tree_spec.rb:4078601891": [
-    [86, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492]
+  "spec/tree_haver/tree_spec.rb:3140083706": [
+    [91, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492]
   ],
-  "spec/tree_haver_spec.rb:641431012": [
+  "spec/tree_haver_spec.rb:1795138684": [
     [5, 5, 9, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver`.", 2434546347],
     [6, 5, 9, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver`.", 2434546347],
     [10, 5, 9, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver`.", 2434546347],
@@ -143,27 +143,27 @@
     [482, 20, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
     [498, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Tree`.", 1835454893],
     [509, 18, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Tree`.", 1835454893],
-    [537, 18, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Tree`.", 1835454893],
-    [556, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Tree`.", 1835454893],
-    [563, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Tree`.", 1835454893],
-    [584, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [598, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [602, 40, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [607, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [615, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [623, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [631, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [638, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [646, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [652, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [660, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [668, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [674, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [681, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [689, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [698, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [705, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [713, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [720, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435]
+    [538, 18, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Tree`.", 1835454893],
+    [558, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Tree`.", 1835454893],
+    [565, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Tree`.", 1835454893],
+    [586, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [600, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [604, 40, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [609, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [617, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [625, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [633, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [640, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [648, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [654, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [662, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [670, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [676, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [683, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [691, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [700, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [707, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [715, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [722, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435]
   ]
 }
