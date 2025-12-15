@@ -23,32 +23,35 @@ module TreeHaver
       #   if TreeHaver::Backends::MRI.available?
       #     puts "MRI backend is ready"
       #   end
-      def self.available?
-        return @loaded if @load_attempted
-        @load_attempted = true
-        begin
-          require "ruby_tree_sitter"
-          @loaded = true
-        rescue LoadError
-          @loaded = false
-        end
-        @loaded
-      end
+      class << self
+        def available?
+          return @loaded if @load_attempted # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+          begin
+            require "ruby_tree_sitter"
 
-      # Get capabilities supported by this backend
-      #
-      # @return [Hash{Symbol => Object}] capability map
-      # @example
-      #   TreeHaver::Backends::MRI.capabilities
-      #   # => { backend: :mri, query: true, bytes_field: true, incremental: true }
-      def self.capabilities
-        return {} unless available?
-        {
-          backend: :mri,
-          query: true,
-          bytes_field: true,
-          incremental: true,
-        }
+            @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+          rescue LoadError
+            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          end
+          @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
+        end
+
+        # Get capabilities supported by this backend
+        #
+        # @return [Hash{Symbol => Object}] capability map
+        # @example
+        #   TreeHaver::Backends::MRI.capabilities
+        #   # => { backend: :mri, query: true, bytes_field: true, incremental: true }
+        def capabilities
+          return {} unless available?
+          {
+            backend: :mri,
+            query: true,
+            bytes_field: true,
+            incremental: true,
+          }
+        end
       end
 
       # Wrapper for ruby_tree_sitter Language
@@ -62,9 +65,11 @@ module TreeHaver
         # @raise [TreeHaver::NotAvailable] if ruby_tree_sitter is not available
         # @example
         #   lang = TreeHaver::Backends::MRI::Language.from_path("/usr/local/lib/libtree-sitter-toml.so")
-        def self.from_path(path)
-          raise TreeHaver::NotAvailable, "ruby_tree_sitter not available" unless MRI.available?
-          ::TreeSitter::Language.load(path)
+        class << self
+          def from_path(path)
+            raise TreeHaver::NotAvailable, "ruby_tree_sitter not available" unless MRI.available?
+            ::TreeSitter::Language.load(path)
+          end
         end
       end
 

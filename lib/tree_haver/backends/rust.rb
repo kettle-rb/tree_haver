@@ -26,41 +26,44 @@ module TreeHaver
       #   if TreeHaver::Backends::Rust.available?
       #     puts "Rust backend is ready"
       #   end
-      def self.available?
-        return @loaded if @load_attempted
-        @load_attempted = true
-        begin
-          require "tree_stump"
-          @loaded = true
-        rescue LoadError
-          @loaded = false
+      class << self
+        def available?
+          return @loaded if @load_attempted # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+          begin
+            require "tree_stump"
+
+            @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+          rescue LoadError
+            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          end
+          @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
         end
-        @loaded
-      end
 
-      # Reset the load state (primarily for testing)
-      #
-      # @return [void]
-      # @api private
-      def self.reset!
-        @load_attempted = false
-        @loaded = false
-      end
+        # Reset the load state (primarily for testing)
+        #
+        # @return [void]
+        # @api private
+        def reset!
+          @load_attempted = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+        end
 
-      # Get capabilities supported by this backend
-      #
-      # @return [Hash{Symbol => Object}] capability map
-      # @example
-      #   TreeHaver::Backends::Rust.capabilities
-      #   # => { backend: :rust, query: true, bytes_field: true, incremental: true }
-      def self.capabilities
-        return {} unless available?
-        {
-          backend: :rust,
-          query: true,
-          bytes_field: true,
-          incremental: true,
-        }
+        # Get capabilities supported by this backend
+        #
+        # @return [Hash{Symbol => Object}] capability map
+        # @example
+        #   TreeHaver::Backends::Rust.capabilities
+        #   # => { backend: :rust, query: true, bytes_field: true, incremental: true }
+        def capabilities
+          return {} unless available?
+          {
+            backend: :rust,
+            query: true,
+            bytes_field: true,
+            incremental: true,
+          }
+        end
       end
 
       # Wrapper for tree_stump Language
@@ -88,30 +91,26 @@ module TreeHaver
         # @raise [TreeHaver::NotAvailable] if tree_stump is not available
         # @example
         #   lang = TreeHaver::Backends::Rust::Language.from_library("/usr/local/lib/libtree-sitter-toml.so")
-        def self.from_library(path, symbol: nil, name: nil) # rubocop:disable Lint/UnusedMethodArgument
-          raise TreeHaver::NotAvailable, "tree_stump not available" unless Rust.available?
+        class << self
+          def from_library(path, symbol: nil, name: nil) # rubocop:disable Lint/UnusedMethodArgument
+            raise TreeHaver::NotAvailable, "tree_stump not available" unless Rust.available?
 
-          # Validate the path exists before calling register_lang to provide a clear error
-          unless File.exist?(path)
-            raise TreeHaver::NotAvailable, "Language library not found: #{path}"
-          end
+            # Validate the path exists before calling register_lang to provide a clear error
+            raise TreeHaver::NotAvailable, "Language library not found: #{path}" unless File.exist?(path)
 
-          # tree_stump uses TreeStump.register_lang(name, path) to register languages
-          # The name is used to derive the symbol automatically (tree_sitter_<name>)
-          lang_name = name || File.basename(path, ".*").sub(/^libtree-sitter-/, "")
-          begin
+            # tree_stump uses TreeStump.register_lang(name, path) to register languages
+            # The name is used to derive the symbol automatically (tree_sitter_<name>)
+            lang_name = name || File.basename(path, ".*").sub(/^libtree-sitter-/, "")
             ::TreeStump.register_lang(lang_name, path)
+            new(lang_name)
           rescue RuntimeError => e
             raise TreeHaver::NotAvailable, "Failed to load language from #{path}: #{e.message}"
           end
-          new(lang_name)
-        end
 
-        # Alias for compatibility
-        #
-        # @see from_library
-        def self.from_path(path)
-          from_library(path)
+          # Alias for compatibility
+          #
+          # @see from_library
+          alias_method :from_path, :from_library
         end
       end
 

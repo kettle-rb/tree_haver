@@ -33,7 +33,7 @@ module TreeHaver
 
       @load_attempted = false
       @loaded = false
-      @java_classes = {}
+      @java_classes = {} # rubocop:disable ThreadSafety/MutableClassInstanceVariable
       @runtime_lookup = nil  # Cached SymbolLookup for libtree-sitter.so
 
       module_function
@@ -262,103 +262,105 @@ module TreeHaver
         #     "tree-sitter-toml",
         #     symbol: "tree_sitter_toml"
         #   )
-        def self.from_library(path, symbol: nil, name: nil)
-          raise TreeHaver::NotAvailable, "Java backend not available" unless Java.available?
+        class << self
+          def from_library(path, symbol: nil, name: nil)
+            raise TreeHaver::NotAvailable, "Java backend not available" unless Java.available?
 
-          # Derive symbol from name or path if not provided
-          base_name = File.basename(path, ".*").sub(/^lib/, "")
-          sym = symbol || "tree_sitter_#{name || base_name.sub(/^tree-sitter-/, "")}"
+            # Derive symbol from name or path if not provided
+            base_name = File.basename(path, ".*").sub(/^lib/, "")
+            sym = symbol || "tree_sitter_#{name || base_name.sub(/^tree-sitter-/, "")}"
 
-          begin
-            arena = ::Java::JavaLangForeign::Arena.global
-            symbol_lookup_class = ::Java::JavaLangForeign::SymbolLookup
+            begin
+              arena = ::Java::JavaLangForeign::Arena.global
+              symbol_lookup_class = ::Java::JavaLangForeign::SymbolLookup
 
-            # IMPORTANT: Load libtree-sitter.so FIRST by name so its symbols are available
-            # Grammar libraries need symbols like ts_language_version from the runtime
-            # We cache this lookup at the module level
-            unless Java.runtime_lookup
-              # Use libraryLookup(String, Arena) to search LD_LIBRARY_PATH
-              Java.runtime_lookup = symbol_lookup_class.libraryLookup("libtree-sitter.so", arena)
-            end
-
-            # Now load the grammar library
-            if File.exist?(path)
-              # Explicit path provided - use libraryLookup(Path, Arena)
-              java_path = ::Java::JavaNioFile::Paths.get(path)
-              grammar_lookup = symbol_lookup_class.libraryLookup(java_path, arena)
-            else
-              # Library name provided - use libraryLookup(String, Arena) to search
-              # LD_LIBRARY_PATH / DYLD_LIBRARY_PATH / PATH
-              grammar_lookup = symbol_lookup_class.libraryLookup(path, arena)
-            end
-
-            # Chain the lookups: grammar first, then runtime library for ts_* symbols
-            # This makes ts_language_version available when Language.load() needs it
-            combined_lookup = grammar_lookup.or(Java.runtime_lookup)
-
-            java_lang = Java.java_classes[:Language].load(combined_lookup, sym)
-            new(java_lang)
-          rescue ::Java::JavaLang::RuntimeException => e
-            cause = e.cause
-            root_cause = cause&.cause || cause
-
-            error_msg = "Failed to load language '#{sym}' from #{path}: #{e.message}"
-            if root_cause.is_a?(::Java::JavaLang::UnsatisfiedLinkError)
-              unresolved = root_cause.message.to_s
-              if unresolved.include?("ts_language_version")
-                # This specific symbol was renamed in tree-sitter 0.24
-                error_msg += "\n\nVersion mismatch detected: The grammar was built against " \
-                  "tree-sitter < 0.24 (uses ts_language_version), but your runtime library " \
-                  "is tree-sitter >= 0.24 (uses ts_language_abi_version).\n\n" \
-                  "Solutions:\n" \
-                  "1. Rebuild the grammar against your version of tree-sitter\n" \
-                  "2. Install a matching version of tree-sitter (< 0.24)\n" \
-                  "3. Find a pre-built grammar compatible with tree-sitter 0.24+"
-              elsif unresolved.include?("ts_language") || unresolved.include?("ts_parser")
-                error_msg += "\n\nThe grammar library has unresolved tree-sitter symbols. " \
-                  "Ensure libtree-sitter.so is in LD_LIBRARY_PATH and version-compatible " \
-                  "with the grammar."
+              # IMPORTANT: Load libtree-sitter.so FIRST by name so its symbols are available
+              # Grammar libraries need symbols like ts_language_version from the runtime
+              # We cache this lookup at the module level
+              unless Java.runtime_lookup
+                # Use libraryLookup(String, Arena) to search LD_LIBRARY_PATH
+                Java.runtime_lookup = symbol_lookup_class.libraryLookup("libtree-sitter.so", arena)
               end
+
+              # Now load the grammar library
+              if File.exist?(path)
+                # Explicit path provided - use libraryLookup(Path, Arena)
+                java_path = ::Java::JavaNioFile::Paths.get(path)
+                grammar_lookup = symbol_lookup_class.libraryLookup(java_path, arena)
+              else
+                # Library name provided - use libraryLookup(String, Arena) to search
+                # LD_LIBRARY_PATH / DYLD_LIBRARY_PATH / PATH
+                grammar_lookup = symbol_lookup_class.libraryLookup(path, arena)
+              end
+
+              # Chain the lookups: grammar first, then runtime library for ts_* symbols
+              # This makes ts_language_version available when Language.load() needs it
+              combined_lookup = grammar_lookup.or(Java.runtime_lookup)
+
+              java_lang = Java.java_classes[:Language].load(combined_lookup, sym)
+              new(java_lang)
+            rescue ::Java::JavaLang::RuntimeException => e
+              cause = e.cause
+              root_cause = cause&.cause || cause
+
+              error_msg = "Failed to load language '#{sym}' from #{path}: #{e.message}"
+              if root_cause.is_a?(::Java::JavaLang::UnsatisfiedLinkError)
+                unresolved = root_cause.message.to_s
+                if unresolved.include?("ts_language_version")
+                  # This specific symbol was renamed in tree-sitter 0.24
+                  error_msg += "\n\nVersion mismatch detected: The grammar was built against " \
+                    "tree-sitter < 0.24 (uses ts_language_version), but your runtime library " \
+                    "is tree-sitter >= 0.24 (uses ts_language_abi_version).\n\n" \
+                    "Solutions:\n" \
+                    "1. Rebuild the grammar against your version of tree-sitter\n" \
+                    "2. Install a matching version of tree-sitter (< 0.24)\n" \
+                    "3. Find a pre-built grammar compatible with tree-sitter 0.24+"
+                elsif unresolved.include?("ts_language") || unresolved.include?("ts_parser")
+                  error_msg += "\n\nThe grammar library has unresolved tree-sitter symbols. " \
+                    "Ensure libtree-sitter.so is in LD_LIBRARY_PATH and version-compatible " \
+                    "with the grammar."
+                end
+              end
+              raise TreeHaver::NotAvailable, error_msg
+            rescue ::Java::JavaLang::UnsatisfiedLinkError => e
+              raise TreeHaver::NotAvailable,
+                "Native library error loading #{path}: #{e.message}. " \
+                  "Ensure the library is in LD_LIBRARY_PATH."
+            rescue ::Java::JavaLang::IllegalArgumentException => e
+              raise TreeHaver::NotAvailable,
+                "Could not find library '#{path}': #{e.message}. " \
+                  "Ensure it's in LD_LIBRARY_PATH or provide an absolute path."
             end
-            raise TreeHaver::NotAvailable, error_msg
-          rescue ::Java::JavaLang::UnsatisfiedLinkError => e
-            raise TreeHaver::NotAvailable,
-              "Native library error loading #{path}: #{e.message}. " \
-                "Ensure the library is in LD_LIBRARY_PATH."
-          rescue ::Java::JavaLang::IllegalArgumentException => e
-            raise TreeHaver::NotAvailable,
-              "Could not find library '#{path}': #{e.message}. " \
-                "Ensure it's in LD_LIBRARY_PATH or provide an absolute path."
           end
-        end
 
-        # Load a language by name from java-tree-sitter grammar JARs
-        #
-        # This method loads grammars that are packaged as java-tree-sitter JARs
-        # from Maven Central. These JARs include the native grammar library
-        # pre-built for Java's Foreign Function API.
-        #
-        # @param name [String] the language name (e.g., "java", "python", "toml")
-        # @return [Language] the loaded language
-        # @raise [TreeHaver::NotAvailable] if the language JAR is not available
-        #
-        # @example
-        #   # First, add the grammar JAR to TREE_SITTER_JAVA_JARS_DIR:
-        #   # tree-sitter-toml-0.23.2.jar from Maven Central
-        #   lang = TreeHaver::Backends::Java::Language.load_by_name("toml")
-        def self.load_by_name(name)
-          raise TreeHaver::NotAvailable, "Java backend not available" unless Java.available?
+          # Load a language by name from java-tree-sitter grammar JARs
+          #
+          # This method loads grammars that are packaged as java-tree-sitter JARs
+          # from Maven Central. These JARs include the native grammar library
+          # pre-built for Java's Foreign Function API.
+          #
+          # @param name [String] the language name (e.g., "java", "python", "toml")
+          # @return [Language] the loaded language
+          # @raise [TreeHaver::NotAvailable] if the language JAR is not available
+          #
+          # @example
+          #   # First, add the grammar JAR to TREE_SITTER_JAVA_JARS_DIR:
+          #   # tree-sitter-toml-0.23.2.jar from Maven Central
+          #   lang = TreeHaver::Backends::Java::Language.load_by_name("toml")
+          def load_by_name(name)
+            raise TreeHaver::NotAvailable, "Java backend not available" unless Java.available?
 
-          begin
-            # java-tree-sitter's Language.load(String) searches for the language
-            # in the classpath using standard naming conventions
-            java_lang = Java.java_classes[:Language].load(name)
-            new(java_lang)
-          rescue ::Java::JavaLang::RuntimeException => e
-            raise TreeHaver::NotAvailable,
-              "Failed to load language '#{name}': #{e.message}. " \
-                "Ensure the grammar JAR (e.g., tree-sitter-#{name}-X.Y.Z.jar) " \
-                "is in TREE_SITTER_JAVA_JARS_DIR."
+            begin
+              # java-tree-sitter's Language.load(String) searches for the language
+              # in the classpath using standard naming conventions
+              java_lang = Java.java_classes[:Language].load(name)
+              new(java_lang)
+            rescue ::Java::JavaLang::RuntimeException => e
+              raise TreeHaver::NotAvailable,
+                "Failed to load language '#{name}': #{e.message}. " \
+                  "Ensure the grammar JAR (e.g., tree-sitter-#{name}-X.Y.Z.jar) " \
+                  "is in TREE_SITTER_JAVA_JARS_DIR."
+            end
           end
         end
 

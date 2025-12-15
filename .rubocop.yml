@@ -11,3 +11,6 @@ RBS:
 
 Layout/IndentationConsistency:
   Exclude: ['*.md']
+
+ThreadSafety/ClassInstanceVariable:
+  Enabled: false
