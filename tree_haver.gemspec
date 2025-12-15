@@ -1,38 +1,22 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 # To retain during kettle-dev templating:
 #     kettle-dev:freeze
 #     # ... your code
 #     kettle-dev:unfreeze
-# coding: utf-8
-
-gem_version =
-  if RUBY_VERSION >= "3.1" # rubocop:disable Gemspec/RubyVersionGlobalsUsage
-    # Loading Version into an anonymous module allows version.rb to get code coverage from SimpleCov!
-    # See: https://github.com/simplecov-ruby/simplecov/issues/557#issuecomment-2630782358
-    # See: https://github.com/panorama-ed/memo_wise/pull/397
-    Module.new.tap { |mod| Kernel.load("#{__dir__}/lib/tree_haver/version.rb", mod) }::TreeHaver::Version::VERSION
-  else
-    # NOTE: Use __FILE__ or __dir__ until removal of Ruby 1.x support
-    # __dir__ introduced in Ruby 1.9.1
-    # lib = File.expand_path("../lib", __FILE__)
-    lib = File.expand_path("lib", __dir__)
-    $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-    require "tree_haver/version"
-    TreeHaver::Version::VERSION
-  end
 
 Gem::Specification.new do |spec|
   spec.name = "tree_haver"
-  spec.version = gem_version
+  spec.version = Module.new.tap { |mod| Kernel.load("#{__dir__}/lib/tree_haver/version.rb", mod) }::TreeHaver::Version::VERSION
   spec.authors = ["Peter H. Boling"]
   spec.email = ["floss@galtzo.com"]
 
-  spec.summary = "🍕 "
-  spec.description = "🍕 "
+  spec.summary = "🌴 Cross-Ruby adapter for Tree-sitter parsing that works on MRI, JRuby, and TruffleRuby"
+  spec.description = "🌴 TreeHaver is a cross-Ruby adapter for the Tree-sitter parsing library that works seamlessly across MRI Ruby, JRuby, and TruffleRuby. It provides a unified API for parsing source code using Tree-sitter grammars, regardless of your Ruby implementation. Like Faraday for HTTP or multi_json for JSON, TreeHaver lets you write once and run anywhere with automatic backend selection (MRI C extensions, Rust extensions, FFI, or Java)."
   spec.homepage = "https://github.com/kettle-rb/tree_haver"
   spec.licenses = ["MIT"]
-  spec.required_ruby_version = ">= 2.3.0"
+  spec.required_ruby_version = ">= 3.2.0"
 
   # Linux distros often package gems and securely certify them independent
   #   of the official RubyGem certification process. Allowed via ENV["SKIP_GEM_SIGNING"]
