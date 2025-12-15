@@ -12,10 +12,10 @@
     [22, 14, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5861859],
     [23, 22, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5861859]
   ],
-  "lib/tree_haver/path_validator.rb:1814403497": [
+  "lib/tree_haver/path_validator.rb:1707103791": [
     [63, 35, 2, "ThreadSafety/MutableClassInstanceVariable: Freeze mutable objects assigned to class instance variables.", 5862883],
     [79, 7, 488, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 1498565377],
-    [222, 11, 12, "Lint/NoReturnInBeginEndBlocks: Do not `return` in `begin..end` blocks in assignment contexts.", 3233382162]
+    [223, 11, 12, "Lint/NoReturnInBeginEndBlocks: Do not `return` in `begin..end` blocks in assignment contexts.", 3233382162]
   ],
   "spec/tree_haver/backends/ffi_spec.rb:1971356407": [
     [146, 15, 17, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 1977790452]

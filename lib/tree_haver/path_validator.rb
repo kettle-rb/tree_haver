@@ -337,11 +337,11 @@ module TreeHaver
     def has_valid_extension?(path)
       # Check for exact matches first (.so, .dylib, .dll)
       return true if ALLOWED_EXTENSIONS.any? { |ext| path.end_with?(ext) }
-      
+
       # Check for versioned .so files (Linux convention)
       # e.g., libtree-sitter.so.0, libtree-sitter.so.14
       return true if path.match?(/\.so\.\d+\z/)
-      
+
       false
     end
   end
