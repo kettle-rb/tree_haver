@@ -20,8 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Initial release
-
 ### Changed
 
 ### Deprecated
@@ -32,6 +30,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Security
 
+## [1.0.0] - 2025-12-15
+
+- TAG: [v1.0.0][1.0.0t]
+- COVERAGE: 97.21% -- 487/501 lines in 8 files
+- BRANCH COVERAGE: 90.75% -- 157/173 branches in 8 files
+- 97.31% documented
+
+### Added
+
+- Initial release
+
+### Security
 
 [Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/kettle-rb/tree_haver/compare/a89211bff10f4440b96758a8ac9d7d539001b0c8...v1.0.0
