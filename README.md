@@ -107,9 +107,9 @@ tree-sitter is a powerful parser generator that creates incremental parsers for 
 
 TreeHaver solves these problems by providing a unified API that automatically selects the appropriate backend for your Ruby implementation, allowing you to write code once and run it anywhere.
 
-### Comparison with Other Ruby tree-sitter Bindings
+### Comparison with Other Ruby AST / Parser Bindings
 
-| Feature                   | TreeHaver                              | [ruby_tree_sitter] | [tree_stump]   | [citrus]    |
+| Feature                   | [tree_haver] (this gem)                | [ruby_tree_sitter] | [tree_stump]   | [citrus]    |
 |---------------------------|----------------------------------------|--------------------|----------------|-------------|
 | **MRI Ruby**              | ✅ Yes                                  | ✅ Yes              | ✅ Yes          | ✅ Yes       |
 | **JRuby**                 | ✅ Yes (FFI, Java, or Citrus backend)   | ❌ No               | ❌ No           | ✅ Yes       |
@@ -128,6 +128,7 @@ TreeHaver solves these problems by providing a unified API that automatically se
 [ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
 [tree_stump]: https://github.com/anthropics/tree_stump
 [citrus]: https://github.com/mjackson/citrus
+[tree_haver]: https://github.com/kettle-rb/tree_haver
 
 **Note:** Java backend works with grammar JARs built specifically for java-tree-sitter, or grammar .so files that statically link tree-sitter. This is why FFI is recommended for JRuby & TruffleRuby.
 
