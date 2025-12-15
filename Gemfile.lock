@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/pboling/tree_stump.git
-  revision: e0f57cae30296b7e749236754482c15efd0b7ad9
+  revision: 06d2f822cc8dbc9f4bbd9c2ba4d66208be58e939
   branch: tree_haver
   specs:
     tree_stump (0.1.0)
@@ -20,7 +20,7 @@ GIT
 PATH
   remote: .
   specs:
-    tree_haver (1.0.0)
+    tree_haver (2.0.0)
       version_gem (~> 1.1, >= 1.1.9)
 
 GEM
@@ -40,6 +40,7 @@ GEM
     bundler-audit (0.9.3)
       bundler (>= 1.2.0)
       thor (~> 1.0)
+    citrus (3.0.2)
     concurrent-ruby (1.3.6)
     date (3.5.1)
     debug (1.11.0)
@@ -299,6 +300,9 @@ GEM
       delegate (~> 0.1)
       rspec (~> 3.0)
       timecop (>= 0.7, < 1)
+    toml-rb (4.1.0)
+      citrus (~> 3.0, > 3.0)
+      racc (~> 1.7)
     tsort (0.2.0)
     ttfunk (1.8.0)
       bigdecimal (~> 3.1)
@@ -336,6 +340,7 @@ DEPENDENCIES
   appraisal2 (~> 3.0)
   benchmark (~> 0.4, >= 0.4.1)
   bundler-audit (~> 0.9.3)
+  citrus
   debug (>= 1.1)
   erb (~> 5.0)
   ffi
@@ -363,6 +368,7 @@ DEPENDENCIES
   standard (>= 1.50)
   stone_checksums (~> 1.0, >= 1.0.3)
   stringio (>= 3.0)
+  toml-rb
   tree_haver!
   tree_stump!
   unparser (~> 0.8, >= 0.8.1)
@@ -382,6 +388,7 @@ CHECKSUMS
   benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
   bigdecimal (3.3.1) sha256=eaa01e228be54c4f9f53bf3cc34fe3d5e845c31963e7fcc5bedb05a4e7d52218
   bundler-audit (0.9.3) sha256=81c8766c71e47d0d28a0f98c7eed028539f21a6ea3cd8f685eb6f42333c9b4e9
+  citrus (3.0.2) sha256=4ec2412fc389ad186735f4baee1460f7900a8e130ffe3f216b30d4f9c684f650
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
   debug (1.11.0) sha256=1425db64cfa0130c952684e3dc974985be201dd62899bf4bbe3f8b5d6cf1aef2
@@ -480,7 +487,8 @@ CHECKSUMS
   thor (1.4.0) sha256=8763e822ccb0f1d7bee88cde131b19a65606657b847cc7b7b4b82e772bcd8a3d
   timecop (0.9.10) sha256=12ba45ce57cdcf6b1043cb6cdffa6381fd89ce10d369c28a7f6f04dc1b0cd8eb
   timecop-rspec (1.0.3) sha256=005f14841bb606dcaefb060e321b5388e2e59537742bee8b3a9a9a40e598fab9
-  tree_haver (1.0.0)
+  toml-rb (4.1.0) sha256=14456ec4549e4703881bf04b83a56f3264ef99884880092d83c98a2058d95846
+  tree_haver (2.0.0)
   tree_stump (0.1.0)
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   ttfunk (1.8.0) sha256=a7cbc7e489cc46e979dde04d34b5b9e4f5c8f1ee5fc6b1a7be39b829919d20ca

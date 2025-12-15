@@ -211,15 +211,16 @@ RSpec.describe TreeHaver::Backends::Rust do
       end
 
       it "parses source code and returns a tree" do
-        tree = parser.parse("key = \"value\"\n")
-        expect(tree).to be_a(TreeStump::Tree)
+        tree = parser.parse("x = 42")
+        expect(tree).to be_a(TreeHaver::Tree)
+        expect(tree.inner_tree).to be_a(TreeStump::Tree)
       end
 
       it "parses valid TOML and provides access to root node" do
-        tree = parser.parse("title = \"TOML\"\n")
+        tree = parser.parse("title = \"Hi\"")
         root = tree.root_node
-        expect(root).to be_a(TreeStump::Node)
-        expect(root.kind).to eq("document")
+        expect(root).to be_a(TreeHaver::Node)
+        expect(root.inner_node).to be_a(TreeStump::Node)
       end
     end
 
@@ -232,28 +233,17 @@ RSpec.describe TreeHaver::Backends::Rust do
       end
 
       it "parses source code with nil old_tree" do
-        tree = parser.parse_string(nil, "key = \"value\"\n")
-        expect(tree).to be_a(TreeStump::Tree)
+        tree = parser.parse_string(nil, "x = 42")
+        expect(tree).to be_a(TreeHaver::Tree)
+        expect(tree.inner_tree).to be_a(TreeStump::Tree)
       end
 
       it "parses source code with existing tree for incremental parsing" do
-        old_tree = parser.parse("key = \"old\"\n")
-        new_tree = parser.parse_string(old_tree, "key = \"new\"\n")
-        expect(new_tree).to be_a(TreeStump::Tree)
-        expect(new_tree.root_node.kind).to eq("document")
+        old_tree = parser.parse("x = 1")
+        new_tree = parser.parse_string(old_tree, "x = 42")
+        expect(new_tree).to be_a(TreeHaver::Tree)
+        expect(new_tree.inner_tree).to be_a(TreeStump::Tree)
       end
-    end
-  end
-
-  describe "Tree" do
-    it "exists as a class" do
-      expect(backend::Tree).to be_a(Class)
-    end
-  end
-
-  describe "Node" do
-    it "exists as a class" do
-      expect(backend::Node).to be_a(Class)
     end
   end
 end

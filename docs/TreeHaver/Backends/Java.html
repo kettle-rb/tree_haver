@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   Module: TreeHaver::Backends::Java
-  
+
     &mdash; Documentation by YARD 0.9.38
-  
+
 </title>
 
   <link rel="stylesheet" href="../../css/style.css" type="text/css" />
@@ -35,16 +35,16 @@
     <div id="main" tabindex="-1">
       <div id="header">
         <div id="menu">
-  
+
     <a href="../../_index.html">Index (J)</a> &raquo;
     <span class='title'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span> &raquo; <span class='title'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span>
-     &raquo; 
+     &raquo;
     <span class="title">Java</span>
-  
+
 </div>
 
         <div id="search">
-  
+
     <a class="full_list_link" id="class_list_link"
         href="../../class_list.html">
 
@@ -54,38 +54,38 @@
           <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
         </svg>
     </a>
-  
+
 </div>
         <div class="clear"></div>
       </div>
 
       <div id="content"><h1>Module: TreeHaver::Backends::Java
-  
-  
-  
+
+
+
 </h1>
 <div class="box_info">
-  
 
-  
-  
-  
-  
-  
 
-  
 
-  
+
+
+
+
+
+
+
+
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/tree_haver/backends/java.rb</dd>
   </dl>
-  
+
 </div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
+
   <div class="note notetag">
     <strong>Note:</strong>
     <div class='inline'><p>Only available on JRuby</p>
@@ -97,7 +97,7 @@
 <p>This backend integrates with java-tree-sitter JARs on JRuby,<br />
 leveraging JRuby’s native Java integration for optimal performance.</p>
 
-<p>java-tree-sitter provides Java bindings to Tree-sitter and supports:</p>
+<p>java-tree-sitter provides Java bindings to tree-sitter and supports:</p>
 <ul>
   <li>Parsing source code into syntax trees</li>
   <li>Incremental parsing via Parser.parse(Tree, String)</li>
@@ -126,36 +126,36 @@ jruby -e “require ‘tree_haver’; puts TreeHaver::Backends::Java.available?�
   </div>
 </div>
 <div class="tags">
-  
+
 
   <p class="tag_title">See Also:</p>
   <ul class="see">
-    
+
       <li><a href="https://tree-sitter.github.io/java-tree-sitter/" target="_parent" title="java-tree-sitter documentation">java-tree-sitter documentation</a></li>
-    
+
       <li><a href="https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter" target="_parent" title="Maven Central">Maven Central</a></li>
-    
+
   </ul>
 
 </div><h2>Defined Under Namespace</h2>
 <p class="children">
-  
-    
-  
-    
+
+
+
+
       <strong class="classes">Classes:</strong> <span class='object_link'><a href="Java/Language.html" title="TreeHaver::Backends::Java::Language (class)">Language</a></span>, <span class='object_link'><a href="Java/Node.html" title="TreeHaver::Backends::Java::Node (class)">Node</a></span>, <span class='object_link'><a href="Java/Parser.html" title="TreeHaver::Backends::Java::Parser (class)">Parser</a></span>, <span class='object_link'><a href="Java/Tree.html" title="TreeHaver::Backends::Java::Tree (class)">Tree</a></span>
-    
-  
+
+
 </p>
 
-  
+
     <h2>
       Constant Summary
       <small><a href="#" class="constants_summary_toggle">collapse</a></small>
     </h2>
 
     <dl class="constants">
-      
+
         <dt id="JAVA_PACKAGE-constant" class="">JAVA_PACKAGE =
           <div class="docstring">
   <div class="discussion">
@@ -165,14 +165,13 @@ jruby -e “require ‘tree_haver’; puts TreeHaver::Backends::Java.available?�
   </div>
 </div>
 <div class="tags">
-  
+
 
 </div>
         </dt>
         <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>io.github.treesitter.jtreesitter</span><span class='tstring_end'>&quot;</span></span></pre></dd>
-      
+
     </dl>
-  
 
 
 
@@ -180,239 +179,240 @@ jruby -e “require ‘tree_haver’; puts TreeHaver::Backends::Java.available?�
 
 
 
-  
+
+
     <h2>
       Class Method Summary
       <small><a href="#" class="summary_toggle">collapse</a></small>
     </h2>
 
     <ul class="summary">
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#add_jars_from_env!-class_method" title="add_jars_from_env! (class method)">.<strong>add_jars_from_env!</strong>  &#x21d2; void </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Attempt to append JARs from TREE_SITTER_JAVA_JARS_DIR to JRuby classpath and configure native library path from TREE_SITTER_RUNTIME_LIB.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#available%3F-class_method" title="available? (class method)">.<strong>available?</strong>  &#x21d2; Boolean </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Check if the Java backend is available.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#capabilities-class_method" title="capabilities (class method)">.<strong>capabilities</strong>  &#x21d2; Hash{Symbol =&gt; Object} </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Get capabilities supported by this backend.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
-      <a href="#configure_native_library_path!-class_method" title="configure_native_library_path! (class method)">.<strong>configure_native_library_path!</strong>  &#x21d2; void </a>
-    
 
-    
+      <a href="#configure_native_library_path!-class_method" title="configure_native_library_path! (class method)">.<strong>configure_native_library_path!</strong>  &#x21d2; void </a>
+
+
+
   </span>
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   <span class="private note title">private</span>
 
-  
+
     <span class="summary_desc"><div class='inline'><p>Configure java.library.path to include the directory containing libtree-sitter.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
-      <a href="#java_classes-class_method" title="java_classes (class method)">.<strong>java_classes</strong>  &#x21d2; Hash </a>
-    
 
-    
+      <a href="#java_classes-class_method" title="java_classes (class method)">.<strong>java_classes</strong>  &#x21d2; Hash </a>
+
+
+
   </span>
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   <span class="private note title">private</span>
 
-  
+
     <span class="summary_desc"><div class='inline'><p>Get the loaded Java classes.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#load_error-class_method" title="load_error (class method)">.<strong>load_error</strong>  &#x21d2; String<sup>?</sup> </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Get the last load error message (for debugging).</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
-      <a href="#reset!-class_method" title="reset! (class method)">.<strong>reset!</strong>  &#x21d2; void </a>
-    
 
-    
+      <a href="#reset!-class_method" title="reset! (class method)">.<strong>reset!</strong>  &#x21d2; void </a>
+
+
+
   </span>
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   <span class="private note title">private</span>
 
-  
+
     <span class="summary_desc"><div class='inline'><p>Reset the load state (primarily for testing).</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
-      <a href="#runtime_lookup-class_method" title="runtime_lookup (class method)">.<strong>runtime_lookup</strong>  &#x21d2; Object<sup>?</sup> </a>
-    
 
-    
+      <a href="#runtime_lookup-class_method" title="runtime_lookup (class method)">.<strong>runtime_lookup</strong>  &#x21d2; Object<sup>?</sup> </a>
+
+
+
   </span>
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   <span class="private note title">private</span>
 
-  
+
     <span class="summary_desc"><div class='inline'><p>Get the cached runtime library SymbolLookup.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
-      <a href="#runtime_lookup=-class_method" title="runtime_lookup= (class method)">.<strong>runtime_lookup=</strong>(lookup)  &#x21d2; Object </a>
-    
 
-    
+      <a href="#runtime_lookup=-class_method" title="runtime_lookup= (class method)">.<strong>runtime_lookup=</strong>(lookup)  &#x21d2; Object </a>
+
+
+
   </span>
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   <span class="private note title">private</span>
 
-  
+
     <span class="summary_desc"><div class='inline'><p>Set the cached runtime library SymbolLookup.</p>
 </div></span>
-  
+
 </li>
 
-      
+
     </ul>
-  
+
 
 
 
   <div id="class_method_details" class="method_details_list">
     <h2>Class Method Details</h2>
 
-    
+
       <div class="method_details first">
   <h3 class="signature first" id="add_jars_from_env!-class_method">
-  
-    .<strong>add_jars_from_env!</strong>  &#x21d2; <tt>void</tt> 
-  
 
-  
+    .<strong>add_jars_from_env!</strong>  &#x21d2; <tt>void</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p><p>Attempt to append JARs from TREE_SITTER_JAVA_JARS_DIR to JRuby classpath<br />
@@ -425,14 +425,14 @@ in that directory (recursively) are added to the JRuby classpath.</p>
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
       <pre class="example code"><code><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_JAVA_JARS_DIR</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/path/to/java-tree-sitter/jars</span><span class='tstring_end'>&quot;</span></span>
 <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_add_jars_from_env!'>add_jars_from_env!</span></code></pre>
-    
+
   </div>
 
 
@@ -494,16 +494,16 @@ in that directory (recursively) are added to the JRuby classpath.</p>
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="available?-class_method">
-  
-    .<strong>available?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
 
-  
+    .<strong>available?</strong>  &#x21d2; <tt>Boolean</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p>Check if the Java backend is available</p>
@@ -515,33 +515,33 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
       <pre class="example code"><code><span class='kw'>if</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'>available?</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Java backend is ready</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></code></pre>
-    
+
   </div>
 
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>true if Java backend is available</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div><table class="source_code">
@@ -664,16 +664,16 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="capabilities-class_method">
-  
-    .<strong>capabilities</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Object}</tt> 
-  
 
-  
+    .<strong>capabilities</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Object}</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p>Get capabilities supported by this backend</p>
@@ -682,32 +682,32 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_capabilities'>capabilities</span>
 <span class='comment'># =&gt; { backend: :java, parse: true, query: true, bytes_field: true, incremental: true }</span></code></pre>
-    
+
   </div>
 
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>Hash{Symbol =&gt; Object}</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>capability map</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div><table class="source_code">
@@ -750,16 +750,16 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="configure_native_library_path!-class_method">
-  
-    .<strong>configure_native_library_path!</strong>  &#x21d2; <tt>void</tt> 
-  
 
-  
+    .<strong>configure_native_library_path!</strong>  &#x21d2; <tt>void</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note private">
@@ -772,7 +772,7 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </div>
 </div>
 <div class="tags">
-  
+
 
 </div><table class="source_code">
   <tr>
@@ -828,16 +828,16 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="java_classes-class_method">
-  
-    .<strong>java_classes</strong>  &#x21d2; <tt>Hash</tt> 
-  
 
-  
+    .<strong>java_classes</strong>  &#x21d2; <tt>Hash</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note private">
@@ -850,23 +850,23 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </div>
 </div>
 <div class="tags">
-  
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>the Java class references</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div><table class="source_code">
@@ -889,16 +889,16 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="load_error-class_method">
-  
-    .<strong>load_error</strong>  &#x21d2; <tt>String</tt><sup>?</sup> 
-  
 
-  
+    .<strong>load_error</strong>  &#x21d2; <tt>String</tt><sup>?</sup>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p>Get the last load error message (for debugging)</p>
@@ -907,23 +907,23 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </div>
 </div>
 <div class="tags">
-  
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>the error message or nil if no error</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div><table class="source_code">
@@ -946,16 +946,16 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="reset!-class_method">
-  
-    .<strong>reset!</strong>  &#x21d2; <tt>void</tt> 
-  
 
-  
+    .<strong>reset!</strong>  &#x21d2; <tt>void</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note private">
@@ -968,7 +968,7 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </div>
 </div>
 <div class="tags">
-  
+
 
 </div><table class="source_code">
   <tr>
@@ -996,16 +996,16 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="runtime_lookup-class_method">
-  
-    .<strong>runtime_lookup</strong>  &#x21d2; <tt>Object</tt><sup>?</sup> 
-  
 
-  
+    .<strong>runtime_lookup</strong>  &#x21d2; <tt>Object</tt><sup>?</sup>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note private">
@@ -1018,23 +1018,23 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </div>
 </div>
 <div class="tags">
-  
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>Object</tt>, <tt>nil</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>the SymbolLookup for libtree-sitter.so</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div><table class="source_code">
@@ -1057,16 +1057,16 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="runtime_lookup=-class_method">
-  
-    .<strong>runtime_lookup=</strong>(lookup)  &#x21d2; <tt>Object</tt> 
-  
 
-  
+    .<strong>runtime_lookup=</strong>(lookup)  &#x21d2; <tt>Object</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note private">
@@ -1081,22 +1081,22 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
 <div class="tags">
   <p class="tag_title">Parameters:</p>
 <ul class="param">
-  
+
     <li>
-      
+
         <span class='name'>lookup</span>
-      
-      
+
+
         <span class='type'>(<tt>Object</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>the SymbolLookup</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 
@@ -1120,7 +1120,7 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
   </tr>
 </table>
 </div>
-    
+
   </div>
 
 </div>

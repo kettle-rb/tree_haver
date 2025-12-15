@@ -75,7 +75,7 @@ RSpec.describe TreeHaver::Backends::MRI do
     end
   end
 
-  describe "Language", :mri_backend do
+  describe "Language" do
     describe "::from_path" do
       context "when MRI backend is not available" do
         before do
@@ -89,7 +89,7 @@ RSpec.describe TreeHaver::Backends::MRI do
         end
       end
 
-      context "when path does not exist" do
+      context "when path does not exist", :mri_backend do
         it "raises an error for non-existent path" do
           expect {
             backend::Language.from_path("/nonexistent/path/to/lib.so")
@@ -97,7 +97,7 @@ RSpec.describe TreeHaver::Backends::MRI do
         end
       end
 
-      context "with valid TOML grammar", :toml_grammar do
+      context "with valid TOML grammar", :mri_backend, :toml_grammar do
         it "loads the language successfully" do
           path = TreeHaverDependencies.find_toml_grammar_path
           lang = backend::Language.from_path(path)
@@ -192,17 +192,21 @@ RSpec.describe TreeHaver::Backends::MRI do
     end
   end
 
-  describe "Tree" do
-    it "exists as a class" do
-      expect(backend::Tree).to be_a(Class)
+    context "Tree" do
+      it "doesn't define a separate Tree class (passes through to TreeSitter::Tree)" do
+        # MRI backend doesn't define Tree/Node - it passes through to ruby_tree_sitter
+        # The public API returns TreeHaver::Tree which wraps ::TreeSitter::Tree
+        expect(defined?(backend::Tree)).to be_nil
+      end
     end
-  end
 
-  describe "Node" do
-    it "exists as a class" do
-      expect(backend::Node).to be_a(Class)
+    context "Node" do
+      it "doesn't define a separate Node class (passes through to TreeSitter::Node)" do
+        # MRI backend doesn't define Tree/Node - it passes through to ruby_tree_sitter
+        # The public API returns TreeHaver::Node which wraps ::TreeSitter::Node
+        expect(defined?(backend::Node)).to be_nil
+      end
     end
-  end
 
   describe "full parsing workflow", :mri_backend, :toml_grammar do
     it "can parse TOML and traverse the AST" do

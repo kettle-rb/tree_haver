@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   Module: TreeHaver
-  
+
     &mdash; Documentation by YARD 0.9.38
-  
+
 </title>
 
   <link rel="stylesheet" href="css/style.css" type="text/css" />
@@ -35,16 +35,16 @@
     <div id="main" tabindex="-1">
       <div id="header">
         <div id="menu">
-  
+
     <a href="_index.html">Index (T)</a> &raquo;
-    
-    
+
+
     <span class="title">TreeHaver</span>
-  
+
 </div>
 
         <div id="search">
-  
+
     <a class="full_list_link" id="class_list_link"
         href="class_list.html">
 
@@ -54,56 +54,56 @@
           <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
         </svg>
     </a>
-  
+
 </div>
         <div class="clear"></div>
       </div>
 
       <div id="content"><h1>Module: TreeHaver
-  
-  
-  
+
+
+
 </h1>
 <div class="box_info">
-  
 
-  
-  
-  
-  
-  
 
-  
 
-  
+
+
+
+
+
+
+
+
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/tree_haver.rb<span class="defines">,<br />
   lib/tree_haver/version.rb,<br /> lib/tree_haver/backends/ffi.rb,<br /> lib/tree_haver/backends/mri.rb,<br /> lib/tree_haver/backends/java.rb,<br /> lib/tree_haver/backends/rust.rb,<br /> lib/tree_haver/grammar_finder.rb,<br /> lib/tree_haver/path_validator.rb,<br /> lib/tree_haver/language_registry.rb</span>
 </dd>
   </dl>
-  
+
 </div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>TreeHaver is a cross-Ruby adapter for the Tree-sitter parsing library.</p>
+    <p>TreeHaver is a cross-Ruby adapter for the tree-sitter parsing library.</p>
 
-<p>It provides a unified API for parsing source code using Tree-sitter grammars,<br />
+<p>It provides a unified API for parsing source code using tree-sitter grammars,<br />
 working seamlessly across MRI Ruby, JRuby, and TruffleRuby.</p>
 
 
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Basic usage with TOML</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='comment'># Load a language grammar
 </span><span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="TreeHaver/Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/usr/local/lib/libtree-sitter-toml.so</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
@@ -120,27 +120,27 @@ working seamlessly across MRI Ruby, JRuby, and TruffleRuby.</p>
 
 <span class='comment'># Traverse the AST
 </span><span class='id identifier rubyid_root'><span class='object_link'><a href="top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_child'>child</span><span class='op'>|</span> <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_child'>child</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span> <span class='rbrace'>}</span></code></pre>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Using language registration</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='const'>TreeHaver</span><span class='period'>.</span><span class='id identifier rubyid_register_language'><span class='object_link'><a href="#register_language-class_method" title="TreeHaver.register_language (method)">register_language</a></span></span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/usr/local/lib/libtree-sitter-toml.so</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_toml'>toml</span></code></pre>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Using GrammarFinder for automatic discovery</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='comment'># GrammarFinder automatically locates grammar libraries on the system
 </span><span class='id identifier rubyid_finder'>finder</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/GrammarFinder.html" title="TreeHaver::GrammarFinder (class)">GrammarFinder</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="TreeHaver/GrammarFinder.html#initialize-instance_method" title="TreeHaver::GrammarFinder#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='rparen'>)</span>
 <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_register!'>register!</span> <span class='kw'>if</span> <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_available?'>available?</span>
 <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_toml'>toml</span></code></pre>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Using GrammarFinder in a *-merge gem</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='comment'># Each merge gem (toml-merge, json-merge, bash-merge) uses the same pattern
 </span><span class='id identifier rubyid_finder'>finder</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/GrammarFinder.html" title="TreeHaver::GrammarFinder (class)">GrammarFinder</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="TreeHaver/GrammarFinder.html#initialize-instance_method" title="TreeHaver::GrammarFinder#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='rparen'>)</span>  <span class='comment'># or :json, :bash, etc.
 </span><span class='kw'>if</span> <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_available?'>available?</span>
@@ -148,48 +148,48 @@ working seamlessly across MRI Ruby, JRuby, and TruffleRuby.</p>
 <span class='kw'>else</span>
   <span class='id identifier rubyid_warn'>warn</span> <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_not_found_message'>not_found_message</span>
 <span class='kw'>end</span></code></pre>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Selecting a backend</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='const'>TreeHaver</span><span class='period'>.</span><span class='id identifier rubyid_backend'><span class='object_link'><a href="#backend-class_method" title="TreeHaver.backend (method)">backend</a></span></span> <span class='op'>=</span> <span class='symbol'>:ffi</span>  <span class='comment'># Force FFI backend
 </span><span class='const'>TreeHaver</span><span class='period'>.</span><span class='id identifier rubyid_backend'><span class='object_link'><a href="#backend-class_method" title="TreeHaver.backend (method)">backend</a></span></span> <span class='op'>=</span> <span class='symbol'>:mri</span>  <span class='comment'># Force MRI backend
 </span><span class='const'>TreeHaver</span><span class='period'>.</span><span class='id identifier rubyid_backend'><span class='object_link'><a href="#backend-class_method" title="TreeHaver.backend (method)">backend</a></span></span> <span class='op'>=</span> <span class='symbol'>:auto</span> <span class='comment'># Auto-select (default)</span></code></pre>
-    
+
   </div>
 
 
   <p class="tag_title">See Also:</p>
   <ul class="see">
-    
-      <li><a href="https://tree-sitter.github.io/tree-sitter/" target="_parent" title="Tree-sitter documentation">Tree-sitter documentation</a></li>
-    
+
+      <li><a href="https://tree-sitter.github.io/tree-sitter/" target="_parent" title="tree-sitter documentation">tree-sitter documentation</a></li>
+
       <li><span class='object_link'><a href="TreeHaver/GrammarFinder.html" title="TreeHaver::GrammarFinder (class)">For automatic grammar library discovery</a></span></li>
-    
+
   </ul>
 
 </div><h2>Defined Under Namespace</h2>
 <p class="children">
-  
-    
+
+
       <strong class="modules">Modules:</strong> <span class='object_link'><a href="TreeHaver/Backends.html" title="TreeHaver::Backends (module)">Backends</a></span>, <span class='object_link'><a href="TreeHaver/LanguageRegistry.html" title="TreeHaver::LanguageRegistry (module)">LanguageRegistry</a></span>, <span class='object_link'><a href="TreeHaver/PathValidator.html" title="TreeHaver::PathValidator (module)">PathValidator</a></span>, <span class='object_link'><a href="TreeHaver/Version.html" title="TreeHaver::Version (module)">Version</a></span>
-    
-  
-    
+
+
+
       <strong class="classes">Classes:</strong> <span class='object_link'><a href="TreeHaver/Error.html" title="TreeHaver::Error (class)">Error</a></span>, <span class='object_link'><a href="TreeHaver/GrammarFinder.html" title="TreeHaver::GrammarFinder (class)">GrammarFinder</a></span>, <span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (class)">Language</a></span>, <span class='object_link'><a href="TreeHaver/Node.html" title="TreeHaver::Node (class)">Node</a></span>, <span class='object_link'><a href="TreeHaver/NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span>, <span class='object_link'><a href="TreeHaver/Parser.html" title="TreeHaver::Parser (class)">Parser</a></span>, <span class='object_link'><a href="TreeHaver/Tree.html" title="TreeHaver::Tree (class)">Tree</a></span>
-    
-  
+
+
 </p>
 
-  
+
     <h2>
       Constant Summary
       <small><a href="#" class="constants_summary_toggle">collapse</a></small>
     </h2>
 
     <dl class="constants">
-      
+
         <dt id="VERSION-constant" class="">VERSION =
           <div class="docstring">
   <div class="discussion">
@@ -199,31 +199,30 @@ working seamlessly across MRI Ruby, JRuby, and TruffleRuby.</p>
   </div>
 </div>
 <div class="tags">
-  
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>the version string</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div>
         </dt>
         <dd><pre class="code"><span class='const'><span class='object_link'><a href="TreeHaver/Version.html" title="TreeHaver::Version (module)">Version</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Version.html#VERSION-constant" title="TreeHaver::Version::VERSION (constant)">VERSION</a></span></span></pre></dd>
-      
+
     </dl>
-  
 
 
 
@@ -231,254 +230,255 @@ working seamlessly across MRI Ruby, JRuby, and TruffleRuby.</p>
 
 
 
-  
+
+
     <h2>
       Class Method Summary
       <small><a href="#" class="summary_toggle">collapse</a></small>
     </h2>
 
     <ul class="summary">
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#backend-class_method" title="backend (class method)">.<strong>backend</strong>  &#x21d2; Object </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#backend=-class_method" title="backend= (class method)">.<strong>backend=</strong>(name)  &#x21d2; Symbol<sup>?</sup> </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Set the backend to use.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#backend_module-class_method" title="backend_module (class method)">.<strong>backend_module</strong>  &#x21d2; Module<sup>?</sup> </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Determine the concrete backend module to use.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#capabilities-class_method" title="capabilities (class method)">.<strong>capabilities</strong>  &#x21d2; Hash{Symbol =&gt; Object} </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Get capabilities of the current backend.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#clear_languages!-class_method" title="clear_languages! (class method)">.<strong>clear_languages!</strong>  &#x21d2; void </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Clear all registered languages.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#register_language-class_method" title="register_language (class method)">.<strong>register_language</strong>(name, path:, symbol: nil)  &#x21d2; void </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Register a language helper by name.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
-      <a href="#registered_language-class_method" title="registered_language (class method)">.<strong>registered_language</strong>(name)  &#x21d2; Hash<sup>?</sup> </a>
-    
 
-    
+      <a href="#registered_language-class_method" title="registered_language (class method)">.<strong>registered_language</strong>(name)  &#x21d2; Hash<sup>?</sup> </a>
+
+
+
   </span>
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   <span class="private note title">private</span>
 
-  
+
     <span class="summary_desc"><div class='inline'><p>Fetch a registered language entry.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#reset_backend!-class_method" title="reset_backend! (class method)">.<strong>reset_backend!</strong>(to: :auto)  &#x21d2; void </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Reset backend selection memoization.</p>
 </div></span>
-  
+
 </li>
 
-      
+
         <li class="public ">
   <span class="summary_signature">
-    
+
       <a href="#unregister_language-class_method" title="unregister_language (class method)">.<strong>unregister_language</strong>(name)  &#x21d2; void </a>
-    
 
-    
+
+
   </span>
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
     <span class="summary_desc"><div class='inline'><p>Unregister a previously registered language helper.</p>
 </div></span>
-  
+
 </li>
 
-      
+
     </ul>
-  
+
 
 
 
   <div id="class_method_details" class="method_details_list">
     <h2>Class Method Details</h2>
 
-    
+
       <div class="method_details first">
   <h3 class="signature first" id="backend-class_method">
-  
-    .<strong>backend</strong>  &#x21d2; <tt>Object</tt> 
-  
 
-  
+    .<strong>backend</strong>  &#x21d2; <tt>Object</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
-    
+
 
 
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_backend'>backend</span>  <span class='comment'># =&gt; :auto</span></code></pre>
-    
+
   </div>
 
 
@@ -514,16 +514,16 @@ working seamlessly across MRI Ruby, JRuby, and TruffleRuby.</p>
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="backend=-class_method">
-  
-    .<strong>backend=</strong>(name)  &#x21d2; <tt>Symbol</tt><sup>?</sup> 
-  
 
-  
+    .<strong>backend=</strong>(name)  &#x21d2; <tt>Symbol</tt><sup>?</sup>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p>Set the backend to use</p>
@@ -532,59 +532,59 @@ working seamlessly across MRI Ruby, JRuby, and TruffleRuby.</p>
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Force FFI backend</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_backend'><span class='object_link'><a href="#backend-class_method" title="TreeHaver.backend (method)">backend</a></span></span> <span class='op'>=</span> <span class='symbol'>:ffi</span></code></pre>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Force Rust backend</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_backend'><span class='object_link'><a href="#backend-class_method" title="TreeHaver.backend (method)">backend</a></span></span> <span class='op'>=</span> <span class='symbol'>:rust</span></code></pre>
-    
+
   </div>
 <p class="tag_title">Parameters:</p>
 <ul class="param">
-  
+
     <li>
-      
+
         <span class='name'>name</span>
-      
-      
+
+
         <span class='type'>(<tt>Symbol</tt>, <tt>String</tt>, <tt>nil</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>backend name (:auto, :mri, :rust, :ffi, :java)</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>Symbol</tt>, <tt>nil</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>the backend that was set</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div><table class="source_code">
@@ -607,16 +607,16 @@ working seamlessly across MRI Ruby, JRuby, and TruffleRuby.</p>
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="backend_module-class_method">
-  
-    .<strong>backend_module</strong>  &#x21d2; <tt>Module</tt><sup>?</sup> 
-  
 
-  
+    .<strong>backend_module</strong>  &#x21d2; <tt>Module</tt><sup>?</sup>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p>Determine the concrete backend module to use</p>
@@ -629,34 +629,34 @@ On MRI, prefers MRI backend if available, then Rust, then FFI.</p>
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
       <pre class="example code"><code><span class='id identifier rubyid_mod'>mod</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_backend_module'>backend_module</span>
 <span class='kw'>if</span> <span class='id identifier rubyid_mod'>mod</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Using </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_mod'>mod</span><span class='period'>.</span><span class='id identifier rubyid_capabilities'>capabilities</span><span class='lbracket'>[</span><span class='symbol'>:backend</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> backend</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></code></pre>
-    
+
   </div>
 
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>Module</tt>, <tt>nil</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>the backend module (Backends::MRI, Backends::Rust, Backends::FFI, or Backends::Java), or nil if none available</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div><table class="source_code">
@@ -725,16 +725,16 @@ On MRI, prefers MRI backend if available, then Rust, then FFI.</p>
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="capabilities-class_method">
-  
-    .<strong>capabilities</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Object}</tt> 
-  
 
-  
+    .<strong>capabilities</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Object}</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p>Get capabilities of the current backend</p>
@@ -753,32 +753,32 @@ Common keys include:</p>
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_capabilities'>capabilities</span>
 <span class='comment'># =&gt; { backend: :mri, query: true, bytes_field: true }</span></code></pre>
-    
+
   </div>
 
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>Hash{Symbol =&gt; Object}</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>capability map, or empty hash if no backend available</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div><table class="source_code">
@@ -805,16 +805,16 @@ Common keys include:</p>
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="clear_languages!-class_method">
-  
-    .<strong>clear_languages!</strong>  &#x21d2; <tt>void</tt> 
-  
 
-  
+    .<strong>clear_languages!</strong>  &#x21d2; <tt>void</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p><p>Clear all registered languages</p>
@@ -825,13 +825,13 @@ Common keys include:</p>
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_clear_languages!'>clear_languages!</span></code></pre>
-    
+
   </div>
 
 
@@ -855,16 +855,16 @@ Common keys include:</p>
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="register_language-class_method">
-  
-    .<strong>register_language</strong>(name, path:, symbol: nil)  &#x21d2; <tt>void</tt> 
-  
 
-  
+    .<strong>register_language</strong>(name, path:, symbol: nil)  &#x21d2; <tt>void</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p><p>Register a language helper by name</p>
@@ -876,71 +876,71 @@ to load the registered language.</p>
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Register TOML grammar</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_register_language'>register_language</span><span class='lparen'>(</span>
   <span class='symbol'>:toml</span><span class='comma'>,</span>
   <span class='label'>path:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/usr/local/lib/libtree-sitter-toml.so</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
   <span class='label'>symbol:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter_toml</span><span class='tstring_end'>&quot;</span></span>
 <span class='rparen'>)</span></code></pre>
-    
+
   </div>
 <p class="tag_title">Parameters:</p>
 <ul class="param">
-  
+
     <li>
-      
+
         <span class='name'>name</span>
-      
-      
+
+
         <span class='type'>(<tt>Symbol</tt>, <tt>String</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>language identifier (e.g., :toml, :json)</p>
 </div>
-      
+
     </li>
-  
+
     <li>
-      
+
         <span class='name'>path</span>
-      
-      
+
+
         <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>absolute path to the language shared library</p>
 </div>
-      
+
     </li>
-  
+
     <li>
-      
+
         <span class='name'>symbol</span>
-      
-      
+
+
         <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
-      
-      
+
+
         <em class="default">(defaults to: <tt>nil</tt>)</em>
-      
-      
+
+
         &mdash;
         <div class='inline'><p>optional exported factory symbol (e.g., “tree_sitter_toml”)</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 
@@ -964,16 +964,16 @@ to load the registered language.</p>
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="registered_language-class_method">
-  
-    .<strong>registered_language</strong>(name)  &#x21d2; <tt>Hash</tt><sup>?</sup> 
-  
 
-  
+    .<strong>registered_language</strong>(name)  &#x21d2; <tt>Hash</tt><sup>?</sup>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note private">
@@ -988,40 +988,40 @@ to load the registered language.</p>
 <div class="tags">
   <p class="tag_title">Parameters:</p>
 <ul class="param">
-  
+
     <li>
-      
+
         <span class='name'>name</span>
-      
-      
+
+
         <span class='type'>(<tt>Symbol</tt>, <tt>String</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>language identifier</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 <p class="tag_title">Returns:</p>
 <ul class="return">
-  
+
     <li>
-      
-      
+
+
         <span class='type'>(<tt>Hash</tt>, <tt>nil</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>registration hash with keys :path and :symbol, or nil if not registered</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 </div><table class="source_code">
@@ -1044,16 +1044,16 @@ to load the registered language.</p>
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="reset_backend!-class_method">
-  
-    .<strong>reset_backend!</strong>(to: :auto)  &#x21d2; <tt>void</tt> 
-  
 
-  
+    .<strong>reset_backend!</strong>(to: :auto)  &#x21d2; <tt>void</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p><p>Reset backend selection memoization</p>
@@ -1064,43 +1064,43 @@ to load the registered language.</p>
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Reset to auto-selection</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_reset_backend!'>reset_backend!</span></code></pre>
-    
-      
+
+
         <h5 class="example_title"><div class='inline'><p>Reset to specific backend</p>
 </div></h5>
-      
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_reset_backend!'>reset_backend!</span><span class='lparen'>(</span><span class='label'>to:</span> <span class='symbol'>:ffi</span><span class='rparen'>)</span></code></pre>
-    
+
   </div>
 <p class="tag_title">Parameters:</p>
 <ul class="param">
-  
+
     <li>
-      
+
         <span class='name'>to</span>
-      
-      
+
+
         <span class='type'>(<tt>Symbol</tt>, <tt>String</tt>, <tt>nil</tt>)</span>
-      
-      
+
+
         <em class="default">(defaults to: <tt>:auto</tt>)</em>
-      
-      
+
+
         &mdash;
         <div class='inline'><p>backend name or nil to clear (defaults to :auto)</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 
@@ -1124,16 +1124,16 @@ to load the registered language.</p>
   </tr>
 </table>
 </div>
-    
+
       <div class="method_details ">
   <h3 class="signature " id="unregister_language-class_method">
-  
-    .<strong>unregister_language</strong>(name)  &#x21d2; <tt>void</tt> 
-  
 
-  
+    .<strong>unregister_language</strong>(name)  &#x21d2; <tt>void</tt>
 
-  
+
+
+
+
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p><p>Unregister a previously registered language helper</p>
@@ -1142,32 +1142,32 @@ to load the registered language.</p>
   </div>
 </div>
 <div class="tags">
-  
+
   <div class="examples">
     <h4 class="tag_title">Examples:</h4>
-    
-      
+
+
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_unregister_language'>unregister_language</span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='rparen'>)</span></code></pre>
-    
+
   </div>
 <p class="tag_title">Parameters:</p>
 <ul class="param">
-  
+
     <li>
-      
+
         <span class='name'>name</span>
-      
-      
+
+
         <span class='type'>(<tt>Symbol</tt>, <tt>String</tt>)</span>
-      
-      
-      
+
+
+
         &mdash;
         <div class='inline'><p>language identifier to unregister</p>
 </div>
-      
+
     </li>
-  
+
 </ul>
 
 
@@ -1191,7 +1191,7 @@ to load the registered language.</p>
   </tr>
 </table>
 </div>
-    
+
   </div>
 
 </div>

@@ -154,6 +154,7 @@ RSpec.describe TreeHaver do
         allow(TreeHaver::Backends::Rust).to receive(:available?).and_return(false)
         allow(TreeHaver::Backends::FFI).to receive(:available?).and_return(false)
         allow(TreeHaver::Backends::Java).to receive(:available?).and_return(false)
+        allow(TreeHaver::Backends::Citrus).to receive(:available?).and_return(false)
         stub_const("RUBY_ENGINE", "ruby")
         expect(TreeHaver.backend_module).to be_nil
       end
@@ -588,8 +589,8 @@ RSpec.describe TreeHaver do
     describe "#each" do
       let(:child_impl) { double("ChildNode", type: "child") }
       let(:iterable_impl) do
-        double("IterableNode", type: "parent").tap do |impl|
-          allow(impl).to receive(:each).and_yield(child_impl)
+        double("IterableNode", type: "parent", child_count: 1).tap do |impl|
+          allow(impl).to receive(:child).with(0).and_return(child_impl)
         end
       end
 
@@ -653,8 +654,9 @@ RSpec.describe TreeHaver do
       end
 
       it "returns false when impl doesn't respond to has_error?" do
-        basic_impl = double("BasicNode")
+        basic_impl = double("BasicNode", type: "test")
         allow(basic_impl).to receive(:respond_to?).with(:has_error?).and_return(false)
+        allow(basic_impl).to receive(:has_error?).and_return(false)
         node = TreeHaver::Node.new(basic_impl)
         expect(node.has_error?).to be false
       end
@@ -682,9 +684,10 @@ RSpec.describe TreeHaver do
     end
 
     describe "#to_s" do
-      it "delegates to impl" do
-        node = TreeHaver::Node.new(fake_impl)
-        expect(node.to_s).to eq("Node(document)")
+      it "returns the node text" do
+        impl_with_text = double("ImplWithText", text: "sample text", type: "test")
+        node = TreeHaver::Node.new(impl_with_text)
+        expect(node.to_s).to eq("sample text")
       end
     end
 

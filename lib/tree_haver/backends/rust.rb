@@ -5,7 +5,7 @@ module TreeHaver
     # Rust backend using the tree_stump gem
     #
     # This backend wraps the tree_stump gem, which provides Ruby bindings to
-    # Tree-sitter written in Rust. It offers native performance with Rust's
+    # tree-sitter written in Rust. It offers native performance with Rust's
     # safety guarantees and includes precompiled binaries for common platforms.
     #
     # tree_stump supports incremental parsing and the Query API, making it
@@ -140,35 +140,23 @@ module TreeHaver
         # Parse source code
         #
         # @param source [String] the source code to parse
-        # @return [Object] the parsed syntax tree
+        # @return [TreeHaver::Tree] wrapped tree
         def parse(source)
-          @parser.parse(source)
+          tree = @parser.parse(source)
+          TreeHaver::Tree.new(tree, source: source)
         end
 
         # Parse source code with optional incremental parsing
         #
-        # @param old_tree [Object, nil] previous tree for incremental parsing
+        # @param old_tree [TreeHaver::Tree, nil] previous tree for incremental parsing
         # @param source [String] the source code to parse
-        # @return [Object] the parsed syntax tree
+        # @return [TreeHaver::Tree] wrapped tree
         def parse_string(old_tree, source)
           # tree_stump doesn't have parse_string, use parse instead
           # TODO: Check if tree_stump supports incremental parsing
-          @parser.parse(source)
+          tree = @parser.parse(source)
+          TreeHaver::Tree.new(tree, source: source)
         end
-      end
-
-      # Wrapper for tree_stump Tree
-      #
-      # Not used directly; TreeHaver passes through tree_stump Tree objects.
-      class Tree
-        # Not used directly; we pass through tree_stump::Tree
-      end
-
-      # Wrapper for tree_stump Node
-      #
-      # Not used directly; TreeHaver passes through tree_stump::Node objects.
-      class Node
-        # Not used directly; we pass through tree_stump::Node
       end
     end
   end

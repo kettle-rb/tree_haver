@@ -1,7 +1,7 @@
 # NOTE: tree-sitter-toml parser must be installed separately via your package manager
 #       e.g., `apt install libtree-sitter-toml-dev` or built from source
 #
-# TreeHaver provides a unified interface to Tree-sitter
+# TreeHaver provides a unified interface to tree-sitter
 # that works across MRI, JRuby, and TruffleRuby. It uses ruby_tree_sitter, or tree_stump,
 # on MRI and FFI on other platforms.
 #
@@ -9,6 +9,8 @@
 
 # FFI Backend - works on MRI, JRuby, and TruffleRuby
 gem "ffi"
+gem "toml-rb"
+gem "citrus"
 
 platform :mri do
   # MRI Backend

@@ -1,6 +1,6 @@
 # Type definitions for TreeHaver
 #
-# TreeHaver is a cross-Ruby adapter for the Tree-sitter parsing library
+# TreeHaver is a cross-Ruby adapter for the tree-sitter parsing library
 
 module TreeHaver
   VERSION: String
@@ -44,7 +44,7 @@ module TreeHaver
   # Fetch a registered language entry
   def self.registered_language: (Symbol | String name) -> Hash[Symbol, String?]?
 
-  # Represents a Tree-sitter language grammar
+  # Represents a tree-sitter language grammar
   class Language
     # Load a language grammar from a shared library
     def self.from_library: (String path, ?symbol: String?, ?name: String?) -> Language
@@ -57,7 +57,7 @@ module TreeHaver
     def self.respond_to_missing?: (Symbol method_name, ?bool include_private) -> bool
   end
 
-  # Represents a Tree-sitter parser instance
+  # Represents a tree-sitter parser instance
   class Parser
     # Create a new parser instance
     def initialize: () -> void

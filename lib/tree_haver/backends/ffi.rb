@@ -14,7 +14,7 @@ module TreeHaver
   module Backends
     # FFI-based backend for calling libtree-sitter directly
     #
-    # This backend uses Ruby FFI (JNR-FFI on JRuby) to call the native Tree-sitter
+    # This backend uses Ruby FFI (JNR-FFI on JRuby) to call the native tree-sitter
     # C library without requiring MRI C extensions. This makes it compatible with
     # JRuby, TruffleRuby, and other Ruby implementations that support FFI.
     #
@@ -24,16 +24,16 @@ module TreeHaver
     # - Accessing node types and children
     #
     # Not yet supported:
-    # - Query API (Tree-sitter queries/patterns)
+    # - Query API (tree-sitter queries/patterns)
     #
     # @note Requires the `ffi` gem and libtree-sitter shared library to be installed
     # @see https://github.com/ffi/ffi Ruby FFI
-    # @see https://tree-sitter.github.io/tree-sitter/ Tree-sitter
+    # @see https://tree-sitter.github.io/tree-sitter/ tree-sitter
     module FFI
       # Native FFI bindings to libtree-sitter
       #
-      # This module handles loading the Tree-sitter runtime library and defining
-      # FFI function attachments for the core Tree-sitter API.
+      # This module handles loading the tree-sitter runtime library and defining
+      # FFI function attachments for the core tree-sitter API.
       #
       # @api private
       module Native
@@ -42,8 +42,8 @@ module TreeHaver
 
           # FFI struct representation of TSNode
           #
-          # Mirrors the C struct layout used by Tree-sitter. TSNode is passed
-          # by value in the Tree-sitter C API.
+          # Mirrors the C struct layout used by tree-sitter. TSNode is passed
+          # by value in the tree-sitter C API.
           #
           # @api private
           class TSNode < ::FFI::Struct
@@ -79,10 +79,10 @@ module TreeHaver
               ].compact
             end
 
-            # Load the Tree-sitter runtime library
+            # Load the tree-sitter runtime library
             #
             # Tries each candidate library name in order until one succeeds.
-            # After loading, attaches FFI function definitions for the Tree-sitter API.
+            # After loading, attaches FFI function definitions for the tree-sitter API.
             #
             # @raise [TreeHaver::NotAvailable] if no library can be loaded
             # @return [void]
@@ -189,7 +189,7 @@ module TreeHaver
         end
       end
 
-      # Represents a Tree-sitter language loaded via FFI
+      # Represents a tree-sitter language loaded via FFI
       #
       # Holds a pointer to a TSLanguage struct from a loaded shared library.
       class Language
@@ -276,7 +276,7 @@ module TreeHaver
         end
       end
 
-      # FFI-based Tree-sitter parser
+      # FFI-based tree-sitter parser
       #
       # Wraps a TSParser pointer and manages its lifecycle with a finalizer.
       class Parser
@@ -323,18 +323,19 @@ module TreeHaver
         # Parse source code into a syntax tree
         #
         # @param source [String] the source code to parse (should be UTF-8)
-        # @return [Tree] the parsed syntax tree
+        # @return [TreeHaver::Tree] wrapped tree
         # @raise [TreeHaver::NotAvailable] if parsing fails
         def parse(source)
           src = String(source)
           tree_ptr = Native.ts_parser_parse_string(@parser, ::FFI::Pointer::NULL, src, src.bytesize)
           raise TreeHaver::NotAvailable, "Parse returned NULL" if tree_ptr.null?
 
-          Tree.new(tree_ptr)
+          inner_tree = Tree.new(tree_ptr)
+          TreeHaver::Tree.new(inner_tree, source: src)
         end
       end
 
-      # FFI-based Tree-sitter tree
+      # FFI-based tree-sitter tree
       #
       # Wraps a TSTree pointer and manages its lifecycle with a finalizer.
       class Tree
@@ -369,10 +370,10 @@ module TreeHaver
         end
       end
 
-      # FFI-based Tree-sitter node
+      # FFI-based tree-sitter node
       #
       # Wraps a TSNode by-value struct. TSNode is passed by value in the
-      # Tree-sitter C API, so we store the struct value directly.
+      # tree-sitter C API, so we store the struct value directly.
       class Node
         # @api private
         # @param ts_node_value [Native::TSNode] the TSNode struct (by value)
@@ -388,6 +389,63 @@ module TreeHaver
           Native.ts_node_type(@val)
         end
 
+        # Get the number of children
+        #
+        # @return [Integer] child count
+        def child_count
+          Native.ts_node_child_count(@val)
+        end
+
+        # Get a child by index
+        #
+        # @param index [Integer] child index
+        # @return [Node, nil] child node or nil if index out of bounds
+        def child(index)
+          return nil if index >= child_count || index < 0
+          child_node = Native.ts_node_child(@val, index)
+          Node.new(child_node)
+        end
+
+        # Get start byte offset
+        #
+        # @return [Integer]
+        def start_byte
+          Native.ts_node_start_byte(@val)
+        end
+
+        # Get end byte offset
+        #
+        # @return [Integer]
+        def end_byte
+          Native.ts_node_end_byte(@val)
+        end
+
+        # Get start point
+        #
+        # @return [Object] with row and column
+        def start_point
+          # FFI backend would need to implement ts_node_start_point
+          # For now, return a simple struct
+          Struct.new(:row, :column).new(0, Native.ts_node_start_byte(@val))
+        end
+
+        # Get end point
+        #
+        # @return [Object] with row and column
+        def end_point
+          # FFI backend would need to implement ts_node_end_point
+          # For now, return a simple struct
+          Struct.new(:row, :column).new(0, Native.ts_node_end_byte(@val))
+        end
+
+        # Check if node has error
+        #
+        # @return [Boolean]
+        def has_error?
+          # Would need ts_node_has_error implementation
+          false
+        end
+
         # Iterate over child nodes
         #
         # @yieldparam child [Node] each child node
@@ -395,7 +453,7 @@ module TreeHaver
         def each
           return enum_for(:each) unless block_given?
 
-          count = Native.ts_node_child_count(@val)
+          count = child_count
           i = 0
           while i < count
             child = Native.ts_node_child(@val, i)

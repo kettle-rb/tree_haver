@@ -5,7 +5,7 @@ module TreeHaver
     # MRI backend using the ruby_tree_sitter gem
     #
     # This backend wraps the ruby_tree_sitter gem, which is a native C extension
-    # for MRI Ruby. It provides the most feature-complete Tree-sitter integration
+    # for MRI Ruby. It provides the most feature-complete tree-sitter integration
     # on MRI, including support for the Query API.
     #
     # @note This backend only works on MRI Ruby, not JRuby or TruffleRuby
@@ -96,33 +96,23 @@ module TreeHaver
         # Parse source code
         #
         # @param source [String] the source code to parse
-        # @return [::TreeSitter::Tree] the parsed syntax tree
+        # @return [TreeHaver::Tree] wrapped tree
         def parse(source)
-          @parser.parse(source)
+          tree = @parser.parse(source)
+          TreeHaver::Tree.new(tree, source: source)
         end
 
         # Parse source code with optional incremental parsing
         #
-        # @param old_tree [::TreeSitter::Tree, nil] previous tree for incremental parsing
+        # @param old_tree [TreeHaver::Tree, nil] previous tree for incremental parsing
         # @param source [String] the source code to parse
-        # @return [::TreeSitter::Tree] the parsed syntax tree
+        # @return [TreeHaver::Tree] wrapped tree
         def parse_string(old_tree, source)
-          @parser.parse_string(old_tree, source)
+          # Unwrap if TreeHaver::Tree to get inner tree for incremental parsing
+          inner_old_tree = old_tree.respond_to?(:inner_tree) ? old_tree.inner_tree : old_tree
+          tree = @parser.parse_string(inner_old_tree, source)
+          TreeHaver::Tree.new(tree, source: source)
         end
-      end
-
-      # Wrapper for ruby_tree_sitter Tree
-      #
-      # Not used directly; TreeHaver passes through ::TreeSitter::Tree objects.
-      class Tree
-        # Not used directly; we pass through ruby_tree_sitter::Tree
-      end
-
-      # Wrapper for ruby_tree_sitter Node
-      #
-      # Not used directly; TreeHaver passes through ::TreeSitter::Node objects.
-      class Node
-        # Not used directly; we pass through ruby_tree_sitter::Node
       end
     end
   end

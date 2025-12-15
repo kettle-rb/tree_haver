@@ -54,20 +54,20 @@
 
 ## 🌻 Synopsis
 
-TreeHaver is a cross-Ruby adapter for the [Tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsing library that works seamlessly across MRI Ruby, JRuby, and TruffleRuby. It provides a unified API for parsing source code using Tree-sitter grammars, regardless of your Ruby implementation.
+TreeHaver is a cross-Ruby adapter for the [tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsing library that works seamlessly across MRI Ruby, JRuby, and TruffleRuby. It provides a unified API for parsing source code using tree-sitter grammars, regardless of your Ruby implementation.
 
 ### The Adapter Pattern: Like Faraday, but for Parsing
 
 If you've used [Faraday](https://github.com/lostisland/faraday), [multi_json](https://github.com/intridea/multi_json), or [multi_xml](https://github.com/sferik/multi_xml), you'll feel right at home with TreeHaver. These gems share a common philosophy:
 
-| Gem | Unified API for | Backend Examples |
-|-----|-----------------|------------------|
-| **Faraday** | HTTP requests | Net::HTTP, Typhoeus, Patron, Excon |
-| **multi_json** | JSON parsing | Oj, Yajl, JSON gem |
-| **multi_xml** | XML parsing | Nokogiri, LibXML, Ox |
-| **TreeHaver** | Tree-sitter parsing | ruby_tree_sitter, tree_stump, FFI, Java |
+| Gem | Unified API for | Backend Examples                             |
+|-----|-----------------|----------------------------------------------|
+| **Faraday** | HTTP requests | Net::HTTP, Typhoeus, Patron, Excon           |
+| **multi_json** | JSON parsing | Oj, Yajl, JSON gem                           |
+| **multi_xml** | XML parsing | Nokogiri, LibXML, Ox                         |
+| **TreeHaver** | tree-sitter parsing | ruby_tree_sitter, tree_stump, FFI, Java JARs |
 
-**Write once, run anywhere.** Just as Faraday lets you swap HTTP adapters without changing your code, TreeHaver lets you swap Tree-sitter backends. Your parsing code remains the same whether you're running on MRI with native C extensions, JRuby with FFI, or TruffleRuby.
+**Write once, run anywhere.** Just as Faraday lets you swap HTTP adapters without changing your code, TreeHaver lets you swap tree-sitter backends. Your parsing code remains the same whether you're running on MRI with native C extensions, JRuby with FFI, or TruffleRuby.
 
 ```ruby
 # Your code stays the same regardless of backend
@@ -91,14 +91,14 @@ tree = parser.parse(source_code)
   - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby)
   - **Java Backend**: Support for JRuby's native Java integration, and native java-tree-sitter grammar JARs
 - **Automatic Backend Selection**: Intelligently selects the best backend for your Ruby implementation
-- **Language Agnostic**: Load any Tree-sitter grammar dynamically (TOML, JSON, Ruby, JavaScript, etc.)
+- **Language Agnostic**: Load any tree-sitter grammar dynamically (TOML, JSON, Ruby, JavaScript, etc.)
 - **Grammar Discovery**: Built-in `GrammarFinder` utility for platform-aware grammar library discovery
 - **Thread-Safe**: Built-in language registry with thread-safe caching
-- **Minimal API Surface**: Simple, focused API that covers the most common Tree-sitter use cases
+- **Minimal API Surface**: Simple, focused API that covers the most common tree-sitter use cases
 
 ### Why TreeHaver?
 
-Tree-sitter is a powerful parser generator that creates incremental parsers for many programming languages. However, integrating it into Ruby applications can be challenging:
+tree-sitter is a powerful parser generator that creates incremental parsers for many programming languages. However, integrating it into Ruby applications can be challenging:
 
 - MRI-based C extensions don't work on JRuby
 - FFI-based solutions may not be optimal for MRI
@@ -106,7 +106,7 @@ Tree-sitter is a powerful parser generator that creates incremental parsers for 
 
 TreeHaver solves these problems by providing a unified API that automatically selects the appropriate backend for your Ruby implementation, allowing you to write code once and run it anywhere.
 
-### Comparison with Other Ruby Tree-sitter Bindings
+### Comparison with Other Ruby tree-sitter Bindings
 
 | Feature                   | TreeHaver                      | [ruby_tree_sitter] | [tree_stump]   |
 |---------------------------|--------------------------------|--------------------|----------------|
@@ -468,7 +468,7 @@ if finder.available?
   puts "TOML grammar found at: #{finder.find_library_path}"
 else
   puts finder.not_found_message
-  # => "Tree-sitter toml grammar not found. Searched: /usr/lib/libtree-sitter-toml.so, ..."
+  # => "tree-sitter toml grammar not found. Searched: /usr/lib/libtree-sitter-toml.so, ..."
 end
 
 # Register the language if available
@@ -638,7 +638,7 @@ tree = parser.parse(toml_source)
 
 ### Parsing Different Languages
 
-TreeHaver works with any Tree-sitter grammar:
+TreeHaver works with any tree-sitter grammar:
 
 ```ruby
 # Parse Ruby code

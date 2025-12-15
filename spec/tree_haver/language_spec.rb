@@ -78,4 +78,42 @@ RSpec.describe TreeHaver::Language do
       }.to raise_error(TreeHaver::NotAvailable)
     end
   end
+
+  describe "additional method_missing edge cases" do
+    it "derives symbol from name when registration has no symbol" do
+      TreeHaver.register_language(:nosymbol, path: "/path.so", symbol: nil)
+      expect(TreeHaver::Language).to receive(:from_library).with(
+        "/path.so",
+        symbol: "tree_sitter_nosymbol",
+        name: "nosymbol"
+      )
+      described_class.nosymbol
+    end
+
+    it "allows name override via kwargs" do
+      TreeHaver.register_language(:test, path: "/path.so")
+      expect(TreeHaver::Language).to receive(:from_library).with(
+        "/path.so",
+        symbol: "tree_sitter_test",
+        name: "custom_name"
+      )
+      described_class.test(name: "custom_name")
+    end
+
+    it "allows symbol override via kwargs when key exists" do
+      TreeHaver.register_language(:test2, path: "/path.so", symbol: "default_sym")
+      expect(TreeHaver::Language).to receive(:from_library).with(
+        "/path.so",
+        symbol: "custom_sym",
+        name: "test2"
+      )
+      described_class.test2(symbol: "custom_sym")
+    end
+  end
+
+  describe ".from_path alias" do
+    it "is an alias for from_library" do
+      expect(described_class.method(:from_path)).to eq(described_class.method(:from_library))
+    end
+  end
 end

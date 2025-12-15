@@ -47,7 +47,7 @@ module TreeHaver
         # Get list of candidate library names
         def self.lib_candidates: () -> Array[String]
 
-        # Load the Tree-sitter runtime library
+        # Load the tree-sitter runtime library
         def self.try_load!: () -> void
 
         # Check if the library is loaded

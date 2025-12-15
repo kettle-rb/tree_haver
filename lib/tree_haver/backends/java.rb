@@ -7,7 +7,7 @@ module TreeHaver
     # This backend integrates with java-tree-sitter JARs on JRuby,
     # leveraging JRuby's native Java integration for optimal performance.
     #
-    # java-tree-sitter provides Java bindings to Tree-sitter and supports:
+    # java-tree-sitter provides Java bindings to tree-sitter and supports:
     # - Parsing source code into syntax trees
     # - Incremental parsing via Parser.parse(Tree, String)
     # - The Query API for pattern matching
@@ -393,10 +393,11 @@ module TreeHaver
         # Parse source code
         #
         # @param source [String] the source code to parse
-        # @return [Tree] the parsed syntax tree
+        # @return [TreeHaver::Tree] wrapped tree
         def parse(source)
           java_tree = @parser.parse(source)
-          Tree.new(java_tree)
+          inner_tree = Tree.new(java_tree)
+          TreeHaver::Tree.new(inner_tree, source: source)
         end
 
         # Parse source code with optional incremental parsing
@@ -404,18 +405,21 @@ module TreeHaver
         # When old_tree is provided and has been edited, tree-sitter will reuse
         # unchanged nodes for better performance.
         #
-        # @param old_tree [Tree, nil] previous tree for incremental parsing
+        # @param old_tree [TreeHaver::Tree, nil] previous tree for incremental parsing
         # @param source [String] the source code to parse
-        # @return [Tree] the parsed syntax tree
+        # @return [TreeHaver::Tree] wrapped tree
         # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Parser.html#parse(io.github.treesitter.jtreesitter.Tree,java.lang.String)
         def parse_string(old_tree, source)
           if old_tree
-            java_old_tree = old_tree.is_a?(Tree) ? old_tree.impl : old_tree
+            # Unwrap TreeHaver::Tree to get inner tree
+            inner_old_tree = old_tree.respond_to?(:inner_tree) ? old_tree.inner_tree : old_tree
+            java_old_tree = inner_old_tree.is_a?(Tree) ? inner_old_tree.impl : inner_old_tree
             java_tree = @parser.parse(java_old_tree, source)
           else
             java_tree = @parser.parse(source)
           end
-          Tree.new(java_tree)
+          inner_tree = Tree.new(java_tree)
+          TreeHaver::Tree.new(inner_tree, source: source)
         end
       end
 

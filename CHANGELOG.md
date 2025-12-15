@@ -20,13 +20,37 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Added support for Citrus backend (`backends/citrus.rb`) - a pure Ruby grammar parser with its own distinct grammar structure
+- Added `TreeHaver::Tree` unified wrapper class providing consistent API across all backends
+- Added `TreeHaver::Node` unified wrapper class providing consistent API across all backends
+- Added `TreeHaver::Point` class that works as both object and hash for position compatibility
+- Added passthrough mechanism via `method_missing` for accessing backend-specific features
+- Added `inner_node` accessor on `TreeHaver::Node` for advanced backend-specific usage
+- Added `inner_tree` accessor on `TreeHaver::Tree` for advanced backend-specific usage
+
 ### Changed
+
+- **BREAKING:** All backends now return `TreeHaver::Tree` from `Parser#parse` and `Parser#parse_string`
+- **BREAKING:** `TreeHaver::Tree#root_node` now returns `TreeHaver::Node` instead of backend-specific node
+- **BREAKING:** All child/sibling/parent methods on nodes now return `TreeHaver::Node` wrappers
+- Updated MRI backend (`backends/mri.rb`) to return wrapped `TreeHaver::Tree` with source
+- Updated Rust backend (`backends/rust.rb`) to return wrapped `TreeHaver::Tree` with source
+- Updated FFI backend (`backends/ffi.rb`) to return wrapped `TreeHaver::Tree` with source
+- Updated Java backend (`backends/java.rb`) to return wrapped `TreeHaver::Tree` with source
+- Updated Citrus backend (`backends/citrus.rb`) to return wrapped `TreeHaver::Tree` with source
+- Disabled old pass-through stub classes in `tree_haver.rb` (wrapped in `if false` for reference)
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Fixed backend portability - code now works identically across MRI, Rust, FFI, Java, and Citrus backends
+- Fixed inconsistent API - `node.type` now works on all backends (was `node.kind` on TreeStump)
+- Fixed position objects - `start_point` and `end_point` now return objects that work as both `.row` and `[:row]`
+- Fixed child iteration - `node.each` and `node.children` now consistently return `TreeHaver::Node` objects
+- Fixed text extraction - `node.text` now works consistently by storing source in `TreeHaver::Tree`
 
 ### Security
 
@@ -40,8 +64,6 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Added
 
 - Initial release
-
-### Security
 
 [Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/kettle-rb/tree_haver/compare/a89211bff10f4440b96758a8ac9d7d539001b0c8...v1.0.0

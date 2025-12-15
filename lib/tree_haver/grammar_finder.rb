@@ -221,7 +221,7 @@ module TreeHaver
     #
     # @return [String] error message with installation hints
     def not_found_message
-      "Tree-sitter #{@language_name} grammar not found. " \
+      "tree-sitter #{@language_name} grammar not found. " \
         "Searched: #{search_paths.join(", ")}. " \
         "Install tree-sitter-#{@language_name} or set #{env_var_name}."
     end

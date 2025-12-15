@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     env:
-      # Tree-sitter library paths for FFI/MRI/Rust backend compatibility
+      # tree-sitter library paths for FFI/MRI/Rust backend compatibility
       LD_LIBRARY_PATH: "/usr/local/lib:/usr/lib/x86_64-linux-gnu:/usr/lib"
       TREE_SITTER_RUNTIME_LIB: "/usr/lib/x86_64-linux-gnu/libtree-sitter.so.0"
       TREE_SITTER_TOML_PATH: "/usr/local/lib/libtree-sitter-toml.so"

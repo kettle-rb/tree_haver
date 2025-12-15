@@ -7,9 +7,9 @@ require "version_gem"
 require_relative "tree_haver/version"
 require_relative "tree_haver/language_registry"
 
-# TreeHaver is a cross-Ruby adapter for the Tree-sitter parsing library.
+# TreeHaver is a cross-Ruby adapter for the tree-sitter parsing library.
 #
-# It provides a unified API for parsing source code using Tree-sitter grammars,
+# It provides a unified API for parsing source code using tree-sitter grammars,
 # working seamlessly across MRI Ruby, JRuby, and TruffleRuby.
 #
 # @example Basic usage with TOML
@@ -54,7 +54,7 @@ require_relative "tree_haver/language_registry"
 #   TreeHaver.backend = :mri  # Force MRI backend
 #   TreeHaver.backend = :auto # Auto-select (default)
 #
-# @see https://tree-sitter.github.io/tree-sitter/ Tree-sitter documentation
+# @see https://tree-sitter.github.io/tree-sitter/ tree-sitter documentation
 # @see GrammarFinder For automatic grammar library discovery
 module TreeHaver
   # Base error class for TreeHaver exceptions
@@ -83,12 +83,14 @@ module TreeHaver
   # - {Backends::MRI} - Uses ruby_tree_sitter (MRI C extension)
   # - {Backends::Rust} - Uses tree_stump (Rust extension with precompiled binaries)
   # - {Backends::FFI} - Uses Ruby FFI to call libtree-sitter directly
-  # - {Backends::Java} - Uses JRuby's Java integration (planned)
+  # - {Backends::Java} - Uses JRuby's Java integration
+  # - {Backends::Citrus} - Uses Citrus PEG parser (pure Ruby, portable)
   module Backends
     autoload :MRI, File.join(__dir__, "tree_haver", "backends", "mri")
     autoload :Rust, File.join(__dir__, "tree_haver", "backends", "rust")
     autoload :FFI, File.join(__dir__, "tree_haver", "backends", "ffi")
     autoload :Java, File.join(__dir__, "tree_haver", "backends", "java")
+    autoload :Citrus, File.join(__dir__, "tree_haver", "backends", "citrus")
   end
 
   # Security utilities for validating paths before loading shared libraries
@@ -119,9 +121,15 @@ module TreeHaver
   # @see PathValidator
   autoload :GrammarFinder, File.join(__dir__, "tree_haver", "grammar_finder")
 
+  # Unified Node wrapper providing consistent API across backends
+  autoload :Node, File.join(__dir__, "tree_haver", "node")
+
+  # Unified Tree wrapper providing consistent API across backends
+  autoload :Tree, File.join(__dir__, "tree_haver", "tree")
+
   # Get the current backend selection
   #
-  # @return [Symbol] one of :auto, :mri, :ffi, or :java
+  # @return [Symbol] one of :auto, :mri, :rust, :ffi, :java, or :citrus
   # @note Can be set via ENV["TREE_HAVER_BACKEND"]
   class << self
     # @example
@@ -132,13 +140,14 @@ module TreeHaver
       when "rust" then :rust
       when "ffi" then :ffi
       when "java" then :java
+      when "citrus" then :citrus
       else :auto
       end
     end
 
     # Set the backend to use
     #
-    # @param name [Symbol, String, nil] backend name (:auto, :mri, :rust, :ffi, :java)
+    # @param name [Symbol, String, nil] backend name (:auto, :mri, :rust, :ffi, :java, :citrus)
     # @return [Symbol, nil] the backend that was set
     # @example Force FFI backend
     #   TreeHaver.backend = :ffi
@@ -165,10 +174,11 @@ module TreeHaver
     # Determine the concrete backend module to use
     #
     # This method performs backend auto-selection when backend is :auto.
-    # On JRuby, prefers Java backend if available, then FFI.
-    # On MRI, prefers MRI backend if available, then Rust, then FFI.
+    # On JRuby, prefers Java backend if available, then FFI, then Citrus.
+    # On MRI, prefers MRI backend if available, then Rust, then FFI, then Citrus.
+    # Citrus is the final fallback as it's pure Ruby and works everywhere.
     #
-    # @return [Module, nil] the backend module (Backends::MRI, Backends::Rust, Backends::FFI, or Backends::Java), or nil if none available
+    # @return [Module, nil] the backend module (Backends::MRI, Backends::Rust, Backends::FFI, Backends::Java, or Backends::Citrus), or nil if none available
     # @example
     #   mod = TreeHaver.backend_module
     #   if mod
@@ -184,8 +194,10 @@ module TreeHaver
         Backends::FFI
       when :java
         Backends::Java
+      when :citrus
+        Backends::Citrus
       else
-        # auto-select: on JRuby prefer Java backend if available; on MRI prefer MRI, then Rust; otherwise FFI
+        # auto-select: prefer native/fast backends, fall back to pure Ruby (Citrus)
         if defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby" && Backends::Java.available?
           Backends::Java
         elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ruby" && Backends::MRI.available?
@@ -194,8 +206,10 @@ module TreeHaver
           Backends::Rust
         elsif Backends::FFI.available?
           Backends::FFI
+        elsif Backends::Citrus.available?
+          Backends::Citrus  # Pure Ruby fallback
         else
-          # No backend available yet
+          # No backend available
           nil
         end
       end
@@ -276,7 +290,7 @@ module TreeHaver
     end
   end
 
-  # Represents a Tree-sitter language grammar
+  # Represents a tree-sitter language grammar
   #
   # A Language object is an opaque handle to a TSLanguage* that defines
   # the grammar rules for parsing a specific programming language.
@@ -400,7 +414,7 @@ module TreeHaver
     end
   end
 
-  # Represents a Tree-sitter parser instance
+  # Represents a tree-sitter parser instance
   #
   # A Parser is used to parse source code into a syntax tree. You must
   # set a language before parsing.
@@ -448,7 +462,7 @@ module TreeHaver
     #
     # == Incremental Parsing
     #
-    # Tree-sitter supports **incremental parsing** where you can pass a previously
+    # tree-sitter supports **incremental parsing** where you can pass a previously
     # parsed tree along with edit information to efficiently re-parse only the
     # changed portions of source code. This is a major performance optimization
     # for editors and IDEs that need to re-parse on every keystroke.
@@ -458,7 +472,7 @@ module TreeHaver
     # 2. User edits the source (e.g., inserts a character)
     # 3. Call `tree.edit(...)` to update the tree's position data
     # 4. Re-parse with the old tree: `new_tree = parser.parse_string(tree, new_source)`
-    # 5. Tree-sitter reuses unchanged nodes, only re-parsing affected regions
+    # 5. tree-sitter reuses unchanged nodes, only re-parsing affected regions
     #
     # TreeHaver passes through to the underlying backend if it supports incremental
     # parsing (MRI and Rust backends do). Check `TreeHaver.capabilities[:incremental]`
@@ -467,7 +481,7 @@ module TreeHaver
     # @param old_tree [Tree, nil] previously parsed tree for incremental parsing, or nil for fresh parse
     # @param source [String] the source code to parse (should be UTF-8)
     # @return [Tree] the parsed syntax tree
-    # @see https://tree-sitter.github.io/tree-sitter/using-parsers#editing Tree-sitter incremental parsing docs
+    # @see https://tree-sitter.github.io/tree-sitter/using-parsers#editing tree-sitter incremental parsing docs
     # @see Tree#edit For marking edits before incremental re-parsing
     # @example First parse (no old tree)
     #   tree = parser.parse_string(nil, "x = 1")
@@ -478,7 +492,14 @@ module TreeHaver
       # Pass through to backend if it supports incremental parsing
       if old_tree && @impl.respond_to?(:parse_string)
         # Extract the underlying implementation from our Tree wrapper
-        old_impl = old_tree.is_a?(Tree) ? old_tree.instance_variable_get(:@impl) : old_tree
+        old_impl = if old_tree.respond_to?(:inner_tree)
+          old_tree.inner_tree
+        elsif old_tree.respond_to?(:instance_variable_get)
+          # Fallback for compatibility
+          old_tree.instance_variable_get(:@inner_tree) || old_tree.instance_variable_get(:@impl) || old_tree
+        else
+          old_tree
+        end
         tree_impl = @impl.parse_string(old_impl, source)
         Tree.new(tree_impl)
       elsif @impl.respond_to?(:parse_string)
@@ -491,219 +512,14 @@ module TreeHaver
     end
   end
 
-  # Represents a parsed syntax tree
+  # Tree and Node classes have been moved to separate files:
+  # - tree_haver/tree.rb: TreeHaver::Tree - unified wrapper providing consistent API
+  # - tree_haver/node.rb: TreeHaver::Node - unified wrapper providing consistent API
   #
-  # A Tree is the result of parsing source code. It provides access to
-  # the root node of the AST and supports incremental parsing via the
-  # {#edit} method.
-  #
-  # @example Basic usage
-  #   tree = parser.parse(source)
-  #   root = tree.root_node
-  #
-  # @example Incremental parsing
-  #   tree = parser.parse_string(nil, original_source)
-  #   tree.edit(
-  #     start_byte: 10,
-  #     old_end_byte: 15,
-  #     new_end_byte: 20,
-  #     start_point: { row: 0, column: 10 },
-  #     old_end_point: { row: 0, column: 15 },
-  #     new_end_point: { row: 0, column: 20 }
-  #   )
-  #   new_tree = parser.parse_string(tree, edited_source)
-  class Tree
-    # @api private
-    def initialize(impl)
-      @impl = impl
-    end
+  # These provide a unified interface across all backends (MRI, Rust, FFI, Java, Citrus).
+  # All backends now return properly wrapped TreeHaver::Tree and TreeHaver::Node objects.
 
-    # Get the root node of the syntax tree
-    #
-    # @return [Node] the root node
-    # @example
-    #   root = tree.root_node
-    #   puts root.type  # => "document" or similar
-    def root_node
-      Node.new(@impl.root_node)
-    end
-
-    # Mark the tree as edited for incremental re-parsing
-    #
-    # Call this method after the source code has been modified but before
-    # re-parsing. This tells Tree-sitter which parts of the tree are
-    # invalidated so it can efficiently re-parse only the affected regions.
-    #
-    # @param start_byte [Integer] byte offset where the edit starts
-    # @param old_end_byte [Integer] byte offset where the old text ended
-    # @param new_end_byte [Integer] byte offset where the new text ends
-    # @param start_point [Hash] starting position as `{ row:, column: }`
-    # @param old_end_point [Hash] old ending position as `{ row:, column: }`
-    # @param new_end_point [Hash] new ending position as `{ row:, column: }`
-    # @return [void]
-    # @raise [NotAvailable] if the backend doesn't support incremental parsing
-    # @see https://tree-sitter.github.io/tree-sitter/using-parsers#editing
-    #
-    # @example
-    #   # Original: "x = 1"
-    #   # Edited:   "x = 42"  (replaced "1" with "42" at byte 4)
-    #   tree.edit(
-    #     start_byte: 4,
-    #     old_end_byte: 5,
-    #     new_end_byte: 6,
-    #     start_point: { row: 0, column: 4 },
-    #     old_end_point: { row: 0, column: 5 },
-    #     new_end_point: { row: 0, column: 6 }
-    #   )
-    def edit(start_byte:, old_end_byte:, new_end_byte:, start_point:, old_end_point:, new_end_point:)
-      unless @impl.respond_to?(:edit)
-        raise NotAvailable, "Incremental parsing not supported by current backend. " \
-          "Use MRI (ruby_tree_sitter) or Rust (tree_stump) backend."
-      end
-
-      @impl.edit(
-        start_byte: start_byte,
-        old_end_byte: old_end_byte,
-        new_end_byte: new_end_byte,
-        start_point: start_point,
-        old_end_point: old_end_point,
-        new_end_point: new_end_point,
-      )
-    end
-
-    # Check if the underlying implementation supports incremental parsing
-    #
-    # @return [Boolean] true if {#edit} can be called on this tree
-    def supports_editing?
-      @impl.respond_to?(:edit)
-    end
-  end
-
-  # Represents a node in the syntax tree
-  #
-  # A Node represents a single element in the parsed AST. Each node has
-  # a type (like "string", "number", "table", etc.) and may have child nodes.
-  #
-  # @example Traversing nodes
-  #   root = tree.root_node
-  #   root.each do |child|
-  #     puts "Child type: #{child.type}"
-  #     child.each { |grandchild| puts "  Grandchild: #{grandchild.type}" }
-  #   end
-  class Node
-    # @api private
-    def initialize(impl)
-      @impl = impl
-    end
-
-    # Get the type name of this node
-    #
-    # The type corresponds to the grammar rule that produced this node
-    # (e.g., "document", "table", "string_literal", "pair", etc.).
-    #
-    # @return [String] the node type
-    # @example
-    #   node.type  # => "table"
-    def type
-      @impl.type
-    end
-
-    # Iterate over child nodes
-    #
-    # @yieldparam child [Node] each child node
-    # @return [Enumerator, nil] an enumerator if no block given, nil otherwise
-    # @example With a block
-    #   node.each { |child| puts child.type }
-    #
-    # @example Without a block
-    #   children = node.each.to_a
-    def each(&blk)
-      return enum_for(:each) unless block_given?
-      @impl.each { |child_impl| blk.call(Node.new(child_impl)) }
-    end
-
-    # Get the start position of this node in the source
-    #
-    # @return [Object] point object with row and column
-    # @example
-    #   node.start_point.row     # => 0
-    #   node.start_point.column  # => 4
-    def start_point
-      @impl.start_point
-    end
-
-    # Get the end position of this node in the source
-    #
-    # @return [Object] point object with row and column
-    # @example
-    #   node.end_point.row     # => 0
-    #   node.end_point.column  # => 10
-    def end_point
-      @impl.end_point
-    end
-
-    # Get the start byte offset of this node in the source
-    #
-    # @return [Integer] byte offset from beginning of source
-    def start_byte
-      @impl.start_byte
-    end
-
-    # Get the end byte offset of this node in the source
-    #
-    # @return [Integer] byte offset from beginning of source
-    def end_byte
-      @impl.end_byte
-    end
-
-    # Check if this node or any descendant has a parse error
-    #
-    # @return [Boolean] true if there is an error in the subtree
-    def has_error?
-      @impl.respond_to?(:has_error?) && @impl.has_error?
-    end
-
-    # Check if this node is a MISSING node (inserted by error recovery)
-    #
-    # @return [Boolean] true if this is a missing node
-    def missing?
-      @impl.respond_to?(:missing?) && @impl.missing?
-    end
-
-    # Get string representation of this node
-    #
-    # @return [String] string representation
-    def to_s
-      @impl.to_s
-    end
-
-    # Check if node responds to a method (includes delegation to @impl)
-    #
-    # @param method_name [Symbol] method to check
-    # @param include_private [Boolean] include private methods
-    # @return [Boolean]
-    def respond_to_missing?(method_name, include_private = false)
-      @impl.respond_to?(method_name, include_private) || super
-    end
-
-    # Delegate unknown methods to the underlying implementation
-    #
-    # This provides full compatibility with ruby_tree_sitter nodes
-    # for methods not explicitly wrapped.
-    #
-    # @param method_name [Symbol] method to call
-    # @param args [Array] arguments to pass
-    # @param block [Proc] block to pass
-    # @return [Object] result from the underlying implementation
-    def method_missing(method_name, *args, **kwargs, &block)
-      if @impl.respond_to?(method_name)
-        @impl.public_send(method_name, *args, **kwargs, &block)
-      else
-        super
-      end
-    end
-  end
-end
+end # end module TreeHaver
 
 TreeHaver::Version.class_eval do
   extend VersionGem::Basic

@@ -6,7 +6,7 @@ set -e
 # Options:
 #   --sudo: Use sudo for package installation commands
 #   --cli:  Install tree-sitter-cli via npm (optional)
-#   --build: Build and install the Tree-sitter C runtime from source when distro packages are missing (optional)
+#   --build: Build and install the tree-sitter C runtime from source when distro packages are missing (optional)
 
 SUDO=""
 INSTALL_CLI=false
@@ -130,7 +130,7 @@ $SUDO cp libtree-sitter-toml.so /usr/local/lib/
 $SUDO ldconfig
 
 echo ""
-echo "Tree-sitter setup complete!"
+echo "tree-sitter setup complete!"
 echo ""
 echo "Detected library paths:"
 
