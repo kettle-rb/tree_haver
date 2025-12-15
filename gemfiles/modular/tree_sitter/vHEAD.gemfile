@@ -1,5 +1,7 @@
 # FFI Backend - works on MRI, JRuby, and TruffleRuby
 gem "ffi", github: "ffi/ffi"
+gem "toml-rb"
+gem "citrus"
 
 platform :mri do
   # MRI Backend

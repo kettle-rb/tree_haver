@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.0.0] - 2025-12-15
+
+- TAG: [v2.0.0][2.0.0t]
+- COVERAGE: 82.78% -- 601/726 lines in 11 files
+- BRANCH COVERAGE: 70.45% -- 186/264 branches in 11 files
+- 91.90% documented
+
+### Added
+
 - Added support for Citrus backend (`backends/citrus.rb`) - a pure Ruby grammar parser with its own distinct grammar structure
 - Added `TreeHaver::Tree` unified wrapper class providing consistent API across all backends
 - Added `TreeHaver::Node` unified wrapper class providing consistent API across all backends
@@ -45,10 +64,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Updated Citrus backend (`backends/citrus.rb`) to return wrapped `TreeHaver::Tree` with source
 - Disabled old pass-through stub classes in `tree_haver.rb` (wrapped in `if false` for reference)
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Fixed backend portability - code now works identically across MRI, Rust, FFI, Java, and Citrus backends
@@ -56,8 +71,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Fixed position objects - `start_point` and `end_point` now return objects that work as both `.row` and `[:row]`
 - Fixed child iteration - `node.each` and `node.children` now consistently return `TreeHaver::Node` objects
 - Fixed text extraction - `node.text` now works consistently by storing source in `TreeHaver::Tree`
-
-### Security
 
 ## [1.0.0] - 2025-12-15
 
@@ -70,6 +83,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/kettle-rb/tree_haver/compare/v1.0.0...v2.0.0
+[2.0.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v2.0.0
 [1.0.0]: https://github.com/kettle-rb/tree_haver/compare/a89211bff10f4440b96758a8ac9d7d539001b0c8...v1.0.0
 [1.0.0t]: https://github.com/kettle-rb/tree_haver/tags/v1.0.0
