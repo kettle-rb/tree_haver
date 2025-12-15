@@ -72,13 +72,54 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>Added support for Citrus backend (<code>backends/citrus.rb</code>) - a pure Ruby grammar parser with its own distinct grammar structure</li>
+  <li>Added <code>TreeHaver::Tree</code> unified wrapper class providing consistent API across all backends</li>
+  <li>Added <code>TreeHaver::Node</code> unified wrapper class providing consistent API across all backends</li>
+  <li>Added <code>TreeHaver::Point</code> class that works as both object and hash for position compatibility</li>
+  <li>Added passthrough mechanism via <code>method_missing</code> for accessing backend-specific features</li>
+  <li>Added <code>inner_node</code> accessor on <code>TreeHaver::Node</code> for advanced backend-specific usage</li>
+  <li>Added <code>inner_tree</code> accessor on <code>TreeHaver::Tree</code> for advanced backend-specific usage</li>
+  <li>Added comprehensive test suite for <code>TreeHaver::Node</code> wrapper class (88 examples)</li>
+  <li>Added comprehensive test suite for <code>TreeHaver::Tree</code> wrapper class (17 examples)</li>
+  <li>Added comprehensive test suite for <code>TreeHaver::Parser</code> class (12 examples)</li>
+  <li>Added complete test coverage for Citrus backend (41 examples)</li>
+  <li>Enhanced <code>TreeHaver::Language</code> tests for dynamic language helpers</li>
+</ul>
+
 <h3 id="changed">Changed</h3>
+
+<ul>
+  <li>
+<strong>BREAKING:</strong> All backends now return <code>TreeHaver::Tree</code> from <code>Parser#parse</code> and <code>Parser#parse_string</code>
+</li>
+  <li>
+<strong>BREAKING:</strong> <code>TreeHaver::Tree#root_node</code> now returns <code>TreeHaver::Node</code> instead of backend-specific node</li>
+  <li>
+<strong>BREAKING:</strong> All child/sibling/parent methods on nodes now return <code>TreeHaver::Node</code> wrappers</li>
+  <li>Updated MRI backend (<code>backends/mri.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Updated Rust backend (<code>backends/rust.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Updated FFI backend (<code>backends/ffi.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Updated Java backend (<code>backends/java.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Updated Citrus backend (<code>backends/citrus.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Disabled old pass-through stub classes in <code>tree_haver.rb</code> (wrapped in <code>if false</code> for reference)</li>
+</ul>
 
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>Fixed backend portability - code now works identically across MRI, Rust, FFI, Java, and Citrus backends</li>
+  <li>Fixed inconsistent API - <code>node.type</code> now works on all backends (was <code>node.kind</code> on TreeStump)</li>
+  <li>Fixed position objects - <code>start_point</code> and <code>end_point</code> now return objects that work as both <code>.row</code> and <code>[:row]</code>
+</li>
+  <li>Fixed child iteration - <code>node.each</code> and <code>node.children</code> now consistently return <code>TreeHaver::Node</code> objects</li>
+  <li>Fixed text extraction - <code>node.text</code> now works consistently by storing source in <code>TreeHaver::Tree</code>
+</li>
+</ul>
 
 <h3 id="security">Security</h3>
 
@@ -99,12 +140,10 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>Initial release</li>
 </ul>
 
-<h3 id="security-1">Security</h3>
-
 </div></div>
 
       <div id="footer">
-  Generated on Mon Dec 15 00:39:47 2025 by
+  Generated on Mon Dec 15 05:48:34 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-3.4.7).
 </div>

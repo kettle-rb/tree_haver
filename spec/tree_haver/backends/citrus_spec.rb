@@ -218,13 +218,15 @@ RSpec.describe TreeHaver::Backends::Citrus do
           # Create an appropriate error based on whether Citrus is loaded
           if defined?(Citrus::ParseError)
             # Real Citrus::ParseError requires an input object with various methods
-            input_stub = double("input",
+            input_stub = double(
+              "input",
               max_offset: 100,
               string: "test",
               line_offset: 0,
               line_number: 1,
               line: "test",
-              column_number: 1)
+              column_number: 1,
+            )
             Citrus::ParseError.new(input_stub)
           else
             # Mock Citrus::ParseError for when Citrus isn't loaded

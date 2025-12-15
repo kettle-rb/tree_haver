@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   File: README
-
+  
     &mdash; Documentation by YARD 0.9.38
-
+  
 </title>
 
   <link rel="stylesheet" href="css/style.css" type="text/css" />
@@ -35,14 +35,14 @@
     <div id="main" tabindex="-1">
       <div id="header">
         <div id="menu">
-
-    <a href="_index.html">Index</a> &raquo;
+  
+    <a href="_index.html">Index</a> &raquo; 
     <span class="title">File: README</span>
-
+  
 </div>
 
         <div id="search">
-
+  
     <a class="full_list_link" id="class_list_link"
         href="class_list.html">
 
@@ -52,7 +52,7 @@
           <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
         </svg>
     </a>
-
+  
 </div>
         <div class="clear"></div>
       </div>
@@ -149,7 +149,7 @@
     <tr>
       <td><strong>TreeHaver</strong></td>
       <td>tree-sitter parsing</td>
-      <td>ruby_tree_sitter, tree_stump, FFI, Java</td>
+      <td>ruby_tree_sitter, tree_stump, FFI, Java JARs, Citrus</td>
     </tr>
   </tbody>
 </table>
@@ -188,6 +188,8 @@ tree = parser.parse(source_code)
 <strong>FFI Backend</strong>: Pure Ruby FFI bindings to <code>libtree-sitter</code> (ideal for JRuby)</li>
       <li>
 <strong>Java Backend</strong>: Support for JRuby’s native Java integration, and native java-tree-sitter grammar JARs</li>
+      <li>
+<strong>Citrus Backend</strong>: Pure Ruby parser using <a href="https://github.com/mjackson/citrus"><code>citrus</code></a> gem (no native dependencies, portable)</li>
     </ul>
   </li>
   <li>
@@ -214,15 +216,17 @@ tree = parser.parse(source_code)
 
 <p>TreeHaver solves these problems by providing a unified API that automatically selects the appropriate backend for your Ruby implementation, allowing you to write code once and run it anywhere.</p>
 
-<h3 id="comparison-with-other-ruby-tree-sitter-bindings">Comparison with Other Ruby tree-sitter Bindings</h3>
+<h3 id="comparison-with-other-ruby-ast--parser-bindings">Comparison with Other Ruby AST / Parser Bindings</h3>
 
 <table>
   <thead>
     <tr>
       <th>Feature</th>
-      <th>TreeHaver</th>
+      <th>
+<a href="https://github.com/kettle-rb/tree_haver">tree_haver</a> (this gem)</th>
       <th><a href="https://github.com/Faveod/ruby-tree-sitter">ruby_tree_sitter</a></th>
       <th><a href="https://github.com/anthropics/tree_stump">tree_stump</a></th>
+      <th><a href="https://github.com/mjackson/citrus">citrus</a></th>
     </tr>
   </thead>
   <tbody>
@@ -231,41 +235,48 @@ tree = parser.parse(source_code)
       <td>✅ Yes</td>
       <td>✅ Yes</td>
       <td>✅ Yes</td>
+      <td>✅ Yes</td>
     </tr>
     <tr>
       <td><strong>JRuby</strong></td>
-      <td>✅ Yes (FFI or Java* backend)</td>
+      <td>✅ Yes (FFI, Java, or Citrus backend)</td>
       <td>❌ No</td>
       <td>❌ No</td>
+      <td>✅ Yes</td>
     </tr>
     <tr>
       <td><strong>TruffleRuby</strong></td>
-      <td>✅ Yes (FFI)</td>
+      <td>✅ Yes (FFI or Citrus)</td>
       <td>❌ No</td>
       <td>❓ Unknown</td>
+      <td>✅ Yes</td>
     </tr>
     <tr>
       <td><strong>Backend</strong></td>
-      <td>Multi (MRI C, Rust, FFI, Java)</td>
+      <td>Multi (MRI C, Rust, FFI, Java, Citrus)</td>
       <td>C extension only</td>
       <td>Rust extension</td>
+      <td>Pure Ruby</td>
     </tr>
     <tr>
       <td><strong>Incremental Parsing</strong></td>
-      <td>✅ Via MRI C/Rust backend</td>
+      <td>✅ Via MRI C/Rust/Java backend</td>
       <td>✅ Yes</td>
       <td>✅ Yes</td>
+      <td>❌ No</td>
     </tr>
     <tr>
       <td><strong>Query API</strong></td>
-      <td>⚡ Via MRI/Rust backend</td>
+      <td>⚡ Via MRI/Rust/Java backend</td>
       <td>✅ Yes</td>
       <td>✅ Yes</td>
+      <td>❌ No</td>
     </tr>
     <tr>
       <td><strong>Grammar Discovery</strong></td>
       <td>✅ Built-in <code>GrammarFinder</code>
 </td>
+      <td>❌ Manual</td>
       <td>❌ Manual</td>
       <td>❌ Manual</td>
     </tr>
@@ -275,10 +286,12 @@ tree = parser.parse(source_code)
 </td>
       <td>❌ No</td>
       <td>❌ No</td>
+      <td>❌ No</td>
     </tr>
     <tr>
       <td><strong>Language Registration</strong></td>
       <td>✅ Thread-safe registry</td>
+      <td>❌ No</td>
       <td>❌ No</td>
       <td>❌ No</td>
     </tr>
@@ -287,11 +300,20 @@ tree = parser.parse(source_code)
       <td>⚡ Backend-dependent</td>
       <td>✅ Native C</td>
       <td>✅ Native Rust</td>
+      <td>❌ Pure Ruby</td>
     </tr>
     <tr>
       <td><strong>Precompiled Binaries</strong></td>
       <td>⚡ Via Rust backend</td>
       <td>✅ Yes</td>
+      <td>✅ Yes</td>
+      <td>✅ Pure Ruby</td>
+    </tr>
+    <tr>
+      <td><strong>Zero Native Deps</strong></td>
+      <td>⚡ Via Citrus backend</td>
+      <td>❌ No</td>
+      <td>❌ No</td>
       <td>✅ Yes</td>
     </tr>
     <tr>
@@ -299,6 +321,7 @@ tree = parser.parse(source_code)
       <td>3.2+</td>
       <td>3.0+</td>
       <td>3.1+</td>
+      <td>0+</td>
     </tr>
   </tbody>
 </table>
@@ -312,6 +335,7 @@ tree = parser.parse(source_code)
 <h4 id="when-to-use-each">When to Use Each</h4>
 
 <p><strong>Choose TreeHaver when:</strong></p>
+
 <ul>
   <li>You need JRuby or TruffleRuby support</li>
   <li>You’re building a library that should work across Ruby implementations</li>
@@ -321,6 +345,7 @@ tree = parser.parse(source_code)
 </ul>
 
 <p><strong>Choose ruby_tree_sitter directly when:</strong></p>
+
 <ul>
   <li>You only target MRI Ruby</li>
   <li>You need the full Query API without abstraction</li>
@@ -329,6 +354,7 @@ tree = parser.parse(source_code)
 </ul>
 
 <p><strong>Choose tree_stump directly when:</strong></p>
+
 <ul>
   <li>You only target MRI Ruby</li>
   <li>You prefer Rust-based native extensions</li>
@@ -336,6 +362,15 @@ tree = parser.parse(source_code)
   <li>You don’t need TreeHaver’s grammar discovery</li>
   <li>
 <strong>Note:</strong> Use <a href="https://github.com/pboling/tree_stump/tree/tree_haver">pboling’s fork (tree_haver branch)</a> until PRs <a href="https://github.com/joker1007/tree_stump/pull/5">#5</a>, <a href="https://github.com/joker1007/tree_stump/pull/7">#7</a>, <a href="https://github.com/joker1007/tree_stump/pull/11">#11</a>, <a href="https://github.com/joker1007/tree_stump/pull/13">#13</a> are merged</li>
+</ul>
+
+<p><strong>Choose citrus directly when:</strong></p>
+
+<ul>
+  <li>You need zero native dependencies (pure Ruby)</li>
+  <li>You’re using a Citrus grammar (not tree-sitter grammars)</li>
+  <li>Performance is less critical than portability</li>
+  <li>You don’t need TreeHaver’s unified API</li>
 </ul>
 
 <h2 id="-info-you-can-shake-a-stick-at">💡 Info you can shake a stick at</h2>
@@ -408,7 +443,7 @@ tree = parser.parse(source_code)
       <td>
 <code>...</code> 💖</td>
       <td>
-<a href="https://wellfound.com/u/peter-boling"><img src="https://img.shields.io/badge/peter--boling-orange?style=flat&amp;logo=wellfound" alt="Find Me on WellFound:"></a> <a href="https://www.crunchbase.com/person/peter-boling"><img src="https://img.shields.io/badge/peter--boling-purple?style=flat&amp;logo=crunchbase" alt="Find Me on CrunchBase"></a> <a href="https://linktr.ee/galtzo"><img src="https://img.shields.io/badge/galtzo-purple?style=flat&amp;logo=linktree" alt="My LinkTree"></a> <a href="https://about.me/peter.boling"><img src="https://img.shields.io/badge/about.me-0A0A0A?style=flat&amp;logo=aboutme&amp;logoColor=white" alt="More About Me"></a> <a href="https://codeberg.org/pboling">🧊</a> <a href="https://github.org/pboling">🐙</a>  <a href="https://sr.ht/~galtzo/">🛖</a> <a href="https://gitlab.com/pboling">🧪</a>
+<a href="https://wellfound.com/u/peter-boling"><img src="https://img.shields.io/badge/peter--boling-orange?style=flat&amp;logo=wellfound" alt="Find Me on WellFound:"></a> <a href="https://www.crunchbase.com/person/peter-boling"><img src="https://img.shields.io/badge/peter--boling-purple?style=flat&amp;logo=crunchbase" alt="Find Me on CrunchBase"></a> <a href="https://linktr.ee/galtzo"><img src="https://img.shields.io/badge/galtzo-purple?style=flat&amp;logo=linktree" alt="My LinkTree"></a> <a href="https://about.me/peter.boling"><img src="https://img.shields.io/badge/about.me-0A0A0A?style=flat&amp;logo=aboutme&amp;logoColor=white" alt="More About Me"></a> <a href="https://codeberg.org/pboling">🧊</a> <a href="https://github.org/pboling">🐙</a> <a href="https://sr.ht/~galtzo/">🛖</a> <a href="https://gitlab.com/pboling">🧪</a>
 </td>
     </tr>
   </tbody>
@@ -551,7 +586,7 @@ by following the instructions below.</p>
   <pre class="code language-console"><code class="language-console">gem cert --add &lt;(curl -Ls https://raw.github.com/galtzo-floss/certs/main/pboling.pem)
 </code></pre>
 
-  <p>You only need to do that once.  Then proceed to install with:</p>
+  <p>You only need to do that once. Then proceed to install with:</p>
 
   <pre class="code language-console"><code class="language-console">gem install tree_haver -P HighSecurity
 </code></pre>
@@ -685,15 +720,18 @@ export TREE_SITTER_TOML_PATH=~/.local/share/mise/installs/lua/5.4.8/luarocks/lib
 TreeHaver.backend = :auto
 
 # Force a specific backend
-TreeHaver.backend = :mri   # Use ruby_tree_sitter (MRI only, C extension)
-TreeHaver.backend = :rust  # Use tree_stump (MRI, Rust extension with precompiled binaries)
-                           # Note: Requires pboling&#39;s fork until PRs #5, #7, #11, #13 are merged
-                           # See: https://github.com/pboling/tree_stump/tree/tree_haver
-TreeHaver.backend = :ffi   # Use FFI bindings (works on MRI and JRuby)
-TreeHaver.backend = :java  # Use Java bindings (JRuby only, coming soon)
+TreeHaver.backend = :mri     # Use ruby_tree_sitter (MRI only, C extension)
+TreeHaver.backend = :rust    # Use tree_stump (MRI, Rust extension with precompiled binaries)
+                             # Note: Requires pboling&#39;s fork until PRs #5, #7, #11, #13 are merged
+                             # See: https://github.com/pboling/tree_stump/tree/tree_haver
+TreeHaver.backend = :ffi     # Use FFI bindings (works on MRI and JRuby)
+TreeHaver.backend = :java    # Use Java bindings (JRuby only, coming soon)
+TreeHaver.backend = :citrus  # Use Citrus pure Ruby parser
+                             # NOTE: Portable, all Ruby implementations
+                             # CAVEAT: few major language grammars, but many esoteric grammars
 </code></pre>
 
-<p><strong>Auto-selection priority on MRI:</strong> MRI → Rust → FFI</p>
+<p><strong>Auto-selection priority on MRI:</strong> MRI → Rust → FFI → Citrus</p>
 
 <p>You can also set the backend via environment variable:</p>
 
@@ -710,7 +748,8 @@ TreeHaver.backend = :java  # Use Java bindings (JRuby only, coming soon)
 
 <ul>
   <li>
-<strong><code>TREE_HAVER_TRUSTED_DIRS</code></strong>: Comma-separated list of additional trusted directories for grammar libraries
+    <p><strong><code>TREE_HAVER_TRUSTED_DIRS</code></strong>: Comma-separated list of additional trusted directories for grammar libraries</p>
+
     <pre class="code language-bash"><code class="language-bash"># For Homebrew on Linux and luarocks
 export TREE_HAVER_TRUSTED_DIRS=&quot;/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua&quot;
 </code></pre>
@@ -730,6 +769,7 @@ export TREE_HAVER_TRUSTED_DIRS=&quot;/home/linuxbrew/.linuxbrew/Cellar,~/.local/
 </ul>
 
 <p>If not set, TreeHaver tries these names in order:</p>
+
 <ul>
   <li><code>tree-sitter</code></li>
   <li><code>libtree-sitter.so.0</code></li>
@@ -905,6 +945,8 @@ puts finder.search_info
 # =&gt; { backend: :mri, query: true, bytes_field: true }
 # or
 # =&gt; { backend: :ffi, parse: true, query: false, bytes_field: true }
+# or
+# =&gt; { backend: :citrus, parse: true, query: false, bytes_field: false }
 </code></pre>
 
 <h3 id="compatibility-mode">Compatibility Mode</h3>
@@ -1048,7 +1090,7 @@ tree.edit(
 new_tree = parser.parse_string(tree, &quot;x = 42&quot;)
 </code></pre>
 
-<p><strong>Note:</strong> Incremental parsing requires the MRI (<code>ruby_tree_sitter</code>), Rust (<code>tree_stump</code>), or Java (<code>java-tree-sitter</code>) backend. The FFI backend does not currently support incremental parsing. You can check support with:</p>
+<p><strong>Note:</strong> Incremental parsing requires the MRI (<code>ruby_tree_sitter</code>), Rust (<code>tree_stump</code>), or Java (<code>java-tree-sitter</code>) backend. The FFI and Citrus backends do not currently support incremental parsing. You can check support with:</p>
 
 <p><strong>Note:</strong> <code>tree_stump</code> requires <a href="https://github.com/pboling/tree_stump/tree/tree_haver">pboling’s fork (tree_haver branch)</a> until PRs <a href="https://github.com/joker1007/tree_stump/pull/5">#5</a>, <a href="https://github.com/joker1007/tree_stump/pull/7">#7</a>, <a href="https://github.com/joker1007/tree_stump/pull/11">#11</a>, <a href="https://github.com/joker1007/tree_stump/pull/13">#13</a> are merged.</p>
 
@@ -1066,7 +1108,7 @@ end
 # Check if a backend is available
 if TreeHaver.backend_module.nil?
   puts &quot;No TreeHaver backend is available!&quot;
-  puts &quot;Install ruby_tree_sitter (MRI) or ensure ffi gem and libtree-sitter are present&quot;
+  puts &quot;Install ruby_tree_sitter (MRI), ffi gem with libtree-sitter, or citrus gem&quot;
 end
 </code></pre>
 
@@ -1086,9 +1128,9 @@ parser = TreeHaver::Parser.new
 
 <h4 id="jruby">JRuby</h4>
 
-<p>On JRuby, TreeHaver can use either the FFI backend or the Java backend:</p>
+<p>On JRuby, TreeHaver can use the FFI backend, Java backend, or Citrus backend:</p>
 
-<p><strong>Option 1: FFI Backend (simpler setup)</strong></p>
+<p><strong>Option 1: FFI Backend (recommended for tree-sitter grammars)</strong></p>
 
 <pre class="code language-ruby"><code class="language-ruby"># Gemfile
 gem &quot;tree_haver&quot;
@@ -1146,20 +1188,51 @@ TreeHaver.backend = :ffi
 <p>The FFI backend uses Ruby’s FFI gem which relies on the system’s dynamic linker, correctly resolving symbol dependencies between <code>libtree-sitter.so</code> and grammar libraries.</p>
 
 <p>The Java backend will work with:</p>
+
 <ul>
   <li>Grammar JARs built specifically for java-tree-sitter (self-contained)</li>
   <li>Grammar <code>.so</code> files that statically link tree-sitter</li>
 </ul>
 
+<p><strong>Option 3: Citrus Backend (pure Ruby, portable)</strong></p>
+
+<pre class="code language-ruby"><code class="language-ruby"># Gemfile
+gem &quot;tree_haver&quot;
+gem &quot;citrus&quot;  # Pure Ruby parser, zero native dependencies
+
+# Code - Force Citrus backend for maximum portability
+TreeHaver.backend = :citrus
+
+# Check if Citrus backend is available
+if TreeHaver::Backends::Citrus.available?
+  puts &quot;Citrus backend is ready!&quot;
+  puts TreeHaver.capabilities
+  # =&gt; { backend: :citrus, parse: true, query: false, bytes_field: false }
+end
+</code></pre>
+
+<p><strong>⚠️ Citrus Backend Limitations:</strong></p>
+
+<ul>
+  <li>Uses Citrus grammars (not tree-sitter grammars)</li>
+  <li>No incremental parsing support</li>
+  <li>No query API</li>
+  <li>Pure Ruby performance (slower than native backends)</li>
+  <li>Best for: prototyping, environments without native extension support, teaching</li>
+</ul>
+
 <h4 id="truffleruby">TruffleRuby</h4>
 
-<p>TruffleRuby can use either the MRI or FFI backend:</p>
+<p>TruffleRuby can use the MRI, FFI, or Citrus backend:</p>
 
-<pre class="code language-ruby"><code class="language-ruby"># Use FFI backend (recommended)
+<pre class="code language-ruby"><code class="language-ruby"># Use FFI backend (recommended for tree-sitter grammars)
 TreeHaver.backend = :ffi
 
 # Or try MRI backend if ruby_tree_sitter compiles on your TruffleRuby version
 TreeHaver.backend = :mri
+
+# Or use Citrus backend for zero native dependencies
+TreeHaver.backend = :citrus
 </code></pre>
 
 <h3 id="advanced-testing-with-multiple-backends">Advanced: Testing with Multiple Backends</h3>
@@ -1267,8 +1340,10 @@ and <a href="https://tidelift.com/subscription/pkg/rubygems-tree_haver?utm_sourc
 <p>NOTE: <a href="https://github.com/kettle-rb/tree_haver/blob/main/exe/kettle-readme-backers">kettle-readme-backers</a> updates this list every day, automatically.</p>
 
 <!-- OPENCOLLECTIVE-INDIVIDUALS:START -->
-<p>No backers yet. Be the first!<br>
-<!-- OPENCOLLECTIVE-INDIVIDUALS:END --></p>
+
+<p>No backers yet. Be the first!</p>
+
+<!-- OPENCOLLECTIVE-INDIVIDUALS:END -->
 
 <h3 id="open-collective-for-organizations">Open Collective for Organizations</h3>
 
@@ -1277,12 +1352,14 @@ and <a href="https://tidelift.com/subscription/pkg/rubygems-tree_haver?utm_sourc
 <p>NOTE: <a href="https://github.com/kettle-rb/tree_haver/blob/main/exe/kettle-readme-backers">kettle-readme-backers</a> updates this list every day, automatically.</p>
 
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:START -->
-<p>No sponsors yet. Be the first!<br>
-<!-- OPENCOLLECTIVE-ORGANIZATIONS:END --></p>
+
+<p>No sponsors yet. Be the first!</p>
+
+<!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->
 
 <h3 id="another-way-to-support-open-source">Another way to support open-source</h3>
 
-<p>I’m driven by a passion to foster a thriving open-source community – a space where people can tackle complex problems, no matter how small.  Revitalizing libraries that have fallen into disrepair, and building new libraries focused on solving real-world challenges, are my passions.  I was recently affected by layoffs, and the tech jobs market is unwelcoming. I’m reaching out here because your support would significantly aid my efforts to provide for my family, and my farm (11 🐔 chickens, 2 🐶 dogs, 3 🐰 rabbits, 8 🐈‍ cats).</p>
+<p>I’m driven by a passion to foster a thriving open-source community – a space where people can tackle complex problems, no matter how small. Revitalizing libraries that have fallen into disrepair, and building new libraries focused on solving real-world challenges, are my passions. I was recently affected by layoffs, and the tech jobs market is unwelcoming. I’m reaching out here because your support would significantly aid my efforts to provide for my family, and my farm (11 🐔 chickens, 2 🐶 dogs, 3 🐰 rabbits, 8 🐈‍ cats).</p>
 
 <p>If you work at a company that uses my work, please encourage them to support me as a corporate sponsor. My work on gems you use might show up in <code>bundle fund</code>.</p>
 
@@ -1428,7 +1505,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Dec 15 00:39:47 2025 by
+  Generated on Mon Dec 15 05:48:33 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-3.4.7).
 </div>
