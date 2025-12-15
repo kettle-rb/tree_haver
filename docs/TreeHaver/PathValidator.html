@@ -348,6 +348,29 @@ This prevents shell metacharacters and other injection attempts</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#has_valid_extension%3F-class_method" title="has_valid_extension? (class method)">.<strong>has_valid_extension?</strong>(path)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if path has a valid library extension Allows: .so, .dylib, .dll, and versioned .so files like .so.0, .so.14.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#in_trusted_directory%3F-class_method" title="in_trusted_directory? (class method)">.<strong>in_trusted_directory?</strong>(path)  &#x21d2; Boolean </a>
     
 
@@ -813,6 +836,78 @@ Primarily useful for testing.</p>
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="has_valid_extension?-class_method">
+  
+    .<strong>has_valid_extension?</strong>(path)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Check if path has a valid library extension<br />
+Allows: .so, .dylib, .dll, and versioned .so files like .so.0, .so.14</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 337</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_has_valid_extension?'>has_valid_extension?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  <span class='comment'># Check for exact matches first (.so, .dylib, .dll)
+</span>  <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="#ALLOWED_EXTENSIONS-constant" title="TreeHaver::PathValidator::ALLOWED_EXTENSIONS (constant)">ALLOWED_EXTENSIONS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ext'>ext</span><span class='op'>|</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_ext'>ext</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+
+  <span class='comment'># Check for versioned .so files (Linux convention)
+</span>  <span class='comment'># e.g., libtree-sitter.so.0, libtree-sitter.so.14
+</span>  <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\.so\.\d+\z</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
+
+  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="in_trusted_directory?-class_method">
   
     .<strong>in_trusted_directory?</strong>(path)  &#x21d2; <tt>Boolean</tt> 
@@ -876,7 +971,6 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
       <pre class="lines">
 
 
-210
 211
 212
 213
@@ -893,10 +987,11 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
 224
 225
 226
-227</pre>
+227
+228</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 210</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 211</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_in_trusted_directory?'>in_trusted_directory?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1045,14 +1140,14 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
       <pre class="lines">
 
 
-273
 274
 275
 276
-277</pre>
+277
+278</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 273</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 274</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_safe_backend_name?'>safe_backend_name?</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='id identifier rubyid_backend'>backend</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='comment'># nil means :auto
@@ -1142,7 +1237,6 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
       <pre class="lines">
 
 
-243
 244
 245
 246
@@ -1150,10 +1244,11 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
 248
 249
 250
-251</pre>
+251
+252</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 243</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 244</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_safe_language_name?'>safe_language_name?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1294,7 +1389,8 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
 198
 199
 200
-201</pre>
+201
+202</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 176</span>
@@ -1312,7 +1408,8 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/./</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 
   <span class='comment'># Validate extension
-</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#ALLOWED_EXTENSIONS-constant" title="TreeHaver::PathValidator::ALLOWED_EXTENSIONS (constant)">ALLOWED_EXTENSIONS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ext'>ext</span><span class='op'>|</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='id identifier rubyid_ext'>ext</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+</span>  <span class='comment'># Allow versioned .so files like .so.0, .so.14, etc. (common on Linux)
+</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_has_valid_extension?'>has_valid_extension?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
 
   <span class='comment'># Validate filename portion
 </span>  <span class='id identifier rubyid_filename'>filename</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
@@ -1400,16 +1497,16 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
       <pre class="lines">
 
 
-261
 262
 263
 264
 265
 266
-267</pre>
+267
+268</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 261</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 262</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_safe_symbol_name?'>safe_symbol_name?</span><span class='lparen'>(</span><span class='id identifier rubyid_symbol'>symbol</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_symbol'>symbol</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1493,7 +1590,6 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
       <pre class="lines">
 
 
-287
 288
 289
 290
@@ -1501,10 +1597,11 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
 292
 293
 294
-295</pre>
+295
+296</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 287</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 288</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sanitize_language_name'>sanitize_language_name</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1678,7 +1775,6 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
       <pre class="lines">
 
 
-301
 302
 303
 304
@@ -1702,10 +1798,11 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
 322
 323
 324
-325</pre>
+325
+326</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 301</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 302</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validation_errors'>validation_errors</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_errors'>errors</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -1716,4 +1813,96 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
   <span class='kw'>end</span>
 
   <span class='id identifier rubyid_errors'>errors</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Path exceeds maximum length (</span><span class='embexpr_beg'>#{</span><span class='const'><span class='object_link'><a href="#MAX_PATH_LENGTH-constant" title="TreeHaver::PathValidator::MAX_PATH_LENGTH (constant)">MAX_PATH_LENGTH</a></span></span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>&gt;</span> <span class='const'><span class='object_link'><a href="#MAX_PATH_LENGTH-constant" title="TreeHaver::PathValidator::MAX_PATH_LENGTH (constant)">MAX_PATH_LENGTH</a></span></span>
-  <span class='id identifier rubyid_errors'>errors</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Path contains null byte</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\0</span><span class='tstri
+  <span class='id identifier rubyid_errors'>errors</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Path contains null byte</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\0</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_errors'>errors</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Path is not absolute</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_start_with?'>start_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_windows_absolute_path?'>windows_absolute_path?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_errors'>errors</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Path contains traversal sequence (/../)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/../</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/..</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_errors'>errors</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Path contains traversal sequence (/./)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/./</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/.</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='kw'>unless</span> <span class='id identifier rubyid_has_valid_extension?'>has_valid_extension?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_errors'>errors</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Path does not have allowed extension (.so, .so.X, .dylib, .dll)</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_filename'>filename</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  <span class='kw'>unless</span> <span class='id identifier rubyid_filename'>filename</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#VALID_FILENAME_PATTERN-constant" title="TreeHaver::PathValidator::VALID_FILENAME_PATTERN (constant)">VALID_FILENAME_PATTERN</a></span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_errors'>errors</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Filename contains invalid characters</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_errors'>errors</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="windows_absolute_path?-class_method">
+  
+    .<strong>windows_absolute_path?</strong>(path)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+329
+330
+331
+332</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/path_validator.rb', line 329</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_windows_absolute_path?'>windows_absolute_path?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  <span class='comment'># Match Windows absolute paths like C:\path or D:/path
+</span>  <span class='id identifier rubyid_path'>path</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\A[A-Za-z]:[\\\/]</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Dec 15 06:18:25 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>
