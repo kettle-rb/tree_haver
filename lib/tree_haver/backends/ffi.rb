@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
-begin
-  require "ffi"
-  FFI_AVAILABLE = true
-rescue LoadError
-  FFI_AVAILABLE = false
-end
-
 module TreeHaver
+  # The load condition isn't really worth testing, so :nocov:
+  # :nocov:
+  begin
+    require "ffi"
+    FFI_AVAILABLE = true
+  rescue LoadError
+    FFI_AVAILABLE = false
+  end
+  # :nocov:
+
   module Backends
     # FFI-based backend for calling libtree-sitter directly
     #
@@ -37,6 +40,23 @@ module TreeHaver
         if FFI_AVAILABLE && defined?(::FFI)
           extend ::FFI::Library
 
+          # FFI struct representation of TSNode
+          #
+          # Mirrors the C struct layout used by Tree-sitter. TSNode is passed
+          # by value in the Tree-sitter C API.
+          #
+          # @api private
+          class TSNode < ::FFI::Struct
+            layout :context,
+              [:uint32, 4],
+              :id,
+              :pointer,
+              :tree,
+              :pointer
+          end
+
+          typedef TSNode.by_value, :ts_node
+
           class << self
             # Get list of candidate library names for loading libtree-sitter
             #
@@ -58,23 +78,6 @@ module TreeHaver
                 "libtree-sitter.dll",
               ].compact
             end
-
-            # FFI struct representation of TSNode
-            #
-            # Mirrors the C struct layout used by Tree-sitter. TSNode is passed
-            # by value in the Tree-sitter C API.
-            #
-            # @api private
-            class TSNode < ::FFI::Struct
-              layout :context,
-                [:uint32, 4],
-                :id,
-                :pointer,
-                :tree,
-                :pointer
-            end
-
-            typedef TSNode.by_value, :ts_node
 
             # Load the Tree-sitter runtime library
             #

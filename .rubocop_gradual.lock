@@ -1,6 +1,6 @@
 {
-  "lib/tree_haver/backends/ffi.rb:1911586100": [
-    [317, 11, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
+  "lib/tree_haver/backends/ffi.rb:255235922": [
+    [320, 11, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
   ],
   "lib/tree_haver/backends/rust.rb:246483878": [
     [137, 11, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]

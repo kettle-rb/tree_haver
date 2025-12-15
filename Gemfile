@@ -30,5 +30,8 @@ eval_gemfile "gemfiles/modular/documentation.gemfile"
 # Optional
 eval_gemfile "gemfiles/modular/optional.gemfile"
 
+# Tree Sitter Tools
+eval_gemfile "gemfiles/modular/tree_sitter.gemfile"
+
 ### Std Lib Extracted Gems
 eval_gemfile "gemfiles/modular/x_std_libs.gemfile"
