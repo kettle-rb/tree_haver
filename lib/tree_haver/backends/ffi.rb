@@ -131,7 +131,11 @@ module TreeHaver
             !!@loaded
           end
         else
-          # Fallback stubs when FFI is not present; callers should have checked availability
+          # :nocov:
+          # Fallback stubs when FFI gem is not installed.
+          # These paths cannot be tested in a test suite where FFI is a dependency,
+          # since the gem is always available. They provide graceful degradation
+          # for environments where FFI cannot be installed.
           def self.try_load!
             raise TreeHaver::NotAvailable, "FFI not available"
           end
@@ -139,6 +143,7 @@ module TreeHaver
           def self.loaded?
             false
           end
+          # :nocov:
         end
       end
 

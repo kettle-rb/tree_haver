@@ -31,6 +31,22 @@ RSpec.describe TreeHaver::Language do
         described_class.toml(path: "/also/missing/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
       }.to raise_error(TreeHaver::NotAvailable)
     end
+
+    it "raises ArgumentError when path is nil and not registered with a path" do
+      # Register without a path (path: nil)
+      TreeHaver::LanguageRegistry.register(:no_path_lang, path: nil, symbol: "test")
+      expect {
+        described_class.no_path_lang
+      }.to raise_error(ArgumentError, /path is required/)
+    end
+
+    it "uses path from positional argument if kwargs path is nil" do
+      TreeHaver.register_language(:pos_arg_lang, path: nil)
+      expect {
+        # First positional arg should be used as path
+        described_class.pos_arg_lang("/path/from/arg.so")
+      }.to raise_error(TreeHaver::NotAvailable)
+    end
   end
 
   describe "registration-driven dynamic helpers" do

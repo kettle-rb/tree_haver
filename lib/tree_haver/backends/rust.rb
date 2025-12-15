@@ -66,23 +66,45 @@ module TreeHaver
       # Wrapper for tree_stump Language
       #
       # Provides TreeHaver-compatible interface to tree_stump's language loading.
+      # tree_stump uses a registration-based API where languages are registered
+      # by name, then referenced by that name when setting parser language.
       class Language
+        # The registered language name
+        # @return [String]
+        attr_reader :name
+
+        # @api private
+        # @param name [String] the registered language name
+        def initialize(name)
+          @name = name
+        end
+
         # Load a language from a shared library path
         #
         # @param path [String] absolute path to the language shared library
         # @param symbol [String, nil] the symbol name (accepted for API consistency, but tree_stump derives it from name)
         # @param name [String, nil] logical name for the language (optional, derived from path if not provided)
-        # @return [Object] the loaded language handle
+        # @return [Language] a wrapper holding the registered language name
         # @raise [TreeHaver::NotAvailable] if tree_stump is not available
         # @example
         #   lang = TreeHaver::Backends::Rust::Language.from_library("/usr/local/lib/libtree-sitter-toml.so")
         def self.from_library(path, symbol: nil, name: nil) # rubocop:disable Lint/UnusedMethodArgument
           raise TreeHaver::NotAvailable, "tree_stump not available" unless Rust.available?
 
-          # tree_stump uses TreeStump::Language.load(name, path) similar to ruby_tree_sitter
-          # The name is used to derive the symbol automatically; the symbol parameter is ignored
+          # Validate the path exists before calling register_lang to provide a clear error
+          unless File.exist?(path)
+            raise TreeHaver::NotAvailable, "Language library not found: #{path}"
+          end
+
+          # tree_stump uses TreeStump.register_lang(name, path) to register languages
+          # The name is used to derive the symbol automatically (tree_sitter_<name>)
           lang_name = name || File.basename(path, ".*").sub(/^libtree-sitter-/, "")
-          ::TreeStump::Language.load(lang_name, path)
+          begin
+            ::TreeStump.register_lang(lang_name, path)
+          rescue RuntimeError => e
+            raise TreeHaver::NotAvailable, "Failed to load language from #{path}: #{e.message}"
+          end
+          new(lang_name)
         end
 
         # Alias for compatibility
@@ -107,10 +129,13 @@ module TreeHaver
 
         # Set the language for this parser
         #
-        # @param lang [Object] the language to use
-        # @return [Object] the language that was set
+        # @param lang [Language, String] the language to use (Language wrapper or name string)
+        # @return [Language, String] the language that was set
         def language=(lang)
-          @parser.language = lang
+          # tree_stump uses set_language with a string name
+          lang_name = lang.respond_to?(:name) ? lang.name : lang.to_s
+          @parser.set_language(lang_name)
+          lang
         end
 
         # Parse source code
@@ -127,7 +152,9 @@ module TreeHaver
         # @param source [String] the source code to parse
         # @return [Object] the parsed syntax tree
         def parse_string(old_tree, source)
-          @parser.parse_string(old_tree, source)
+          # tree_stump doesn't have parse_string, use parse instead
+          # TODO: Check if tree_stump supports incremental parsing
+          @parser.parse(source)
         end
       end
 

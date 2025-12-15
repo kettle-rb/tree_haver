@@ -63,6 +63,9 @@ module TreeHaver
       #   ENV["TREE_SITTER_JAVA_JARS_DIR"] = "/path/to/java-tree-sitter/jars"
       #   TreeHaver::Backends::Java.add_jars_from_env!
       def add_jars_from_env!
+        # :nocov:
+        # This method requires JRuby and cannot be tested on MRI/CRuby.
+        # JRuby-specific CI jobs would test this code.
         require "java"
 
         # Add JARs to classpath
@@ -77,6 +80,7 @@ module TreeHaver
         # Configure native library path for libtree-sitter
         # java-tree-sitter uses JNI and needs to find the native library
         configure_native_library_path!
+        # :nocov:
       rescue LoadError
         # ignore; not JRuby or Java bridge not available
       end
@@ -86,6 +90,8 @@ module TreeHaver
       # @return [void]
       # @api private
       def configure_native_library_path!
+        # :nocov:
+        # This method requires JRuby and cannot be tested on MRI/CRuby.
         lib_path = ENV["TREE_SITTER_RUNTIME_LIB"]
         return unless lib_path && File.exist?(lib_path)
 
@@ -99,7 +105,8 @@ module TreeHaver
           # Also set jna.library.path in case it uses JNA
           java.lang.System.setProperty("jna.library.path", new_path)
         end
-      rescue => e
+        # :nocov:
+      rescue => _error
         # Ignore errors setting library path
       end
 
@@ -121,6 +128,9 @@ module TreeHaver
 
         return false unless defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby"
 
+        # :nocov:
+        # Everything below requires JRuby and cannot be tested on MRI/CRuby.
+        # JRuby-specific CI jobs would test this code.
         begin
           require "java"
         rescue LoadError
@@ -161,6 +171,7 @@ module TreeHaver
         end
 
         @loaded
+        # :nocov:
       end
 
       # Get the last load error message (for debugging)
@@ -196,6 +207,8 @@ module TreeHaver
       #   TreeHaver::Backends::Java.capabilities
       #   # => { backend: :java, parse: true, query: true, bytes_field: true, incremental: true }
       def capabilities
+        # :nocov:
+        # This method returns meaningful data only on JRuby when java-tree-sitter is available.
         return {} unless available?
         {
           backend: :java,
@@ -204,11 +217,16 @@ module TreeHaver
           bytes_field: true,
           incremental: true, # java-tree-sitter supports Parser.parse(Tree, String)
         }
+        # :nocov:
       end
 
       # Wrapper for java-tree-sitter Language
       #
       # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Language.html
+      #
+      # :nocov:
+      # All Java backend implementation classes require JRuby and cannot be tested on MRI/CRuby.
+      # JRuby-specific CI jobs would test this code.
       class Language
         attr_reader :impl
 
@@ -542,6 +560,7 @@ module TreeHaver
           @impl.text.to_s
         end
       end
+      # :nocov:
     end
   end
 end

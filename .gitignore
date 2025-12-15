@@ -3,6 +3,7 @@
 /tmp/
 *.gem
 /vendor/jars/
+/vendor/tree*
 
 # Bundler
 /vendor/bundle/

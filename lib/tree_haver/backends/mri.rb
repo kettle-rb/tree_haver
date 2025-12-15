@@ -64,7 +64,6 @@ module TreeHaver
         #   lang = TreeHaver::Backends::MRI::Language.from_path("/usr/local/lib/libtree-sitter-toml.so")
         def self.from_path(path)
           raise TreeHaver::NotAvailable, "ruby_tree_sitter not available" unless MRI.available?
-          # ruby_tree_sitter expects Fiddle::Handle path for language .so/.dylib
           ::TreeSitter::Language.load(path)
         end
       end

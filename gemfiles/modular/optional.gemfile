@@ -7,3 +7,11 @@
 # URL parsing with Unicode support (falls back to URI if not available)
 
 gem "addressable", ">= 2.8", "< 3" # ruby >= 2.2
+
+platform :mri do
+  gem "ruby_tree_sitter"
+  gem "tree_stump",
+      # path: "../../vendor/tree_stump"
+  github: "pboling/tree_stump",
+  branch: "tree_haver"
+end
