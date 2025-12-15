@@ -15,13 +15,13 @@ RSpec.describe TreeHaver::LanguageRegistry do
     it "registers a language with path and symbol" do
       registry.register(:toml, path: "/path/to/lib.so", symbol: "tree_sitter_toml")
       entry = registry.registered(:toml)
-      expect(entry).to eq({ path: "/path/to/lib.so", symbol: "tree_sitter_toml" })
+      expect(entry).to eq({path: "/path/to/lib.so", symbol: "tree_sitter_toml"})
     end
 
     it "registers a language with path only" do
       registry.register(:json, path: "/path/to/json.so")
       entry = registry.registered(:json)
-      expect(entry).to eq({ path: "/path/to/json.so", symbol: nil })
+      expect(entry).to eq({path: "/path/to/json.so", symbol: nil})
     end
 
     it "accepts string names and converts to symbol" do
@@ -106,8 +106,14 @@ RSpec.describe TreeHaver::LanguageRegistry do
     it "returns cached value without calling block on subsequent calls" do
       call_count = 0
       key = ["/path.so", "symbol", "name"]
-      registry.fetch(key) { call_count += 1; "first" }
-      result = registry.fetch(key) { call_count += 1; "second" }
+      registry.fetch(key) {
+        call_count += 1
+        "first"
+      }
+      result = registry.fetch(key) {
+        call_count += 1
+        "second"
+      }
       expect(result).to eq("first")
       expect(call_count).to eq(1)
     end
@@ -137,7 +143,10 @@ RSpec.describe TreeHaver::LanguageRegistry do
       registry.clear_cache!
       # After clearing, block should be called again
       call_count = 0
-      registry.fetch(["key1"]) { call_count += 1; "new" }
+      registry.fetch(["key1"]) {
+        call_count += 1
+        "new"
+      }
       expect(call_count).to eq(1)
     end
 
@@ -155,7 +164,10 @@ RSpec.describe TreeHaver::LanguageRegistry do
       registry.clear_all!
       expect(registry.registered(:toml)).to be_nil
       call_count = 0
-      registry.fetch(["cache_key"]) { call_count += 1; "new" }
+      registry.fetch(["cache_key"]) {
+        call_count += 1
+        "new"
+      }
       expect(call_count).to eq(1)
     end
   end
@@ -188,4 +200,3 @@ RSpec.describe TreeHaver::LanguageRegistry do
     end
   end
 end
-

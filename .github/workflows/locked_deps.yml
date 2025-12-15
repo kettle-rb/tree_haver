@@ -58,6 +58,11 @@ jobs:
     name: Default rake task w/ main Gemfile.lock ${{ matrix.name_extra || '' }}
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
+    env:
+      # Tree-sitter library paths for FFI/MRI/Rust backend compatibility
+      LD_LIBRARY_PATH: "/usr/local/lib:/usr/lib/x86_64-linux-gnu:/usr/lib"
+      TREE_SITTER_RUNTIME_LIB: "/usr/lib/x86_64-linux-gnu/libtree-sitter.so.0"
+      TREE_SITTER_TOML_PATH: "/usr/local/lib/libtree-sitter-toml.so"
     strategy:
       fail-fast: false
       matrix:
@@ -72,6 +77,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Install tree-sitter dependencies (Ubuntu)
+        run: .github/scripts/ubuntu/setup-tree-sitter.sh --sudo
 
       - name: Setup Ruby & RubyGems
         uses: ruby/setup-ruby@v1

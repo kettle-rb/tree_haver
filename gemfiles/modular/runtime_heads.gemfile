@@ -9,4 +9,5 @@
 
 gem "version_gem", github: "ruby-oauth/version_gem", branch: "main"
 
+eval_gemfile("tree_sitter/vHEAD.gemfile")
 eval_gemfile("x_std_libs/vHEAD.gemfile")

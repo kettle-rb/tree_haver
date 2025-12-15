@@ -101,7 +101,7 @@ RSpec.describe TreeHaver::Backends::MRI do
         it "loads the language successfully" do
           path = TreeHaverDependencies.find_toml_grammar_path
           lang = backend::Language.from_path(path)
-          expect(lang).to be_a(::TreeSitter::Language)
+          expect(lang).to be_a(TreeSitter::Language)
         end
 
         it "calls TreeSitter::Language.load" do
@@ -132,7 +132,7 @@ RSpec.describe TreeHaver::Backends::MRI do
         parser = backend::Parser.new
         expect(parser).to be_a(backend::Parser)
         # Verify it actually created the underlying parser (line 80)
-        expect(parser.instance_variable_get(:@parser)).to be_a(::TreeSitter::Parser)
+        expect(parser.instance_variable_get(:@parser)).to be_a(TreeSitter::Parser)
       end
     end
 
@@ -158,13 +158,13 @@ RSpec.describe TreeHaver::Backends::MRI do
       it "parses source code and returns a tree" do
         # This actually exercises line 96: @parser.parse(source)
         tree = parser.parse("key = \"value\"\n")
-        expect(tree).to be_a(::TreeSitter::Tree)
+        expect(tree).to be_a(TreeSitter::Tree)
       end
 
       it "parses valid TOML and provides access to root node" do
         tree = parser.parse("title = \"TOML\"\n")
         root = tree.root_node
-        expect(root).to be_a(::TreeSitter::Node)
+        expect(root).to be_a(TreeSitter::Node)
         expect(root.type).to eq("document")
       end
     end
@@ -180,13 +180,13 @@ RSpec.describe TreeHaver::Backends::MRI do
       it "parses source code with nil old_tree" do
         # This actually exercises line 105: @parser.parse_string(old_tree, source)
         tree = parser.parse_string(nil, "key = \"value\"\n")
-        expect(tree).to be_a(::TreeSitter::Tree)
+        expect(tree).to be_a(TreeSitter::Tree)
       end
 
       it "parses source code with existing tree for incremental parsing" do
         old_tree = parser.parse("key = \"old\"\n")
         new_tree = parser.parse_string(old_tree, "key = \"new\"\n")
-        expect(new_tree).to be_a(::TreeSitter::Tree)
+        expect(new_tree).to be_a(TreeSitter::Tree)
         expect(new_tree.root_node.type).to eq("document")
       end
     end
@@ -223,8 +223,7 @@ RSpec.describe TreeHaver::Backends::MRI do
 
       # Check that we can access children
       first_child = root.child(0)
-      expect(first_child).to be_a(::TreeSitter::Node)
+      expect(first_child).to be_a(TreeSitter::Node)
     end
   end
 end
-

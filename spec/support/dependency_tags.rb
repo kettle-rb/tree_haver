@@ -172,10 +172,8 @@ RSpec.configure do |config|
   config.filter_run_excluding toml_grammar: true unless TreeHaverDependencies.toml_grammar_available?
 
   # Convenience: :native_parsing requires both libtree_sitter and toml_grammar
-  config.filter_run_excluding native_parsing: true unless (
-    TreeHaverDependencies.libtree_sitter_available? &&
+  config.filter_run_excluding native_parsing: true unless TreeHaverDependencies.libtree_sitter_available? &&
     TreeHaverDependencies.toml_grammar_available?
-  )
 
   # ============================================================
   # Negated tags: run when dependency is NOT available
@@ -203,4 +201,3 @@ RSpec.configure do |config|
   # Skip tests tagged :not_toml_grammar when a TOML grammar IS available
   config.filter_run_excluding not_toml_grammar: true if TreeHaverDependencies.toml_grammar_available?
 end
-

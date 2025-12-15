@@ -266,8 +266,8 @@ module TreeHaver
           raise TreeHaver::NotAvailable, "Java backend not available" unless Java.available?
 
           # Derive symbol from name or path if not provided
-          base_name = File.basename(path, '.*').sub(/^lib/, '')
-          sym = symbol || "tree_sitter_#{name || base_name.sub(/^tree-sitter-/, '')}"
+          base_name = File.basename(path, ".*").sub(/^lib/, "")
+          sym = symbol || "tree_sitter_#{name || base_name.sub(/^tree-sitter-/, "")}"
 
           begin
             arena = ::Java::JavaLangForeign::Arena.global
@@ -324,11 +324,11 @@ module TreeHaver
           rescue ::Java::JavaLang::UnsatisfiedLinkError => e
             raise TreeHaver::NotAvailable,
               "Native library error loading #{path}: #{e.message}. " \
-              "Ensure the library is in LD_LIBRARY_PATH."
+                "Ensure the library is in LD_LIBRARY_PATH."
           rescue ::Java::JavaLang::IllegalArgumentException => e
             raise TreeHaver::NotAvailable,
               "Could not find library '#{path}': #{e.message}. " \
-              "Ensure it's in LD_LIBRARY_PATH or provide an absolute path."
+                "Ensure it's in LD_LIBRARY_PATH or provide an absolute path."
           end
         end
 
@@ -357,13 +357,13 @@ module TreeHaver
           rescue ::Java::JavaLang::RuntimeException => e
             raise TreeHaver::NotAvailable,
               "Failed to load language '#{name}': #{e.message}. " \
-              "Ensure the grammar JAR (e.g., tree-sitter-#{name}-X.Y.Z.jar) " \
-              "is in TREE_SITTER_JAVA_JARS_DIR."
+                "Ensure the grammar JAR (e.g., tree-sitter-#{name}-X.Y.Z.jar) " \
+                "is in TREE_SITTER_JAVA_JARS_DIR."
           end
         end
 
         class << self
-          alias from_path from_library
+          alias_method :from_path, :from_library
         end
       end
 
@@ -458,7 +458,7 @@ module TreeHaver
             new_end_byte,
             start_pt,
             old_end_pt,
-            new_end_pt
+            new_end_pt,
           )
 
           @impl.edit(input_edit)
@@ -528,7 +528,7 @@ module TreeHaver
         # @return [Hash] with :row and :column keys
         def start_point
           pt = @impl.startPoint
-          { row: pt.row, column: pt.column }
+          {row: pt.row, column: pt.column}
         end
 
         # Get the end point (row, column)
@@ -536,7 +536,7 @@ module TreeHaver
         # @return [Hash] with :row and :column keys
         def end_point
           pt = @impl.endPoint
-          { row: pt.row, column: pt.column }
+          {row: pt.row, column: pt.column}
         end
 
         # Check if this node has an error

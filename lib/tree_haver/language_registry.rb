@@ -39,7 +39,7 @@ module TreeHaver
     def register(name, path:, symbol: nil)
       key = name.to_sym
       @mutex.synchronize do
-        @registrations[key] = { path: path, symbol: symbol }
+        @registrations[key] = {path: path, symbol: symbol}
       end
       nil
     end

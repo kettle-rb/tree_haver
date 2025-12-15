@@ -84,7 +84,7 @@ tree = parser.parse(source_code)
 ### Key Features
 
 - **Universal Ruby Support**: Works on MRI Ruby, JRuby, and TruffleRuby
-- **Multiple Backends**: 
+- **Multiple Backends**:
   - **MRI Backend**: Leverages the excellent [`ruby_tree_sitter`](https://github.com/Faveod/ruby-tree-sitter) gem (C extension)
   - **Rust Backend**: Uses [`tree_stump`](https://github.com/anthropics/tree_stump) gem (Rust extension with precompiled binaries)
   - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby)
@@ -321,7 +321,7 @@ TreeHaver::PathValidator.add_trusted_directory("/home/linuxbrew/.linuxbrew/Cella
 TreeHaver::PathValidator.add_trusted_directory("~/.local/share/mise/installs/lua")
 
 # Or via environment variable (comma-separated, in your shell profile)
-export TREE_HAVER_TRUSTED_DIRS="/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua"
+export TREE_HAVER_TRUSTED_DIRS = "/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua"
 ```
 
 **Example: Fedora Silverblue with Homebrew and luarocks**
@@ -381,7 +381,7 @@ TreeHaver recognizes several environment variables for configuration:
   # For Homebrew on Linux and luarocks
   export TREE_HAVER_TRUSTED_DIRS="/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua"
   ```
-  
+
   Tilde (`~`) is expanded to the user's home directory. Directories listed here are considered safe for `find_library_path_safe`.
 
 #### Core Runtime Library
@@ -390,7 +390,7 @@ TreeHaver recognizes several environment variables for configuration:
   ```bash
   export TREE_SITTER_RUNTIME_LIB=/usr/local/lib/libtree-sitter.so
   ```
-  
+
 If not set, TreeHaver tries these names in order:
   - `tree-sitter`
   - `libtree-sitter.so.0`
@@ -436,7 +436,7 @@ Register languages once at application startup for convenient access:
 TreeHaver.register_language(
   :toml,
   path: "/usr/local/lib/libtree-sitter-toml.so",
-  symbol: "tree_sitter_toml"  # optional, will be inferred if omitted
+  symbol: "tree_sitter_toml",  # optional, will be inferred if omitted
 )
 
 # Now you can use the convenient helper
@@ -444,7 +444,7 @@ language = TreeHaver::Language.toml
 
 # Or still override path/symbol per-call
 language = TreeHaver::Language.toml(
-  path: "/custom/path/libtree-sitter-toml.so"
+  path: "/custom/path/libtree-sitter-toml.so",
 )
 ```
 
@@ -498,7 +498,7 @@ The `GrammarFinder` pattern enables clean integration in language-specific merge
 finder = TreeHaver::GrammarFinder.new(:toml)
 finder.register! if finder.available?
 
-# In json-merge  
+# In json-merge
 finder = TreeHaver::GrammarFinder.new(:json)
 finder.register! if finder.available?
 
@@ -516,7 +516,7 @@ For non-standard installations, provide extra search paths:
 ```ruby
 finder = TreeHaver::GrammarFinder.new(:toml, extra_paths: [
   "/opt/custom/lib",
-  "/home/user/.local/lib"
+  "/home/user/.local/lib",
 ])
 ```
 
@@ -575,7 +575,7 @@ require "tree_haver"
 # Load a language grammar
 language = TreeHaver::Language.from_library(
   "/usr/local/lib/libtree-sitter-toml.so",
-  symbol: "tree_sitter_toml"
+  symbol: "tree_sitter_toml",
 )
 
 # Create a parser
@@ -612,12 +612,12 @@ For cleaner code, register languages at startup:
 # At application initialization
 TreeHaver.register_language(
   :toml,
-  path: "/usr/local/lib/libtree-sitter-toml.so"
+  path: "/usr/local/lib/libtree-sitter-toml.so",
 )
 
 TreeHaver.register_language(
   :json,
-  path: "/usr/local/lib/libtree-sitter-json.so"
+  path: "/usr/local/lib/libtree-sitter-json.so",
 )
 
 # Later in your code
@@ -636,7 +636,7 @@ TreeHaver works with any Tree-sitter grammar:
 ```ruby
 # Parse Ruby code
 ruby_lang = TreeHaver::Language.from_library(
-  "/path/to/libtree-sitter-ruby.so"
+  "/path/to/libtree-sitter-ruby.so",
 )
 parser = TreeHaver::Parser.new
 parser.language = ruby_lang
@@ -644,7 +644,7 @@ tree = parser.parse("class Foo; end")
 
 # Parse JavaScript
 js_lang = TreeHaver::Language.from_library(
-  "/path/to/libtree-sitter-javascript.so"
+  "/path/to/libtree-sitter-javascript.so",
 )
 parser.language = js_lang  # Reuse the same parser
 tree = parser.parse("const x = 42;")
@@ -688,9 +688,9 @@ tree.edit(
   start_byte: 4,           # edit starts at byte 4
   old_end_byte: 5,         # old text "1" ended at byte 5
   new_end_byte: 6,         # new text "42" ends at byte 6
-  start_point: { row: 0, column: 4 },
-  old_end_point: { row: 0, column: 5 },
-  new_end_point: { row: 0, column: 6 }
+  start_point: {row: 0, column: 4},
+  old_end_point: {row: 0, column: 5},
+  new_end_point: {row: 0, column: 6},
 )
 
 # Re-parse incrementally - tree-sitter reuses unchanged nodes
@@ -821,15 +821,15 @@ If you're developing a library that uses TreeHaver, you can test against differe
 
 ```ruby
 # In your test setup
-RSpec.describe "MyParser" do
+RSpec.describe("MyParser") do
   before do
     TreeHaver.reset_backend!(to: :ffi)
   end
-  
+
   after do
     TreeHaver.reset_backend!(to: :auto)
   end
-  
+
   it "parses correctly with FFI backend" do
     # Your test code
   end
@@ -846,22 +846,22 @@ require "tree_haver"
 # Setup
 TreeHaver.register_language(
   :toml,
-  path: "/usr/local/lib/libtree-sitter-toml.so"
+  path: "/usr/local/lib/libtree-sitter-toml.so",
 )
 
 def extract_package_name(toml_content)
   # Create parser
   parser = TreeHaver::Parser.new
   parser.language = TreeHaver::Language.toml
-  
+
   # Parse
   tree = parser.parse(toml_content)
   root = tree.root_node
-  
+
   # Find [package] table
   root.each do |child|
     next unless child.type == "table"
-    
+
     child.each do |table_elem|
       if table_elem.type == "pair"
         # Look for name = "..." pair

@@ -12,7 +12,7 @@ RSpec.describe TreeHaver do
   end
 
   it "has a version number" do
-    expect(TreeHaver::VERSION).not_to be nil
+    expect(TreeHaver::VERSION).not_to be_nil
   end
 
   describe ".backend" do
@@ -163,8 +163,8 @@ RSpec.describe TreeHaver do
   describe ".capabilities" do
     it "returns backend capabilities when available" do
       allow(TreeHaver).to receive(:backend_module).and_return(TreeHaver::Backends::FFI)
-      allow(TreeHaver::Backends::FFI).to receive(:capabilities).and_return({ backend: :ffi, parse: true })
-      expect(TreeHaver.capabilities).to eq({ backend: :ffi, parse: true })
+      allow(TreeHaver::Backends::FFI).to receive(:capabilities).and_return({backend: :ffi, parse: true})
+      expect(TreeHaver.capabilities).to eq({backend: :ffi, parse: true})
     end
 
     it "returns empty hash when no backend available" do
@@ -213,7 +213,7 @@ RSpec.describe TreeHaver do
           "/path/to/lib.so",
           symbol: "tree_sitter_toml",
           name: "toml",
-          validate: true
+          validate: true,
         )
         TreeHaver::Language.load("toml", "/path/to/lib.so")
       end
@@ -223,7 +223,7 @@ RSpec.describe TreeHaver do
           "/path/to/lib.so",
           symbol: "tree_sitter_json",
           name: "json",
-          validate: false
+          validate: false,
         )
         TreeHaver::Language.load("json", "/path/to/lib.so", validate: false)
       end
@@ -340,7 +340,7 @@ RSpec.describe TreeHaver do
         let(:fake_backend_module) do
           mod = Module.new
           parser_class = Class.new do
-            define_method(:initialize) { }
+            define_method(:initialize) {}
           end
           mod.const_set(:Parser, parser_class)
           mod
@@ -510,17 +510,17 @@ RSpec.describe TreeHaver do
             start_byte: 0,
             old_end_byte: 1,
             new_end_byte: 2,
-            start_point: { row: 0, column: 0 },
-            old_end_point: { row: 0, column: 1 },
-            new_end_point: { row: 0, column: 2 }
+            start_point: {row: 0, column: 0},
+            old_end_point: {row: 0, column: 1},
+            new_end_point: {row: 0, column: 2},
           )
           tree.edit(
             start_byte: 0,
             old_end_byte: 1,
             new_end_byte: 2,
-            start_point: { row: 0, column: 0 },
-            old_end_point: { row: 0, column: 1 },
-            new_end_point: { row: 0, column: 2 }
+            start_point: {row: 0, column: 0},
+            old_end_point: {row: 0, column: 1},
+            new_end_point: {row: 0, column: 2},
           )
         end
       end
@@ -539,9 +539,9 @@ RSpec.describe TreeHaver do
               start_byte: 0,
               old_end_byte: 1,
               new_end_byte: 2,
-              start_point: { row: 0, column: 0 },
-              old_end_point: { row: 0, column: 1 },
-              new_end_point: { row: 0, column: 2 }
+              start_point: {row: 0, column: 0},
+              old_end_point: {row: 0, column: 1},
+              new_end_point: {row: 0, column: 2},
             )
           }.to raise_error(TreeHaver::NotAvailable, /Incremental parsing not supported/)
         end
@@ -567,13 +567,14 @@ RSpec.describe TreeHaver do
 
   describe TreeHaver::Node do
     let(:fake_impl) do
-      double("ImplNode",
+      double(
+        "ImplNode",
         type: "document",
         start_point: double(row: 0, column: 0),
         end_point: double(row: 5, column: 10),
         start_byte: 0,
         end_byte: 50,
-        to_s: "Node(document)"
+        to_s: "Node(document)",
       )
     end
 

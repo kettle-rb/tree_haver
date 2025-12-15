@@ -285,11 +285,11 @@ module TreeHaver
     #   PathValidator.sanitize_language_name("TOML")  # => :toml
     #   PathValidator.sanitize_language_name("c++")   # => nil (invalid)
     def sanitize_language_name(name)
-      return nil if name.nil?
+      return if name.nil?
 
       sanitized = name.to_s.downcase.gsub(/[^a-z0-9_]/, "")
-      return nil if sanitized.empty?
-      return nil unless sanitized.match?(/\A[a-z]/)
+      return if sanitized.empty?
+      return unless sanitized.match?(/\A[a-z]/)
 
       sanitized.to_sym
     end
@@ -313,7 +313,7 @@ module TreeHaver
       errors << "Path contains traversal sequence (/./)" if path.include?("/./") || path.end_with?("/.")
 
       unless ALLOWED_EXTENSIONS.any? { |ext| path.end_with?(ext) }
-        errors << "Path does not have allowed extension (#{ALLOWED_EXTENSIONS.join(', ')})"
+        errors << "Path does not have allowed extension (#{ALLOWED_EXTENSIONS.join(", ")})"
       end
 
       filename = File.basename(path)
@@ -331,4 +331,3 @@ module TreeHaver
     end
   end
 end
-

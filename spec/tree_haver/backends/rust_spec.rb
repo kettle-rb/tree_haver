@@ -179,7 +179,7 @@ RSpec.describe TreeHaver::Backends::Rust do
 
         it "creates a TreeStump::Parser internally" do
           parser = backend::Parser.new
-          expect(parser.instance_variable_get(:@parser)).to be_a(::TreeStump::Parser)
+          expect(parser.instance_variable_get(:@parser)).to be_a(TreeStump::Parser)
         end
       end
     end
@@ -212,13 +212,13 @@ RSpec.describe TreeHaver::Backends::Rust do
 
       it "parses source code and returns a tree" do
         tree = parser.parse("key = \"value\"\n")
-        expect(tree).to be_a(::TreeStump::Tree)
+        expect(tree).to be_a(TreeStump::Tree)
       end
 
       it "parses valid TOML and provides access to root node" do
         tree = parser.parse("title = \"TOML\"\n")
         root = tree.root_node
-        expect(root).to be_a(::TreeStump::Node)
+        expect(root).to be_a(TreeStump::Node)
         expect(root.kind).to eq("document")
       end
     end
@@ -233,13 +233,13 @@ RSpec.describe TreeHaver::Backends::Rust do
 
       it "parses source code with nil old_tree" do
         tree = parser.parse_string(nil, "key = \"value\"\n")
-        expect(tree).to be_a(::TreeStump::Tree)
+        expect(tree).to be_a(TreeStump::Tree)
       end
 
       it "parses source code with existing tree for incremental parsing" do
         old_tree = parser.parse("key = \"old\"\n")
         new_tree = parser.parse_string(old_tree, "key = \"new\"\n")
-        expect(new_tree).to be_a(::TreeStump::Tree)
+        expect(new_tree).to be_a(TreeStump::Tree)
         expect(new_tree.root_node.kind).to eq("document")
       end
     end
@@ -257,4 +257,3 @@ RSpec.describe TreeHaver::Backends::Rust do
     end
   end
 end
-

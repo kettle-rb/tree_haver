@@ -50,7 +50,7 @@ RSpec.describe TreeHaver::Backends::Java do
       backend.instance_variable_set(:@load_attempted, true)
       backend.instance_variable_set(:@loaded, true)
       backend.instance_variable_set(:@load_error, "some error")
-      backend.instance_variable_set(:@java_classes, { Parser: "fake" })
+      backend.instance_variable_set(:@java_classes, {Parser: "fake"})
     end
 
     it "resets load_attempted flag" do
@@ -88,8 +88,8 @@ RSpec.describe TreeHaver::Backends::Java do
 
   describe "::java_classes" do
     it "returns the java_classes hash" do
-      backend.instance_variable_set(:@java_classes, { Parser: "test" })
-      expect(backend.java_classes).to eq({ Parser: "test" })
+      backend.instance_variable_set(:@java_classes, {Parser: "test"})
+      expect(backend.java_classes).to eq({Parser: "test"})
     end
   end
 

@@ -52,8 +52,6 @@ module TreeHaver
     # Alias for from_library
     def self.from_path: (String path, ?symbol: String?, ?name: String?) -> Language
 
-    private
-
     def self.method_missing: (Symbol method_name, *untyped args, **untyped kwargs) ?{ () -> untyped } -> Language
 
     def self.respond_to_missing?: (Symbol method_name, ?bool include_private) -> bool

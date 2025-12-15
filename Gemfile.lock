@@ -1,11 +1,4 @@
 GIT
-  remote: https://github.com/pboling/tree_stump.git
-  revision: a600939e85629bb4d1f9f74badd220fac303bca7
-  branch: tree_haver
-  specs:
-    tree_stump (0.1.0)
-
-GIT
   remote: https://github.com/pboling/yard-junk.git
   revision: 54ccebabbfa9a9cd44d0b991687ebbfd22c32b55
   branch: next
@@ -124,7 +117,6 @@ GEM
     mutex_m (0.3.0)
     nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
-    oppen (1.0.0)
     ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.10.0)
@@ -246,10 +238,6 @@ GEM
       rubocop-ast (>= 1.44.0, < 2.0)
     ruby-progressbar (1.13.0)
     ruby_engine (2.0.3)
-    ruby_tree_sitter (2.0.0-x86_64-linux-gnu)
-      oppen (~> 1.0)
-      sorbet-runtime
-      zeitwerk
     ruby_version (1.0.3)
     silent_stream (1.0.12)
       logger (~> 1.2)
@@ -270,7 +258,6 @@ GEM
     simplecov-rcov (0.3.7)
       simplecov (>= 0.4.1)
     simplecov_json_formatter (0.1.4)
-    sorbet-runtime (0.6.12846)
     standard (1.52.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -359,12 +346,10 @@ DEPENDENCIES
   rubocop-rspec (~> 3.6)
   rubocop-ruby3_2
   ruby-progressbar (~> 1.13)
-  ruby_tree_sitter
   standard (>= 1.50)
   stone_checksums (~> 1.0, >= 1.0.3)
   stringio (>= 3.0)
   tree_haver!
-  tree_stump!
   unparser (~> 0.8, >= 0.8.1)
   yaml-converter (~> 0.1)
   yard (~> 0.9, >= 0.9.37)
@@ -414,7 +399,6 @@ CHECKSUMS
   matrix (0.4.3) sha256=a0d5ab7ddcc1973ff690ab361b67f359acbb16958d1dc072b8b956a286564c5b
   mutex_m (0.3.0) sha256=cfcb04ac16b69c4813777022fdceda24e9f798e48092a2b817eb4c0a782b0751
   nokogiri (1.18.10-x86_64-linux-gnu) sha256=ff5ba26ba2dbce5c04b9ea200777fd225061d7a3930548806f31db907e500f72
-  oppen (1.0.0) sha256=379bf0b35c5e87c5f4139927721fd6c9f561e344a73ce3f658726a609034ddee
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   parallel (1.27.0) sha256=4ac151e1806b755fb4e2dc2332cbf0e54f2e24ba821ff2d3dcf86bf6dc4ae130
   parser (3.3.10.0) sha256=ce3587fa5cc55a88c4ba5b2b37621b3329aadf5728f9eafa36bbd121462aabd6
@@ -459,7 +443,6 @@ CHECKSUMS
   rubocop-thread_safety (0.7.3) sha256=067cdd52fbf5deffc18995437e45b5194236eaff4f71de3375a1f6052e48f431
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
   ruby_engine (2.0.3) sha256=ca2ae7def8cfcdc2bfb6a186d36d5d59c8b403245dc0256c3802b767fa278aaa
-  ruby_tree_sitter (2.0.0-x86_64-linux-gnu) sha256=e1aedb67def976f1528f7c76ae007d669f03f8426e55faa7e13914a99577a5a8
   ruby_version (1.0.3) sha256=5930f9950746b7e6c973184398ee364ee7440b170fef7922b9f5cdf317f1ccb5
   silent_stream (1.0.12) sha256=377c43aa10033fe90c33b39ea8cd97d79f2d1c4856df598efc56f3091f3ae782
   simplecov (0.22.0) sha256=fe2622c7834ff23b98066bb0a854284b2729a569ac659f82621fc22ef36213a5
@@ -469,7 +452,6 @@ CHECKSUMS
   simplecov-lcov (0.9.0) sha256=7a77a31e200a595ed4b0249493056efd0c920601f53d2ef135ca34ee796346cd
   simplecov-rcov (0.3.7) sha256=372f50bf6df6b6350b7d0c840f2f8bdabe021861a43c26877b747c9ac96139fc
   simplecov_json_formatter (0.1.4) sha256=529418fbe8de1713ac2b2d612aa3daa56d316975d307244399fa4838c601b428
-  sorbet-runtime (0.6.12846) sha256=d19597575dd3ad17cd144791fd889d3b20c5caf0bf1493f9e1749e80c800eeb2
   standard (1.52.0) sha256=ec050e63228e31fabe40da3ef96da7edda476f7acdf3e7c2ad47b6e153f6a076
   standard-custom (1.0.2) sha256=424adc84179a074f1a2a309bb9cf7cd6bfdb2b6541f20c6bf9436c0ba22a652b
   standard-performance (1.9.0) sha256=49483d31be448292951d80e5e67cdcb576c2502103c7b40aec6f1b6e9c88e3f2
@@ -481,7 +463,6 @@ CHECKSUMS
   timecop (0.9.10) sha256=12ba45ce57cdcf6b1043cb6cdffa6381fd89ce10d369c28a7f6f04dc1b0cd8eb
   timecop-rspec (1.0.3) sha256=005f14841bb606dcaefb060e321b5388e2e59537742bee8b3a9a9a40e598fab9
   tree_haver (1.0.0)
-  tree_stump (0.1.0)
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   ttfunk (1.8.0) sha256=a7cbc7e489cc46e979dde04d34b5b9e4f5c8f1ee5fc6b1a7be39b829919d20ca
   unicode-display_width (3.2.0) sha256=0cdd96b5681a5949cdbc2c55e7b420facae74c4aaf9a9815eee1087cb1853c42

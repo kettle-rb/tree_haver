@@ -41,13 +41,14 @@ module TreeHaverSpecHelpers
         end
 
         def mock_node
-          double("Node",
+          double(
+            "Node",
             type: "document",
             each: [].each,
             start_point: double(row: 0, column: 0),
             end_point: double(row: 0, column: 0),
             start_byte: 0,
-            end_byte: 0
+            end_byte: 0,
           )
         end
       end)
@@ -93,4 +94,3 @@ end
 RSpec.configure do |config|
   config.include TreeHaverSpecHelpers
 end
-

@@ -220,7 +220,7 @@ module TreeHaver
         def child: (Integer index) -> Node
 
         def each: () { (Node) -> void } -> void
-               | () -> Enumerator[Node, nil]
+                | () -> Enumerator[Node, nil]
 
         def start_byte: () -> Integer
 

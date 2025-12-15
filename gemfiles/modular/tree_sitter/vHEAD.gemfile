@@ -1,0 +1,11 @@
+# FFI Backend - works on MRI, JRuby, and TruffleRuby
+gem "ffi", github: "ffi/ffi"
+
+platform :mri do
+  # MRI Backend
+  gem "ruby_tree_sitter", github: "Faveod/ruby-tree-sitter"
+  # Rust Backend
+  gem "tree_stump",
+    github: "pboling/tree_stump",
+    branch: "tree_haver"
+end

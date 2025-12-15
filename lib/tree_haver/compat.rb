@@ -20,7 +20,7 @@
 # @note This is an opt-in feature. Only require this file if you need compatibility
 # @see TreeHaver The main module this aliases to
 
-unless defined?(::TreeSitter)
+unless defined?(TreeSitter)
   # Compatibility module aliasing TreeHaver classes to TreeSitter
   #
   # @note Only defined if TreeSitter doesn't already exist
@@ -37,7 +37,7 @@ unless defined?(::TreeSitter)
 
   TreeSitter::Error = TreeHaver::Error
   TreeSitter::Parser = TreeHaver::Parser
-  TreeSitter::Tree   = TreeHaver::Tree
-  TreeSitter::Node   = TreeHaver::Node
+  TreeSitter::Tree = TreeHaver::Tree
+  TreeSitter::Node = TreeHaver::Node
   TreeSitter::Language = TreeHaver::Language
 end

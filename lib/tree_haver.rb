@@ -126,14 +126,12 @@ module TreeHaver
   # @example
   #   TreeHaver.backend  # => :auto
   def self.backend
-    @backend ||= begin
-      case (ENV["TREE_HAVER_BACKEND"] || :auto).to_s
-      when "mri" then :mri
-      when "rust" then :rust
-      when "ffi" then :ffi
-      when "java" then :java
-      else :auto
-      end
+    @backend ||= case (ENV["TREE_HAVER_BACKEND"] || :auto).to_s
+    when "mri" then :mri
+    when "rust" then :rust
+    when "ffi" then :ffi
+    when "java" then :java
+    else :auto
     end
   end
 
@@ -160,7 +158,7 @@ module TreeHaver
   # @example Reset to specific backend
   #   TreeHaver.reset_backend!(to: :ffi)
   def self.reset_backend!(to: :auto)
-    @backend = (to && to.to_sym)
+    @backend = to && to.to_sym
   end
 
   # Determine the concrete backend module to use
@@ -336,7 +334,7 @@ module TreeHaver
       if validate
         unless PathValidator.safe_library_path?(path)
           errors = PathValidator.validation_errors(path)
-          raise ArgumentError, "Unsafe library path: #{path.inspect}. Errors: #{errors.join('; ')}"
+          raise ArgumentError, "Unsafe library path: #{path.inspect}. Errors: #{errors.join("; ")}"
         end
 
         if symbol && !PathValidator.safe_symbol_name?(symbol)
@@ -362,7 +360,7 @@ module TreeHaver
     class << self
       # Alias for {from_library}
       # @see from_library
-      alias from_path from_library
+      alias_method :from_path, :from_library
 
       # Dynamic helper to load a registered language by name
       #
@@ -391,7 +389,7 @@ module TreeHaver
         raise ArgumentError, "path is required" unless path
         symbol = kwargs.key?(:symbol) ? kwargs[:symbol] : (reg[:symbol] || "tree_sitter_#{method_name}")
         name = kwargs[:name] || method_name.to_s
-        return from_library(path, symbol: symbol, name: name)
+        from_library(path, symbol: symbol, name: name)
       end
 
       # @api private
@@ -568,7 +566,7 @@ module TreeHaver
         new_end_byte: new_end_byte,
         start_point: start_point,
         old_end_point: old_end_point,
-        new_end_point: new_end_point
+        new_end_point: new_end_point,
       )
     end
 

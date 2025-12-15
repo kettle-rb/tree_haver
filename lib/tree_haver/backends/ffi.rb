@@ -37,40 +37,43 @@ module TreeHaver
         if FFI_AVAILABLE && defined?(::FFI)
           extend ::FFI::Library
 
-        # Get list of candidate library names for loading libtree-sitter
-        #
-        # The list is built dynamically to respect environment variables set at runtime.
-        # If TREE_SITTER_RUNTIME_LIB is set, it is tried first.
-        #
-        # @note TREE_SITTER_LIB is intentionally NOT supported
-        # @return [Array<String>] list of library names to try
-        # @example
-        #   Native.lib_candidates
-        #   # => ["tree-sitter", "libtree-sitter.so.0", "libtree-sitter.so", ...]
-        def self.lib_candidates
-          [
-            ENV["TREE_SITTER_RUNTIME_LIB"],
-            "tree-sitter",
-            "libtree-sitter.so.0",
-            "libtree-sitter.so",
-            "libtree-sitter.dylib",
-            "libtree-sitter.dll",
-          ].compact
-        end
+          # Get list of candidate library names for loading libtree-sitter
+          #
+          # The list is built dynamically to respect environment variables set at runtime.
+          # If TREE_SITTER_RUNTIME_LIB is set, it is tried first.
+          #
+          # @note TREE_SITTER_LIB is intentionally NOT supported
+          # @return [Array<String>] list of library names to try
+          # @example
+          #   Native.lib_candidates
+          #   # => ["tree-sitter", "libtree-sitter.so.0", "libtree-sitter.so", ...]
+          def self.lib_candidates
+            [
+              ENV["TREE_SITTER_RUNTIME_LIB"],
+              "tree-sitter",
+              "libtree-sitter.so.0",
+              "libtree-sitter.so",
+              "libtree-sitter.dylib",
+              "libtree-sitter.dll",
+            ].compact
+          end
 
-        # FFI struct representation of TSNode
-        #
-        # Mirrors the C struct layout used by Tree-sitter. TSNode is passed
-        # by value in the Tree-sitter C API.
-        #
-        # @api private
-        class TSNode < ::FFI::Struct
-          layout :context, [:uint32, 4],
-                 :id,      :pointer,
-                 :tree,    :pointer
-        end
+          # FFI struct representation of TSNode
+          #
+          # Mirrors the C struct layout used by Tree-sitter. TSNode is passed
+          # by value in the Tree-sitter C API.
+          #
+          # @api private
+          class TSNode < ::FFI::Struct
+            layout :context,
+              [:uint32, 4],
+              :id,
+              :pointer,
+              :tree,
+              :pointer
+          end
 
-        typedef TSNode.by_value, :ts_node
+          typedef TSNode.by_value, :ts_node
 
           # Load the Tree-sitter runtime library
           #
@@ -86,13 +89,11 @@ module TreeHaver
             last_error = nil
             candidates = lib_candidates
             candidates.each do |name|
-              begin
-                ffi_lib name
-                @loaded = true
-                break
-              rescue ::FFI::NotFoundError, LoadError => e
-                last_error = e
-              end
+              ffi_lib(name)
+              @loaded = true
+              break
+            rescue ::FFI::NotFoundError, LoadError => e
+              last_error = e
             end
             unless @loaded
               # :nocov:
@@ -114,17 +115,17 @@ module TreeHaver
             end
 
             # Attach functions after lib is selected
-            attach_function :ts_parser_new, [], :pointer
-            attach_function :ts_parser_delete, [:pointer], :void
-            attach_function :ts_parser_set_language, [:pointer, :pointer], :bool
-            attach_function :ts_parser_parse_string, [:pointer, :pointer, :string, :uint32], :pointer
+            attach_function(:ts_parser_new, [], :pointer)
+            attach_function(:ts_parser_delete, [:pointer], :void)
+            attach_function(:ts_parser_set_language, [:pointer, :pointer], :bool)
+            attach_function(:ts_parser_parse_string, [:pointer, :pointer, :string, :uint32], :pointer)
 
-            attach_function :ts_tree_delete, [:pointer], :void
-            attach_function :ts_tree_root_node, [:pointer], :ts_node
+            attach_function(:ts_tree_delete, [:pointer], :void)
+            attach_function(:ts_tree_root_node, [:pointer], :ts_node)
 
-            attach_function :ts_node_type, [:ts_node], :string
-            attach_function :ts_node_child_count, [:ts_node], :uint32
-            attach_function :ts_node_child, [:ts_node, :uint32], :ts_node
+            attach_function(:ts_node_type, [:ts_node], :string)
+            attach_function(:ts_node_child_count, [:ts_node], :uint32)
+            attach_function(:ts_node_child, [:ts_node, :uint32], :ts_node)
           end
 
           def self.loaded?
@@ -234,19 +235,17 @@ module TreeHaver
           candidates = if requested && !requested.to_s.empty?
             [requested]
           else
-            [ (guessed_lang.empty? ? nil : "tree_sitter_#{guessed_lang}"), "tree_sitter_toml" ].compact
+            [(guessed_lang.empty? ? nil : "tree_sitter_#{guessed_lang}"), "tree_sitter_toml"].compact
           end
 
           func = nil
           last_err = nil
           candidates.each do |name|
-            begin
-              addr = dl.find_function(name)
-              func = ::FFI::Function.new(:pointer, [], addr)
-              break
-            rescue StandardError => e
-              last_err = e
-            end
+            addr = dl.find_function(name)
+            func = ::FFI::Function.new(:pointer, [], addr)
+            break
+          rescue StandardError => e
+            last_err = e
           end
           unless func
             env_used = []
@@ -264,7 +263,7 @@ module TreeHaver
 
         # Backward-compatible alias
         class << self
-          alias from_path from_library
+          alias_method :from_path, :from_library
         end
       end
 
@@ -287,7 +286,13 @@ module TreeHaver
         # @param ptr [FFI::Pointer] pointer to TSParser
         # @return [Proc] finalizer that deletes the parser
         def self.finalizer(ptr)
-          proc { Native.ts_parser_delete(ptr) rescue nil }
+          proc {
+            begin
+              Native.ts_parser_delete(ptr)
+            rescue
+              nil
+            end
+          }
         end
 
         # Set the language for this parser
@@ -329,7 +334,13 @@ module TreeHaver
         # @param ptr [FFI::Pointer] pointer to TSTree
         # @return [Proc] finalizer that deletes the tree
         def self.finalizer(ptr)
-          proc { Native.ts_tree_delete(ptr) rescue nil }
+          proc {
+            begin
+              Native.ts_tree_delete(ptr)
+            rescue
+              nil
+            end
+          }
         end
 
         # Get the root node of the syntax tree

@@ -450,4 +450,3 @@ RSpec.describe TreeHaver::PathValidator do
     end
   end
 end
-

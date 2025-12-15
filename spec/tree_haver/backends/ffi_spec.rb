@@ -81,7 +81,7 @@ RSpec.describe TreeHaver::Backends::FFI do
 
     describe "TSNode struct" do
       it "is defined when FFI is available" do
-        expect(backend::Native::TSNode).to be < ::FFI::Struct
+        expect(backend::Native::TSNode).to be < FFI::Struct
       end
     end
   end
