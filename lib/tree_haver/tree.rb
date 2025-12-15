@@ -140,21 +140,8 @@ module TreeHaver
     #   end
     def supports_editing?
       # Check if inner_tree has edit method
-      # Need to be defensive about Delegator/SimpleDelegator wrappers
-      # which may return true for respond_to? even when the method isn't actually callable
-      return false unless @inner_tree.respond_to?(:edit)
-
-      # Additional check: try to get the method to ensure it's real
-      @inner_tree.method(:edit)
-      true
-    rescue NoMethodError => e
-      # Method doesn't actually exist - verify it's about :edit
-      raise unless e.name == :edit || e.message.include?("edit")
-      false
-    rescue NameError => e
-      # Method doesn't actually exist
-      raise unless e.name == :edit
-      false
+      # This must use the exact same logic as the edit method to ensure consistency
+      @inner_tree.respond_to?(:edit)
     end
 
     # String representation

@@ -66,7 +66,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
-- Fixed `TreeHaver::Tree#supports_editing?` to be more defensive against Delegator wrappers (checks `.method(:edit)` existence, not just `respond_to?`)
+- Fixed `TreeHaver::Tree#supports_editing?` to use the same check as `#edit` method for consistency
 - Fixed `PathValidator` to accept versioned `.so` files (e.g., `.so.0`, `.so.14`) which are standard on Linux systems
 - Fixed backend portability - code now works identically across MRI, Rust, FFI, Java, and Citrus backends
 - Fixed inconsistent API - `node.type` now works on all backends (was `node.kind` on TreeStump)
