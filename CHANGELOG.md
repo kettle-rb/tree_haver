@@ -20,6 +20,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Initial release
+
 ### Changed
 
 ### Deprecated
@@ -30,6 +32,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Security
 
-## [0.1.0] - 2025-12-13
 
-- Initial release
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/kettle-rb/tree_haver/compare/a89211bff10f4440b96758a8ac9d7d539001b0c8...v1.0.0
+[1.0.0t]: https://github.com/kettle-rb/tree_haver/tags/v1.0.0
