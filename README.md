@@ -774,7 +774,7 @@ curl -fSL -o vendor/jars/jtreesitter-0.23.2.jar \
   "https://repo1.maven.org/maven2/io/github/tree-sitter/jtreesitter/0.23.2/jtreesitter-0.23.2.jar"
 
 # 2. Set environment variables
-export solu="$(pwd)/vendor/jars"
+export CLASSPATH="$(pwd)/vendor/jars:$CLASSPATH"
 export LD_LIBRARY_PATH="/path/to/libtree-sitter/lib:$LD_LIBRARY_PATH"
 
 # 3. Run with JRuby (requires Java 22+ for Foreign Function API)
