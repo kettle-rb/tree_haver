@@ -281,5 +281,72 @@ module TreeHaver
       class Node
       end
     end
+
+    # Citrus backend using pure Ruby Citrus parser
+    module Citrus
+      # Check if the Citrus backend is available
+      def self.available?: () -> bool
+
+      # Reset the load state (for testing)
+      def self.reset!: () -> void
+
+      # Get capabilities supported by this backend
+      def self.capabilities: () -> Hash[Symbol, untyped]
+
+      class Language
+        attr_reader grammar_module: untyped
+
+        # Create a new language from a Citrus grammar module
+        def initialize: (untyped grammar_module) -> void
+      end
+
+      class Parser
+        # Create a new parser instance
+        def initialize: () -> void
+
+        # Set the grammar for this parser
+        def language=: (Language | untyped grammar) -> (Language | untyped)
+
+        # Parse source code
+        def parse: (String source) -> untyped
+
+        private
+
+        @grammar: untyped
+      end
+
+      class Tree
+        attr_reader root_match: untyped
+        attr_reader source: String
+
+        def initialize: (untyped root_match, String source) -> void
+
+        def root_node: () -> Node
+      end
+
+      class Node
+        attr_reader match: untyped
+        attr_reader source: String
+
+        def initialize: (untyped match, String source) -> void
+
+        def type: () -> String
+
+        def start_byte: () -> Integer
+
+        def end_byte: () -> Integer
+
+        def text: () -> String
+
+        def child_count: () -> Integer
+
+        def child: (Integer index) -> Node?
+
+        def children: () -> Array[Node]
+
+        def each: () { (Node) -> void } -> void
+                | () -> Enumerator[Node, nil]
+      end
+    end
   end
 end

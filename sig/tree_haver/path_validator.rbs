@@ -26,6 +26,7 @@ module TreeHaver
     def self.sanitize_language_name: (String | Symbol | nil name) -> Symbol?
     def self.validation_errors: (String? path) -> Array[String]
     def self.windows_absolute_path?: (String path) -> bool
+    def self.has_valid_extension?: (String path) -> bool
   end
 end
 

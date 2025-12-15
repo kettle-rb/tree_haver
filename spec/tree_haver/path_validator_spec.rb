@@ -137,10 +137,10 @@ RSpec.describe TreeHaver::PathValidator do
         expect(validator.safe_library_path?("/path/to/tree-sitter-toml.dll")).to be true
       end
 
-      it "rejects .so with version suffix (not in ALLOWED_EXTENSIONS)" do
-        # ALLOWED_EXTENSIONS only includes .so, .dylib, .dll - not .so.0
-        # Versioned .so files are not explicitly allowed by the current implementation
-        expect(validator.safe_library_path?("/usr/lib/libtree-sitter.so.0")).to be false
+      it "accepts .so with version suffix (common on Linux)" do
+        # Versioned .so files like .so.0, .so.14 are standard on Linux
+        expect(validator.safe_library_path?("/usr/lib/libtree-sitter.so.0")).to be true
+        expect(validator.safe_library_path?("/usr/lib64/libtree-sitter-toml.so.14")).to be true
       end
     end
 

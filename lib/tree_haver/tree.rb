@@ -139,7 +139,17 @@ module TreeHaver
     #     new_tree = parser.parse(edited_source)
     #   end
     def supports_editing?
-      @inner_tree.respond_to?(:edit)
+      # Check if inner_tree has edit method
+      # Need to be defensive about Delegator/SimpleDelegator wrappers
+      # which may return true for respond_to? even when the method isn't actually callable
+      return false unless @inner_tree.respond_to?(:edit)
+      
+      # Additional check: try to get the method to ensure it's real
+      @inner_tree.method(:edit)
+      true
+    rescue NameError, NoMethodError
+      # Method doesn't actually exist
+      false
     end
 
     # String representation

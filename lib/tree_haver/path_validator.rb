@@ -186,7 +186,8 @@ module TreeHaver
       return false if path.include?("/./") || path.end_with?("/.")
 
       # Validate extension
-      return false unless ALLOWED_EXTENSIONS.any? { |ext| path.end_with?(ext) }
+      # Allow versioned .so files like .so.0, .so.14, etc. (common on Linux)
+      return false unless has_valid_extension?(path)
 
       # Validate filename portion
       filename = File.basename(path)
@@ -312,8 +313,8 @@ module TreeHaver
       errors << "Path contains traversal sequence (/../)" if path.include?("/../") || path.end_with?("/..")
       errors << "Path contains traversal sequence (/./)" if path.include?("/./") || path.end_with?("/.")
 
-      unless ALLOWED_EXTENSIONS.any? { |ext| path.end_with?(ext) }
-        errors << "Path does not have allowed extension (#{ALLOWED_EXTENSIONS.join(", ")})"
+      unless has_valid_extension?(path)
+        errors << "Path does not have allowed extension (.so, .so.X, .dylib, .dll)"
       end
 
       filename = File.basename(path)
@@ -328,6 +329,20 @@ module TreeHaver
     def windows_absolute_path?(path)
       # Match Windows absolute paths like C:\path or D:/path
       path.match?(/\A[A-Za-z]:[\\\/]/)
+    end
+
+    # @api private
+    # Check if path has a valid library extension
+    # Allows: .so, .dylib, .dll, and versioned .so files like .so.0, .so.14
+    def has_valid_extension?(path)
+      # Check for exact matches first (.so, .dylib, .dll)
+      return true if ALLOWED_EXTENSIONS.any? { |ext| path.end_with?(ext) }
+      
+      # Check for versioned .so files (Linux convention)
+      # e.g., libtree-sitter.so.0, libtree-sitter.so.14
+      return true if path.match?(/\.so\.\d+\z/)
+      
+      false
     end
   end
 end

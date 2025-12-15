@@ -68,6 +68,9 @@ module TreeHaver
     # Parse source code into a syntax tree
     def parse: (String source) -> Tree
 
+    # Parse with optional incremental parsing support
+    def parse_string: (Tree? old_tree, String source) -> Tree
+
     private
 
     @impl: untyped
@@ -75,30 +78,113 @@ module TreeHaver
 
   # Represents a parsed syntax tree
   class Tree
+    attr_reader inner_tree: untyped
+    attr_reader source: String?
+
     # Get the root node of the syntax tree
-    def root_node: () -> Node
+    def root_node: () -> Node?
+
+    # Edit the tree for incremental parsing
+    def edit: (
+      start_byte: Integer,
+      old_end_byte: Integer,
+      new_end_byte: Integer,
+      start_point: Hash[Symbol, Integer],
+      old_end_point: Hash[Symbol, Integer],
+      new_end_point: Hash[Symbol, Integer]
+    ) -> void
+
+    # Check if the current backend supports incremental parsing
+    def supports_editing?: () -> bool
+
+    # String representation
+    def inspect: () -> String
+
+    # Check if tree responds to a method (includes delegation to inner_tree)
+    def respond_to_missing?: (Symbol method_name, ?bool include_private) -> bool
+
+    # Delegate unknown methods to the underlying backend-specific tree
+    def method_missing: (Symbol method_name, *untyped args, **untyped kwargs) ?{ () -> untyped } -> untyped
 
     private
 
-    def initialize: (untyped impl) -> void
-
-    @impl: untyped
+    def initialize: (untyped inner_tree, ?source: String?) -> void
   end
 
   # Represents a node in the syntax tree
   class Node
+    attr_reader inner_node: untyped
+    attr_reader source: String?
+
     # Get the type name of this node
     def type: () -> String
+
+    # Get the text content of this node
+    def text: () -> String?
+
+    # Get the start byte offset
+    def start_byte: () -> Integer
+
+    # Get the end byte offset
+    def end_byte: () -> Integer
+
+    # Get the start point (row, column)
+    def start_point: () -> Point
+
+    # Get the end point (row, column)
+    def end_point: () -> Point
+
+    # Get the number of child nodes
+    def child_count: () -> Integer
+
+    # Get a child node by index
+    def child: (Integer index) -> Node?
+
+    # Get all children as an array
+    def children: () -> Array[Node]
 
     # Iterate over child nodes
     def each: () { (Node child) -> void } -> nil
             | () -> Enumerator[Node, nil]
 
+    # Get a named child by field name
+    def child_by_field_name: (String | Symbol field_name) -> Node?
+
+    # Get the parent node
+    def parent: () -> Node?
+
+    # Get the next sibling node
+    def next_sibling: () -> Node?
+
+    # Get the previous sibling node
+    def prev_sibling: () -> Node?
+
+    # Check if node responds to a method (includes delegation to inner_node)
+    def respond_to_missing?: (Symbol method_name, ?bool include_private) -> bool
+
+    # Delegate unknown methods to the underlying backend-specific node
+    def method_missing: (Symbol method_name, *untyped args, **untyped kwargs) ?{ () -> untyped } -> untyped
+
     private
 
-    def initialize: (untyped impl) -> void
+    def initialize: (untyped inner_node, ?source: String?) -> void
+  end
 
-    @impl: untyped
+  # Position in source code that works as both object and hash
+  class Point
+    attr_reader row: Integer
+    attr_reader column: Integer
+
+    def initialize: (row: Integer, column: Integer) -> void
+
+    # Hash-style access
+    def []: (Symbol key) -> Integer?
+
+    # Convert to hash
+    def to_h: () -> Hash[Symbol, Integer]
+
+    # String representation
+    def inspect: () -> String
   end
 
   # Thread-safe language registrations and cache
