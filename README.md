@@ -87,6 +87,7 @@ tree = parser.parse(source_code)
 - **Multiple Backends**:
   - **MRI Backend**: Leverages the excellent [`ruby_tree_sitter`](https://github.com/Faveod/ruby-tree-sitter) gem (C extension)
   - **Rust Backend**: Uses [`tree_stump`](https://github.com/anthropics/tree_stump) gem (Rust extension with precompiled binaries)
+    - **Note**: Currently requires [pboling's fork](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13 (inclusive of the others)](https://github.com/joker1007/tree_stump/pull/13) are merged
   - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby)
   - **Java Backend**: Support for JRuby's native Java integration, and native java-tree-sitter grammar JARs
 - **Automatic Backend Selection**: Intelligently selects the best backend for your Ruby implementation
@@ -126,7 +127,10 @@ TreeHaver solves these problems by providing a unified API that automatically se
 [tree_stump]: https://github.com/anthropics/tree_stump
 
 **Note:** Java backend works with grammar JARs built specifically for java-tree-sitter, or grammar .so files that statically link tree-sitter. This is why FFI is recommended for JRuby & TruffleRuby.
+
 **Note:** TreeHaver can use `ruby_tree_sitter` or `tree_stump` as backends, giving you TreeHaver's unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.
+
+**Note:** `tree_stump` currently requires [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until upstream PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13](https://github.com/joker1007/tree_stump/pull/13) are merged.
 
 #### When to Use Each
 
@@ -148,6 +152,7 @@ TreeHaver solves these problems by providing a unified API that automatically se
 - You prefer Rust-based native extensions
 - You want precompiled binaries without system dependencies
 - You don't need TreeHaver's grammar discovery
+- **Note:** Use [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), [#13](https://github.com/joker1007/tree_stump/pull/13) are merged
 
 ## 💡 Info you can shake a stick at
 
@@ -356,6 +361,8 @@ TreeHaver.backend = :auto
 # Force a specific backend
 TreeHaver.backend = :mri   # Use ruby_tree_sitter (MRI only, C extension)
 TreeHaver.backend = :rust  # Use tree_stump (MRI, Rust extension with precompiled binaries)
+                           # Note: Requires pboling's fork until PRs #5, #7, #11, #13 are merged
+                           # See: https://github.com/pboling/tree_stump/tree/tree_haver
 TreeHaver.backend = :ffi   # Use FFI bindings (works on MRI and JRuby)
 TreeHaver.backend = :java  # Use Java bindings (JRuby only, coming soon)
 ```
@@ -698,6 +705,8 @@ new_tree = parser.parse_string(tree, "x = 42")
 ```
 
 **Note:** Incremental parsing requires the MRI (`ruby_tree_sitter`), Rust (`tree_stump`), or Java (`java-tree-sitter`) backend. The FFI backend does not currently support incremental parsing. You can check support with:
+
+**Note:** `tree_stump` requires [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), [#13](https://github.com/joker1007/tree_stump/pull/13) are merged.
 
 ```ruby
 tree.supports_editing?  # => true if edit() is available
