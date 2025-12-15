@@ -61,10 +61,10 @@ install_tree_sitter_from_source() {
 
 echo "Installing tree-sitter system library and dependencies..."
 $SUDO apt-get update -y
+# libtree-sitter-dev is optional when building from source via --build
 if ! $SUDO apt-get install -y \
   build-essential \
   pkg-config \
-  # libtree-sitter-dev is optional when building from source via --build
   $( [ "$BUILD_FROM_SOURCE" = false ] && echo "libtree-sitter-dev" ) \
   wget \
   gcc \

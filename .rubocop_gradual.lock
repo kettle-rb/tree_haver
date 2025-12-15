@@ -133,8 +133,5 @@
     [702, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
     [710, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
     [717, 16, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435]
-  ],
-  "tree_haver.gemspec:3397608195": [
-    [7, 1, 15, "Lint/OrderedMagicComments: The encoding magic comment should precede all other magic comments.", 3274088582]
   ]
 }
