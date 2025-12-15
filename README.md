@@ -60,12 +60,12 @@ TreeHaver is a cross-Ruby adapter for the [tree-sitter](https://tree-sitter.gith
 
 If you've used [Faraday](https://github.com/lostisland/faraday), [multi_json](https://github.com/intridea/multi_json), or [multi_xml](https://github.com/sferik/multi_xml), you'll feel right at home with TreeHaver. These gems share a common philosophy:
 
-| Gem | Unified API for | Backend Examples                             |
-|-----|-----------------|----------------------------------------------|
-| **Faraday** | HTTP requests | Net::HTTP, Typhoeus, Patron, Excon           |
-| **multi_json** | JSON parsing | Oj, Yajl, JSON gem                           |
-| **multi_xml** | XML parsing | Nokogiri, LibXML, Ox                         |
-| **TreeHaver** | tree-sitter parsing | ruby_tree_sitter, tree_stump, FFI, Java JARs |
+| Gem            | Unified API for     | Backend Examples                                     |
+|----------------|---------------------|------------------------------------------------------|
+| **Faraday**    | HTTP requests       | Net::HTTP, Typhoeus, Patron, Excon                   |
+| **multi_json** | JSON parsing        | Oj, Yajl, JSON gem                                   |
+| **multi_xml**  | XML parsing         | Nokogiri, LibXML, Ox                                 |
+| **TreeHaver**  | tree-sitter parsing | ruby_tree_sitter, tree_stump, FFI, Java JARs, Citrus |
 
 **Write once, run anywhere.** Just as Faraday lets you swap HTTP adapters without changing your code, TreeHaver lets you swap tree-sitter backends. Your parsing code remains the same whether you're running on MRI with native C extensions, JRuby with FFI, or TruffleRuby.
 
@@ -90,6 +90,7 @@ tree = parser.parse(source_code)
     - **Note**: Currently requires [pboling's fork](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13 (inclusive of the others)](https://github.com/joker1007/tree_stump/pull/13) are merged
   - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby)
   - **Java Backend**: Support for JRuby's native Java integration, and native java-tree-sitter grammar JARs
+  - **Citrus Backend**: Pure Ruby parser using [`citrus`](https://github.com/mjackson/citrus) gem (no native dependencies, portable)
 - **Automatic Backend Selection**: Intelligently selects the best backend for your Ruby implementation
 - **Language Agnostic**: Load any tree-sitter grammar dynamically (TOML, JSON, Ruby, JavaScript, etc.)
 - **Grammar Discovery**: Built-in `GrammarFinder` utility for platform-aware grammar library discovery
@@ -108,23 +109,25 @@ TreeHaver solves these problems by providing a unified API that automatically se
 
 ### Comparison with Other Ruby tree-sitter Bindings
 
-| Feature                   | TreeHaver                      | [ruby_tree_sitter] | [tree_stump]   |
-|---------------------------|--------------------------------|--------------------|----------------|
-| **MRI Ruby**              | ✅ Yes                          | ✅ Yes              | ✅ Yes          |
-| **JRuby**                 | ✅ Yes (FFI or Java\* backend)  | ❌ No               | ❌ No           |
-| **TruffleRuby**           | ✅ Yes (FFI)                    | ❌ No               | ❓ Unknown      |
-| **Backend**               | Multi (MRI C, Rust, FFI, Java) | C extension only   | Rust extension |
-| **Incremental Parsing**   | ✅ Via MRI C/Rust backend       | ✅ Yes              | ✅ Yes          |
-| **Query API**             | ⚡ Via MRI/Rust backend         | ✅ Yes              | ✅ Yes          |
-| **Grammar Discovery**     | ✅ Built-in `GrammarFinder`     | ❌ Manual           | ❌ Manual       |
-| **Security Validations**  | ✅ `PathValidator`              | ❌ No               | ❌ No           |
-| **Language Registration** | ✅ Thread-safe registry         | ❌ No               | ❌ No           |
-| **Native Performance**    | ⚡ Backend-dependent            | ✅ Native C         | ✅ Native Rust  |
-| **Precompiled Binaries**  | ⚡ Via Rust backend             | ✅ Yes              | ✅ Yes          |
-| **Minimum Ruby**          | 3.2+                           | 3.0+               | 3.1+           |
+| Feature                   | TreeHaver                              | [ruby_tree_sitter] | [tree_stump]   | [citrus]    |
+|---------------------------|----------------------------------------|--------------------|----------------|-------------|
+| **MRI Ruby**              | ✅ Yes                                  | ✅ Yes              | ✅ Yes          | ✅ Yes       |
+| **JRuby**                 | ✅ Yes (FFI, Java, or Citrus backend)   | ❌ No               | ❌ No           | ✅ Yes       |
+| **TruffleRuby**           | ✅ Yes (FFI or Citrus)                  | ❌ No               | ❓ Unknown      | ✅ Yes       |
+| **Backend**               | Multi (MRI C, Rust, FFI, Java, Citrus) | C extension only   | Rust extension | Pure Ruby   |
+| **Incremental Parsing**   | ✅ Via MRI C/Rust/Java backend          | ✅ Yes              | ✅ Yes          | ❌ No        |
+| **Query API**             | ⚡ Via MRI/Rust/Java backend            | ✅ Yes              | ✅ Yes          | ❌ No        |
+| **Grammar Discovery**     | ✅ Built-in `GrammarFinder`             | ❌ Manual           | ❌ Manual       | ❌ Manual    |
+| **Security Validations**  | ✅ `PathValidator`                      | ❌ No               | ❌ No           | ❌ No        |
+| **Language Registration** | ✅ Thread-safe registry                 | ❌ No               | ❌ No           | ❌ No        |
+| **Native Performance**    | ⚡ Backend-dependent                    | ✅ Native C         | ✅ Native Rust  | ❌ Pure Ruby |
+| **Precompiled Binaries**  | ⚡ Via Rust backend                     | ✅ Yes              | ✅ Yes          | ✅ Pure Ruby |
+| **Zero Native Deps**      | ⚡ Via Citrus backend                   | ❌ No               | ❌ No           | ✅ Yes       |
+| **Minimum Ruby**          | 3.2+                                   | 3.0+               | 3.1+           | 0+          |
 
 [ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
 [tree_stump]: https://github.com/anthropics/tree_stump
+[citrus]: https://github.com/mjackson/citrus
 
 **Note:** Java backend works with grammar JARs built specifically for java-tree-sitter, or grammar .so files that statically link tree-sitter. This is why FFI is recommended for JRuby & TruffleRuby.
 
@@ -135,6 +138,7 @@ TreeHaver solves these problems by providing a unified API that automatically se
 #### When to Use Each
 
 **Choose TreeHaver when:**
+
 - You need JRuby or TruffleRuby support
 - You're building a library that should work across Ruby implementations
 - You want automatic grammar discovery and security validations
@@ -142,39 +146,48 @@ TreeHaver solves these problems by providing a unified API that automatically se
 - You need incremental parsing with a unified API
 
 **Choose ruby_tree_sitter directly when:**
+
 - You only target MRI Ruby
 - You need the full Query API without abstraction
 - You want the most battle-tested C bindings
 - You don't need TreeHaver's grammar discovery
 
 **Choose tree_stump directly when:**
+
 - You only target MRI Ruby
 - You prefer Rust-based native extensions
 - You want precompiled binaries without system dependencies
 - You don't need TreeHaver's grammar discovery
 - **Note:** Use [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), [#13](https://github.com/joker1007/tree_stump/pull/13) are merged
 
+**Choose citrus directly when:**
+
+- You need zero native dependencies (pure Ruby)
+- You're using a Citrus grammar (not tree-sitter grammars)
+- Performance is less critical than portability
+- You don't need TreeHaver's unified API
+
 ## 💡 Info you can shake a stick at
 
-| Tokens to Remember      | [![Gem name][⛳️name-img]][⛳️gem-name] [![Gem namespace][⛳️namespace-img]][⛳️gem-namespace]                                                                                                                                                                                                                                                                          |
-|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Works with JRuby        | [![JRuby 10.0 Compat][💎jruby-c-i]][🚎11-c-wf] [![JRuby HEAD Compat][💎jruby-headi]][🚎3-hd-wf]                                                                                                          |
-| Works with Truffle Ruby | [![Truffle Ruby 23.1 Compat][💎truby-23.1i]][🚎9-t-wf] [![Truffle Ruby 24.1 Compat][💎truby-c-i]][🚎11-c-wf]                                                                                                                                                            |
-| Works with MRI Ruby 3   | [![Ruby 3.2 Compat][💎ruby-3.2i]][🚎6-s-wf] [![Ruby 3.3 Compat][💎ruby-3.3i]][🚎6-s-wf] [![Ruby 3.4 Compat][💎ruby-c-i]][🚎11-c-wf] [![Ruby HEAD Compat][💎ruby-headi]][🚎3-hd-wf]                                                                                         |
-| Support & Community     | [![Join Me on Daily.dev's RubyFriends][✉️ruby-friends-img]][✉️ruby-friends] [![Live Chat on Discord][✉️discord-invite-img-ftb]][✉️discord-invite] [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]][👨🏼‍🏫expsup-upwork] [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]][👨🏼‍🏫expsup-codementor]                                       |
-| Source                  | [![Source on GitLab.com][📜src-gl-img]][📜src-gl] [![Source on CodeBerg.org][📜src-cb-img]][📜src-cb] [![Source on Github.com][📜src-gh-img]][📜src-gh] [![The best SHA: dQw4w9WgXcQ!][🧮kloc-img]][🧮kloc]                                                                                                                                                         |
-| Documentation           | [![Current release on RubyDoc.info][📜docs-cr-rd-img]][🚎yard-current] [![YARD on Galtzo.com][📜docs-head-rd-img]][🚎yard-head] [![Maintainer Blog][🚂maint-blog-img]][🚂maint-blog] [![GitLab Wiki][📜gl-wiki-img]][📜gl-wiki] [![GitHub Wiki][📜gh-wiki-img]][📜gh-wiki]                                                                                          |
+| Tokens to Remember      | [![Gem name][⛳️name-img]][⛳️gem-name] [![Gem namespace][⛳️namespace-img]][⛳️gem-namespace]                                                                                                                                                                                                                                                                    |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Works with JRuby        | [![JRuby 10.0 Compat][💎jruby-c-i]][🚎11-c-wf] [![JRuby HEAD Compat][💎jruby-headi]][🚎3-hd-wf]                                                                                                                                                                                                                                                                   |
+| Works with Truffle Ruby | [![Truffle Ruby 23.1 Compat][💎truby-23.1i]][🚎9-t-wf] [![Truffle Ruby 24.1 Compat][💎truby-c-i]][🚎11-c-wf]                                                                                                                                                                                                                                                      |
+| Works with MRI Ruby 3   | [![Ruby 3.2 Compat][💎ruby-3.2i]][🚎6-s-wf] [![Ruby 3.3 Compat][💎ruby-3.3i]][🚎6-s-wf] [![Ruby 3.4 Compat][💎ruby-c-i]][🚎11-c-wf] [![Ruby HEAD Compat][💎ruby-headi]][🚎3-hd-wf]                                                                                                                                                                                |
+| Support & Community     | [![Join Me on Daily.dev's RubyFriends][✉️ruby-friends-img]][✉️ruby-friends] [![Live Chat on Discord][✉️discord-invite-img-ftb]][✉️discord-invite] [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]][👨🏼‍🏫expsup-upwork] [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]][👨🏼‍🏫expsup-codementor]                                                         |
+| Source                  | [![Source on GitLab.com][📜src-gl-img]][📜src-gl] [![Source on CodeBerg.org][📜src-cb-img]][📜src-cb] [![Source on Github.com][📜src-gh-img]][📜src-gh] [![The best SHA: dQw4w9WgXcQ!][🧮kloc-img]][🧮kloc]                                                                                                                                                       |
+| Documentation           | [![Current release on RubyDoc.info][📜docs-cr-rd-img]][🚎yard-current] [![YARD on Galtzo.com][📜docs-head-rd-img]][🚎yard-head] [![Maintainer Blog][🚂maint-blog-img]][🚂maint-blog] [![GitLab Wiki][📜gl-wiki-img]][📜gl-wiki] [![GitHub Wiki][📜gh-wiki-img]][📜gh-wiki]                                                                                        |
 | Compliance              | [![License: MIT][📄license-img]][📄license-ref] [![Compatible with Apache Software Projects: Verified by SkyWalking Eyes][📄license-compat-img]][📄license-compat] [![📄ilo-declaration-img]][📄ilo-declaration] [![Security Policy][🔐security-img]][🔐security] [![Contributor Covenant 2.1][🪇conduct-img]][🪇conduct] [![SemVer 2.0.0][📌semver-img]][📌semver] |
-| Style                   | [![Enforced Code Style Linter][💎rlts-img]][💎rlts] [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]][📗keep-changelog] [![Gitmoji Commits][📌gitmoji-img]][📌gitmoji] [![Compatibility appraised by: appraisal2][💎appraisal2-img]][💎appraisal2]                                                                                                                  |
-| Maintainer 🎖️          | [![Follow Me on LinkedIn][💖🖇linkedin-img]][💖🖇linkedin] [![Follow Me on Ruby.Social][💖🐘ruby-mast-img]][💖🐘ruby-mast] [![Follow Me on Bluesky][💖🦋bluesky-img]][💖🦋bluesky] [![Contact Maintainer][🚂maint-contact-img]][🚂maint-contact] [![My technical writing][💖💁🏼‍♂️devto-img]][💖💁🏼‍♂️devto]                                                      |
-| `...` 💖                | [![Find Me on WellFound:][💖✌️wellfound-img]][💖✌️wellfound] [![Find Me on CrunchBase][💖💲crunchbase-img]][💖💲crunchbase] [![My LinkTree][💖🌳linktree-img]][💖🌳linktree] [![More About Me][💖💁🏼‍♂️aboutme-img]][💖💁🏼‍♂️aboutme] [🧊][💖🧊berg] [🐙][💖🐙hub]  [🛖][💖🛖hut] [🧪][💖🧪lab]                                                                   |
+| Style                   | [![Enforced Code Style Linter][💎rlts-img]][💎rlts] [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]][📗keep-changelog] [![Gitmoji Commits][📌gitmoji-img]][📌gitmoji] [![Compatibility appraised by: appraisal2][💎appraisal2-img]][💎appraisal2]                                                                                                                |
+| Maintainer 🎖️           | [![Follow Me on LinkedIn][💖🖇linkedin-img]][💖🖇linkedin] [![Follow Me on Ruby.Social][💖🐘ruby-mast-img]][💖🐘ruby-mast] [![Follow Me on Bluesky][💖🦋bluesky-img]][💖🦋bluesky] [![Contact Maintainer][🚂maint-contact-img]][🚂maint-contact] [![My technical writing][💖💁🏼‍♂️devto-img]][💖💁🏼‍♂️devto]                                                                |
+| `...` 💖                | [![Find Me on WellFound:][💖✌️wellfound-img]][💖✌️wellfound] [![Find Me on CrunchBase][💖💲crunchbase-img]][💖💲crunchbase] [![My LinkTree][💖🌳linktree-img]][💖🌳linktree] [![More About Me][💖💁🏼‍♂️aboutme-img]][💖💁🏼‍♂️aboutme] [🧊][💖🧊berg] [🐙][💖🐙hub] [🛖][💖🛖hut] [🧪][💖🧪lab]                                                                            |
 
 ### Compatibility
 
 Compatible with MRI Ruby 3.2.0+, and concordant releases of JRuby, and TruffleRuby.
 
-| 🚚 _Amazing_ test matrix was brought to you by | 🔎 appraisal2 🔎 and the color 💚 green 💚             |
-|------------------------------------------------|--------------------------------------------------------|
+| 🚚 _Amazing_ test matrix was brought to you by | 🔎 appraisal2 🔎 and the color 💚 green 💚               |
+| ---------------------------------------------- | -------------------------------------------------------- |
 | 👟 Check it out!                               | ✨ [github.com/appraisal-rb/appraisal2][💎appraisal2] ✨ |
 
 ### Federated DVCS
@@ -183,9 +196,9 @@ Compatible with MRI Ruby 3.2.0+, and concordant releases of JRuby, and TruffleRu
   <summary>Find this repo on federated forges (Coming soon!)</summary>
 
 | Federated [DVCS][💎d-in-dvcs] Repository        | Status                                                                | Issues                    | PRs                      | Wiki                      | CI                       | Discussions                  |
-|-------------------------------------------------|-----------------------------------------------------------------------|---------------------------|--------------------------|---------------------------|--------------------------|------------------------------|
-| 🧪 [kettle-rb/tree_haver on GitLab][📜src-gl]   | The Truth                                                             | [💚][🤝gl-issues]         | [💚][🤝gl-pulls]         | [💚][📜gl-wiki]           | 🐭 Tiny Matrix           | ➖                            |
-| 🧊 [kettle-rb/tree_haver on CodeBerg][📜src-cb] | An Ethical Mirror ([Donate][🤝cb-donate])                             | [💚][🤝cb-issues]         | [💚][🤝cb-pulls]         | ➖                         | ⭕️ No Matrix             | ➖                            |
+| ----------------------------------------------- | --------------------------------------------------------------------- | ------------------------- | ------------------------ | ------------------------- | ------------------------ | ---------------------------- |
+| 🧪 [kettle-rb/tree_haver on GitLab][📜src-gl]   | The Truth                                                             | [💚][🤝gl-issues]         | [💚][🤝gl-pulls]         | [💚][📜gl-wiki]           | 🐭 Tiny Matrix           | ➖                           |
+| 🧊 [kettle-rb/tree_haver on CodeBerg][📜src-cb] | An Ethical Mirror ([Donate][🤝cb-donate])                             | [💚][🤝cb-issues]         | [💚][🤝cb-pulls]         | ➖                        | ⭕️ No Matrix            | ➖                           |
 | 🐙 [kettle-rb/tree_haver on GitHub][📜src-gh]   | Another Mirror                                                        | [💚][🤝gh-issues]         | [💚][🤝gh-pulls]         | [💚][📜gh-wiki]           | 💯 Full Matrix           | [💚][gh-discussions]         |
 | 🎮️ [Discord Server][✉️discord-invite]          | [![Live Chat on Discord][✉️discord-invite-img-ftb]][✉️discord-invite] | [Let's][✉️discord-invite] | [talk][✉️discord-invite] | [about][✉️discord-invite] | [this][✉️discord-invite] | [library!][✉️discord-invite] |
 
@@ -206,7 +219,7 @@ The maintainers of this and thousands of other packages are working with Tidelif
 
 - 💡Subscribe for support guarantees covering _all_ your FLOSS dependencies
 - 💡Tidelift is part of [Sonar][🏙️entsup-tidelift-sonar]
-- 💡Tidelift pays maintainers to maintain the software you depend on!<br/>📊`@`Pointy Haired Boss: An [enterprise support][🏙️entsup-tidelift] subscription is "[never gonna let you down][🧮kloc]", and *supports* open source maintainers
+- 💡Tidelift pays maintainers to maintain the software you depend on!<br/>📊`@`Pointy Haired Boss: An [enterprise support][🏙️entsup-tidelift] subscription is "[never gonna let you down][🧮kloc]", and _supports_ open source maintainers
 
 Alternatively:
 
@@ -245,7 +258,7 @@ Add my public key (if you haven’t already, expires 2045-04-29) as a trusted ce
 gem cert --add <(curl -Ls https://raw.github.com/galtzo-floss/certs/main/pboling.pem)
 ```
 
-You only need to do that once.  Then proceed to install with:
+You only need to do that once. Then proceed to install with:
 
 ```console
 gem install tree_haver -P HighSecurity
@@ -359,15 +372,18 @@ TreeHaver automatically selects the best backend for your Ruby implementation, b
 TreeHaver.backend = :auto
 
 # Force a specific backend
-TreeHaver.backend = :mri   # Use ruby_tree_sitter (MRI only, C extension)
-TreeHaver.backend = :rust  # Use tree_stump (MRI, Rust extension with precompiled binaries)
-                           # Note: Requires pboling's fork until PRs #5, #7, #11, #13 are merged
-                           # See: https://github.com/pboling/tree_stump/tree/tree_haver
-TreeHaver.backend = :ffi   # Use FFI bindings (works on MRI and JRuby)
-TreeHaver.backend = :java  # Use Java bindings (JRuby only, coming soon)
+TreeHaver.backend = :mri     # Use ruby_tree_sitter (MRI only, C extension)
+TreeHaver.backend = :rust    # Use tree_stump (MRI, Rust extension with precompiled binaries)
+                             # Note: Requires pboling's fork until PRs #5, #7, #11, #13 are merged
+                             # See: https://github.com/pboling/tree_stump/tree/tree_haver
+TreeHaver.backend = :ffi     # Use FFI bindings (works on MRI and JRuby)
+TreeHaver.backend = :java    # Use Java bindings (JRuby only, coming soon)
+TreeHaver.backend = :citrus  # Use Citrus pure Ruby parser
+                             # NOTE: Portable, all Ruby implementations
+                             # CAVEAT: few major language grammars, but many esoteric grammars
 ```
 
-**Auto-selection priority on MRI:** MRI → Rust → FFI
+**Auto-selection priority on MRI:** MRI → Rust → FFI → Citrus
 
 You can also set the backend via environment variable:
 
@@ -384,6 +400,7 @@ TreeHaver recognizes several environment variables for configuration:
 #### Security Configuration
 
 - **`TREE_HAVER_TRUSTED_DIRS`**: Comma-separated list of additional trusted directories for grammar libraries
+
   ```bash
   # For Homebrew on Linux and luarocks
   export TREE_HAVER_TRUSTED_DIRS="/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua"
@@ -399,11 +416,12 @@ TreeHaver recognizes several environment variables for configuration:
   ```
 
 If not set, TreeHaver tries these names in order:
-  - `tree-sitter`
-  - `libtree-sitter.so.0`
-  - `libtree-sitter.so`
-  - `libtree-sitter.dylib`
-  - `libtree-sitter.dll`
+
+- `tree-sitter`
+- `libtree-sitter.so.0`
+- `libtree-sitter.so`
+- `libtree-sitter.dylib`
+- `libtree-sitter.dll`
 
 #### Language Symbol Resolution
 
@@ -482,11 +500,11 @@ language = TreeHaver::Language.toml
 
 Given just the language name, `GrammarFinder` automatically derives:
 
-| Property | Derived Value (for `:toml`) |
-|----------|----------------------------|
-| ENV var  | `TREE_SITTER_TOML_PATH` |
+| Property         | Derived Value (for `:toml`)                          |
+| ---------------- | ---------------------------------------------------- |
+| ENV var          | `TREE_SITTER_TOML_PATH`                              |
 | Library filename | `libtree-sitter-toml.so` (Linux) or `.dylib` (macOS) |
-| Symbol name | `tree_sitter_toml` |
+| Symbol name      | `tree_sitter_toml`                                   |
 
 #### Search Order
 
@@ -496,7 +514,7 @@ Given just the language name, `GrammarFinder` automatically derives:
 2. **Extra paths**: Custom paths provided at initialization
 3. **System paths**: Common installation directories (`/usr/lib`, `/usr/local/lib`, `/opt/homebrew/lib`, etc.)
 
-#### Usage in *-merge Gems
+#### Usage in \*-merge Gems
 
 The `GrammarFinder` pattern enables clean integration in language-specific merge gems:
 
@@ -555,6 +573,8 @@ TreeHaver.capabilities
 # => { backend: :mri, query: true, bytes_field: true }
 # or
 # => { backend: :ffi, parse: true, query: false, bytes_field: true }
+# or
+# => { backend: :citrus, parse: true, query: false, bytes_field: false }
 ```
 
 ### Compatibility Mode
@@ -704,7 +724,7 @@ tree.edit(
 new_tree = parser.parse_string(tree, "x = 42")
 ```
 
-**Note:** Incremental parsing requires the MRI (`ruby_tree_sitter`), Rust (`tree_stump`), or Java (`java-tree-sitter`) backend. The FFI backend does not currently support incremental parsing. You can check support with:
+**Note:** Incremental parsing requires the MRI (`ruby_tree_sitter`), Rust (`tree_stump`), or Java (`java-tree-sitter`) backend. The FFI and Citrus backends do not currently support incremental parsing. You can check support with:
 
 **Note:** `tree_stump` requires [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), [#13](https://github.com/joker1007/tree_stump/pull/13) are merged.
 
@@ -724,7 +744,7 @@ end
 # Check if a backend is available
 if TreeHaver.backend_module.nil?
   puts "No TreeHaver backend is available!"
-  puts "Install ruby_tree_sitter (MRI) or ensure ffi gem and libtree-sitter are present"
+  puts "Install ruby_tree_sitter (MRI), ffi gem with libtree-sitter, or citrus gem"
 end
 ```
 
@@ -745,9 +765,9 @@ parser = TreeHaver::Parser.new
 
 #### JRuby
 
-On JRuby, TreeHaver can use either the FFI backend or the Java backend:
+On JRuby, TreeHaver can use the FFI backend, Java backend, or Citrus backend:
 
-**Option 1: FFI Backend (simpler setup)**
+**Option 1: FFI Backend (recommended for tree-sitter grammars)**
 
 ```ruby
 # Gemfile
@@ -809,19 +829,49 @@ TreeHaver.backend = :ffi
 The FFI backend uses Ruby's FFI gem which relies on the system's dynamic linker, correctly resolving symbol dependencies between `libtree-sitter.so` and grammar libraries.
 
 The Java backend will work with:
+
 - Grammar JARs built specifically for java-tree-sitter (self-contained)
 - Grammar `.so` files that statically link tree-sitter
 
-#### TruffleRuby
-
-TruffleRuby can use either the MRI or FFI backend:
+**Option 3: Citrus Backend (pure Ruby, portable)**
 
 ```ruby
-# Use FFI backend (recommended)
+# Gemfile
+gem "tree_haver"
+gem "citrus"  # Pure Ruby parser, zero native dependencies
+
+# Code - Force Citrus backend for maximum portability
+TreeHaver.backend = :citrus
+
+# Check if Citrus backend is available
+if TreeHaver::Backends::Citrus.available?
+  puts "Citrus backend is ready!"
+  puts TreeHaver.capabilities
+  # => { backend: :citrus, parse: true, query: false, bytes_field: false }
+end
+```
+
+**⚠️ Citrus Backend Limitations:**
+
+- Uses Citrus grammars (not tree-sitter grammars)
+- No incremental parsing support
+- No query API
+- Pure Ruby performance (slower than native backends)
+- Best for: prototyping, environments without native extension support, teaching
+
+#### TruffleRuby
+
+TruffleRuby can use the MRI, FFI, or Citrus backend:
+
+```ruby
+# Use FFI backend (recommended for tree-sitter grammars)
 TreeHaver.backend = :ffi
 
 # Or try MRI backend if ruby_tree_sitter compiles on your TruffleRuby version
 TreeHaver.backend = :mri
+
+# Or use Citrus backend for zero native dependencies
+TreeHaver.backend = :citrus
 ```
 
 ### Advanced: Testing with Multiple Backends
@@ -912,7 +962,7 @@ You can support the development of kettle-rb tools via
 and [Tidelift][🏙️entsup-tidelift].
 
 | 📍 NOTE                                                                                                                                                                                                              |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | If doing a sponsorship in the form of donation is problematic for your company <br/> from an accounting standpoint, we'd recommend the use of Tidelift, <br/> where you can get a support-like subscription instead. |
 
 ### Open Collective for Individuals
@@ -922,7 +972,9 @@ Support us with a monthly donation and help us continue our activities. [[Become
 NOTE: [kettle-readme-backers][kettle-readme-backers] updates this list every day, automatically.
 
 <!-- OPENCOLLECTIVE-INDIVIDUALS:START -->
+
 No backers yet. Be the first!
+
 <!-- OPENCOLLECTIVE-INDIVIDUALS:END -->
 
 ### Open Collective for Organizations
@@ -932,14 +984,16 @@ Become a sponsor and get your logo on our README on GitHub with a link to your s
 NOTE: [kettle-readme-backers][kettle-readme-backers] updates this list every day, automatically.
 
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:START -->
+
 No sponsors yet. Be the first!
+
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->
 
 [kettle-readme-backers]: https://github.com/kettle-rb/tree_haver/blob/main/exe/kettle-readme-backers
 
 ### Another way to support open-source
 
-I’m driven by a passion to foster a thriving open-source community – a space where people can tackle complex problems, no matter how small.  Revitalizing libraries that have fallen into disrepair, and building new libraries focused on solving real-world challenges, are my passions.  I was recently affected by layoffs, and the tech jobs market is unwelcoming. I’m reaching out here because your support would significantly aid my efforts to provide for my family, and my farm (11 🐔 chickens, 2 🐶 dogs, 3 🐰 rabbits, 8 🐈‍ cats).
+I’m driven by a passion to foster a thriving open-source community – a space where people can tackle complex problems, no matter how small. Revitalizing libraries that have fallen into disrepair, and building new libraries focused on solving real-world challenges, are my passions. I was recently affected by layoffs, and the tech jobs market is unwelcoming. I’m reaching out here because your support would significantly aid my efforts to provide for my family, and my farm (11 🐔 chickens, 2 🐶 dogs, 3 🐰 rabbits, 8 🐈‍ cats).
 
 If you work at a company that uses my work, please encourage them to support me as a corporate sponsor. My work on gems you use might show up in `bundle fund`.
 
@@ -1010,7 +1064,7 @@ a new version should be immediately released that restores compatibility.
 Breaking changes to the public API will only be introduced with new major versions.
 
 > dropping support for a platform is both obviously and objectively a breaking change <br/>
->—Jordan Harband ([@ljharb](https://github.com/ljharb), maintainer of SemVer) [in SemVer issue 716][📌semver-breaking]
+> —Jordan Harband ([@ljharb](https://github.com/ljharb), maintainer of SemVer) [in SemVer issue 716][📌semver-breaking]
 
 I understand that policy doesn't work universally ("exceptions to every rule!"),
 but it is the policy here.
@@ -1027,7 +1081,7 @@ spec.add_dependency("tree_haver", "~> 1.0")
 <summary>📌 Is "Platform Support" part of the public API? More details inside.</summary>
 
 SemVer should, IMO, but doesn't explicitly, say that dropping support for specific Platforms
-is a *breaking change* to an API, and for that reason the bike shedding is endless.
+is a _breaking change_ to an API, and for that reason the bike shedding is endless.
 
 To get a better understanding of how SemVer is intended to work over a project's lifetime,
 read this article from the creator of SemVer:
@@ -1114,7 +1168,6 @@ Thanks for RTFM. ☺️
 [✉️discord-invite-img-ftb]: https://img.shields.io/discord/1373797679469170758?style=for-the-badge&logo=discord
 [✉️ruby-friends-img]: https://img.shields.io/badge/daily.dev-%F0%9F%92%8E_Ruby_Friends-0A0A0A?style=for-the-badge&logo=dailydotdev&logoColor=white
 [✉️ruby-friends]: https://app.daily.dev/squads/rubyfriends
-
 [✇bundle-group-pattern]: https://gist.github.com/pboling/4564780
 [⛳️gem-namespace]: https://github.com/kettle-rb/tree_haver
 [⛳️namespace-img]: https://img.shields.io/badge/namespace-TreeHaver-3C2D2D.svg?style=square&logo=ruby&logoColor=white
