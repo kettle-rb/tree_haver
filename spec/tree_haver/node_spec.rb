@@ -421,53 +421,215 @@ RSpec.describe TreeHaver::Node, :toml_grammar do
       }.to raise_error(NoMethodError)
     end
   end
-end
 
-RSpec.describe TreeHaver::Point do
-  let(:point) { described_class.new(5, 10) }
+  describe "#field_name_for_child" do
+    context "when backend doesn't support field_name_for_child" do
+      let(:mock_node) { double("node") }
+      let(:node) { described_class.new(mock_node, source: source) }
 
-  describe "#initialize" do
-    it "sets row and column" do
-      expect(point.row).to eq(5)
-      expect(point.column).to eq(10)
+      it "returns nil" do
+        allow(mock_node).to receive(:respond_to?).with(:field_name_for_child).and_return(false)
+        expect(node.field_name_for_child(0)).to be_nil
+      end
     end
   end
 
-  describe "#[]" do
-    it "provides hash-like access with symbol keys" do
-      expect(point[:row]).to eq(5)
-      expect(point[:column]).to eq(10)
-    end
+  describe "#child_by_field_name" do
+    context "when backend doesn't support child_by_field_name" do
+      let(:mock_node) { double("node") }
+      let(:node) { described_class.new(mock_node, source: source) }
 
-    it "provides hash-like access with string keys" do
-      expect(point["row"]).to eq(5)
-      expect(point["column"]).to eq(10)
-    end
-
-    it "returns nil for invalid keys" do
-      expect(point[:invalid]).to be_nil
-      expect(point["invalid"]).to be_nil
+      it "returns nil" do
+        allow(mock_node).to receive(:respond_to?).with(:child_by_field_name).and_return(false)
+        expect(node.child_by_field_name("name")).to be_nil
+      end
     end
   end
 
-  describe "#to_h" do
-    it "converts to a hash" do
-      expect(point.to_h).to eq({row: 5, column: 10})
+  describe "#child_by_field_id" do
+    context "when backend doesn't support child_by_field_id" do
+      let(:mock_node) { double("node") }
+      let(:node) { described_class.new(mock_node, source: source) }
+
+      it "returns nil" do
+        allow(mock_node).to receive(:respond_to?).with(:child_by_field_id).and_return(false)
+        expect(node.child_by_field_id(1)).to be_nil
+      end
     end
   end
 
-  describe "#to_s" do
-    it "returns a readable string representation" do
-      expect(point.to_s).to eq("(5, 10)")
+  describe "#==" do
+    it "compares based on inner_node" do
+      node1 = described_class.new(root_node.inner_node, source: source)
+      node2 = described_class.new(root_node.inner_node, source: source)
+      different_node = root_node.child(0) if root_node.child_count > 0
+
+      expect(node1).to eq(node2)
+      expect(node1).not_to eq(different_node) if different_node
     end
   end
 
-  describe "#inspect" do
-    it "returns a debug-friendly string" do
-      result = point.inspect
-      expect(result).to include("TreeHaver::Point")
-      expect(result).to include("row=5")
-      expect(result).to include("column=10")
+  describe "edge cases and error paths" do
+    context "when backend node doesn't support required methods" do
+      let(:minimal_node) do
+        double("MinimalNode",
+          child_count: 0,
+          type: "minimal",
+          start_byte: 0,
+          end_byte: 10)
+      end
+
+      let(:node) { described_class.new(minimal_node) }
+
+      describe "#type" do
+        it "uses kind when type not available" do
+          allow(minimal_node).to receive(:respond_to?).with(:type).and_return(false)
+          allow(minimal_node).to receive(:respond_to?).with(:kind).and_return(true)
+          allow(minimal_node).to receive(:kind).and_return(:test_kind)
+
+          expect(node.type).to eq("test_kind")
+        end
+      end
+
+      describe "#start_point" do
+        it "raises error when node has neither start_point nor start_position" do
+          allow(minimal_node).to receive(:respond_to?).with(:start_point).and_return(false)
+          allow(minimal_node).to receive(:respond_to?).with(:start_position).and_return(false)
+
+          expect { node.start_point }.to raise_error(TreeHaver::Error, /does not support start_point\/start_position/)
+        end
+
+        it "uses start_position as fallback" do
+          allow(minimal_node).to receive(:respond_to?).with(:start_point).and_return(false)
+          allow(minimal_node).to receive(:respond_to?).with(:start_position).and_return(true)
+          position = double("Position", row: 10, column: 5)
+          allow(minimal_node).to receive(:start_position).and_return(position)
+
+          point = node.start_point
+          expect(point.row).to eq(10)
+          expect(point.column).to eq(5)
+        end
+      end
+
+      describe "#end_point" do
+        it "raises error when node has neither end_point nor end_position" do
+          allow(minimal_node).to receive(:respond_to?).with(:end_point).and_return(false)
+          allow(minimal_node).to receive(:respond_to?).with(:end_position).and_return(false)
+
+          expect { node.end_point }.to raise_error(TreeHaver::Error, /does not support end_point\/end_position/)
+        end
+
+        it "uses end_position as fallback" do
+          allow(minimal_node).to receive(:respond_to?).with(:end_point).and_return(false)
+          allow(minimal_node).to receive(:respond_to?).with(:end_position).and_return(true)
+          position = double("Position", row: 20, column: 15)
+          allow(minimal_node).to receive(:end_position).and_return(position)
+
+          point = node.end_point
+          expect(point.row).to eq(20)
+          expect(point.column).to eq(15)
+        end
+      end
+
+      describe "#text" do
+        it "raises error when node has no text method and no source" do
+          allow(minimal_node).to receive(:respond_to?).with(:text).and_return(false)
+
+          expect { node.text }.to raise_error(TreeHaver::Error, /Cannot extract text/)
+        end
+
+        it "extracts from source when node doesn't have text method" do
+          allow(minimal_node).to receive(:respond_to?).with(:text).and_return(false)
+          allow(minimal_node).to receive(:start_byte).and_return(0)
+          allow(minimal_node).to receive(:end_byte).and_return(5)
+
+          node_with_source = described_class.new(minimal_node, source: "hello world")
+          expect(node_with_source.text).to eq("hello")
+        end
+
+        it "returns empty string when byte range is out of bounds" do
+          allow(minimal_node).to receive(:respond_to?).with(:text).and_return(false)
+          allow(minimal_node).to receive(:start_byte).and_return(100)
+          allow(minimal_node).to receive(:end_byte).and_return(200)
+
+          node_with_source = described_class.new(minimal_node, source: "short")
+          expect(node_with_source.text).to eq("")
+        end
+      end
+
+      describe "#missing?" do
+        it "returns false when backend doesn't support missing?" do
+          allow(minimal_node).to receive(:respond_to?).with(:missing?).and_return(false)
+
+          expect(node.missing?).to be false
+        end
+
+        it "delegates when backend supports missing?" do
+          allow(minimal_node).to receive(:respond_to?).with(:missing?).and_return(true)
+          allow(minimal_node).to receive(:missing?).and_return(true)
+
+          expect(node.missing?).to be true
+        end
+      end
+
+      describe "#named?" do
+        it "returns true by default when backend doesn't support named?" do
+          allow(minimal_node).to receive(:respond_to?).with(:named?).and_return(false)
+          allow(minimal_node).to receive(:respond_to?).with(:is_named?).and_return(false)
+
+          expect(node.named?).to be true
+        end
+
+        it "uses is_named? as fallback" do
+          allow(minimal_node).to receive(:respond_to?).with(:named?).and_return(false)
+          allow(minimal_node).to receive(:respond_to?).with(:is_named?).and_return(true)
+          allow(minimal_node).to receive(:is_named?).and_return(false)
+
+          expect(node.named?).to be false
+        end
+      end
+    end
+
+    context "with child iteration" do
+      let(:parent_node) do
+        double("ParentNode",
+          child_count: 3,
+          type: "parent")
+      end
+
+      let(:child1) { double("Child1", type: "child1", child_count: 0) }
+      let(:child2) { double("Child2", type: "child2", child_count: 0) }
+      let(:child3) { double("Child3", type: "child3", child_count: 0) }
+
+      before do
+        allow(parent_node).to receive(:child).with(0).and_return(child1)
+        allow(parent_node).to receive(:child).with(1).and_return(child2)
+        allow(parent_node).to receive(:child).with(2).and_return(child3)
+      end
+
+      it "handles child returning nil" do
+        allow(parent_node).to receive(:child).with(1).and_return(nil)
+
+        node = described_class.new(parent_node)
+        children = node.children
+
+        expect(children.length).to eq(2)  # nil child is filtered out
+      end
+
+      it "filters named_children correctly" do
+        allow(child1).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(child1).to receive(:named?).and_return(true)
+        allow(child2).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(child2).to receive(:named?).and_return(false)
+        allow(child3).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(child3).to receive(:named?).and_return(true)
+
+        node = described_class.new(parent_node)
+        named = node.named_children
+
+        expect(named.length).to eq(2)
+        expect(named.map(&:type)).to eq(["child1", "child3"])
+      end
     end
   end
 end

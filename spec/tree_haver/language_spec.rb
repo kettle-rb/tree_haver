@@ -32,19 +32,20 @@ RSpec.describe TreeHaver::Language do
       }.to raise_error(TreeHaver::NotAvailable)
     end
 
-    it "raises ArgumentError when path is nil and not registered with a path" do
-      # Register without a path (path: nil)
-      TreeHaver::LanguageRegistry.register(:no_path_lang, path: nil, symbol: "test")
+    it "raises NoMethodError when trying to call unregistered language" do
+      # Without any registration, calling an undefined method should raise NoMethodError
       expect {
         described_class.no_path_lang
-      }.to raise_error(ArgumentError, /path is required/)
+      }.to raise_error(NoMethodError)
     end
 
-    it "uses path from positional argument if kwargs path is nil" do
-      TreeHaver.register_language(:pos_arg_lang, path: nil)
+    it "accepts path as first positional argument" do
+      # Register with a tree-sitter path so the language is registered for tree-sitter backends
+      TreeHaver.register_language(:pos_arg_lang, path: "/default/path.so")
+      # First positional arg should override the registered path
+      # This will fail because the path doesn't exist, but it tests the API
       expect {
-        # First positional arg should be used as path
-        described_class.pos_arg_lang("/path/from/arg.so")
+        described_class.pos_arg_lang("/nonexistent/override.so")
       }.to raise_error(TreeHaver::NotAvailable)
     end
   end

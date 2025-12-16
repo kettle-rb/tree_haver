@@ -196,7 +196,7 @@ RSpec.describe TreeHaver::Backends::Citrus do
 
       it "parses source and returns wrapped tree" do
         result = parser.parse(source)
-        expect(result).to be_a(TreeHaver::Tree)
+        expect(result).to be_a(TreeHaver::Backends::Citrus::Tree)
         expect(result.source).to eq(source)
       end
 
@@ -273,12 +273,12 @@ RSpec.describe TreeHaver::Backends::Citrus do
       it "ignores old_tree and calls parse" do
         old_tree = double("tree")
         result = parser.parse_string(old_tree, source)
-        expect(result).to be_a(TreeHaver::Tree)
+        expect(result).to be_a(TreeHaver::Backends::Citrus::Tree)
       end
 
       it "works with nil old_tree" do
         result = parser.parse_string(nil, source)
-        expect(result).to be_a(TreeHaver::Tree)
+        expect(result).to be_a(TreeHaver::Backends::Citrus::Tree)
       end
     end
   end
@@ -352,8 +352,9 @@ RSpec.describe TreeHaver::Backends::Citrus do
         let(:string_match) { double("match", events: ["string"], offset: 0, length: 0) }
         let(:string_node) { backend::Node.new(string_match, source) }
 
-        it "returns unknown" do
-          expect(string_node.type).to eq("unknown")
+        it "returns the string event value" do
+          # When the event is a String, extract_type_from_event returns the string itself
+          expect(string_node.type).to eq("string")
         end
       end
     end

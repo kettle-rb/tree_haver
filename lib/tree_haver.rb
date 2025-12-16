@@ -184,6 +184,148 @@ module TreeHaver
       @backend = to&.to_sym # rubocop:disable ThreadSafety/ClassInstanceVariable
     end
 
+    # Thread-local backend context storage
+    #
+    # Returns a hash containing the thread-local backend context with keys:
+    # - :backend - The backend name (Symbol) or nil if using global default
+    # - :depth - The nesting depth (Integer) for proper cleanup
+    #
+    # @return [Hash{Symbol => Object}] context hash with :backend and :depth keys
+    # @example
+    #   ctx = TreeHaver.current_backend_context
+    #   ctx[:backend]  # => nil or :ffi, :mri, etc.
+    #   ctx[:depth]    # => 0, 1, 2, etc.
+    def current_backend_context
+      Thread.current[:tree_haver_backend_context] ||= {
+        backend: nil,  # nil means "use global default"
+        depth: 0       # Track nesting depth for proper cleanup
+      }
+    end
+
+    # Get the effective backend for current context
+    #
+    # Priority: thread-local context → global @backend → :auto
+    #
+    # @return [Symbol] the backend to use
+    # @example
+    #   TreeHaver.effective_backend  # => :auto (default)
+    # @example With thread-local context
+    #   TreeHaver.with_backend(:ffi) do
+    #     TreeHaver.effective_backend  # => :ffi
+    #   end
+    def effective_backend
+      ctx = current_backend_context
+      ctx[:backend] || backend || :auto
+    end
+
+    # Execute a block with a specific backend in thread-local context
+    #
+    # Supports nesting (inner block overrides outer block). The backend
+    # setting is automatically restored when the block exits, even if
+    # an exception is raised.
+    #
+    # @param name [Symbol, String] backend name (:mri, :rust, :ffi, :java, :citrus, :auto)
+    # @yield block to execute with the specified backend
+    # @return [Object] the return value of the block
+    # @raise [ArgumentError] if backend name is nil
+    # @example
+    #   TreeHaver.with_backend(:ffi) do
+    #     parser = TreeHaver::Parser.new
+    #     parser.parse(source)
+    #   end
+    # @example Nested blocks
+    #   TreeHaver.with_backend(:ffi) do
+    #     parser1 = TreeHaver::Parser.new  # Uses :ffi
+    #     TreeHaver.with_backend(:mri) do
+    #       parser2 = TreeHaver::Parser.new  # Uses :mri
+    #     end
+    #   end
+    def with_backend(name)
+      raise ArgumentError, "Backend name required" if name.nil?
+
+      # Get context FIRST to ensure it exists
+      ctx = current_backend_context
+      old_backend = ctx[:backend]
+      old_depth = ctx[:depth]
+
+      begin
+        # Set new backend and increment depth
+        ctx[:backend] = name.to_sym
+        ctx[:depth] += 1
+
+        # Execute block
+        yield
+      ensure
+        # Restore previous backend and depth
+        # This ensures proper unwinding even with exceptions
+        ctx[:backend] = old_backend
+        ctx[:depth] = old_depth
+      end
+    end
+
+    # Resolve the effective backend considering explicit override
+    #
+    # Priority: explicit > thread context > global > :auto
+    #
+    # @param explicit_backend [Symbol, String, nil] explicitly requested backend
+    # @return [Symbol] the backend to use
+    # @example
+    #   TreeHaver.resolve_effective_backend(:ffi)  # => :ffi
+    # @example With thread-local context
+    #   TreeHaver.with_backend(:mri) do
+    #     TreeHaver.resolve_effective_backend(nil)  # => :mri
+    #     TreeHaver.resolve_effective_backend(:ffi)  # => :ffi (explicit wins)
+    #   end
+    def resolve_effective_backend(explicit_backend = nil)
+      return explicit_backend.to_sym if explicit_backend
+      effective_backend
+    end
+
+    # Get backend module for a specific backend (with explicit override)
+    #
+    # @param explicit_backend [Symbol, String, nil] explicitly requested backend
+    # @return [Module, nil] the backend module or nil if not available
+    # @example
+    #   mod = TreeHaver.resolve_backend_module(:ffi)
+    #   mod.capabilities[:backend]  # => :ffi
+    def resolve_backend_module(explicit_backend = nil)
+      # Temporarily override effective backend
+      requested = resolve_effective_backend(explicit_backend)
+
+      mod = case requested
+      when :mri
+        Backends::MRI
+      when :rust
+        Backends::Rust
+      when :ffi
+        Backends::FFI
+      when :java
+        Backends::Java
+      when :citrus
+        Backends::Citrus
+      else
+        backend_module  # Fall back to normal resolution for :auto
+      end
+
+      # Return nil if the module doesn't exist or is explicitly unavailable.
+      #
+      # Why use early return pattern instead of complex conditional?
+      # - Early returns make the logic clearer: "return nil if X" is easier to read
+      # - Each condition is independent and can be evaluated separately
+      # - Adding new conditions doesn't require restructuring boolean logic
+      # - The "happy path" (returning mod) stays at the bottom, which is conventional
+      #
+      # Why assume modules without available? are available?
+      # - Some backends might be mocked in tests without an available? method
+      # - This makes the code more defensive and test-friendly
+      # - It allows graceful degradation if a backend module is incomplete
+      # - Backward compatibility: if a module doesn't declare availability, assume it works
+      return nil unless mod
+      return nil if mod.respond_to?(:available?) && !mod.available?
+
+      mod
+    end
+
     # Determine the concrete backend module to use
     #
     # This method performs backend auto-selection when backend is :auto.
@@ -198,7 +340,7 @@ module TreeHaver
     #     puts "Using #{mod.capabilities[:backend]} backend"
     #   end
     def backend_module
-      case backend
+      case effective_backend  # Changed from: backend
       when :mri
         Backends::MRI
       when :rust
@@ -259,8 +401,20 @@ module TreeHaver
     # to load the registered language. TreeHaver will automatically use the appropriate
     # grammar based on the active backend.
     #
-    # You can register multiple backends for the same language, enabling runtime
-    # switching, benchmarking, and fallback scenarios.
+    # IMPORTANT: This method INTENTIONALLY allows registering BOTH a tree-sitter
+    # library AND a Citrus grammar for the same language IN A SINGLE CALL.
+    # This is achieved by using separate `if` statements (not `elsif`) and no early
+    # returns. This design is deliberate and provides significant benefits:
+    #
+    # Why register both backends for one language?
+    # - Backend flexibility: Code works regardless of which backend is active
+    # - Performance testing: Compare tree-sitter vs Citrus performance
+    # - Gradual migration: Transition between backends without breaking code
+    # - Fallback scenarios: Use Citrus when tree-sitter library unavailable
+    # - Platform portability: tree-sitter on Linux/Mac, Citrus on JRuby/Windows
+    #
+    # The active backend determines which registration is used automatically.
+    # No code changes needed to switch backends - just change TreeHaver.backend.
     #
     # @param name [Symbol, String] language identifier (e.g., :toml, :json)
     # @param path [String, nil] absolute path to the language shared library (for tree-sitter)
@@ -277,38 +431,56 @@ module TreeHaver
     # @example Register Citrus grammar only
     #   TreeHaver.register_language(
     #     :toml,
-    #     grammar_module: TomlRB::Document
+    #     grammar_module: TomlRB::Document,
+    #     gem_name: "toml-rb"
     #   )
-    # @example Register BOTH (call twice or use both params)
-    #   TreeHaver.register_language(:toml,
-    #     path: "/usr/local/lib/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
-    #   TreeHaver.register_language(:toml,
-    #     grammar_module: TomlRB::Document)
+    # @example Register BOTH backends in separate calls
+    #   TreeHaver.register_language(
+    #     :toml,
+    #     path: "/usr/local/lib/libtree-sitter-toml.so",
+    #     symbol: "tree_sitter_toml"
+    #   )
+    #   TreeHaver.register_language(
+    #     :toml,
+    #     grammar_module: TomlRB::Document,
+    #     gem_name: "toml-rb"
+    #   )
+    # @example Register BOTH backends in ONE call (recommended for maximum flexibility)
+    #   TreeHaver.register_language(
+    #     :toml,
+    #     path: "/usr/local/lib/libtree-sitter-toml.so",
+    #     symbol: "tree_sitter_toml",
+    #     grammar_module: TomlRB::Document,
+    #     gem_name: "toml-rb"
+    #   )
+    #   # Now TreeHaver::Language.toml works with ANY backend!
     def register_language(name, path: nil, symbol: nil, grammar_module: nil, gem_name: nil)
       # Register tree-sitter backend if path provided
+      # Note: Uses `if` not `elsif` so both backends can be registered in one call
       if path
-        LanguageRegistry.register(name, :tree_sitter,
-          path: path,
-          symbol: symbol
-        )
+        LanguageRegistry.register(name, :tree_sitter, path: path, symbol: symbol)
       end
 
       # Register Citrus backend if grammar_module provided
+      # Note: Uses `if` not `elsif` so both backends can be registered in one call
+      # This allows maximum flexibility - register once, use with any backend
       if grammar_module
         unless grammar_module.respond_to?(:parse)
           raise ArgumentError, "Grammar module must respond to :parse"
         end
 
-        LanguageRegistry.register(name, :citrus,
-          grammar_module: grammar_module,
-          gem_name: gem_name
-        )
+        LanguageRegistry.register(name, :citrus, grammar_module: grammar_module, gem_name: gem_name)
       end
 
+      # Require at least one backend to be registered
       if path.nil? && grammar_module.nil?
         raise ArgumentError, "Must provide at least one of: path (tree-sitter) or grammar_module (Citrus)"
       end
 
+      # Note: No early return! This method intentionally processes both `if` blocks
+      # above to allow registering multiple backends for the same language.
+      # Both tree-sitter and Citrus can be registered simultaneously for maximum
+      # flexibility. See method documentation for rationale.
       nil
     end
 
@@ -391,6 +563,7 @@ module TreeHaver
       # @param symbol [String, nil] name of the exported function (defaults to auto-detection)
       # @param name [String, nil] logical name for the language (used in caching)
       # @param validate [Boolean] if true, validates path and symbol for safety (default: true)
+      # @param backend [Symbol, String, nil] optional backend to use (overrides context/global)
       # @return [Language] loaded language handle
       # @raise [NotAvailable] if the library cannot be loaded or the symbol is not found
       # @raise [ArgumentError] if path or symbol fails security validation
@@ -400,7 +573,13 @@ module TreeHaver
       #     symbol: "tree_sitter_toml",
       #     name: "toml"
       #   )
-      def from_library(path, symbol: nil, name: nil, validate: true)
+      # @example With explicit backend
+      #   language = TreeHaver::Language.from_library(
+      #     "/usr/local/lib/libtree-sitter-toml.so",
+      #     symbol: "tree_sitter_toml",
+      #     backend: :ffi
+      #   )
+      def from_library(path, symbol: nil, name: nil, validate: true, backend: nil)
         if validate
           unless PathValidator.safe_library_path?(path)
             errors = PathValidator.validation_errors(path)
@@ -413,11 +592,20 @@ module TreeHaver
           end
         end
 
-        mod = TreeHaver.backend_module
-        raise NotAvailable, "No TreeHaver backend is available" unless mod
+        mod = TreeHaver.resolve_backend_module(backend)
+
+        if mod.nil?
+          if backend
+            raise NotAvailable, "Requested backend #{backend.inspect} is not available"
+          else
+            raise NotAvailable, "No TreeHaver backend is available"
+          end
+        end
+
         # Backend must implement .from_library; fallback to .from_path for older impls
-        # Include ENV vars in cache key since they affect symbol resolution
-        key = [path, symbol, name, ENV["TREE_SITTER_LANG_SYMBOL"]]
+        # Include effective backend AND ENV vars in cache key since they affect loading
+        effective_b = TreeHaver.resolve_effective_backend(backend)
+        key = [effective_b, path, symbol, name, ENV["TREE_SITTER_LANG_SYMBOL"]]
         LanguageRegistry.fetch(key) do
           if mod::Language.respond_to?(:from_library)
             mod::Language.from_library(path, symbol: symbol, name: name)
@@ -516,11 +704,34 @@ module TreeHaver
   class Parser
     # Create a new parser instance
     #
-    # @raise [NotAvailable] if no backend is available
-    def initialize
-      mod = TreeHaver.backend_module
-      raise NotAvailable, "No TreeHaver backend is available" unless mod
+    # @param backend [Symbol, String, nil] optional backend to use (overrides context/global)
+    # @raise [NotAvailable] if no backend is available or requested backend is unavailable
+    # @example Default (uses context/global)
+    #   parser = TreeHaver::Parser.new
+    # @example Explicit backend
+    #   parser = TreeHaver::Parser.new(backend: :ffi)
+    def initialize(backend: nil)
+      # Convert string backend names to symbols for consistency
+      backend = backend.to_sym if backend.is_a?(String)
+
+      mod = TreeHaver.resolve_backend_module(backend)
+
+      if mod.nil?
+        if backend
+          raise NotAvailable, "Requested backend #{backend.inspect} is not available"
+        else
+          raise NotAvailable, "No TreeHaver backend is available"
+        end
+      end
+
       @impl = mod::Parser.new
+      @explicit_backend = backend  # Remember for introspection (always a Symbol or nil)
+    end
+
+    # Get the backend this parser is using (for introspection)
+    # @return [Symbol] the backend name
+    def backend
+      @explicit_backend || TreeHaver.effective_backend
     end
 
     # Set the language grammar for this parser
@@ -542,7 +753,8 @@ module TreeHaver
     #   puts tree.root_node.type
     def parse(source)
       tree_impl = @impl.parse(source)
-      Tree.new(tree_impl)
+      # Wrap backend tree with source so Node#text works
+      Tree.new(tree_impl, source: source)
     end
 
     # Parse source code into a syntax tree (with optional incremental parsing)
@@ -591,10 +803,12 @@ module TreeHaver
           old_tree
         end
         tree_impl = @impl.parse_string(old_impl, source)
-        Tree.new(tree_impl)
+         # Wrap backend tree with source so Node#text works
+        Tree.new(tree_impl, source: source)
       elsif @impl.respond_to?(:parse_string)
         tree_impl = @impl.parse_string(nil, source)
-        Tree.new(tree_impl)
+        # Wrap backend tree with source so Node#text works
+        Tree.new(tree_impl, source: source)
       else
         # Fallback for backends that don't support parse_string
         parse(source)

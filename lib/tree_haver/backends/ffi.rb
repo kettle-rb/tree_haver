@@ -130,6 +130,12 @@ module TreeHaver
               attach_function(:ts_node_type, [:ts_node], :string)
               attach_function(:ts_node_child_count, [:ts_node], :uint32)
               attach_function(:ts_node_child, [:ts_node, :uint32], :ts_node)
+              attach_function(:ts_node_start_byte, [:ts_node], :uint32)
+              attach_function(:ts_node_end_byte, [:ts_node], :uint32)
+              attach_function(:ts_node_start_point, [:ts_node], :pointer)
+              attach_function(:ts_node_end_point, [:ts_node], :pointer)
+              attach_function(:ts_node_is_null, [:ts_node], :bool)
+              attach_function(:ts_node_is_named, [:ts_node], :bool)
             end
 
             def loaded?
@@ -170,6 +176,18 @@ module TreeHaver
           return false unless FFI_AVAILABLE && defined?(::FFI)
           # We report available when ffi is present; loading lib happens lazily
           true
+        end
+
+        # Reset the load state (primarily for testing)
+        #
+        # Note: FFI backend doesn't maintain load state like other backends,
+        # but this method is provided for API consistency.
+        #
+        # @return [void]
+        # @api private
+        def reset!
+          # FFI backend uses constant-time availability check, no state to reset
+          nil
         end
 
         # Get capabilities supported by this backend
@@ -290,22 +308,15 @@ module TreeHaver
           @parser = Native.ts_parser_new
           raise TreeHaver::NotAvailable, "Failed to create ts_parser" if @parser.null?
 
-          ObjectSpace.define_finalizer(self, self.class.finalizer(@parser))
-        end
-
-        class << self
-          # @api private
-          # @param ptr [FFI::Pointer] pointer to TSParser
-          # @return [Proc] finalizer that deletes the parser
-          def finalizer(ptr)
-            proc {
-              begin
-                Native.ts_parser_delete(ptr)
-              rescue StandardError
-                nil
-              end
-            }
-          end
+          # Note: We intentionally do NOT register a finalizer here because:
+          # 1. ts_parser_delete can segfault if called during certain GC scenarios
+          # 2. The native library may be unloaded before finalizers run
+          # 3. Parser cleanup happens automatically on process exit
+          # 4. Long-running processes should explicitly manage parser lifecycle
+          #
+          # If you need explicit cleanup in long-running processes, store the
+          # parser in an instance variable and call a cleanup method explicitly
+          # when done, rather than relying on GC finalizers.
         end
 
         # Set the language for this parser
@@ -323,21 +334,27 @@ module TreeHaver
         # Parse source code into a syntax tree
         #
         # @param source [String] the source code to parse (should be UTF-8)
-        # @return [TreeHaver::Tree] wrapped tree
+        # @return [Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
         # @raise [TreeHaver::NotAvailable] if parsing fails
         def parse(source)
           src = String(source)
           tree_ptr = Native.ts_parser_parse_string(@parser, ::FFI::Pointer::NULL, src, src.bytesize)
           raise TreeHaver::NotAvailable, "Parse returned NULL" if tree_ptr.null?
 
-          inner_tree = Tree.new(tree_ptr)
-          TreeHaver::Tree.new(inner_tree, source: src)
+          # Return raw FFI::Tree - TreeHaver::Parser will wrap it
+          Tree.new(tree_ptr)
         end
       end
 
       # FFI-based tree-sitter tree
       #
       # Wraps a TSTree pointer and manages its lifecycle with a finalizer.
+      #
+      # Note: Tree objects DO use finalizers (unlike Parser objects) because:
+      # 1. Trees are typically short-lived and numerous (one per parse)
+      # 2. ts_tree_delete is safer than ts_parser_delete during GC
+      # 3. Memory leaks from accumulated trees are more problematic
+      # 4. The finalizer silently ignores errors for safety
       class Tree
         # @api private
         # @param ptr [FFI::Pointer] pointer to TSTree
@@ -349,12 +366,21 @@ module TreeHaver
         # @api private
         # @param ptr [FFI::Pointer] pointer to TSTree
         class << self
+          # Returns a finalizer proc that deletes the tree
+          #
+          # This is public API for testing purposes, but not intended for
+          # direct use. The finalizer is automatically registered when
+          # creating a Tree object.
+          #
           # @return [Proc] finalizer that deletes the tree
           def finalizer(ptr)
             proc {
               begin
                 Native.ts_tree_delete(ptr)
               rescue StandardError
+                # Silently ignore errors during finalization to prevent crashes
+                # during GC. If the library is unloaded or ptr is invalid, we
+                # don't want to crash the entire process.
                 nil
               end
             }

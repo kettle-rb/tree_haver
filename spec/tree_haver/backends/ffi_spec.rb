@@ -192,10 +192,20 @@ RSpec.describe TreeHaver::Backends::FFI do
       end
     end
 
-    describe "::finalizer", :ffi do
-      it "returns a Proc" do
+    describe "Parser", :ffi do
+      it "does not use finalizers (intentional design decision)" do
+        # Parser objects intentionally don't use finalizers because ts_parser_delete
+        # can segfault during GC. Parser cleanup relies on process exit.
+        expect(backend::Parser).not_to respond_to(:finalizer)
+      end
+    end
+
+    describe "Tree::finalizer", :ffi do
+      it "returns a Proc that safely deletes trees" do
+        # Tree objects DO use finalizers (unlike Parser) because trees are
+        # short-lived and numerous, and ts_tree_delete is safer during GC
         fake_ptr = double("FFI::Pointer")
-        finalizer = backend::Parser.finalizer(fake_ptr)
+        finalizer = backend::Tree.finalizer(fake_ptr)
         expect(finalizer).to be_a(Proc)
       end
     end
@@ -210,10 +220,10 @@ RSpec.describe TreeHaver::Backends::FFI do
 
   describe "Tree", :ffi do
     describe "::finalizer" do
-      it "returns a Proc" do
-        fake_ptr = double("FFI::Pointer")
-        finalizer = backend::Tree.finalizer(fake_ptr)
-        expect(finalizer).to be_a(Proc)
+      it "does not define a finalizer method (intentional design decision)" do
+        # We intentionally don't use finalizers because ts_parser_delete can segfault
+        # during GC in certain scenarios. Parser cleanup relies on process exit.
+        expect(backend::Parser).not_to respond_to(:finalizer)
       end
     end
   end

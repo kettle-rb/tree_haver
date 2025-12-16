@@ -393,11 +393,11 @@ module TreeHaver
         # Parse source code
         #
         # @param source [String] the source code to parse
-        # @return [TreeHaver::Tree] wrapped tree
+        # @return [Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
         def parse(source)
           java_tree = @parser.parse(source)
-          inner_tree = Tree.new(java_tree)
-          TreeHaver::Tree.new(inner_tree, source: source)
+          # Return raw Java::Tree - TreeHaver::Parser will wrap it
+          Tree.new(java_tree)
         end
 
         # Parse source code with optional incremental parsing
@@ -407,7 +407,7 @@ module TreeHaver
         #
         # @param old_tree [TreeHaver::Tree, nil] previous tree for incremental parsing
         # @param source [String] the source code to parse
-        # @return [TreeHaver::Tree] wrapped tree
+        # @return [Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
         # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Parser.html#parse(io.github.treesitter.jtreesitter.Tree,java.lang.String)
         def parse_string(old_tree, source)
           if old_tree
@@ -418,8 +418,8 @@ module TreeHaver
           else
             java_tree = @parser.parse(source)
           end
-          inner_tree = Tree.new(java_tree)
-          TreeHaver::Tree.new(inner_tree, source: source)
+          # Return raw Java::Tree - TreeHaver::Parser will wrap it
+          Tree.new(java_tree)
         end
       end
 

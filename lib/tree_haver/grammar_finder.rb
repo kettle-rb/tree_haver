@@ -142,12 +142,35 @@ module TreeHaver
     def find_library_path
       # Check environment variable first (highest priority)
       env_path = ENV[env_var_name]
-      if env_path && PathValidator.safe_library_path?(env_path) && File.exist?(env_path)
-        return env_path
+      if env_path
+        # Store why env path was rejected for better error messages
+        @env_rejection_reason = validate_env_path(env_path)
+        return env_path if @env_rejection_reason.nil?
       end
 
       # Search all paths (these are constructed from trusted base dirs)
       search_paths.find { |path| File.exist?(path) }
+    end
+
+    # Validate an environment variable path and return reason if invalid
+    # @return [String, nil] rejection reason or nil if valid
+    def validate_env_path(path)
+      # Check for leading/trailing whitespace
+      if path != path.strip
+        return "contains leading or trailing whitespace (use #{path.strip.inspect})"
+      end
+
+      # Check if path is safe
+      unless PathValidator.safe_library_path?(path)
+        return "failed security validation (may contain path traversal or suspicious characters)"
+      end
+
+      # Check if file exists
+      unless File.exist?(path)
+        return "file does not exist"
+      end
+
+      nil # Valid!
     end
 
     # Find the grammar library path with strict security validation
@@ -205,15 +228,17 @@ module TreeHaver
     #
     # @return [Hash] diagnostic information
     def search_info
+      found = find_library_path # This populates @env_rejection_reason
       {
         language: @language_name,
         env_var: env_var_name,
         env_value: ENV[env_var_name],
+        env_rejection_reason: @env_rejection_reason,
         symbol: symbol_name,
         library_filename: library_filename,
         search_paths: search_paths,
-        found_path: find_library_path,
-        available: available?,
+        found_path: found,
+        available: !found.nil?,
       }
     end
 
@@ -221,9 +246,19 @@ module TreeHaver
     #
     # @return [String] error message with installation hints
     def not_found_message
-      "tree-sitter #{@language_name} grammar not found. " \
-        "Searched: #{search_paths.join(", ")}. " \
-        "Install tree-sitter-#{@language_name} or set #{env_var_name}."
+      msg = "tree-sitter #{@language_name} grammar not found."
+
+      # Check if env var is set but rejected
+      env_value = ENV[env_var_name]
+      if env_value && @env_rejection_reason
+        msg += " #{env_var_name} is set to #{env_value.inspect} but #{@env_rejection_reason}."
+      elsif env_value
+        msg += " #{env_var_name} is set but was not used (file may have been removed)."
+      else
+        msg += " Searched: #{search_paths.join(", ")}."
+      end
+
+      msg + " Install tree-sitter-#{@language_name} or set #{env_var_name} to a valid path."
     end
 
     private

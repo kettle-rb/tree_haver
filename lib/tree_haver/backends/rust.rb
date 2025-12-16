@@ -140,22 +140,22 @@ module TreeHaver
         # Parse source code
         #
         # @param source [String] the source code to parse
-        # @return [TreeHaver::Tree] wrapped tree
+        # @return [TreeStump::Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
         def parse(source)
-          tree = @parser.parse(source)
-          TreeHaver::Tree.new(tree, source: source)
+          # Return raw tree_stump tree - TreeHaver::Parser will wrap it
+          @parser.parse(source)
         end
 
         # Parse source code with optional incremental parsing
         #
         # @param old_tree [TreeHaver::Tree, nil] previous tree for incremental parsing
         # @param source [String] the source code to parse
-        # @return [TreeHaver::Tree] wrapped tree
+        # @return [TreeStump::Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
         def parse_string(old_tree, source)
-          # tree_stump doesn't have parse_string, use parse instead
-          # TODO: Check if tree_stump supports incremental parsing
-          tree = @parser.parse(source)
-          TreeHaver::Tree.new(tree, source: source)
+          # Unwrap if TreeHaver::Tree to get inner tree for incremental parsing
+          inner_old_tree = old_tree.respond_to?(:inner_tree) ? old_tree.inner_tree : old_tree
+          # Return raw tree_stump tree - TreeHaver::Parser will wrap it
+          @parser.parse(source, inner_old_tree)
         end
       end
     end

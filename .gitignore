@@ -4,6 +4,7 @@
 *.gem
 /vendor/jars/
 /vendor/tree*
+/vendor/finitio
 
 # Bundler
 /vendor/bundle/

@@ -154,7 +154,7 @@ module TreeHaver
         # Parse source code
         #
         # @param source [String] the source code to parse
-        # @return [TreeHaver::Tree] wrapped tree
+        # @return [Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
         # @raise [TreeHaver::NotAvailable] if no grammar is set
         # @raise [::Citrus::ParseError] if parsing fails
         def parse(source)
@@ -162,8 +162,8 @@ module TreeHaver
 
           begin
             citrus_match = @grammar.parse(source)
-            inner_tree = Tree.new(citrus_match, source)
-            TreeHaver::Tree.new(inner_tree, source: source)
+            # Return raw Citrus::Tree - TreeHaver::Parser will wrap it
+            Tree.new(citrus_match, source)
           rescue ::Citrus::ParseError => e
             # Re-raise with more context
             raise TreeHaver::Error, "Parse error: #{e.message}"

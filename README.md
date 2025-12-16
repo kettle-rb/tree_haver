@@ -76,7 +76,7 @@ parser.language = TreeHaver::Language.from_library("/path/to/grammar.so")
 tree = parser.parse(source_code)
 
 # TreeHaver automatically picks the best backend:
-# - MRI → ruby_tree_sitter (C extension)
+# - MRI → ruby_tree_sitter (C extensions)
 # - JRuby → FFI (system's libtree-sitter)
 # - TruffleRuby → FFI or MRI backend
 ```
@@ -96,6 +96,74 @@ tree = parser.parse(source_code)
 - **Grammar Discovery**: Built-in `GrammarFinder` utility for platform-aware grammar library discovery
 - **Thread-Safe**: Built-in language registry with thread-safe caching
 - **Minimal API Surface**: Simple, focused API that covers the most common tree-sitter use cases
+
+### Backend Requirements
+
+TreeHaver has minimal dependencies and automatically selects the best backend for your Ruby implementation. Each backend has specific version requirements:
+
+#### MRI Backend (ruby_tree_sitter, C extensions)
+
+**Requires `ruby_tree_sitter` v2.0+**
+
+In ruby_tree_sitter v2.0, all TreeSitter exceptions were changed to inherit from `Exception` (not `StandardError`). This was an intentional breaking change made for thread-safety and signal handling reasons.
+
+**Exception Mapping**: TreeHaver catches `TreeSitter::TreeSitterError` and its subclasses, converting them to `TreeHaver::NotAvailable` while preserving the original error message. This provides a consistent exception API across all backends:
+
+| ruby_tree_sitter Exception          | TreeHaver Exception        | When It Occurs                                 |
+|-------------------------------------|----------------------------|------------------------------------------------|
+| `TreeSitter::ParserNotFoundError`   | `TreeHaver::NotAvailable`  | Parser library file cannot be loaded           |
+| `TreeSitter::LanguageLoadError`     | `TreeHaver::NotAvailable`  | Language symbol loads but returns nothing      |
+| `TreeSitter::SymbolNotFoundError`   | `TreeHaver::NotAvailable`  | Symbol not found in library                    |
+| `TreeSitter::ParserVersionError`    | `TreeHaver::NotAvailable`  | Parser version incompatible with tree-sitter   |
+| `TreeSitter::QueryCreationError`    | `TreeHaver::NotAvailable`  | Query creation fails                           |
+
+```ruby
+# Add to your Gemfile for MRI backend
+gem "ruby_tree_sitter", "~> 2.0"
+```
+
+#### Rust Backend (tree_stump)
+
+Currently requires [pboling's fork](https://github.com/pboling/tree_stump/tree/tree_haver) until upstream PRs are merged.
+
+```ruby
+# Add to your Gemfile for Rust backend
+gem "tree_stump", github: "pboling/tree_stump", branch: "tree_haver"
+```
+
+#### FFI Backend
+
+Requires the `ffi` gem and a system installation of `libtree-sitter`:
+
+```ruby
+# Add to your Gemfile for FFI backend
+gem "ffi", ">= 1.15", "< 2.0"
+```
+
+```bash
+# Install libtree-sitter on your system:
+# macOS
+brew install tree-sitter
+
+# Ubuntu/Debian
+apt-get install libtree-sitter0 libtree-sitter-dev
+
+# Fedora
+dnf install tree-sitter tree-sitter-devel
+```
+
+#### Citrus Backend
+
+Pure Ruby parser with no native dependencies:
+
+```ruby
+# Add to your Gemfile for Citrus backend
+gem "citrus", "~> 3.0"
+```
+
+#### Java Backend (JRuby only)
+
+No additional dependencies required beyond grammar JARs built for java-tree-sitter.
 
 ### Why TreeHaver?
 
@@ -280,6 +348,63 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 </details>
 
 ## ⚙️ Configuration
+
+### Available Backends
+
+TreeHaver supports multiple parsing backends, each with different trade-offs. The `auto` backend automatically selects the best available option.
+
+| Backend | Description | Performance | Portability | Examples |
+|---------|-------------|-------------|-------------|----------|
+| **Auto** | Auto-selects best backend | Varies | ✅ Universal | [JSON](examples/auto_json.rb) · [JSONC](examples/auto_jsonc.rb) · [Bash](examples/auto_bash.rb) |
+| **MRI** | C extension via ruby_tree_sitter | ⚡ Fastest | MRI only | [JSON](examples/mri_json.rb) · [JSONC](examples/mri_jsonc.rb) · ~~Bash~~* |
+| **Rust** | Precompiled via tree_stump | ⚡ Very Fast | ✅ Good | [JSON](examples/rust_json.rb) · [JSONC](examples/rust_jsonc.rb) · ~~Bash~~* |
+| **FFI** | Dynamic linking via FFI | 🔵 Fast | ✅ Universal | [JSON](examples/ffi_json.rb) · [JSONC](examples/ffi_jsonc.rb) · [Bash](examples/ffi_bash.rb) |
+| **Java** | JNI bindings | ⚡ Very Fast | JRuby only | [JSON](examples/java_json.rb) · [JSONC](examples/java_jsonc.rb) · [Bash](examples/java_bash.rb) |
+| **Citrus** | Pure Ruby parsing | 🟡 Slower | ✅ Universal | [TOML](examples/citrus_toml.rb) · [Finitio](examples/citrus_finitio.rb) · [Dhall](examples/citrus_dhall.rb) |
+
+**Selection Priority (Auto mode):** MRI → Rust → FFI → Java → Citrus
+
+**Known Issues:**
+- *MRI + Bash: ABI incompatibility (use FFI instead)
+- *Rust + Bash: Version mismatch (use FFI instead)
+
+**Backend Requirements:**
+
+```ruby
+# MRI Backend
+gem 'ruby_tree_sitter'
+
+# Rust Backend  
+gem 'tree_stump'
+
+# FFI Backend
+gem 'ffi'
+
+# Citrus Backend
+gem 'citrus'
+# Plus grammar gems: toml-rb, dhall, finitio, etc.
+```
+
+**Force Specific Backend:**
+
+```ruby
+TreeHaver.backend = :ffi    # Force FFI backend
+TreeHaver.backend = :mri    # Force MRI backend
+TreeHaver.backend = :rust   # Force Rust backend
+TreeHaver.backend = :java   # Force Java backend (JRuby)
+TreeHaver.backend = :citrus # Force Citrus backend
+TreeHaver.backend = :auto   # Auto-select (default)
+```
+
+**Check Backend Capabilities:**
+
+```ruby
+TreeHaver.backend              # => :ffi
+TreeHaver.backend_module       # => TreeHaver::Backends::FFI
+TreeHaver.capabilities         # => { backend: :ffi, parse: true, query: false, ... }
+```
+
+See [examples/](examples/) directory for 18 complete working examples demonstrating all backends and languages.
 
 ### Security Considerations
 
@@ -590,6 +715,64 @@ parser = TreeSitter::Parser.new  # Actually creates TreeHaver::Parser
 ```
 
 This is safe and idempotent—if the real `TreeSitter` module is already loaded, the shim does nothing.
+
+#### ⚠️ Critical: Exception Hierarchy Incompatibility
+
+**ruby_tree_sitter v2+ exceptions inherit from `Exception` (not `StandardError`).**  
+**TreeHaver exceptions follow Ruby best practices and inherit from `StandardError`.**
+
+This means exception handling behaves **differently** between the two:
+
+| Scenario | ruby_tree_sitter v2+ | TreeHaver Compat Mode |
+|----------|---------------------|----------------------|
+| `rescue => e` | Does NOT catch TreeSitter errors | DOES catch TreeHaver errors |
+| Behavior | Errors propagate (inherit Exception) | Errors caught (inherit StandardError) |
+
+**Example showing the difference:**
+
+```ruby
+# With real ruby_tree_sitter v2+
+begin
+  TreeSitter::Language.load("missing", "/nonexistent.so")
+rescue => e
+  puts "Caught!"  # Never reached - TreeSitter errors inherit Exception
+end
+
+# With TreeHaver compat mode
+require "tree_haver/compat"
+begin
+  TreeSitter::Language.load("missing", "/nonexistent.so")  # Actually TreeHaver
+rescue => e
+  puts "Caught!"  # WILL be reached - TreeHaver errors inherit StandardError
+end
+```
+
+**To write compatible exception handling:**
+
+```ruby
+# Option 1: Catch specific exception (works with both)
+begin
+  TreeSitter::Language.load(...)
+rescue TreeSitter::TreeSitterError => e  # Explicit rescue
+  # Works with both ruby_tree_sitter and TreeHaver compat mode
+end
+
+# Option 2: Use TreeHaver API directly (recommended)
+begin
+  TreeHaver::Language.from_library(...)
+rescue TreeHaver::NotAvailable => e  # TreeHaver's unified exception
+  # Clear and consistent when using TreeHaver
+end
+```
+
+**Why TreeHaver uses StandardError:**
+
+1. **Ruby Best Practice**: The [Ruby style guide](https://rubystyle.guide/#exception-flow-control) recommends inheriting from `StandardError`
+2. **Safety**: Inheriting from `Exception` can catch system signals (`SIGTERM`, `SIGINT`) and `exit`, which is dangerous
+3. **Consistency**: Most Ruby libraries follow this convention
+4. **Testability**: StandardError exceptions are easier to test and mock
+
+See `lib/tree_haver/compat.rb` for detailed documentation.
 
 ## 🔧 Basic Usage
 

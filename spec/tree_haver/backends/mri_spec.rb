@@ -36,8 +36,14 @@ RSpec.describe TreeHaver::Backends::MRI do
       end
     end
 
-    context "when ruby_tree_sitter is not available", :not_mri_backend do
-      it "returns false" do
+    context "when ruby_tree_sitter is not available" do
+      it "returns false after reset and failed require" do
+        # Reset the memoized state using the API
+        backend.reset!
+
+        # Stub require to fail
+        allow(backend).to receive(:require).with("tree_sitter").and_raise(LoadError)
+
         expect(backend.available?).to be false
       end
     end
@@ -79,7 +85,8 @@ RSpec.describe TreeHaver::Backends::MRI do
     describe "::from_path" do
       context "when MRI backend is not available" do
         before do
-          allow(backend).to receive(:available?).and_return(false)
+          # Stub TreeSitter constant to not exist
+          hide_const("TreeSitter")
         end
 
         it "raises NotAvailable" do

@@ -176,7 +176,7 @@ RSpec.describe TreeHaver do
 
   describe ".register_language" do
     it "delegates to LanguageRegistry" do
-      expect(TreeHaver::LanguageRegistry).to receive(:register).with(:toml, path: "/path.so", symbol: "ts_toml")
+      expect(TreeHaver::LanguageRegistry).to receive(:register).with(:toml, :tree_sitter, path: "/path.so", symbol: "ts_toml")
       TreeHaver.register_language(:toml, path: "/path.so", symbol: "ts_toml")
     end
   end
@@ -203,7 +203,8 @@ RSpec.describe TreeHaver do
       TreeHaver.register_language(:toml, path: "/lib.so")
       result = TreeHaver.registered_language(:toml)
       expect(result).to be_a(Hash)
-      expect(result[:path]).to eq("/lib.so")
+      expect(result[:tree_sitter]).to be_a(Hash)
+      expect(result[:tree_sitter][:path]).to eq("/lib.so")
     end
   end
 
@@ -723,6 +724,265 @@ RSpec.describe TreeHaver do
         expect {
           node.undefined_method
         }.to raise_error(NoMethodError)
+      end
+    end
+  end
+
+  describe ".backend_module", :ffi do
+    context "when backend is :citrus" do
+      before { TreeHaver.backend = :citrus }
+      after { TreeHaver.backend = :auto }
+
+      it "returns Citrus backend module" do
+        expect(TreeHaver.backend_module).to eq(TreeHaver::Backends::Citrus)
+      end
+    end
+
+    context "when no backend is available" do
+      before do
+        allow(TreeHaver::Backends::Java).to receive(:available?).and_return(false)
+        allow(TreeHaver::Backends::MRI).to receive(:available?).and_return(false)
+        allow(TreeHaver::Backends::Rust).to receive(:available?).and_return(false)
+        allow(TreeHaver::Backends::FFI).to receive(:available?).and_return(false)
+        allow(TreeHaver::Backends::Citrus).to receive(:available?).and_return(false)
+        TreeHaver.backend = :auto
+      end
+
+      after do
+        TreeHaver.backend = :auto
+      end
+
+      it "returns nil" do
+        expect(TreeHaver.backend_module).to be_nil
+      end
+    end
+  end
+
+  describe ".register_language" do
+    after { TreeHaver::LanguageRegistry.clear_all! }
+
+    context "with grammar_module that doesn't respond to :parse" do
+      it "raises ArgumentError" do
+        bad_module = Module.new
+
+        expect {
+          TreeHaver.register_language(:bad, grammar_module: bad_module)
+        }.to raise_error(ArgumentError, /must respond to :parse/)
+      end
+    end
+
+    context "with neither path nor grammar_module" do
+      it "raises ArgumentError" do
+        expect {
+          TreeHaver.register_language(:empty)
+        }.to raise_error(ArgumentError, /Must provide at least one/)
+      end
+    end
+
+    context "with both path and grammar_module" do
+      it "registers both backends" do
+        mock_grammar = Module.new
+        def mock_grammar.parse(source); end
+
+        TreeHaver.register_language(
+          :test_lang,
+          path: "/fake/path.so",
+          symbol: "ts_test",
+          grammar_module: mock_grammar,
+          gem_name: "test-gem"
+        )
+
+        registration = TreeHaver.registered_language(:test_lang)
+        expect(registration).to have_key(:tree_sitter)
+        expect(registration).to have_key(:citrus)
+        expect(registration[:tree_sitter][:path]).to eq("/fake/path.so")
+        expect(registration[:citrus][:grammar_module]).to eq(mock_grammar)
+      end
+    end
+  end
+
+  describe ".unregister_language" do
+    before do
+      TreeHaver.register_language(:test_lang, path: "/fake/path.so")
+    end
+
+    after { TreeHaver::LanguageRegistry.clear_all! }
+
+    it "removes language registration" do
+      expect(TreeHaver.registered_language(:test_lang)).not_to be_nil
+      TreeHaver.unregister_language(:test_lang)
+      expect(TreeHaver.registered_language(:test_lang)).to be_nil
+    end
+  end
+
+  describe ".resolve_effective_backend" do
+    after do
+      Thread.current[:tree_haver_backend_context] = nil
+      TreeHaver.backend = :auto
+    end
+
+    it "returns explicit backend when provided" do
+      expect(TreeHaver.send(:resolve_effective_backend, :ffi)).to eq(:ffi)
+    end
+
+    it "returns thread context backend when no explicit backend" do
+      Thread.current[:tree_haver_backend_context] = { backend: :mri, depth: 1 }
+      expect(TreeHaver.send(:resolve_effective_backend, nil)).to eq(:mri)
+    end
+
+    it "returns global backend when no thread context" do
+      TreeHaver.backend = :rust
+      expect(TreeHaver.send(:resolve_effective_backend, nil)).to eq(:rust)
+    end
+
+    it "returns :auto when nothing is set" do
+      Thread.current[:tree_haver_backend_context] = nil
+      TreeHaver.backend = :auto
+      expect(TreeHaver.send(:resolve_effective_backend, nil)).to eq(:auto)
+    end
+  end
+
+  describe "backend resolution edge cases" do
+
+    describe "::resolve_backend_module" do
+      context "when no backends are available" do
+        before do
+          # Stub all backends as unavailable
+          allow(TreeHaver::Backends::MRI).to receive(:available?).and_return(false)
+          allow(TreeHaver::Backends::Rust).to receive(:available?).and_return(false)
+          allow(TreeHaver::Backends::FFI).to receive(:available?).and_return(false)
+          allow(TreeHaver::Backends::Java).to receive(:available?).and_return(false)
+          allow(TreeHaver::Backends::Citrus).to receive(:available?).and_return(false)
+        end
+
+        it "returns nil when auto-detecting with no available backends" do
+          result = described_class.resolve_backend_module(:auto)
+          expect(result).to be_nil
+        end
+      end
+
+      context "when only Citrus is available" do
+        before do
+          allow(TreeHaver::Backends::MRI).to receive(:available?).and_return(false)
+          allow(TreeHaver::Backends::Rust).to receive(:available?).and_return(false)
+          allow(TreeHaver::Backends::FFI).to receive(:available?).and_return(false)
+          allow(TreeHaver::Backends::Java).to receive(:available?).and_return(false)
+          allow(TreeHaver::Backends::Citrus).to receive(:available?).and_return(true)
+        end
+
+        it "falls back to Citrus when auto-detecting" do
+          result = described_class.resolve_backend_module(:auto)
+          expect(result).to eq(TreeHaver::Backends::Citrus)
+        end
+      end
+    end
+  end
+
+  describe TreeHaver::Language do
+    describe "::method_missing edge cases" do
+      context "with Citrus backend" do
+        before do
+          TreeHaver.backend = :citrus
+          TreeHaver::LanguageRegistry.clear_all!
+        end
+
+        after do
+          TreeHaver.backend = :auto
+          TreeHaver::LanguageRegistry.clear_all!
+        end
+
+        it "raises NoMethodError when no registration found" do
+          expect {
+            TreeHaver::Language.unregistered_lang
+          }.to raise_error(NoMethodError)
+        end
+      end
+
+      context "without appropriate registration" do
+        before do
+          TreeHaver.backend = :mri
+          TreeHaver::LanguageRegistry.clear_all!
+          # Register only for Citrus, not tree-sitter
+          TreeHaver::LanguageRegistry.register(:test_lang, :citrus,
+            grammar_module: double("Grammar", parse: true))
+        end
+
+        after do
+          TreeHaver.backend = :auto
+          TreeHaver::LanguageRegistry.clear_all!
+        end
+
+        it "raises ArgumentError when no compatible registration found" do
+          expect {
+            TreeHaver::Language.test_lang
+          }.to raise_error(ArgumentError, /No grammar registered for :test_lang compatible with/)
+        end
+      end
+    end
+  end
+
+  describe TreeHaver::Parser do
+    describe "#parse_string edge cases" do
+      context "with old_tree parameter" do
+        let(:old_tree_impl) { double("OldTreeImpl") }
+        let(:new_tree_impl) { double("NewTreeImpl", root_node: double(type: "root", child_count: 0)) }
+        let(:impl) { double("ParserImpl", parse_string: new_tree_impl, "language=": nil) }
+
+        let(:fake_backend_module) do
+          mod = Module.new
+          impl_inst = impl
+          parser_class = Class.new do
+            define_method(:initialize) do
+              @impl = impl_inst
+            end
+            attr_reader :impl
+            define_method(:language=) { |lang| @impl.language = lang }
+            define_method(:parse_string) { |old, src| @impl.parse_string(old, src) }
+          end
+          mod.const_set(:Parser, parser_class)
+          mod
+        end
+
+        before do
+          allow(TreeHaver).to receive(:resolve_backend_module).and_return(fake_backend_module)
+        end
+
+        it "extracts impl from Tree wrapper when old_tree has @inner_tree" do
+          parser = TreeHaver::Parser.new
+
+          old_tree_wrapper = double("TreeWrapper")
+          allow(old_tree_wrapper).to receive(:respond_to?).and_return(false)
+          allow(old_tree_wrapper).to receive(:respond_to?).with(:inner_tree).and_return(true)
+          allow(old_tree_wrapper).to receive(:inner_tree).and_return(old_tree_impl)
+
+          expect(impl).to receive(:parse_string).with(old_tree_impl, "new source").and_return(new_tree_impl)
+
+          parser.parse_string(old_tree_wrapper, "new source")
+        end
+
+        it "extracts impl from legacy wrapper when old_tree has @impl" do
+          parser = TreeHaver::Parser.new
+
+          old_tree_wrapper = double("TreeWrapper")
+          allow(old_tree_wrapper).to receive(:respond_to?).and_return(true)
+          allow(old_tree_wrapper).to receive(:respond_to?).with(:inner_tree).and_return(false)
+          allow(old_tree_wrapper).to receive(:instance_variable_get).with(:@inner_tree).and_return(nil)
+          allow(old_tree_wrapper).to receive(:instance_variable_get).with(:@impl).and_return(old_tree_impl)
+
+          expect(impl).to receive(:parse_string).with(old_tree_impl, "new source").and_return(new_tree_impl)
+
+          parser.parse_string(old_tree_wrapper, "new source")
+        end
+
+        it "uses old_tree directly when it's not a wrapper" do
+          parser = TreeHaver::Parser.new
+
+          allow(old_tree_impl).to receive(:respond_to?).and_return(false)
+
+          expect(impl).to receive(:parse_string).with(old_tree_impl, "new source").and_return(new_tree_impl)
+
+          parser.parse_string(old_tree_impl, "new source")
+        end
       end
     end
   end

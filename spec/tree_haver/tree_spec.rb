@@ -156,5 +156,50 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
       result = tree.custom_method(:arg1, key: :value)
       expect(result).to eq(:result)
     end
+
+    it "delegates with block" do
+      allow(tree.inner_tree).to receive(:respond_to?).with(:method_with_block).and_return(true)
+      allow(tree.inner_tree).to receive(:method_with_block) do |&block|
+        block.call("yielded value")
+      end
+
+      result = nil
+      tree.method_with_block { |val| result = val }
+
+      expect(result).to eq("yielded value")
+    end
+  end
+
+  describe "#respond_to_missing?" do
+    it "returns true for methods supported by inner_tree" do
+      allow(tree.inner_tree).to receive(:respond_to?).with(:backend_specific_method, false).and_return(true)
+      expect(tree.respond_to?(:backend_specific_method)).to be true
+    end
+
+    it "returns false for unsupported methods" do
+      allow(tree.inner_tree).to receive(:respond_to?).with(:unsupported_method, false).and_return(false)
+      expect(tree.respond_to?(:unsupported_method)).to be false
+    end
+
+    it "includes private methods when asked" do
+      allow(tree.inner_tree).to receive(:respond_to?).with(:private_method, true).and_return(true)
+      expect(tree.respond_to?(:private_method, true)).to be true
+    end
+  end
+
+  describe "#inspect" do
+    it "includes source length when source is present" do
+      result = tree.inspect
+      expect(result).to include("TreeHaver::Tree")
+      expect(result).to include("source_length")
+      expect(result).to include(source.bytesize.to_s)
+    end
+
+    it "shows 'unknown' when source is nil" do
+      tree_without_source = described_class.new(tree.inner_tree, source: nil)
+      result = tree_without_source.inspect
+      expect(result).to include("TreeHaver::Tree")
+      expect(result).to include("source_length=unknown")
+    end
   end
 end

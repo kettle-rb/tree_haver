@@ -17,6 +17,32 @@
 #   parser = TreeSitter::Parser.new  # Actually creates TreeHaver::Parser
 #   tree = parser.parse(source)
 #
+# @note CRITICAL: Exception Hierarchy Incompatibility
+#
+#   ruby_tree_sitter v2+ exceptions inherit from Exception (not StandardError).
+#   TreeHaver exceptions follow Ruby best practices and inherit from StandardError.
+#
+#   This means exception handling behaves DIFFERENTLY:
+#
+#   **ruby_tree_sitter v2+ (real):**
+#     begin
+#       TreeSitter::Language.load(...)
+#     rescue => e  # Does NOT catch TreeSitter errors (they're Exception)
+#       # Never reached for TreeSitter::TreeSitterError
+#     end
+#
+#   **TreeHaver compat mode:**
+#     require "tree_haver/compat"
+#     begin
+#       TreeSitter::Language.load(...)  # Actually TreeHaver
+#     rescue => e  # DOES catch errors (they're StandardError)
+#       # WILL be reached - DIFFERENT behavior!
+#     end
+#
+#   To handle exceptions consistently:
+#     - Catch TreeSitter::TreeSitterError explicitly (works with both)
+#     - Or catch TreeHaver::NotAvailable when using TreeHaver directly
+#
 # @note This is an opt-in feature. Only require this file if you need compatibility
 # @see TreeHaver The main module this aliases to
 

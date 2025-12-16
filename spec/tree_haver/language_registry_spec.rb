@@ -13,27 +13,27 @@ RSpec.describe TreeHaver::LanguageRegistry do
 
   describe ".register" do
     it "registers a language with path and symbol" do
-      registry.register(:toml, path: "/path/to/lib.so", symbol: "tree_sitter_toml")
-      entry = registry.registered(:toml)
+      registry.register(:toml, :tree_sitter, path: "/path/to/lib.so", symbol: "tree_sitter_toml")
+      entry = registry.registered(:toml, :tree_sitter)
       expect(entry).to eq({path: "/path/to/lib.so", symbol: "tree_sitter_toml"})
     end
 
     it "registers a language with path only" do
-      registry.register(:json, path: "/path/to/json.so")
-      entry = registry.registered(:json)
-      expect(entry).to eq({path: "/path/to/json.so", symbol: nil})
+      registry.register(:json, :tree_sitter, path: "/path/to/json.so")
+      entry = registry.registered(:json, :tree_sitter)
+      expect(entry).to eq({path: "/path/to/json.so"})
     end
 
     it "accepts string names and converts to symbol" do
-      registry.register("yaml", path: "/path/to/yaml.so")
+      registry.register("yaml", :tree_sitter, path: "/path/to/yaml.so")
       expect(registry.registered(:yaml)).not_to be_nil
       expect(registry.registered("yaml")).not_to be_nil
     end
 
     it "overwrites existing registration" do
-      registry.register(:toml, path: "/old/path.so")
-      registry.register(:toml, path: "/new/path.so", symbol: "new_symbol")
-      entry = registry.registered(:toml)
+      registry.register(:toml, :tree_sitter, path: "/old/path.so")
+      registry.register(:toml, :tree_sitter, path: "/new/path.so", symbol: "new_symbol")
+      entry = registry.registered(:toml, :tree_sitter)
       expect(entry[:path]).to eq("/new/path.so")
       expect(entry[:symbol]).to eq("new_symbol")
     end
@@ -41,7 +41,7 @@ RSpec.describe TreeHaver::LanguageRegistry do
 
   describe ".unregister" do
     it "removes a registered language" do
-      registry.register(:toml, path: "/path/lib.so")
+      registry.register(:toml, :tree_sitter, path: "/path/lib.so")
       expect(registry.registered(:toml)).not_to be_nil
       registry.unregister(:toml)
       expect(registry.registered(:toml)).to be_nil
@@ -52,7 +52,7 @@ RSpec.describe TreeHaver::LanguageRegistry do
     end
 
     it "accepts string names" do
-      registry.register(:toml, path: "/path/lib.so")
+      registry.register(:toml, :tree_sitter, path: "/path/lib.so")
       registry.unregister("toml")
       expect(registry.registered(:toml)).to be_nil
     end
@@ -64,18 +64,19 @@ RSpec.describe TreeHaver::LanguageRegistry do
     end
 
     it "returns registration hash for registered language" do
-      registry.register(:toml, path: "/lib.so", symbol: "ts_toml")
+      registry.register(:toml, :tree_sitter, path: "/lib.so", symbol: "ts_toml")
       entry = registry.registered(:toml)
       expect(entry).to be_a(Hash)
-      expect(entry).to have_key(:path)
-      expect(entry).to have_key(:symbol)
+      expect(entry).to have_key(:tree_sitter)
+      expect(entry[:tree_sitter]).to have_key(:path)
+      expect(entry[:tree_sitter]).to have_key(:symbol)
     end
   end
 
   describe ".clear_registrations!" do
     it "removes all registrations" do
-      registry.register(:toml, path: "/a.so")
-      registry.register(:json, path: "/b.so")
+      registry.register(:toml, :tree_sitter, path: "/a.so")
+      registry.register(:json, :tree_sitter, path: "/b.so")
       registry.clear_registrations!
       expect(registry.registered(:toml)).to be_nil
       expect(registry.registered(:json)).to be_nil
@@ -151,7 +152,7 @@ RSpec.describe TreeHaver::LanguageRegistry do
     end
 
     it "does not affect registrations" do
-      registry.register(:toml, path: "/lib.so")
+      registry.register(:toml, :tree_sitter, path: "/lib.so")
       registry.clear_cache!
       expect(registry.registered(:toml)).not_to be_nil
     end
@@ -159,7 +160,7 @@ RSpec.describe TreeHaver::LanguageRegistry do
 
   describe ".clear_all!" do
     it "clears both registrations and cache" do
-      registry.register(:toml, path: "/lib.so")
+      registry.register(:toml, :tree_sitter, path: "/lib.so")
       registry.fetch(["cache_key"]) { "cached" }
       registry.clear_all!
       expect(registry.registered(:toml)).to be_nil
@@ -177,7 +178,7 @@ RSpec.describe TreeHaver::LanguageRegistry do
       threads = 10.times.map do |i|
         Thread.new do
           100.times do |j|
-            registry.register(:"lang_#{i}_#{j}", path: "/path/#{i}/#{j}.so")
+            registry.register(:"lang_#{i}_#{j}", :tree_sitter, path: "/path/#{i}/#{j}.so")
           end
         end
       end
