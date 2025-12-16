@@ -55,7 +55,7 @@ puts
 puts "Registering Finitio grammar with TreeHaver..."
 TreeHaver.register_language(
   :finitio,
-  grammar_module: Finitio::Syntax::Parser
+  grammar_module: Finitio::Syntax::Parser,
 )
 puts "✓ Registered"
 puts
@@ -115,7 +115,7 @@ end
 puts "Structural Nodes Found:"
 puts "-" * 70
 structural_nodes.each do |node|
-  puts "  • #{node.type}: #{node.text[0..50].gsub("\n", " ").inspect}"
+  puts "  • #{node.type}: #{node.text[0..50].tr("\n", " ").inspect}"
 end
 puts
 
@@ -130,7 +130,7 @@ end
 
 type_defs = find_nodes_by_type(root, "type_def")
 type_defs.each do |def_node|
-  puts "  • #{def_node.text[0..60].gsub("\n", " ")}"
+  puts "  • #{def_node.text[0..60].tr("\n", " ")}"
 end
 puts
 
@@ -148,4 +148,3 @@ puts "  - TOML (via toml-rb)"
 puts "  - Finitio (via finitio gem)"
 puts "  - Any of the 40+ other Citrus-based grammars on RubyGems"
 puts "=" * 70
-

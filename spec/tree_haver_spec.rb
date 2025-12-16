@@ -1,14 +1,10 @@
 # frozen_string_literal: true
 
-RSpec.describe TreeHaver do
-  before do
-    TreeHaver.reset_backend!(to: :auto)
-    TreeHaver.clear_languages!
-  end
+require "spec_helper"
 
+RSpec.describe TreeHaver do
   after do
     TreeHaver.reset_backend!(to: :auto)
-    TreeHaver.clear_languages!
   end
 
   it "has a version number" do
@@ -178,23 +174,6 @@ RSpec.describe TreeHaver do
     it "delegates to LanguageRegistry" do
       expect(TreeHaver::LanguageRegistry).to receive(:register).with(:toml, :tree_sitter, path: "/path.so", symbol: "ts_toml")
       TreeHaver.register_language(:toml, path: "/path.so", symbol: "ts_toml")
-    end
-  end
-
-  describe ".unregister_language" do
-    it "delegates to LanguageRegistry" do
-      expect(TreeHaver::LanguageRegistry).to receive(:unregister).with(:toml)
-      TreeHaver.unregister_language(:toml)
-    end
-  end
-
-  describe ".clear_languages!" do
-    it "delegates to LanguageRegistry" do
-      # Register a language first
-      TreeHaver.register_language(:test, path: "/test.so")
-      expect(TreeHaver.registered_language(:test)).not_to be_nil
-      TreeHaver.clear_languages!
-      expect(TreeHaver.registered_language(:test)).to be_nil
     end
   end
 
@@ -371,13 +350,50 @@ RSpec.describe TreeHaver do
         mod
       end
 
+      # Create a proper test Language class that follows the Language pattern
+      let(:test_language_class) do
+        Class.new do
+          include Comparable
+
+          attr_reader :backend, :path, :symbol
+
+          def initialize(backend: :test, path: "/test/grammar.so", symbol: "tree_sitter_test")
+            @backend = backend
+            @path = path
+            @symbol = symbol
+          end
+
+          # Unwrapping method for test backend
+          def to_test_language
+            "test_language_pointer"
+          end
+
+          # Comparable implementation
+          def <=>(other)
+            return unless other.is_a?(self.class)
+            return unless other.backend == @backend
+
+            cmp = (@path || "") <=> (other.path || "")
+            return cmp unless cmp.zero?
+
+            (@symbol || "") <=> (other.symbol || "")
+          end
+
+          def hash
+            [@backend, @path, @symbol].hash
+          end
+
+          alias_method :eql?, :==
+        end
+      end
+
       before do
         allow(TreeHaver).to receive(:backend_module).and_return(fake_backend_module)
       end
 
       it "sets language on underlying implementation" do
         parser = TreeHaver::Parser.new
-        lang = double("Language")
+        lang = test_language_class.new
         expect { parser.language = lang }.not_to raise_error
       end
     end
@@ -728,8 +744,8 @@ RSpec.describe TreeHaver do
     end
   end
 
-  describe ".backend_module", :ffi do
-    context "when backend is :citrus" do
+  describe ".backend_module" do
+    context "when backend is :citrus", :citrus_backend do
       before { TreeHaver.backend = :citrus }
       after { TreeHaver.backend = :auto }
 
@@ -759,14 +775,14 @@ RSpec.describe TreeHaver do
   end
 
   describe ".register_language" do
-    after { TreeHaver::LanguageRegistry.clear_all! }
+    # NOTE: Don't clear registrations - use unique names per test
 
     context "with grammar_module that doesn't respond to :parse" do
       it "raises ArgumentError" do
         bad_module = Module.new
 
         expect {
-          TreeHaver.register_language(:bad, grammar_module: bad_module)
+          TreeHaver.register_language(:bad_module_test, grammar_module: bad_module)
         }.to raise_error(ArgumentError, /must respond to :parse/)
       end
     end
@@ -774,7 +790,7 @@ RSpec.describe TreeHaver do
     context "with neither path nor grammar_module" do
       it "raises ArgumentError" do
         expect {
-          TreeHaver.register_language(:empty)
+          TreeHaver.register_language(:empty_test)
         }.to raise_error(ArgumentError, /Must provide at least one/)
       end
     end
@@ -782,14 +798,15 @@ RSpec.describe TreeHaver do
     context "with both path and grammar_module" do
       it "registers both backends" do
         mock_grammar = Module.new
-        def mock_grammar.parse(source); end
+        def mock_grammar.parse(source)
+        end
 
         TreeHaver.register_language(
           :test_lang,
           path: "/fake/path.so",
           symbol: "ts_test",
           grammar_module: mock_grammar,
-          gem_name: "test-gem"
+          gem_name: "test-gem",
         )
 
         registration = TreeHaver.registered_language(:test_lang)
@@ -798,20 +815,6 @@ RSpec.describe TreeHaver do
         expect(registration[:tree_sitter][:path]).to eq("/fake/path.so")
         expect(registration[:citrus][:grammar_module]).to eq(mock_grammar)
       end
-    end
-  end
-
-  describe ".unregister_language" do
-    before do
-      TreeHaver.register_language(:test_lang, path: "/fake/path.so")
-    end
-
-    after { TreeHaver::LanguageRegistry.clear_all! }
-
-    it "removes language registration" do
-      expect(TreeHaver.registered_language(:test_lang)).not_to be_nil
-      TreeHaver.unregister_language(:test_lang)
-      expect(TreeHaver.registered_language(:test_lang)).to be_nil
     end
   end
 
@@ -826,7 +829,7 @@ RSpec.describe TreeHaver do
     end
 
     it "returns thread context backend when no explicit backend" do
-      Thread.current[:tree_haver_backend_context] = { backend: :mri, depth: 1 }
+      Thread.current[:tree_haver_backend_context] = {backend: :mri, depth: 1}
       expect(TreeHaver.send(:resolve_effective_backend, nil)).to eq(:mri)
     end
 
@@ -843,7 +846,6 @@ RSpec.describe TreeHaver do
   end
 
   describe "backend resolution edge cases" do
-
     describe "::resolve_backend_module" do
       context "when no backends are available" do
         before do
@@ -883,17 +885,15 @@ RSpec.describe TreeHaver do
       context "with Citrus backend" do
         before do
           TreeHaver.backend = :citrus
-          TreeHaver::LanguageRegistry.clear_all!
         end
 
         after do
           TreeHaver.backend = :auto
-          TreeHaver::LanguageRegistry.clear_all!
         end
 
         it "raises NoMethodError when no registration found" do
           expect {
-            TreeHaver::Language.unregistered_lang
+            TreeHaver::Language.unregistered_lang_citrus_test
           }.to raise_error(NoMethodError)
         end
       end
@@ -901,21 +901,22 @@ RSpec.describe TreeHaver do
       context "without appropriate registration" do
         before do
           TreeHaver.backend = :mri
-          TreeHaver::LanguageRegistry.clear_all!
-          # Register only for Citrus, not tree-sitter
-          TreeHaver::LanguageRegistry.register(:test_lang, :citrus,
-            grammar_module: double("Grammar", parse: true))
+          # Register only for Citrus, not tree-sitter - use unique name
+          TreeHaver::LanguageRegistry.register(
+            :test_lang_citrus_only,
+            :citrus,
+            grammar_module: double("Grammar", parse: true),
+          )
         end
 
         after do
           TreeHaver.backend = :auto
-          TreeHaver::LanguageRegistry.clear_all!
         end
 
         it "raises ArgumentError when no compatible registration found" do
           expect {
-            TreeHaver::Language.test_lang
-          }.to raise_error(ArgumentError, /No grammar registered for :test_lang compatible with/)
+            TreeHaver::Language.test_lang_citrus_only
+          }.to raise_error(ArgumentError, /No grammar registered for :test_lang_citrus_only compatible with/)
         end
       end
     end

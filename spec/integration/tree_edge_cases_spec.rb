@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 # Integration tests for Tree edge cases and method delegation
 RSpec.describe "TreeHaver::Tree edge cases", :toml_grammar do
   let(:source) { "[package]\nname = \"test\"" }
@@ -115,4 +117,3 @@ RSpec.describe "TreeHaver::Tree edge cases", :toml_grammar do
     end
   end
 end
-

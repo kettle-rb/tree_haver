@@ -122,4 +122,3 @@ puts "  • Documentation generation"
 puts "  • Security auditing"
 puts "  • Code refactoring tools"
 puts "=" * 70
-

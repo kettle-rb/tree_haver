@@ -81,4 +81,3 @@ puts "  - Optimal performance on JRuby"
 puts "  - Takes advantage of JVM optimizations"
 puts "  - Best choice for JRuby applications"
 puts "=" * 70
-

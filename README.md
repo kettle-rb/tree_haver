@@ -396,6 +396,51 @@ TreeHaver.backend = :citrus # Force Citrus backend
 TreeHaver.backend = :auto   # Auto-select (default)
 ```
 
+**Block-based Backend Switching:**
+
+Use `with_backend` to temporarily switch backends for a specific block of code.
+This is thread-safe and supports nesting—the previous backend is automatically
+restored when the block exits (even if an exception is raised).
+
+```ruby
+# Temporarily use a specific backend
+TreeHaver.with_backend(:mri) do
+  parser = TreeHaver::Parser.new
+  tree = parser.parse(source)
+  # All operations in this block use the MRI backend
+end
+# Backend is restored to its previous value here
+
+# Nested blocks work correctly
+TreeHaver.with_backend(:rust) do
+  # Uses :rust
+  TreeHaver.with_backend(:citrus) do
+    # Uses :citrus
+    parser = TreeHaver::Parser.new
+  end
+  # Back to :rust
+end
+# Back to original backend
+```
+
+This is particularly useful for:
+
+- **Testing**: Test the same code with different backends
+- **Performance comparison**: Benchmark different backends
+- **Fallback scenarios**: Try one backend, fall back to another
+- **Thread isolation**: Each thread can use a different backend safely
+
+```ruby
+# Example: Testing with multiple backends
+[:mri, :rust, :citrus].each do |backend_name|
+  TreeHaver.with_backend(backend_name) do
+    parser = TreeHaver::Parser.new
+    result = parser.parse(source)
+    puts "#{backend_name}: #{result.root_node.type}"
+  end
+end
+```
+
 **Check Backend Capabilities:**
 
 ```ruby
@@ -840,6 +885,38 @@ parser.language = toml_language
 tree = parser.parse(toml_source)
 ```
 
+#### Flexible Language Names
+
+The `name` parameter in `register_language` is an arbitrary identifier you choose—it doesn't
+need to match the actual language name. The actual grammar identity comes from the `path`
+and `symbol` parameters (for tree-sitter) or `grammar_module` (for Citrus).
+
+This flexibility is useful for:
+
+- **Aliasing**: Register the same grammar under multiple names
+- **Versioning**: Register different grammar versions (e.g., `:ruby_2`, `:ruby_3`)
+- **Testing**: Use unique names to avoid collisions between tests
+- **Context-specific naming**: Use names that make sense for your application
+
+```ruby
+# Register the same TOML grammar under different names for different purposes
+TreeHaver.register_language(
+  :config_parser,  # Custom name for your app
+  path: "/usr/local/lib/libtree-sitter-toml.so",
+  symbol: "tree_sitter_toml",
+)
+
+TreeHaver.register_language(
+  :toml_v1,  # Version-specific name
+  path: "/usr/local/lib/libtree-sitter-toml.so",
+  symbol: "tree_sitter_toml",
+)
+
+# Use your custom names
+config_lang = TreeHaver::Language.config_parser
+versioned_lang = TreeHaver::Language.toml_v1
+```
+
 ### Parsing Different Languages
 
 TreeHaver works with any tree-sitter grammar:
@@ -1058,23 +1135,90 @@ TreeHaver.backend = :mri
 TreeHaver.backend = :citrus
 ```
 
-### Advanced: Testing with Multiple Backends
+### Advanced: Thread-Safe Backend Switching
 
-If you're developing a library that uses TreeHaver, you can test against different backends:
+TreeHaver provides `with_backend` for thread-safe, temporary backend switching. This is
+essential for testing, benchmarking, and applications that need different backends in
+different contexts.
+
+#### Testing with Multiple Backends
+
+Test the same code path with different backends using `with_backend`:
 
 ```ruby
 # In your test setup
 RSpec.describe("MyParser") do
-  before do
-    TreeHaver.reset_backend!(to: :ffi)
+  # Test with each available backend
+  [:mri, :rust, :citrus].each do |backend_name|
+    context "with #{backend_name} backend" do
+      it "parses correctly" do
+        TreeHaver.with_backend(backend_name) do
+          parser = TreeHaver::Parser.new
+          result = parser.parse("x = 42")
+          expect(result.root_node.type).to eq("document")
+        end
+        # Backend automatically restored after block
+      end
+    end
+  end
+end
+```
+
+#### Thread Isolation
+
+Each thread can use a different backend safely—`with_backend` uses thread-local storage:
+
+```ruby
+threads = []
+
+threads << Thread.new do
+  TreeHaver.with_backend(:mri) do
+    # This thread uses MRI backend
+    parser = TreeHaver::Parser.new
+    100.times { parser.parse("x = 1") }
+  end
+end
+
+threads << Thread.new do
+  TreeHaver.with_backend(:citrus) do
+    # This thread uses Citrus backend simultaneously
+    parser = TreeHaver::Parser.new
+    100.times { parser.parse("x = 1") }
+  end
+end
+
+threads.each(&:join)
+```
+
+#### Nested Blocks
+
+`with_backend` supports nesting—inner blocks override outer blocks:
+
+```ruby
+TreeHaver.with_backend(:rust) do
+  puts TreeHaver.effective_backend  # => :rust
+
+  TreeHaver.with_backend(:citrus) do
+    puts TreeHaver.effective_backend  # => :citrus
   end
 
-  after do
-    TreeHaver.reset_backend!(to: :auto)
-  end
+  puts TreeHaver.effective_backend  # => :rust (restored)
+end
+```
 
-  it "parses correctly with FFI backend" do
-    # Your test code
+#### Fallback Pattern
+
+Try one backend, fall back to another on failure:
+
+```ruby
+def parse_with_fallback(source)
+  TreeHaver.with_backend(:mri) do
+    TreeHaver::Parser.new.tap { |p| p.language = load_language }.parse(source)
+  end
+rescue TreeHaver::NotAvailable
+  # Fall back to Citrus if MRI backend unavailable
+  TreeHaver.with_backend(:citrus) do
+    TreeHaver::Parser.new.tap { |p| p.language = load_language }.parse(source)
   end
 end
 ```

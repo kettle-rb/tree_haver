@@ -65,14 +65,79 @@ module TreeHaver
 
       # Wrapper for ruby_tree_sitter Language
       #
-      # This is a thin pass-through to ::TreeSitter::Language from ruby_tree_sitter.
+      # Wraps ::TreeSitter::Language from ruby_tree_sitter to provide a consistent
+      # API across all backends.
       class Language
+        include Comparable
+
+        # The wrapped TreeSitter::Language object
+        # @return [::TreeSitter::Language]
+        attr_reader :inner_language
+
+        # The backend this language is for
+        # @return [Symbol]
+        attr_reader :backend
+
+        # The path this language was loaded from (if known)
+        # @return [String, nil]
+        attr_reader :path
+
+        # The symbol name (if known)
+        # @return [String, nil]
+        attr_reader :symbol
+
+        # @api private
+        # @param lang [::TreeSitter::Language] the language object from ruby_tree_sitter
+        # @param path [String, nil] path language was loaded from
+        # @param symbol [String, nil] symbol name
+        def initialize(lang, path: nil, symbol: nil)
+          @inner_language = lang
+          @backend = :mri
+          @path = path
+          @symbol = symbol
+        end
+
+        # Compare languages for equality
+        #
+        # MRI languages are equal if they have the same backend, path, and symbol.
+        # Path and symbol uniquely identify a loaded language.
+        #
+        # @param other [Object] object to compare with
+        # @return [Integer, nil] -1, 0, 1, or nil if not comparable
+        def <=>(other)
+          return unless other.is_a?(Language)
+          return unless other.backend == @backend
+
+          # Compare by path first, then symbol
+          cmp = (@path || "") <=> (other.path || "")
+          return cmp unless cmp.zero?
+
+          (@symbol || "") <=> (other.symbol || "")
+        end
+
+        # Hash value for this language (for use in Sets/Hashes)
+        # @return [Integer]
+        def hash
+          [@backend, @path, @symbol].hash
+        end
+
+        # Alias eql? to ==
+        alias_method :eql?, :==
+
+        # Convert to the underlying TreeSitter::Language for passing to parser
+        #
+        # @return [::TreeSitter::Language]
+        def to_language
+          @inner_language
+        end
+        alias_method :to_ts_language, :to_language
+
         # Load a language from a shared library (preferred method)
         #
         # @param path [String] absolute path to the language shared library
         # @param symbol [String] the exported symbol name (e.g., "tree_sitter_json")
         # @param name [String, nil] optional language name (unused by MRI backend)
-        # @return [::TreeSitter::Language] the loaded language handle
+        # @return [Language] wrapped language handle
         # @raise [TreeHaver::NotAvailable] if ruby_tree_sitter is not available
         # @example
         #   lang = TreeHaver::Backends::MRI::Language.from_library("/path/to/lib.so", symbol: "tree_sitter_json")
@@ -81,9 +146,14 @@ module TreeHaver
             raise TreeHaver::NotAvailable, "ruby_tree_sitter not available" unless MRI.available?
 
             # ruby_tree_sitter's TreeSitter::Language.load takes (language_name, path_to_so)
-            # where language_name is the exported symbol name (e.g., "tree_sitter_json")
+            # where language_name is the language identifier (e.g., "toml", "json")
+            # NOT the full symbol name (e.g., NOT "tree_sitter_toml")
             # and path_to_so is the full path to the .so file
-            ::TreeSitter::Language.load(name || symbol, path)
+            #
+            # If name is not provided, derive it from symbol by stripping "tree_sitter_" prefix
+            language_name = name || symbol&.sub(/\Atree_sitter_/, "")
+            ts_lang = ::TreeSitter::Language.load(language_name, path)
+            new(ts_lang, path: path, symbol: symbol)
           rescue NameError => e
             # TreeSitter constant doesn't exist - backend not loaded
             raise TreeHaver::NotAvailable, "ruby_tree_sitter not available: #{e.message}"
@@ -97,7 +167,7 @@ module TreeHaver
           #
           # @param path [String] absolute path to the language shared library
           # @param symbol [String] the exported symbol name (e.g., "tree_sitter_json")
-          # @return [::TreeSitter::Language] the loaded language handle
+          # @return [Language] wrapped language handle
           # @deprecated Use {from_library} instead
           def from_path(path, symbol: nil)
             from_library(path, symbol: symbol)
@@ -125,16 +195,19 @@ module TreeHaver
 
         # Set the language for this parser
         #
-        # @param lang [::TreeSitter::Language] the language to use
+        # Note: TreeHaver::Parser unwraps language objects before calling this method.
+        # This backend receives raw ::TreeSitter::Language objects, never wrapped ones.
+        #
+        # @param lang [::TreeSitter::Language] the language to use (already unwrapped)
         # @return [::TreeSitter::Language] the language that was set
         # @raise [TreeHaver::NotAvailable] if setting language fails
         def language=(lang)
+          # lang is already unwrapped by TreeHaver::Parser, use directly
           @parser.language = lang
           # Verify it was set
           raise TreeHaver::NotAvailable, "Language not set correctly" if @parser.language.nil?
 
-          # Return the original language object, not what ruby_tree_sitter returns
-          # ruby_tree_sitter may return a different object, but we want consistency
+          # Return the language object
           lang
         rescue TreeSitter::TreeSitterError => e
           # TreeSitter errors inherit from Exception (not StandardError) in ruby_tree_sitter v2+
@@ -162,15 +235,17 @@ module TreeHaver
 
         # Parse source code with optional incremental parsing
         #
-        # @param old_tree [TreeHaver::Tree, nil] previous tree for incremental parsing
+        # Note: old_tree should already be unwrapped by TreeHaver::Parser before reaching this method.
+        # The backend receives the raw inner tree (::TreeSitter::Tree or nil), not a wrapped TreeHaver::Tree.
+        #
+        # @param old_tree [::TreeSitter::Tree, nil] previous tree for incremental parsing (already unwrapped)
         # @param source [String] the source code to parse
         # @return [::TreeSitter::Tree] raw tree (NOT wrapped - wrapping happens in TreeHaver::Parser)
         # @raise [TreeHaver::NotAvailable] if parsing fails
         def parse_string(old_tree, source)
-          # Unwrap if TreeHaver::Tree to get inner tree for incremental parsing
-          inner_old_tree = old_tree.respond_to?(:inner_tree) ? old_tree.inner_tree : old_tree
+          # old_tree is already unwrapped by TreeHaver::Parser, pass it directly
           # Return raw tree - TreeHaver::Parser will wrap it
-          @parser.parse_string(inner_old_tree, source)
+          @parser.parse_string(old_tree, source)
         rescue TreeSitter::TreeSitterError => e
           # TreeSitter errors inherit from Exception (not StandardError) in ruby_tree_sitter v2+
           raise TreeHaver::NotAvailable, "Could not parse source: #{e.message}"

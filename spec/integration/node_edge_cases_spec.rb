@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 # Integration tests for Node edge cases and fallback behaviors
 # These test behaviors when backend nodes don't implement all optional methods
 RSpec.describe "TreeHaver::Node edge cases", :toml_grammar do
@@ -19,15 +21,19 @@ RSpec.describe "TreeHaver::Node edge cases", :toml_grammar do
       context "when backend doesn't support named_child_count directly" do
         it "manually counts named children" do
           # Create a mock node that doesn't support named_child_count
-          mock_inner = double("mock_node")
-          allow(mock_inner).to receive(:respond_to?).with(:named_child_count).and_return(false)
-          allow(mock_inner).to receive(:respond_to?).with(:child_count).and_return(true)
-          allow(mock_inner).to receive(:child_count).and_return(3)
+          mock_inner = double("mock_node", child_count: 3)
+          allow(mock_inner).to receive(:respond_to?) do |method, *|
+            method != :named_child_count
+          end
 
           # Create mock children: 2 named, 1 unnamed
-          child1 = double("child1", named?: true)
-          child2 = double("child2", named?: false)
-          child3 = double("child3", named?: true)
+          child1 = double("child1", named?: true, child_count: 0, type: "named1")
+          child2 = double("child2", named?: false, child_count: 0, type: "unnamed")
+          child3 = double("child3", named?: true, child_count: 0, type: "named2")
+
+          [child1, child2, child3].each do |child|
+            allow(child).to receive(:respond_to?).and_return(true)
+          end
 
           allow(mock_inner).to receive(:child).with(0).and_return(child1)
           allow(mock_inner).to receive(:child).with(1).and_return(child2)
@@ -42,15 +48,20 @@ RSpec.describe "TreeHaver::Node edge cases", :toml_grammar do
     describe "#named_child" do
       context "when backend doesn't support named_child directly" do
         it "manually finds the nth named child" do
-          mock_inner = double("mock_node")
-          allow(mock_inner).to receive(:respond_to?).with(:named_child).and_return(false)
-          allow(mock_inner).to receive(:child_count).and_return(4)
+          mock_inner = double("mock_node", child_count: 4)
+          allow(mock_inner).to receive(:respond_to?) do |method, *|
+            method != :named_child
+          end
 
           # Create children: index 1 and 3 are named
-          child0 = double("child0", named?: false)
-          child1 = double("child1", named?: true, type: "first_named")
-          child2 = double("child2", named?: false)
-          child3 = double("child3", named?: true, type: "second_named")
+          child0 = double("child0", named?: false, child_count: 0, type: "unnamed0")
+          child1 = double("child1", named?: true, type: "first_named", child_count: 0)
+          child2 = double("child2", named?: false, child_count: 0, type: "unnamed2")
+          child3 = double("child3", named?: true, type: "second_named", child_count: 0)
+
+          [child0, child1, child2, child3].each do |child|
+            allow(child).to receive(:respond_to?).and_return(true)
+          end
 
           allow(mock_inner).to receive(:child).with(0).and_return(child0)
           allow(mock_inner).to receive(:child).with(1).and_return(child1)
@@ -175,4 +186,3 @@ RSpec.describe "TreeHaver::Node edge cases", :toml_grammar do
     end
   end
 end
-

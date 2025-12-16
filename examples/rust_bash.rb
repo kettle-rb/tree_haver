@@ -41,10 +41,9 @@ begin
   root = tree.root_node
   puts "✓ Parsed: #{root.type} with #{root.child_count} children"
   puts "✓ Rust backend - very fast with precompiled binaries"
-rescue => e
+rescue
   puts "✗ Version compatibility error"
   puts "The Rust backend statically links tree-sitter at compile time."
   puts "See rust_json.rb for detailed explanation and solutions."
-  exit 1
+  exit(1)
 end
-

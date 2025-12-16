@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe TreeHaver::Point do
   let(:point) { described_class.new(5, 10) }
 
@@ -48,4 +50,3 @@ RSpec.describe TreeHaver::Point do
     end
   end
 end
-

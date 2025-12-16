@@ -1,33 +1,23 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Example: Using TreeHaver with TOML-RB Citrus Grammar
+# Example: MRI Backend with TOML
+# Forces MRI backend for TOML parsing.
 #
-# This demonstrates how tree_haver's Citrus backend provides a pure Ruby
-# fallback for TOML parsing using toml-rb when tree-sitter-toml is unavailable.
-#
-# toml-rb gem: https://github.com/emancu/toml-rb
 # TOML spec: https://toml.io/
 
 require "bundler/inline"
 
 gemfile do
   source "https://rubygems.org"
-
-  # Load tree_haver from local path
   gem "tree_haver", path: File.expand_path("..", __dir__)
-
-  # TOML parser with Citrus grammar
-  gem "toml-rb", "~> 4.1"
-
-  gem "citrus"
+  gem "ruby_tree_sitter"
 end
 
 require "tree_haver"
-require "toml-rb"
 
 puts "=" * 70
-puts "TreeHaver + TOML-RB (Citrus Grammar) Example"
+puts "TreeHaver MRI Backend - TOML Parsing"
 puts "=" * 70
 puts
 
@@ -58,21 +48,25 @@ puts "-" * 70
 puts toml_source
 puts
 
-# Register TOML-RB's Citrus grammar with TreeHaver
-puts "Registering TOML grammar with TreeHaver..."
-TreeHaver.register_language(
-  :toml,
-  grammar_module: TomlRB::Document,
-  gem_name: "toml-rb",
-)
+# Register JSON
+puts "Registering JSON grammar..."
+finder = TreeHaver::GrammarFinder.new(:toml)
+if finder.available?
+  finder.register!
+  puts "✓ Registered from: #{finder.find_library_path}"
+else
+  puts "✗ tree-sitter-toml not found"
+  puts finder.not_found_message
+  exit 1
+end
 puts "✓ Registered"
 puts
 
-# Force Citrus backend (pure Ruby parsing)
-puts "Setting backend to Citrus (pure Ruby)..."
-TreeHaver.backend = :citrus
+# Force MRI backend (C Extensions)
+puts "Setting backend to MRI (C Extensions)..."
+TreeHaver.backend = :mri
 puts "✓ Backend: #{TreeHaver.backend_module}"
-puts "✓ This is 100% pure Ruby - no native extensions!"
+puts "✓ Capabilities: #{TreeHaver.capabilities.inspect}"
 puts
 
 # Parse the TOML source
@@ -161,22 +155,5 @@ keyvalues.each do |kv|
 end
 puts
 
-# Demonstrate the advantage of Citrus backend
-puts "=" * 70
-puts "Why Use Citrus Backend?"
-puts "=" * 70
-puts "1. Pure Ruby - works on any platform without native extensions"
-puts "2. No compilation needed - perfect for development"
-puts "3. Works on JRuby, TruffleRuby, and other Ruby implementations"
-puts "4. Useful when tree-sitter-toml native library isn't available"
-puts "5. Same TreeHaver API as tree-sitter backends"
-puts
-puts "Trade-offs:"
-puts "  - Slower than native tree-sitter (but still fast enough for most uses)"
-puts "  - Uses more memory (Ruby objects vs C structs)"
-puts
-puts "Best practice:"
-puts "  - Use tree-sitter when available (fast)"
-puts "  - Automatic fallback to Citrus when tree-sitter unavailable"
-puts "  - tree_haver makes this transparent to your application!"
-puts "=" * 70
+puts "✓ Parsed: #{root.type} with #{root.child_count} children"
+puts "✓ MRI backend handles TOML comments correctly"

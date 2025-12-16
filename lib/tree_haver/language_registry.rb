@@ -29,8 +29,8 @@ module TreeHaver
   # @api private
   module LanguageRegistry
     @mutex = Mutex.new
-    @cache = {}
-    @registrations = {}
+    @cache = {} # rubocop:disable ThreadSafety/MutableClassInstanceVariable
+    @registrations = {} # rubocop:disable ThreadSafety/MutableClassInstanceVariable
 
     module_function
 
@@ -64,22 +64,6 @@ module TreeHaver
       nil
     end
 
-    # Unregister a previously registered language helper
-    #
-    # Removes the registration entry but does not affect cached Language objects.
-    #
-    # @param name [Symbol, String] language identifier to unregister
-    # @return [void]
-    # @example
-    #   LanguageRegistry.unregister(:toml)
-    def unregister(name)
-      key = name.to_sym
-      @mutex.synchronize do
-        @registrations.delete(key)
-      end
-      nil
-    end
-
     # Fetch registration entries for a language
     #
     # Returns all backend-specific configurations for a language.
@@ -99,7 +83,7 @@ module TreeHaver
     def registered(name, backend_type = nil)
       @mutex.synchronize do
         lang_config = @registrations[name.to_sym]
-        return nil unless lang_config
+        return unless lang_config
 
         if backend_type
           lang_config[backend_type.to_sym]
@@ -107,19 +91,6 @@ module TreeHaver
           lang_config
         end
       end
-    end
-
-    # Clear all registrations
-    #
-    # Removes all registered language mappings. Primarily intended for test cleanup.
-    # Does not clear the language cache.
-    #
-    # @return [void]
-    # @example
-    #   LanguageRegistry.clear_registrations!
-    def clear_registrations!
-      @mutex.synchronize { @registrations.clear }
-      nil
     end
 
     # Fetch a cached language by key or compute and store it
@@ -153,22 +124,6 @@ module TreeHaver
     #   LanguageRegistry.clear_cache!
     def clear_cache!
       @mutex.synchronize { @cache.clear }
-      nil
-    end
-
-    # Clear everything (registrations and cache)
-    #
-    # Removes all registered languages and all cached Language objects.
-    # Useful for complete teardown in tests.
-    #
-    # @return [void]
-    # @example
-    #   LanguageRegistry.clear_all!
-    def clear_all!
-      @mutex.synchronize do
-        @registrations.clear
-        @cache.clear
-      end
       nil
     end
   end

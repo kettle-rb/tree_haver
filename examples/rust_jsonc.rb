@@ -41,8 +41,7 @@ begin
   root = tree.root_node
   puts "✓ Parsed: #{root.type} with #{root.child_count} children"
   puts "✓ Rust backend handles JSONC comments correctly"
-rescue => e
+rescue
   puts "✗ Version compatibility error (see rust_json.rb for details)"
-  exit 1
+  exit(1)
 end
-

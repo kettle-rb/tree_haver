@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe TreeHaver::Backends::MRI do
   let(:backend) { described_class }
 
-  # Store original state to restore after tests
   before do
-    @original_load_attempted = backend.instance_variable_get(:@load_attempted)
-    @original_loaded = backend.instance_variable_get(:@loaded)
+    TreeHaver::LanguageRegistry.clear_cache!
   end
 
   after do
-    # Restore original state
-    backend.instance_variable_set(:@load_attempted, @original_load_attempted)
-    backend.instance_variable_set(:@loaded, @original_loaded)
+    backend.reset!
+    TreeHaver::LanguageRegistry.clear_cache!
     TreeHaver.reset_backend!(to: :auto)
   end
 
@@ -85,8 +84,9 @@ RSpec.describe TreeHaver::Backends::MRI do
     describe "::from_path" do
       context "when MRI backend is not available" do
         before do
-          # Stub TreeSitter constant to not exist
-          hide_const("TreeSitter")
+          # Stub available? to return false - this is more reliable than hide_const
+          # because it avoids issues with memoization
+          allow(backend).to receive(:available?).and_return(false)
         end
 
         it "raises NotAvailable" do

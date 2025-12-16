@@ -86,9 +86,15 @@ module TreeHaver
       #   # For TOML, use toml-rb's grammar
       #   language = TreeHaver::Backends::Citrus::Language.new(TomlRB::Document)
       class Language
+        include Comparable
+
         # The Citrus grammar module
         # @return [Module] Citrus grammar module (e.g., TomlRB::Document)
         attr_reader :grammar_module
+
+        # The backend this language is for
+        # @return [Symbol]
+        attr_reader :backend
 
         # @param grammar_module [Module] A Citrus grammar module with a parse method
         def initialize(grammar_module)
@@ -98,7 +104,32 @@ module TreeHaver
                 "Expected a Citrus grammar module (e.g., TomlRB::Document)."
           end
           @grammar_module = grammar_module
+          @backend = :citrus
         end
+
+        # Compare languages for equality
+        #
+        # Citrus languages are equal if they have the same backend and grammar_module.
+        # Grammar module uniquely identifies a Citrus language.
+        #
+        # @param other [Object] object to compare with
+        # @return [Integer, nil] -1, 0, 1, or nil if not comparable
+        def <=>(other)
+          return unless other.is_a?(Language)
+          return unless other.backend == @backend
+
+          # Compare by grammar_module name (modules are compared by object_id by default)
+          @grammar_module.name <=> other.grammar_module.name
+        end
+
+        # Hash value for this language (for use in Sets/Hashes)
+        # @return [Integer]
+        def hash
+          [@backend, @grammar_module.name].hash
+        end
+
+        # Alias eql? to ==
+        alias_method :eql?, :==
 
         # Not applicable for Citrus (tree-sitter-specific)
         #
@@ -131,24 +162,23 @@ module TreeHaver
 
         # Set the grammar for this parser
         #
-        # @param grammar [Language, Module] Citrus grammar module or Language wrapper
-        # @return [Language, Module] the grammar that was set
+        # Note: TreeHaver::Parser unwraps language objects before calling this method.
+        # This backend receives the raw Citrus grammar module (unwrapped), not the Language wrapper.
+        #
+        # @param grammar [Module] Citrus grammar module with a parse method
+        # @return [void]
         # @example
         #   require "toml-rb"
-        #   parser.language = TomlRB::Document  # Pass module directly
-        #   # or
-        #   parser.language = TreeHaver::Backends::Citrus::Language.new(TomlRB::Document)
+        #   # TreeHaver::Parser unwraps Language.new(TomlRB::Document) to just TomlRB::Document
+        #   parser.language = TomlRB::Document  # Backend receives unwrapped module
         def language=(grammar)
-          @grammar = if grammar.respond_to?(:grammar_module)
-            grammar.grammar_module
-          elsif grammar.respond_to?(:parse)
-            grammar
-          else
+          # grammar is already unwrapped by TreeHaver::Parser
+          unless grammar.respond_to?(:parse)
             raise ArgumentError,
-              "Expected Citrus grammar module or Language wrapper, " \
+              "Expected Citrus grammar module with parse method, " \
                 "got #{grammar.class}"
           end
-          grammar
+          @grammar = grammar
         end
 
         # Parse source code
@@ -176,8 +206,8 @@ module TreeHaver
         #
         # @param old_tree [TreeHaver::Tree, nil] ignored (no incremental parsing support)
         # @param source [String] the source code to parse
-        # @return [TreeHaver::Tree] wrapped tree
-        def parse_string(old_tree, source)
+        # @return [Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
+        def parse_string(old_tree, source) # rubocop:disable Lint/UnusedMethodArgument
           parse(source)  # Citrus doesn't support incremental parsing
         end
       end
@@ -313,11 +343,11 @@ module TreeHaver
           # If we have a pattern like "(rule1 | rule2)*", we can't determine
           # the type without looking at actual matches, but that causes recursion
           # So just return a generic type based on the pattern
-          if str =~ /^\(.*\)\*$/
+          if /^\(.*\)\*$/.match?(str)
             return "repeat"
-          elsif str =~ /^\(.*\)\?$/
+          elsif /^\(.*\)\?$/.match?(str)
             return "optional"
-          elsif str =~ /^.*\|.*$/
+          elsif /^.*\|.*$/.match?(str)
             return "choice"
           end
 

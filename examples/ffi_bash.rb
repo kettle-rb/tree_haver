@@ -39,4 +39,3 @@ tree = parser.parse(bash_source)
 root = tree.root_node
 puts "✓ Parsed: #{root.type} with #{root.child_count} children"
 puts "✓ FFI backend - portable across MRI, JRuby, TruffleRuby"
-

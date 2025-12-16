@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe TreeHaver::Tree, :toml_grammar do
   let(:source) { "[package]\nname = \"test\"" }
   let(:parser) do
@@ -132,14 +134,24 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
   describe "#method_missing" do
     it "delegates to inner_tree if method exists" do
       # Find a method that exists on inner_tree but not on Tree
+      # AND can be called with zero arguments (arity <= 0 or -1 for variable)
       backend_specific_method = tree.inner_tree.methods.find do |m|
-        !described_class.instance_methods.include?(m)
+        next false if described_class.instance_methods.include?(m)
+        begin
+          method_obj = tree.inner_tree.method(m)
+          # arity of 0 means no args, -1 means variable args (can be called with 0)
+          method_obj.arity <= 0
+        rescue NameError
+          false
+        end
       end
 
       if backend_specific_method
         expect {
           tree.public_send(backend_specific_method)
         }.not_to raise_error
+      else
+        skip "No suitable zero-argument backend-specific method found"
       end
     end
 
@@ -159,9 +171,7 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
 
     it "delegates with block" do
       allow(tree.inner_tree).to receive(:respond_to?).with(:method_with_block).and_return(true)
-      allow(tree.inner_tree).to receive(:method_with_block) do |&block|
-        block.call("yielded value")
-      end
+      allow(tree.inner_tree).to receive(:method_with_block).and_yield("yielded value")
 
       result = nil
       tree.method_with_block { |val| result = val }

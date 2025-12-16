@@ -94,4 +94,3 @@ puts "  ✓ Allows trailing commas in arrays/objects"
 puts "  ✓ Same tree-sitter grammar handles both"
 puts "  ✓ Commonly used in: VSCode settings, tsconfig.json, etc."
 puts "=" * 70
-

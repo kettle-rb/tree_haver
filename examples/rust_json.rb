@@ -88,6 +88,5 @@ rescue => e
   puts "  2. Rebuild tree_stump for your tree-sitter version"
   puts "  3. Rebuild tree-sitter-json for tree_stump's version"
   puts "=" * 70
-  exit 1
+  exit(1)
 end
-

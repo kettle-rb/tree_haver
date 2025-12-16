@@ -60,7 +60,7 @@ module TreeHaver
     # Pattern for valid symbol names (C identifier format)
     VALID_SYMBOL_PATTERN = /\A[a-zA-Z_][a-zA-Z0-9_]*\z/
 
-    @custom_trusted_directories = []
+    @custom_trusted_directories = [] # rubocop:disable ThreadSafety/MutableClassInstanceVariable
     @mutex = Mutex.new
 
     module_function
@@ -75,18 +75,15 @@ module TreeHaver
       @mutex.synchronize { dirs.concat(@custom_trusted_directories) }
 
       # Add directories from environment variable
-      env_dirs = ENV[TRUSTED_DIRS_ENV_VAR]
-      if env_dirs
-        env_dirs.split(",").each do |dir|
-          expanded = File.expand_path(dir.strip)
-          # :nocov:
-          # File.expand_path always returns absolute paths on Unix/macOS.
-          # This guard exists for defensive programming on exotic platforms
-          # where expand_path might behave differently, but cannot be tested
-          # in standard CI environments.
-          dirs << expanded if expanded.start_with?("/")
-          # :nocov:
-        end
+      ENV[TRUSTED_DIRS_ENV_VAR]&.split(",")&.each do |dir|
+        expanded = File.expand_path(dir.strip)
+        # :nocov:
+        # File.expand_path always returns absolute paths on Unix/macOS.
+        # This guard exists for defensive programming on exotic platforms
+        # where expand_path might behave differently, but cannot be tested
+        # in standard CI environments.
+        dirs << expanded if expanded.start_with?("/")
+        # :nocov:
       end
 
       dirs.uniq
@@ -212,19 +209,27 @@ module TreeHaver
       return false if path.nil?
 
       # Resolve the real path to handle symlinks
-      check_path = begin
-        File.realpath(path)
-      rescue Errno::ENOENT
-        # File doesn't exist yet, check the directory
-        dir = File.dirname(path)
-        begin
-          File.realpath(dir)
-        rescue Errno::ENOENT
-          return false
-        end
-      end
+      check_path = resolve_check_path(path)
+      return false if check_path.nil?
 
       trusted_directories.any? { |trusted| check_path.start_with?(trusted) }
+    end
+
+    # Resolve a path to its real path for trust checking
+    #
+    # @param path [String] the path to resolve
+    # @return [String, nil] the resolved path or nil if unresolvable
+    # @api private
+    def resolve_check_path(path)
+      File.realpath(path)
+    rescue Errno::ENOENT
+      # File doesn't exist yet, check the directory
+      dir = File.dirname(path)
+      begin
+        File.realpath(dir)
+      rescue Errno::ENOENT
+        nil
+      end
     end
 
     # Validate a language name is safe

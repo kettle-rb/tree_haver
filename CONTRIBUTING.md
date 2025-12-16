@@ -42,6 +42,106 @@ There are many Rake tasks available as well. You can see them by running:
 bin/rake -T
 ```
 
+## Backend Compatibility Testing
+
+TreeHaver supports multiple backends (MRI, FFI, Rust, Citrus), but not all backends can coexist
+in the same Ruby process. Notably, **FFI and MRI backends conflict** at the libtree-sitter runtime
+level—using both in the same process will cause segfaults.
+
+The `bin/backend-matrix` script helps test and document backend compatibility by running tests
+in isolated subprocesses.
+
+### Basic Usage
+
+```shell
+# Test all backends with TOML grammar (default)
+bin/backend-matrix
+
+# Test specific backend order
+bin/backend-matrix ffi mri rust
+
+# Test with a different grammar
+bin/backend-matrix --grammar=json
+
+# Test multiple grammars
+bin/backend-matrix --grammars=json,toml,bash
+```
+
+### All Permutations Mode
+
+Test all possible backend combinations by spawning fresh subprocesses for each:
+
+```shell
+# Test all 15 backend combinations (1-backend, 2-backend, 3-backend)
+bin/backend-matrix --all-permutations
+
+# With multiple grammars
+bin/backend-matrix --all-permutations --grammars=json,toml
+```
+
+### Cross-Grammar Testing
+
+The most interesting test: can different backends coexist if they use *different* grammar files?
+
+```shell
+# Test: FFI+json then MRI+toml, MRI+json then FFI+toml, etc.
+bin/backend-matrix --cross-grammar --grammars=json,toml
+
+# Full cross-grammar matrix
+bin/backend-matrix --all-permutations --cross-grammar --grammars=json,toml
+```
+
+### Custom Source Files
+
+Provide your own source files for parsing:
+
+```shell
+bin/backend-matrix --toml-source=my_config.toml --json-source=data.json
+```
+
+### List Available Grammars
+
+Check which grammars are configured and available:
+
+```shell
+bin/backend-matrix --list-grammars
+```
+
+### Understanding the Output
+
+The script produces tables showing:
+
+1. **1-Backend Tests**: Each backend tested in isolation with all grammars
+2. **2-Backend Tests**: Pairs of backends tested in sequence (A → B)
+3. **3-Backend Tests**: Triples tested in sequence (A → B → C)
+4. **Backend Pair Compatibility**: Data-driven analysis of which backends can coexist
+5. **Statistics**: Success rates and combination counts
+
+Example findings:
+
+```
+Backend Pair Compatibility:
+╭──────────────┬────────────────────┬─────────┬────────╮
+│ Backend Pair │ Compatibility      │ Working │ Failed │
+├──────────────┼────────────────────┼─────────┼────────┤
+│ ffi+mri      │ ✗ Incompatible     │       0 │      8 │
+│ mri+rust     │ ✓ Fully compatible │       8 │      0 │
+│ ffi+rust     │ ✓ Fully compatible │       8 │      0 │
+╰──────────────┴────────────────────┴─────────┴────────╯
+```
+
+### Required Environment Variables
+
+The script requires grammar paths to be set:
+
+```shell
+export TREE_SITTER_TOML_PATH=/path/to/libtree-sitter-toml.so
+export TREE_SITTER_JSON_PATH=/path/to/libtree-sitter-json.so
+export TREE_SITTER_BASH_PATH=/path/to/libtree-sitter-bash.so
+```
+
+See `.envrc` for examples of how these are typically configured.
+
 ## Environment Variables for Local Development
 
 Below are the primary environment variables recognized by stone_checksums (and its integrated tools). Unless otherwise noted, set boolean values to the string "true" to enable.

@@ -35,3 +35,5 @@ eval_gemfile "gemfiles/modular/tree_sitter.gemfile"
 
 ### Std Lib Extracted Gems
 eval_gemfile "gemfiles/modular/x_std_libs.gemfile"
+
+gem "table_tennis", "~> 0.0.7"        # ruby >= 3.0.0

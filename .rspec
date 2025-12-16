@@ -1,7 +1,7 @@
 --format progress
 --color
 --order random
---require spec_helper
+--require spec_thin_helper
 --warnings
 --format html
 --out results/test_results.html

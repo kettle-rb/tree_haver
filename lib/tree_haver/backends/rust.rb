@@ -54,14 +54,14 @@ module TreeHaver
         # @return [Hash{Symbol => Object}] capability map
         # @example
         #   TreeHaver::Backends::Rust.capabilities
-        #   # => { backend: :rust, query: true, bytes_field: true, incremental: true }
+        #   # => { backend: :rust, query: true, bytes_field: true, incremental: false }
         def capabilities
           return {} unless available?
           {
             backend: :rust,
             query: true,
             bytes_field: true,
-            incremental: true,
+            incremental: false,  # TreeStump doesn't currently expose incremental parsing to Ruby
           }
         end
       end
@@ -72,15 +72,51 @@ module TreeHaver
       # tree_stump uses a registration-based API where languages are registered
       # by name, then referenced by that name when setting parser language.
       class Language
+        include Comparable
+
         # The registered language name
         # @return [String]
         attr_reader :name
 
+        # The backend this language is for
+        # @return [Symbol]
+        attr_reader :backend
+
+        # The path this language was loaded from (if known)
+        # @return [String, nil]
+        attr_reader :path
+
         # @api private
         # @param name [String] the registered language name
-        def initialize(name)
+        # @param path [String, nil] path language was loaded from
+        def initialize(name, path: nil)
           @name = name
+          @backend = :rust
+          @path = path
         end
+
+        # Compare languages for equality
+        #
+        # Rust languages are equal if they have the same backend and name.
+        # Name uniquely identifies a registered language in TreeStump.
+        #
+        # @param other [Object] object to compare with
+        # @return [Integer, nil] -1, 0, 1, or nil if not comparable
+        def <=>(other)
+          return unless other.is_a?(Language)
+          return unless other.backend == @backend
+
+          @name <=> other.name
+        end
+
+        # Hash value for this language (for use in Sets/Hashes)
+        # @return [Integer]
+        def hash
+          [@backend, @name].hash
+        end
+
+        # Alias eql? to ==
+        alias_method :eql?, :==
 
         # Load a language from a shared library path
         #
@@ -102,7 +138,7 @@ module TreeHaver
             # The name is used to derive the symbol automatically (tree_sitter_<name>)
             lang_name = name || File.basename(path, ".*").sub(/^libtree-sitter-/, "")
             ::TreeStump.register_lang(lang_name, path)
-            new(lang_name)
+            new(lang_name, path: path)
           rescue RuntimeError => e
             raise TreeHaver::NotAvailable, "Failed to load language from #{path}: #{e.message}"
           end
@@ -128,11 +164,16 @@ module TreeHaver
 
         # Set the language for this parser
         #
-        # @param lang [Language, String] the language to use (Language wrapper or name string)
+        # Note: TreeHaver::Parser unwraps language objects before calling this method.
+        # When called from TreeHaver::Parser, receives String (language name).
+        # For backward compatibility and backend tests, also handles Language wrapper.
+        #
+        # @param lang [Language, String] the language wrapper or name string
         # @return [Language, String] the language that was set
         def language=(lang)
-          # tree_stump uses set_language with a string name
+          # Extract language name (handle both wrapper and raw string)
           lang_name = lang.respond_to?(:name) ? lang.name : lang.to_s
+          # tree_stump uses set_language with a string name
           @parser.set_language(lang_name)
           lang
         end
@@ -148,14 +189,16 @@ module TreeHaver
 
         # Parse source code with optional incremental parsing
         #
-        # @param old_tree [TreeHaver::Tree, nil] previous tree for incremental parsing
+        # Note: TreeStump does not currently expose incremental parsing to Ruby.
+        # The parse method always does a full parse, ignoring old_tree.
+        #
+        # @param old_tree [TreeHaver::Tree, nil] previous tree for incremental parsing (ignored)
         # @param source [String] the source code to parse
         # @return [TreeStump::Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
-        def parse_string(old_tree, source)
-          # Unwrap if TreeHaver::Tree to get inner tree for incremental parsing
-          inner_old_tree = old_tree.respond_to?(:inner_tree) ? old_tree.inner_tree : old_tree
-          # Return raw tree_stump tree - TreeHaver::Parser will wrap it
-          @parser.parse(source, inner_old_tree)
+        def parse_string(old_tree, source) # rubocop:disable Lint/UnusedMethodArgument
+          # TreeStump's parse method only accepts source as a single argument
+          # and internally always passes None for the old tree (no incremental parsing support)
+          @parser.parse(source)
         end
       end
     end

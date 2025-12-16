@@ -3,6 +3,9 @@
 # External gems
 require "version_gem"
 
+# Standard library
+require "set"
+
 # This gem
 require_relative "tree_haver/version"
 require_relative "tree_haver/language_registry"
@@ -77,6 +80,30 @@ module TreeHaver
   #   end
   class NotAvailable < Error; end
 
+  # Raised when attempting to use backends that are known to conflict
+  #
+  # This is a serious error that extends Exception (not StandardError) because
+  # it prevents a segmentation fault. The MRI backend (ruby_tree_sitter) and
+  # FFI backend cannot coexist in the same process - once MRI loads, FFI will
+  # segfault when trying to set a language on a parser.
+  #
+  # This protection can be disabled with `TreeHaver.backend_protect = false`
+  # but doing so risks segfaults.
+  #
+  # @example Handling backend conflicts
+  #   begin
+  #     # This will raise if MRI was already used
+  #     TreeHaver.with_backend(:ffi) { parser.language = lang }
+  #   rescue TreeHaver::BackendConflict => e
+  #     puts "Backend conflict: #{e.message}"
+  #     # Fall back to a compatible backend
+  #   end
+  #
+  # @example Disabling protection (not recommended)
+  #   TreeHaver.backend_protect = false
+  #   # Now you can test backend conflicts (at risk of segfaults)
+  class BackendConflict < Exception; end  # rubocop:disable Lint/InheritException
+
   # Namespace for backend implementations
   #
   # TreeHaver provides multiple backends to support different Ruby implementations:
@@ -91,6 +118,21 @@ module TreeHaver
     autoload :FFI, File.join(__dir__, "tree_haver", "backends", "ffi")
     autoload :Java, File.join(__dir__, "tree_haver", "backends", "java")
     autoload :Citrus, File.join(__dir__, "tree_haver", "backends", "citrus")
+
+    # Known backend conflicts
+    #
+    # Maps each backend to an array of backends that block it from working.
+    # For example, :ffi is blocked by :mri because once ruby_tree_sitter loads,
+    # FFI calls to ts_parser_set_language will segfault.
+    #
+    # @return [Hash{Symbol => Array<Symbol>}]
+    BLOCKED_BY = {
+      mri: [],
+      rust: [],
+      ffi: [:mri],  # FFI segfaults if MRI (ruby_tree_sitter) has been loaded
+      java: [],
+      citrus: [],
+    }.freeze
   end
 
   # Security utilities for validating paths before loading shared libraries
@@ -145,6 +187,74 @@ module TreeHaver
   # @return [Symbol] one of :auto, :mri, :rust, :ffi, :java, or :citrus
   # @note Can be set via ENV["TREE_HAVER_BACKEND"]
   class << self
+    # Whether backend conflict protection is enabled
+    #
+    # When true (default), TreeHaver will raise BackendConflict if you try to
+    # use a backend that is known to conflict with a previously used backend.
+    # For example, FFI will not work after MRI has been used.
+    #
+    # Set to false to disable protection (useful for testing compatibility).
+    #
+    # @return [Boolean]
+    # @example Disable protection for testing
+    #   TreeHaver.backend_protect = false
+    attr_writer :backend_protect
+
+    # Check if backend conflict protection is enabled
+    #
+    # @return [Boolean] true if protection is enabled (default)
+    def backend_protect?
+      return @backend_protect if defined?(@backend_protect) # rubocop:disable ThreadSafety/ClassInstanceVariable
+      true  # Default is protected
+    end
+
+    # Alias for backend_protect?
+    def backend_protect
+      backend_protect?
+    end
+
+    # Track which backends have been used in this process
+    #
+    # @return [Set<Symbol>] set of backend symbols that have been used
+    def backends_used
+      @backends_used ||= Set.new # rubocop:disable ThreadSafety/ClassInstanceVariable
+    end
+
+    # Record that a backend has been used
+    #
+    # @param backend [Symbol] the backend that was used
+    # @return [void]
+    # @api private
+    def record_backend_usage(backend)
+      backends_used << backend
+    end
+
+    # Check if a backend would conflict with previously used backends
+    #
+    # @param backend [Symbol] the backend to check
+    # @return [Array<Symbol>] list of previously used backends that block this one
+    def conflicting_backends_for(backend)
+      blockers = Backends::BLOCKED_BY[backend] || []
+      blockers & backends_used.to_a
+    end
+
+    # Check if using a backend would cause a conflict
+    #
+    # @param backend [Symbol] the backend to check
+    # @raise [BackendConflict] if protection is enabled and there's a conflict
+    # @return [void]
+    def check_backend_conflict!(backend)
+      return unless backend_protect?
+
+      conflicts = conflicting_backends_for(backend)
+      return if conflicts.empty?
+
+      raise BackendConflict,
+        "Cannot use #{backend} backend: it is blocked by previously used backend(s): #{conflicts.join(", ")}. " \
+          "The #{backend} backend will segfault when #{conflicts.first} has already loaded. " \
+          "To disable this protection (at risk of segfaults), set TreeHaver.backend_protect = false"
+    end
+
     # @example
     #   TreeHaver.backend  # => :auto
     def backend
@@ -198,7 +308,7 @@ module TreeHaver
     def current_backend_context
       Thread.current[:tree_haver_backend_context] ||= {
         backend: nil,  # nil means "use global default"
-        depth: 0       # Track nesting depth for proper cleanup
+        depth: 0,       # Track nesting depth for proper cleanup
       }
     end
 
@@ -220,26 +330,72 @@ module TreeHaver
 
     # Execute a block with a specific backend in thread-local context
     #
-    # Supports nesting (inner block overrides outer block). The backend
-    # setting is automatically restored when the block exits, even if
-    # an exception is raised.
+    # This method provides temporary, thread-safe backend switching for a block of code.
+    # The backend setting is automatically restored when the block exits, even if
+    # an exception is raised. Supports nesting—inner blocks override outer blocks,
+    # and each level is properly unwound.
+    #
+    # Thread Safety: Each thread maintains its own backend context, so concurrent
+    # threads can safely use different backends without interfering with each other.
+    #
+    # Use Cases:
+    # - Testing: Test the same code path with different backends
+    # - Performance comparison: Benchmark parsing with different backends
+    # - Fallback scenarios: Try one backend, fall back to another on failure
+    # - Thread isolation: Different threads can use different backends safely
     #
     # @param name [Symbol, String] backend name (:mri, :rust, :ffi, :java, :citrus, :auto)
     # @yield block to execute with the specified backend
     # @return [Object] the return value of the block
     # @raise [ArgumentError] if backend name is nil
-    # @example
-    #   TreeHaver.with_backend(:ffi) do
+    # @raise [BackendConflict] if the requested backend conflicts with a previously used backend
+    #
+    # @example Basic usage
+    #   TreeHaver.with_backend(:mri) do
     #     parser = TreeHaver::Parser.new
-    #     parser.parse(source)
+    #     tree = parser.parse(source)
     #   end
-    # @example Nested blocks
-    #   TreeHaver.with_backend(:ffi) do
-    #     parser1 = TreeHaver::Parser.new  # Uses :ffi
-    #     TreeHaver.with_backend(:mri) do
-    #       parser2 = TreeHaver::Parser.new  # Uses :mri
+    #   # Backend is automatically restored here
+    #
+    # @example Nested blocks (inner overrides outer)
+    #   TreeHaver.with_backend(:rust) do
+    #     parser1 = TreeHaver::Parser.new  # Uses :rust
+    #     TreeHaver.with_backend(:citrus) do
+    #       parser2 = TreeHaver::Parser.new  # Uses :citrus
+    #     end
+    #     parser3 = TreeHaver::Parser.new  # Back to :rust
+    #   end
+    #
+    # @example Testing multiple backends
+    #   [:mri, :rust, :citrus].each do |backend_name|
+    #     TreeHaver.with_backend(backend_name) do
+    #       parser = TreeHaver::Parser.new
+    #       result = parser.parse(source)
+    #       puts "#{backend_name}: #{result.root_node.type}"
     #     end
     #   end
+    #
+    # @example Exception safety (backend restored even on error)
+    #   TreeHaver.with_backend(:mri) do
+    #     raise "Something went wrong"
+    #   rescue
+    #     # Handle error
+    #   end
+    #   # Backend is still restored to its previous value
+    #
+    # @example Thread isolation
+    #   threads = [:mri, :rust].map do |backend_name|
+    #     Thread.new do
+    #       TreeHaver.with_backend(backend_name) do
+    #         # Each thread uses its own backend independently
+    #         TreeHaver::Parser.new
+    #       end
+    #     end
+    #   end
+    #   threads.each(&:join)
+    #
+    # @see #effective_backend
+    # @see #current_backend_context
     def with_backend(name)
       raise ArgumentError, "Backend name required" if name.nil?
 
@@ -285,6 +441,7 @@ module TreeHaver
     #
     # @param explicit_backend [Symbol, String, nil] explicitly requested backend
     # @return [Module, nil] the backend module or nil if not available
+    # @raise [BackendConflict] if the backend conflicts with previously used backends
     # @example
     #   mod = TreeHaver.resolve_backend_module(:ffi)
     #   mod.capabilities[:backend]  # => :ffi
@@ -303,25 +460,33 @@ module TreeHaver
         Backends::Java
       when :citrus
         Backends::Citrus
-      else
+      when :auto
         backend_module  # Fall back to normal resolution for :auto
+      else
+        # Unknown backend name - return nil to trigger error in caller
+        nil
       end
 
-      # Return nil if the module doesn't exist or is explicitly unavailable.
-      #
-      # Why use early return pattern instead of complex conditional?
-      # - Early returns make the logic clearer: "return nil if X" is easier to read
-      # - Each condition is independent and can be evaluated separately
-      # - Adding new conditions doesn't require restructuring boolean logic
-      # - The "happy path" (returning mod) stays at the bottom, which is conventional
-      #
+      # Return nil if the module doesn't exist
+      return unless mod
+
+      # Check for backend conflicts FIRST, before checking availability
+      # This is critical because the conflict causes the backend to report unavailable
+      # We want to raise a clear error explaining WHY it's unavailable
+      # Use the requested backend name directly (not capabilities) because
+      # capabilities may be empty when the backend is blocked/unavailable
+      check_backend_conflict!(requested) if requested && requested != :auto
+
+      # Now check if the backend is available
       # Why assume modules without available? are available?
       # - Some backends might be mocked in tests without an available? method
       # - This makes the code more defensive and test-friendly
       # - It allows graceful degradation if a backend module is incomplete
       # - Backward compatibility: if a module doesn't declare availability, assume it works
-      return nil unless mod
-      return nil if mod.respond_to?(:available?) && !mod.available?
+      return if mod.respond_to?(:available?) && !mod.available?
+
+      # Record that this backend is being used
+      record_backend_usage(requested) if requested && requested != :auto
 
       mod
     end
@@ -401,6 +566,15 @@ module TreeHaver
     # to load the registered language. TreeHaver will automatically use the appropriate
     # grammar based on the active backend.
     #
+    # The `name` parameter is an arbitrary identifier you choose - it doesn't need to
+    # match the actual language name. This is useful for:
+    # - Testing: Use unique names like `:toml_test` to avoid collisions
+    # - Aliasing: Register the same grammar under multiple names
+    # - Versioning: Register different grammar versions as `:ruby_2` and `:ruby_3`
+    #
+    # The actual grammar identity comes from `path`/`symbol` (tree-sitter) or
+    # `grammar_module` (Citrus), not from the name.
+    #
     # IMPORTANT: This method INTENTIONALLY allows registering BOTH a tree-sitter
     # library AND a Citrus grammar for the same language IN A SINGLE CALL.
     # This is achieved by using separate `if` statements (not `elsif`) and no early
@@ -416,7 +590,7 @@ module TreeHaver
     # The active backend determines which registration is used automatically.
     # No code changes needed to switch backends - just change TreeHaver.backend.
     #
-    # @param name [Symbol, String] language identifier (e.g., :toml, :json)
+    # @param name [Symbol, String] identifier for this registration (can be any name you choose)
     # @param path [String, nil] absolute path to the language shared library (for tree-sitter)
     # @param symbol [String, nil] optional exported factory symbol (e.g., "tree_sitter_toml")
     # @param grammar_module [Module, nil] Citrus grammar module that responds to .parse(source)
@@ -482,27 +656,6 @@ module TreeHaver
       # Both tree-sitter and Citrus can be registered simultaneously for maximum
       # flexibility. See method documentation for rationale.
       nil
-    end
-
-    # Unregister a previously registered language helper
-    #
-    # @param name [Symbol, String] language identifier to unregister
-    # @return [void]
-    # @example
-    #   TreeHaver.unregister_language(:toml)
-    def unregister_language(name)
-      LanguageRegistry.unregister(name)
-    end
-
-    # Clear all registered languages
-    #
-    # Primarily intended for test cleanup and resetting state.
-    #
-    # @return [void]
-    # @example
-    #   TreeHaver.clear_languages!
-    def clear_languages!
-      LanguageRegistry.clear_registrations!
     end
 
     # Fetch a registered language entry
@@ -667,22 +820,32 @@ module TreeHaver
           # Fall back to error if no Citrus grammar registered
           raise NotAvailable,
             "Citrus backend is active but no Citrus grammar registered for :#{method_name}. " \
-            "Either register a Citrus grammar or use a tree-sitter backend. " \
-            "Registered backends: #{all_backends.keys.inspect}"
+              "Either register a Citrus grammar or use a tree-sitter backend. " \
+              "Registered backends: #{all_backends.keys.inspect}"
         end
 
         # For tree-sitter backends, use the path
         if reg && reg[:path]
           path = kwargs[:path] || args.first || reg[:path]
-          symbol = kwargs.key?(:symbol) ? kwargs[:symbol] : (reg[:symbol] || "tree_sitter_#{method_name}")
-          name = kwargs[:name] || method_name.to_s
+          # Symbol priority: kwargs override > registration > derive from method_name
+          symbol = if kwargs.key?(:symbol)
+            kwargs[:symbol]
+          elsif reg[:symbol]
+            reg[:symbol]
+          else
+            "tree_sitter_#{method_name}"
+          end
+          # Name priority: kwargs override > derive from symbol (strip tree_sitter_ prefix)
+          # Using symbol-derived name ensures ruby_tree_sitter gets the correct language name
+          # e.g., "toml" not "toml_both" when symbol is "tree_sitter_toml"
+          name = kwargs[:name] || symbol&.sub(/\Atree_sitter_/, "")
           return from_library(path, symbol: symbol, name: name)
         end
 
         # No appropriate registration found
         raise ArgumentError,
           "No grammar registered for :#{method_name} compatible with #{backend_type} backend. " \
-          "Registered backends: #{all_backends.keys.inspect}"
+            "Registered backends: #{all_backends.keys.inspect}"
       end
 
       # @api private
@@ -696,6 +859,29 @@ module TreeHaver
   #
   # A Parser is used to parse source code into a syntax tree. You must
   # set a language before parsing.
+  #
+  # == Wrapping/Unwrapping Responsibility
+  #
+  # TreeHaver::Parser is responsible for ALL object wrapping and unwrapping:
+  #
+  # **Language objects:**
+  # - Unwraps Language wrappers before passing to backend.language=
+  # - MRI backend receives ::TreeSitter::Language
+  # - Rust backend receives String (language name)
+  # - FFI backend receives wrapped Language (needs to_ptr)
+  #
+  # **Tree objects:**
+  # - parse() receives raw source, backend returns raw tree, Parser wraps it
+  # - parse_string() unwraps old_tree before passing to backend, wraps returned tree
+  # - Backends always work with raw backend trees, never TreeHaver::Tree
+  #
+  # **Node objects:**
+  # - Backends return raw nodes, TreeHaver::Tree and TreeHaver::Node wrap them
+  #
+  # This design ensures:
+  # - Principle of Least Surprise: wrapping happens at boundaries, consistently
+  # - Backends are simple: they don't need to know about TreeHaver wrappers
+  # - Single Responsibility: wrapping logic is only in TreeHaver::Parser
   #
   # @example Basic parsing
   #   parser = TreeHaver::Parser.new
@@ -729,9 +915,31 @@ module TreeHaver
     end
 
     # Get the backend this parser is using (for introspection)
-    # @return [Symbol] the backend name
+    #
+    # Returns the actual backend in use, resolving :auto to the concrete backend.
+    #
+    # @return [Symbol] the backend name (:mri, :rust, :ffi, :java, or :citrus)
     def backend
-      @explicit_backend || TreeHaver.effective_backend
+      if @explicit_backend && @explicit_backend != :auto
+        @explicit_backend
+      else
+        # Determine actual backend from the implementation class
+        case @impl.class.name
+        when /MRI/
+          :mri
+        when /Rust/
+          :rust
+        when /FFI/
+          :ffi
+        when /Java/
+          :java
+        when /Citrus/
+          :citrus
+        else
+          # Fallback to effective_backend if we can't determine from class name
+          TreeHaver.effective_backend
+        end
+      end
     end
 
     # Set the language grammar for this parser
@@ -741,8 +949,134 @@ module TreeHaver
     # @example
     #   parser.language = TreeHaver::Language.from_library("/path/to/grammar.so")
     def language=(lang)
-      @impl.language = lang
+      # Unwrap the language before passing to backend
+      # Backends receive raw language objects, never TreeHaver wrappers
+      inner_lang = unwrap_language(lang)
+      @impl.language = inner_lang
+      # Return the original (possibly wrapped) language for consistency
+      lang
     end
+
+    private
+
+    # Unwrap a language object to extract the raw backend language
+    #
+    # This method is smart about backend compatibility:
+    # 1. If language has a backend attribute, checks if it matches current backend
+    # 2. If mismatch detected, attempts to reload language for correct backend
+    # 3. If reload successful, uses new language; otherwise continues with original
+    # 4. Unwraps the language wrapper to get raw backend object
+    #
+    # @param lang [Object] wrapped or raw language object
+    # @return [Object] raw backend language object appropriate for current backend
+    # @api private
+    def unwrap_language(lang)
+      # Check if this is a TreeHaver language wrapper with backend info
+      if lang.respond_to?(:backend)
+        # Verify backend compatibility FIRST
+        # This prevents passing languages from wrong backends to native code
+        # Exception: :auto backend is permissive - accepts any language
+        current_backend = backend
+
+        if lang.backend != current_backend && current_backend != :auto
+          # Backend mismatch! Try to reload for correct backend
+          reloaded = try_reload_language_for_backend(lang, current_backend)
+          if reloaded
+            lang = reloaded
+          else
+            # Couldn't reload - this is an error
+            raise TreeHaver::Error,
+              "Language backend mismatch: language is for #{lang.backend}, parser is #{current_backend}. " \
+                "Cannot reload language for correct backend. " \
+                "Create a new language with TreeHaver::Language.from_library when backend is #{current_backend}."
+          end
+        end
+
+        # Get the current parser's language (if set)
+        current_lang = @impl.respond_to?(:language) ? @impl.language : nil
+
+        # Language mismatch detected! The parser might have a different language set
+        # Compare the actual language objects using Comparable
+        if current_lang && lang != current_lang
+          # Different language being set (e.g., switching from TOML to JSON)
+          # This is fine, just informational
+        end
+      end
+
+      # Unwrap based on backend type
+      # All TreeHaver Language wrappers have the backend attribute
+      unless lang.respond_to?(:backend)
+        # This shouldn't happen - all our wrappers have backend attribute
+        # If we get here, it's likely a raw backend object that was passed directly
+        raise TreeHaver::Error,
+          "Expected TreeHaver Language wrapper with backend attribute, got #{lang.class}. " \
+            "Use TreeHaver::Language.from_library to create language objects."
+      end
+
+      case lang.backend
+      when :mri
+        return lang.to_language if lang.respond_to?(:to_language)
+        return lang.inner_language if lang.respond_to?(:inner_language)
+      when :rust
+        return lang.name if lang.respond_to?(:name)
+      when :ffi
+        return lang  # FFI needs wrapper for to_ptr
+      when :java
+        return lang.impl if lang.respond_to?(:impl)
+      when :citrus
+        return lang.grammar_module if lang.respond_to?(:grammar_module)
+      else
+        # Unknown backend (e.g., test backend)
+        # Try generic unwrapping methods for flexibility in testing
+        return lang.to_language if lang.respond_to?(:to_language)
+        return lang.inner_language if lang.respond_to?(:inner_language)
+        return lang.impl if lang.respond_to?(:impl)
+        return lang.grammar_module if lang.respond_to?(:grammar_module)
+        return lang.name if lang.respond_to?(:name)
+
+        # If nothing works, pass through as-is
+        # This allows test languages to be passed directly
+        return lang
+      end
+
+      # Shouldn't reach here, but just in case
+      lang
+    end
+
+    # Try to reload a language for the current backend
+    #
+    # This handles the case where a language was loaded for one backend,
+    # but is now being used with a different backend (e.g., after backend switch).
+    #
+    # @param lang [Object] language object with metadata
+    # @param target_backend [Symbol] backend to reload for
+    # @return [Object, nil] reloaded language or nil if reload not possible
+    # @api private
+    def try_reload_language_for_backend(lang, target_backend)
+      # Can't reload without path information
+      return unless lang.respond_to?(:path) || lang.respond_to?(:grammar_module)
+
+      # For tree-sitter backends, reload from path
+      if lang.respond_to?(:path) && lang.path
+        begin
+          # Use Language.from_library which respects current backend
+          return Language.from_library(
+            lang.path,
+            symbol: lang.respond_to?(:symbol) ? lang.symbol : nil,
+            name: lang.respond_to?(:name) ? lang.name : nil,
+          )
+        rescue => e
+          # Reload failed, continue with original
+          warn("TreeHaver: Failed to reload language for backend #{target_backend}: #{e.message}") if $VERBOSE
+          return
+        end
+      end
+
+      # For Citrus, can't really reload as it's just a module reference
+      nil
+    end
+
+    public
 
     # Parse source code into a syntax tree
     #
@@ -803,7 +1137,7 @@ module TreeHaver
           old_tree
         end
         tree_impl = @impl.parse_string(old_impl, source)
-         # Wrap backend tree with source so Node#text works
+        # Wrap backend tree with source so Node#text works
         Tree.new(tree_impl, source: source)
       elsif @impl.respond_to?(:parse_string)
         tree_impl = @impl.parse_string(nil, source)

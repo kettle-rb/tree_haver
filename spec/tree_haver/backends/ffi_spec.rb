@@ -1,14 +1,20 @@
 # frozen_string_literal: true
 
-RSpec.describe TreeHaver::Backends::FFI do
+require "spec_helper"
+
+# The :ffi tag ensures the before hook in dependency_tags.rb skips these tests
+# when FFI is not available (e.g., after MRI has been loaded)
+RSpec.describe TreeHaver::Backends::FFI, :ffi do
   let(:backend) { described_class }
 
-  # Force FFI backend for these tests
   before do
+    TreeHaver::LanguageRegistry.clear_cache!
     TreeHaver.reset_backend!(to: :ffi)
   end
 
   after do
+    backend.reset!
+    TreeHaver::LanguageRegistry.clear_cache!
     TreeHaver.reset_backend!(to: :auto)
   end
 
@@ -18,16 +24,14 @@ RSpec.describe TreeHaver::Backends::FFI do
       expect(result).to be(true).or be(false)
     end
 
-    it "returns true when FFI gem is available", :ffi do
+    it "returns true when FFI gem is available" do
+      # FFI availability now only checks for the FFI gem
+      # MRI conflict is handled by BackendConflict at runtime
       expect(backend.available?).to be true
-    end
-
-    it "returns false when FFI gem is not available", :not_ffi do
-      expect(backend.available?).to be false
     end
   end
 
-  describe "::capabilities", :ffi do
+  describe "::capabilities" do
     it "returns a hash with backend info" do
       caps = backend.capabilities
       expect(caps).to include(:backend, :parse)
@@ -38,7 +42,7 @@ RSpec.describe TreeHaver::Backends::FFI do
     end
   end
 
-  describe "Native module", :ffi do
+  describe "Native module" do
     describe "::lib_candidates" do
       it "returns an array of library names to try" do
         candidates = backend::Native.lib_candidates

@@ -52,7 +52,7 @@ finder = TreeHaver::CitrusGrammarFinder.new(
   language: :dhall,
   gem_name: "dhall",
   grammar_const: "Dhall::Parser",
-  require_path: "dhall"
+  require_path: "dhall",
 )
 
 if finder.available?
@@ -132,13 +132,12 @@ begin
   end
 
   collect_types(root, all_types)
-  puts "Node types present: #{all_types.to_a.sort.join(', ')}"
+  puts "Node types present: #{all_types.to_a.sort.join(", ")}"
   puts
-
 rescue TreeHaver::Error => e
   puts "✗ Error: #{e.message}"
   puts e.backtrace.first(5)
-  exit 1
+  exit(1)
 end
 
 puts "=" * 70
@@ -154,4 +153,3 @@ puts "  • Type-safe config files"
 puts "  • Programmable configurations"
 puts "  • Configuration validation"
 puts "=" * 70
-

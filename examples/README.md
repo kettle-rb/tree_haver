@@ -362,7 +362,7 @@ require "your_citrus_gem"
 
 TreeHaver.register_language(
   :your_language,
-  grammar_module: YourGem::GrammarModule
+  grammar_module: YourGem::GrammarModule,
 )
 
 TreeHaver.backend = :citrus

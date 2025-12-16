@@ -69,4 +69,3 @@ puts "  - Most portable option"
 puts "  - Good performance (slightly slower than native)"
 puts "  - Dynamic linking avoids version conflicts"
 puts "=" * 70
-

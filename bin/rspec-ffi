@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Run FFI specs in isolation (without MRI backend loaded)
+#
+# Usage:
+#   bin/rspec-ffi                           # Run all FFI specs
+#   bin/rspec-ffi spec/tree_haver/backends/ffi_spec.rb  # Run specific spec
+
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+
+require "rubygems"
+require "bundler/setup"
+
+# Verify MRI is not loaded before we start
+if defined?(TreeSitter)
+  warn "ERROR: MRI backend (ruby_tree_sitter) is already loaded!"
+  warn "FFI tests must run in a fresh Ruby process."
+  exit 1
+end
+
+# Build the rspec command with FFI helper
+spec_files = ARGV.empty? ? ["spec/tree_haver/backends/ffi_spec.rb"] : ARGV
+cmd = [
+  "bundle",
+  "exec",
+  "rspec",
+  "--require",
+  "spec_ffi_helper",
+  *spec_files,
+]
+
+puts "Running FFI specs in isolation..."
+puts "Command: #{cmd.join(" ")}"
+puts
+
+exec(*cmd)

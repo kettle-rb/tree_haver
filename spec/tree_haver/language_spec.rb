@@ -1,19 +1,18 @@
 # frozen_string_literal: true
 
-RSpec.describe TreeHaver::Language do
-  before do
-    TreeHaver.clear_languages!
-  end
+require "spec_helper"
 
-  after do
-    TreeHaver.clear_languages!
-  end
+RSpec.describe TreeHaver::Language do
+  # NOTE: Do NOT clear languages between tests - can cause issues with backend tracking
+  # Use unique language names in each test to avoid conflicts
 
   describe "::respond_to? for dynamic language helpers" do
     it "does not respond before registration, responds after" do
-      expect(described_class.respond_to?(:toml)).to be false
-      TreeHaver.register_language(:toml, path: "/nonexistent/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
-      expect(described_class.respond_to?(:toml)).to be true
+      # Use a unique name to avoid pollution from other tests
+      unique_name = :"respond_to_test_#{SecureRandom.hex(4)}"
+      expect(described_class.respond_to?(unique_name)).to be false
+      TreeHaver.register_language(unique_name, path: "/nonexistent/libtree-sitter-test.so", symbol: "tree_sitter_test")
+      expect(described_class.respond_to?(unique_name)).to be true
     end
   end
 
@@ -52,19 +51,22 @@ RSpec.describe TreeHaver::Language do
 
   describe "registration-driven dynamic helpers" do
     it "does not claim to respond to unregistered names" do
-      expect(described_class.respond_to?(:toml)).to be(false)
-      expect { described_class.toml }.to raise_error(NoMethodError)
+      # Use a unique name that will never be registered
+      unregistered_name = :"totally_fake_lang_#{SecureRandom.hex(8)}"
+      expect(described_class.respond_to?(unregistered_name)).to be(false)
+      expect { described_class.public_send(unregistered_name) }.to raise_error(NoMethodError)
     end
 
     it "responds to registered names and uses stored defaults" do
-      # Register a fake path just to test dispatch behavior without requiring native libs
-      TreeHaver.register_language(:toml, path: "/nonexistent/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
+      # Register with a unique name to avoid collision with other tests
+      unique_name = :"toml_respond_test_#{SecureRandom.hex(4)}"
+      TreeHaver.register_language(unique_name, path: "/nonexistent/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
 
-      expect(described_class.respond_to?(:toml)).to be(true)
+      expect(described_class.respond_to?(unique_name)).to be(true)
 
       # Calling the helper will attempt to dlopen; expect a graceful NotAvailable
       expect {
-        described_class.toml
+        described_class.public_send(unique_name)
       }.to raise_error(TreeHaver::NotAvailable)
     end
 
@@ -83,6 +85,8 @@ RSpec.describe TreeHaver::Language do
   describe "additional method_missing edge cases" do
     it "derives symbol from name when registration has no symbol" do
       TreeHaver.register_language(:nosymbol, path: "/path.so", symbol: nil)
+      # When no symbol is registered, it derives "tree_sitter_#{method_name}"
+      # and name is derived from symbol by stripping "tree_sitter_" prefix
       expect(TreeHaver::Language).to receive(:from_library).with(
         "/path.so",
         symbol: "tree_sitter_nosymbol",
@@ -93,6 +97,7 @@ RSpec.describe TreeHaver::Language do
 
     it "allows name override via kwargs" do
       TreeHaver.register_language(:test, path: "/path.so")
+      # Symbol is derived as "tree_sitter_test", but name is explicitly overridden
       expect(TreeHaver::Language).to receive(:from_library).with(
         "/path.so",
         symbol: "tree_sitter_test",
@@ -103,10 +108,11 @@ RSpec.describe TreeHaver::Language do
 
     it "allows symbol override via kwargs when key exists" do
       TreeHaver.register_language(:test2, path: "/path.so", symbol: "default_sym")
+      # Symbol is overridden via kwargs, name is derived from the overridden symbol
       expect(TreeHaver::Language).to receive(:from_library).with(
         "/path.so",
         symbol: "custom_sym",
-        name: "test2",
+        name: "custom_sym",  # Derived from symbol (no tree_sitter_ prefix to strip)
       )
       described_class.test2(symbol: "custom_sym")
     end

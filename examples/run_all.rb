@@ -12,30 +12,30 @@ require "pathname"
 EXAMPLES_DIR = __dir__
 EXAMPLES = [
   # JSON examples
-  { file: "auto_json.rb", name: "JSON (Auto)", backend: "auto", language: "JSON" },
-  { file: "mri_json.rb", name: "JSON (MRI)", backend: "mri", language: "JSON" },
-  { file: "rust_json.rb", name: "JSON (Rust)", backend: "rust", language: "JSON" },
-  { file: "ffi_json.rb", name: "JSON (FFI)", backend: "ffi", language: "JSON" },
-  { file: "java_json.rb", name: "JSON (Java)", backend: "java", language: "JSON" },
+  {file: "auto_json.rb", name: "JSON (Auto)", backend: "auto", language: "JSON"},
+  {file: "mri_json.rb", name: "JSON (MRI)", backend: "mri", language: "JSON"},
+  {file: "rust_json.rb", name: "JSON (Rust)", backend: "rust", language: "JSON"},
+  {file: "ffi_json.rb", name: "JSON (FFI)", backend: "ffi", language: "JSON"},
+  {file: "java_json.rb", name: "JSON (Java)", backend: "java", language: "JSON"},
 
   # JSONC examples
-  { file: "auto_jsonc.rb", name: "JSONC (Auto)", backend: "auto", language: "JSONC" },
-  { file: "mri_jsonc.rb", name: "JSONC (MRI)", backend: "mri", language: "JSONC" },
-  { file: "rust_jsonc.rb", name: "JSONC (Rust)", backend: "rust", language: "JSONC" },
-  { file: "ffi_jsonc.rb", name: "JSONC (FFI)", backend: "ffi", language: "JSONC" },
-  { file: "java_jsonc.rb", name: "JSONC (Java)", backend: "java", language: "JSONC" },
+  {file: "auto_jsonc.rb", name: "JSONC (Auto)", backend: "auto", language: "JSONC"},
+  {file: "mri_jsonc.rb", name: "JSONC (MRI)", backend: "mri", language: "JSONC"},
+  {file: "rust_jsonc.rb", name: "JSONC (Rust)", backend: "rust", language: "JSONC"},
+  {file: "ffi_jsonc.rb", name: "JSONC (FFI)", backend: "ffi", language: "JSONC"},
+  {file: "java_jsonc.rb", name: "JSONC (Java)", backend: "java", language: "JSONC"},
 
   # Bash examples
-  { file: "auto_bash.rb", name: "Bash (Auto)", backend: "auto", language: "Bash" },
-  { file: "mri_bash.rb", name: "Bash (MRI)", backend: "mri", language: "Bash" },
-  { file: "rust_bash.rb", name: "Bash (Rust)", backend: "rust", language: "Bash" },
-  { file: "ffi_bash.rb", name: "Bash (FFI)", backend: "ffi", language: "Bash" },
-  { file: "java_bash.rb", name: "Bash (Java)", backend: "java", language: "Bash" },
+  {file: "auto_bash.rb", name: "Bash (Auto)", backend: "auto", language: "Bash"},
+  {file: "mri_bash.rb", name: "Bash (MRI)", backend: "mri", language: "Bash"},
+  {file: "rust_bash.rb", name: "Bash (Rust)", backend: "rust", language: "Bash"},
+  {file: "ffi_bash.rb", name: "Bash (FFI)", backend: "ffi", language: "Bash"},
+  {file: "java_bash.rb", name: "Bash (Java)", backend: "java", language: "Bash"},
 
   # Citrus examples
-  { file: "citrus_toml.rb", name: "TOML (Citrus)", backend: "citrus", language: "TOML" },
-  { file: "citrus_finitio.rb", name: "Finitio (Citrus)", backend: "citrus", language: "Finitio" },
-  { file: "citrus_dhall.rb", name: "Dhall (Citrus)", backend: "citrus", language: "Dhall" },
+  {file: "citrus_toml.rb", name: "TOML (Citrus)", backend: "citrus", language: "TOML"},
+  {file: "citrus_finitio.rb", name: "Finitio (Citrus)", backend: "citrus", language: "Finitio"},
+  {file: "citrus_dhall.rb", name: "Dhall (Citrus)", backend: "citrus", language: "Dhall"},
 ].freeze
 
 # ANSI color codes
@@ -180,7 +180,7 @@ verbose = ARGV.include?("--verbose") || ARGV.include?("-v")
 puts "=" * 80
 puts "TreeHaver Examples Test Runner"
 puts "=" * 80
-puts "Verbose mode: #{verbose ? 'ON' : 'OFF'} (use --verbose or -v for details)"
+puts "Verbose mode: #{verbose ? "ON" : "OFF"} (use --verbose or -v for details)"
 puts
 
 results = []
@@ -191,7 +191,7 @@ EXAMPLES.each_with_index do |example, idx|
   $stdout.flush
 
   result = run_example(example, verbose: verbose)
-  results << { example: example, result: result }
+  results << {example: example, result: result}
   total_duration += result[:duration]
 
   case result[:status]
@@ -265,7 +265,7 @@ skipped = results.count { |r| r[:result][:status] == :skipped }
 unavailable = results.count { |r| r[:result][:status] == :unavailable }
 failed = results.count { |r| [:failed, :error, :missing].include?(r[:result][:status]) }
 runnable = results.size - skipped - unavailable
-pass_rate = runnable > 0 ? (passed.to_f / runnable * 100).round(1) : 0.0
+pass_rate = (runnable > 0) ? (passed.to_f / runnable * 100).round(1) : 0.0
 
 puts "=" * 80
 puts "Overall Statistics"
@@ -329,4 +329,3 @@ else
   puts colorize("✅ All examples passed!", GREEN)
   exit 0
 end
-

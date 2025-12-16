@@ -94,6 +94,8 @@ module TreeHaver
   #
   # @note This is the key to tree_haver's "write once, run anywhere" promise
   class Node
+    include Comparable
+
     # The wrapped backend-specific node object
     #
     # This provides direct access to the underlying backend node for advanced usage
@@ -226,6 +228,26 @@ module TreeHaver
       end
     end
 
+    # Check if the node is structural (non-terminal)
+    #
+    # In tree-sitter, this is equivalent to being a "named" node.
+    # Named nodes represent actual syntactic constructs (e.g., table, keyvalue, string)
+    # while anonymous nodes are syntax/punctuation (e.g., [, =, whitespace).
+    #
+    # For Citrus backends, this checks if the node is a non-terminal rule.
+    #
+    # @return [Boolean] true if this is a structural (non-terminal) node
+    def structural?
+      # Delegate to inner_node if it has its own structural? method (e.g., Citrus)
+      if @inner_node.respond_to?(:structural?)
+        @inner_node.structural?
+      else
+        # For tree-sitter backends, named? is equivalent to structural?
+        # Named nodes are syntactic constructs; anonymous nodes are punctuation
+        named?
+      end
+    end
+
     # Get the number of children
     # @return [Integer]
     def child_count
@@ -240,6 +262,77 @@ module TreeHaver
       child_node = @inner_node.child(index)
       return if child_node.nil?
       Node.new(child_node, source: @source)
+    end
+
+    # Get a named child by index
+    #
+    # Returns the nth named child (skipping unnamed children).
+    # Uses backend's native named_child if available, otherwise provides fallback.
+    #
+    # @param index [Integer] Named child index (0-based)
+    # @return [Node, nil] Wrapped named child node, or nil if index out of bounds
+    def named_child(index)
+      # Try native implementation first
+      if @inner_node.respond_to?(:named_child)
+        child_node = @inner_node.named_child(index)
+        return if child_node.nil?
+        return Node.new(child_node, source: @source)
+      end
+
+      # Fallback: manually iterate through children and count named ones
+      named_count = 0
+      (0...child_count).each do |i|
+        child_node = @inner_node.child(i)
+        next if child_node.nil?
+
+        # Check if this child is named
+        is_named = if child_node.respond_to?(:named?)
+          child_node.named?
+        elsif child_node.respond_to?(:is_named?)
+          child_node.is_named?
+        else
+          true  # Assume named if we can't determine
+        end
+
+        if is_named
+          return Node.new(child_node, source: @source) if named_count == index
+          named_count += 1
+        end
+      end
+
+      nil  # Index out of bounds
+    end
+
+    # Get the count of named children
+    #
+    # Uses backend's native named_child_count if available, otherwise provides fallback.
+    #
+    # @return [Integer] Number of named children
+    def named_child_count
+      # Try native implementation first
+      if @inner_node.respond_to?(:named_child_count)
+        return @inner_node.named_child_count
+      end
+
+      # Fallback: count named children manually
+      count = 0
+      (0...child_count).each do |i|
+        child_node = @inner_node.child(i)
+        next if child_node.nil?
+
+        # Check if this child is named
+        is_named = if child_node.respond_to?(:named?)
+          child_node.named?
+        elsif child_node.respond_to?(:is_named?)
+          child_node.is_named?
+        else
+          true  # Assume named if we can't determine
+        end
+
+        count += 1 if is_named
+      end
+
+      count
     end
 
     # Get all children as wrapped nodes
@@ -323,6 +416,63 @@ module TreeHaver
     # @return [String]
     def to_s
       text
+    end
+
+    # Compare nodes for ordering (used by Comparable module)
+    #
+    # Nodes are ordered by their position in the source:
+    # 1. First by start_byte (earlier nodes come first)
+    # 2. Then by end_byte for tie-breaking (shorter spans come first)
+    # 3. Then by type for deterministic ordering
+    #
+    # This allows nodes to be sorted by position and used in sorted collections.
+    # The Comparable module provides <, <=, ==, >=, >, and between? based on this.
+    #
+    # @param other [Node] node to compare with
+    # @return [Integer, nil] -1, 0, 1, or nil if not comparable
+    def <=>(other)
+      return unless other.is_a?(Node)
+
+      # Compare by position first (start_byte, then end_byte)
+      cmp = start_byte <=> other.start_byte
+      return cmp unless cmp.zero?
+
+      cmp = end_byte <=> other.end_byte
+      return cmp unless cmp.zero?
+
+      # For nodes at the same position with same span, compare by type
+      type <=> other.type
+    end
+
+    # Check equality based on inner_node identity
+    #
+    # Two nodes are equal if they wrap the same backend node object.
+    # This is separate from the <=> comparison which orders by position.
+    # Nodes at the same position but wrapping different backend nodes are
+    # equal according to <=> (positional equality) but not equal according to == (identity equality).
+    #
+    # Note: We override Comparable's default == behavior to check inner_node identity
+    # rather than just relying on <=> returning 0, because we want identity-based
+    # equality for testing and collection membership, not position-based equality.
+    #
+    # @param other [Object] object to compare with
+    # @return [Boolean] true if both nodes wrap the same inner_node
+    def ==(other)
+      return false unless other.is_a?(Node)
+      @inner_node == other.inner_node
+    end
+
+    # Alias for == to support both styles
+    alias_method :eql?, :==
+
+    # Generate hash value for this node
+    #
+    # Uses the hash of the inner_node to ensure nodes wrapping the same
+    # backend node have the same hash value.
+    #
+    # @return [Integer] hash value
+    def hash
+      @inner_node.hash
     end
 
     # Check if node responds to a method (includes delegation to inner_node)

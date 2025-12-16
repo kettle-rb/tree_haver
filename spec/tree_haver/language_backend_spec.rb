@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe "TreeHaver::Language with backend parameter and caching" do
   after do
     # Clean up thread-local state
@@ -19,61 +21,60 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
     end
 
     context "with no backend parameter" do
-      it "uses effective backend from context" do
-        skip "FFI backend not available" unless TreeHaver::Backends::FFI.available?
-
+      # These tests use MRI backend which is available when ruby_tree_sitter is loaded
+      it "uses effective backend from context", :mri_backend do
         mock_language = double("Language")
-        allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
+        allow(TreeHaver::Backends::MRI::Language).to receive(:from_library)
           .and_return(mock_language)
 
-        TreeHaver.with_backend(:ffi) do
+        TreeHaver.with_backend(:mri) do
           language = TreeHaver::Language.from_library(mock_path, symbol: mock_symbol)
           expect(language).to eq(mock_language)
         end
       end
 
-      it "uses global backend when no context set" do
-        skip "FFI backend not available" unless TreeHaver::Backends::FFI.available?
-
+      it "uses global backend when no context set", :mri_backend do
         mock_language = double("Language")
-        allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
+        allow(TreeHaver::Backends::MRI::Language).to receive(:from_library)
           .and_return(mock_language)
 
-        TreeHaver.backend = :ffi
+        TreeHaver.backend = :mri
         language = TreeHaver::Language.from_library(mock_path, symbol: mock_symbol)
         expect(language).to eq(mock_language)
       end
     end
 
     context "with explicit backend parameter" do
-      it "uses specified backend regardless of context" do
-        skip "FFI backend not available" unless TreeHaver::Backends::FFI.available?
-
+      # Test using Rust backend explicitly while MRI is the context backend
+      # (Rust and MRI can coexist, unlike FFI and MRI)
+      it "uses specified backend regardless of context", :mri_backend, :rust_backend do
         mock_language = double("Language")
-        allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
+        allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
           .and_return(mock_language)
 
         TreeHaver.with_backend(:mri) do
-          language = TreeHaver::Language.from_library(mock_path,
+          language = TreeHaver::Language.from_library(
+            mock_path,
             symbol: mock_symbol,
-            backend: :ffi)
+            backend: :rust,
+          )
           expect(language).to eq(mock_language)
         end
 
-        expect(TreeHaver::Backends::FFI::Language).to have_received(:from_library)
+        expect(TreeHaver::Backends::Rust::Language).to have_received(:from_library)
       end
 
-      it "overrides global backend setting" do
-        skip "FFI backend not available" unless TreeHaver::Backends::FFI.available?
-
+      it "overrides global backend setting", :mri_backend, :rust_backend do
         mock_language = double("Language")
-        allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
+        allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
           .and_return(mock_language)
 
         TreeHaver.backend = :mri
-        language = TreeHaver::Language.from_library(mock_path,
+        language = TreeHaver::Language.from_library(
+          mock_path,
           symbol: mock_symbol,
-          backend: :ffi)
+          backend: :rust,
+        )
         expect(language).to eq(mock_language)
       end
 
@@ -86,9 +87,11 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
         end
 
         expect do
-          TreeHaver::Language.from_library(mock_path,
+          TreeHaver::Language.from_library(
+            mock_path,
             symbol: mock_symbol,
-            backend: unavailable_backend)
+            backend: unavailable_backend,
+          )
         end.to raise_error(TreeHaver::NotAvailable, /Requested backend .* is not available/)
       end
     end
@@ -103,67 +106,68 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
       allow(TreeHaver::PathValidator).to receive(:safe_symbol_name?).and_return(true)
     end
 
-    it "caches language separately per backend" do
-      skip "FFI and MRI backends not available" unless
-        TreeHaver::Backends::FFI.available? && TreeHaver::Backends::MRI.available?
-
-      ffi_language = double("FFI Language")
+    # Tests use Rust + MRI which can coexist (unlike FFI + MRI)
+    it "caches language separately per backend", :mri_backend, :rust_backend do
+      rust_language = double("Rust Language")
       mri_language = double("MRI Language")
 
-      allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
-        .and_return(ffi_language)
+      allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
+        .and_return(rust_language)
       allow(TreeHaver::Backends::MRI::Language).to receive(:from_library)
         .and_return(mri_language)
 
-      # Load with FFI backend
-      lang1 = TreeHaver::Language.from_library(mock_path,
+      # Load with Rust backend
+      lang1 = TreeHaver::Language.from_library(
+        mock_path,
         symbol: mock_symbol,
-        backend: :ffi)
+        backend: :rust,
+      )
 
       # Load same path with MRI backend - should be different cached object
-      lang2 = TreeHaver::Language.from_library(mock_path,
+      lang2 = TreeHaver::Language.from_library(
+        mock_path,
         symbol: mock_symbol,
-        backend: :mri)
+        backend: :mri,
+      )
 
-      expect(lang1).to eq(ffi_language)
+      expect(lang1).to eq(rust_language)
       expect(lang2).to eq(mri_language)
       expect(lang1).not_to eq(lang2)
     end
 
-    it "returns cached language for same backend and path" do
-      skip "FFI backend not available" unless TreeHaver::Backends::FFI.available?
-
+    it "returns cached language for same backend and path", :mri_backend do
       mock_language = double("Language")
-      allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
+      allow(TreeHaver::Backends::MRI::Language).to receive(:from_library)
         .and_return(mock_language)
 
-      lang1 = TreeHaver::Language.from_library(mock_path,
+      lang1 = TreeHaver::Language.from_library(
+        mock_path,
         symbol: mock_symbol,
-        backend: :ffi)
-      lang2 = TreeHaver::Language.from_library(mock_path,
+        backend: :mri,
+      )
+      lang2 = TreeHaver::Language.from_library(
+        mock_path,
         symbol: mock_symbol,
-        backend: :ffi)
+        backend: :mri,
+      )
 
       expect(lang1).to eq(lang2)
       expect(lang1.object_id).to eq(lang2.object_id)  # Same object from cache
-      expect(TreeHaver::Backends::FFI::Language).to have_received(:from_library).once
+      expect(TreeHaver::Backends::MRI::Language).to have_received(:from_library).once
     end
 
-    it "uses thread-local context in cache key" do
-      skip "FFI and MRI backends not available" unless
-        TreeHaver::Backends::FFI.available? && TreeHaver::Backends::MRI.available?
-
-      ffi_language = double("FFI Language")
+    it "uses thread-local context in cache key", :mri_backend, :rust_backend do
+      rust_language = double("Rust Language")
       mri_language = double("MRI Language")
 
-      allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
-        .and_return(ffi_language)
+      allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
+        .and_return(rust_language)
       allow(TreeHaver::Backends::MRI::Language).to receive(:from_library)
         .and_return(mri_language)
 
-      # Load with FFI context
+      # Load with Rust context
       lang1 = nil
-      TreeHaver.with_backend(:ffi) do
+      TreeHaver.with_backend(:rust) do
         lang1 = TreeHaver::Language.from_library(mock_path, symbol: mock_symbol)
       end
 
@@ -173,42 +177,45 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
         lang2 = TreeHaver::Language.from_library(mock_path, symbol: mock_symbol)
       end
 
-      expect(lang1).to eq(ffi_language)
+      expect(lang1).to eq(rust_language)
       expect(lang2).to eq(mri_language)
       expect(lang1).not_to eq(lang2)
     end
 
-    it "prevents cache pollution between backends" do
-      skip "FFI and Citrus backends not available" unless
-        TreeHaver::Backends::FFI.available? && TreeHaver::Backends::Citrus.available?
-
-      ffi_language = double("FFI Language")
+    it "prevents cache pollution between backends", :citrus_backend, :rust_backend do
+      rust_language = double("Rust Language")
       citrus_language = double("Citrus Language")
 
-      allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
-        .and_return(ffi_language)
+      allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
+        .and_return(rust_language)
       allow(TreeHaver::Backends::Citrus::Language).to receive(:from_library)
         .and_return(citrus_language)
 
       # Load with different backends - should call backend-specific loader each time
-      lang1 = TreeHaver::Language.from_library(mock_path,
+      lang1 = TreeHaver::Language.from_library(
+        mock_path,
         symbol: mock_symbol,
-        backend: :ffi)
-      lang2 = TreeHaver::Language.from_library(mock_path,
+        backend: :rust,
+      )
+      lang2 = TreeHaver::Language.from_library(
+        mock_path,
         symbol: mock_symbol,
-        backend: :citrus)
+        backend: :citrus,
+      )
 
-      # Load again with FFI - should use cache
-      lang3 = TreeHaver::Language.from_library(mock_path,
+      # Load again with Rust - should use cache
+      lang3 = TreeHaver::Language.from_library(
+        mock_path,
         symbol: mock_symbol,
-        backend: :ffi)
+        backend: :rust,
+      )
 
-      expect(lang1).to eq(ffi_language)
+      expect(lang1).to eq(rust_language)
       expect(lang2).to eq(citrus_language)
-      expect(lang3).to eq(ffi_language)
+      expect(lang3).to eq(rust_language)
       expect(lang1.object_id).to eq(lang3.object_id)  # Same cached object
 
-      expect(TreeHaver::Backends::FFI::Language).to have_received(:from_library).once
+      expect(TreeHaver::Backends::Rust::Language).to have_received(:from_library).once
       expect(TreeHaver::Backends::Citrus::Language).to have_received(:from_library).once
     end
   end
@@ -222,15 +229,13 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
       allow(TreeHaver::PathValidator).to receive(:safe_symbol_name?).and_return(true)
     end
 
-    it "loads languages with different backends in concurrent threads" do
-      skip "FFI and Citrus backends not available" unless
-        TreeHaver::Backends::FFI.available? && TreeHaver::Backends::Citrus.available?
-
-      ffi_language = double("FFI Language")
+    # Use Rust + Citrus which can coexist (unlike FFI + MRI)
+    it "loads languages with different backends in concurrent threads", :citrus_backend, :rust_backend do
+      rust_language = double("Rust Language")
       citrus_language = double("Citrus Language")
 
-      allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
-        .and_return(ffi_language)
+      allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
+        .and_return(rust_language)
       allow(TreeHaver::Backends::Citrus::Language).to receive(:from_library)
         .and_return(citrus_language)
 
@@ -239,16 +244,16 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
       mutex = Mutex.new
 
       thread1 = Thread.new do
-        TreeHaver.with_backend(:ffi) do
+        TreeHaver.with_backend(:rust) do
           lang = TreeHaver::Language.from_library(mock_path, symbol: mock_symbol)
-          mutex.synchronize { results << { thread: 1, language: lang } }
+          mutex.synchronize { results << {thread: 1, language: lang} }
         end
       end
 
       thread2 = Thread.new do
         TreeHaver.with_backend(:citrus) do
           lang = TreeHaver::Language.from_library(mock_path, symbol: mock_symbol)
-          mutex.synchronize { results << { thread: 2, language: lang } }
+          mutex.synchronize { results << {thread: 2, language: lang} }
         end
       end
 
@@ -256,19 +261,16 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
       thread2.join
 
       expect(results.size).to eq(2)
-      expect(results.find { |r| r[:thread] == 1 }[:language]).to eq(ffi_language)
+      expect(results.find { |r| r[:thread] == 1 }[:language]).to eq(rust_language)
       expect(results.find { |r| r[:thread] == 2 }[:language]).to eq(citrus_language)
     end
 
-    it "loads languages with explicit backends in concurrent threads" do
-      skip "FFI and Citrus backends not available" unless
-        TreeHaver::Backends::FFI.available? && TreeHaver::Backends::Citrus.available?
-
-      ffi_language = double("FFI Language")
+    it "loads languages with explicit backends in concurrent threads", :citrus_backend, :rust_backend do
+      rust_language = double("Rust Language")
       citrus_language = double("Citrus Language")
 
-      allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
-        .and_return(ffi_language)
+      allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
+        .and_return(rust_language)
       allow(TreeHaver::Backends::Citrus::Language).to receive(:from_library)
         .and_return(citrus_language)
 
@@ -277,24 +279,28 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
       mutex = Mutex.new
 
       thread1 = Thread.new do
-        lang = TreeHaver::Language.from_library(mock_path,
+        lang = TreeHaver::Language.from_library(
+          mock_path,
           symbol: mock_symbol,
-          backend: :ffi)
-        mutex.synchronize { results << { thread: 1, language: lang } }
+          backend: :rust,
+        )
+        mutex.synchronize { results << {thread: 1, language: lang} }
       end
 
       thread2 = Thread.new do
-        lang = TreeHaver::Language.from_library(mock_path,
+        lang = TreeHaver::Language.from_library(
+          mock_path,
           symbol: mock_symbol,
-          backend: :citrus)
-        mutex.synchronize { results << { thread: 2, language: lang } }
+          backend: :citrus,
+        )
+        mutex.synchronize { results << {thread: 2, language: lang} }
       end
 
       thread1.join
       thread2.join
 
       expect(results.size).to eq(2)
-      expect(results.find { |r| r[:thread] == 1 }[:language]).to eq(ffi_language)
+      expect(results.find { |r| r[:thread] == 1 }[:language]).to eq(rust_language)
       expect(results.find { |r| r[:thread] == 2 }[:language]).to eq(citrus_language)
     end
   end
@@ -319,17 +325,14 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
       expect(language).to eq(mock_language)
     end
 
-    it "respects global backend setting (existing behavior)" do
-      skip "FFI backend not available" unless TreeHaver::Backends::FFI.available?
-
+    it "respects global backend setting (existing behavior)", :mri_backend do
       mock_language = double("Language")
-      allow(TreeHaver::Backends::FFI::Language).to receive(:from_library)
+      allow(TreeHaver::Backends::MRI::Language).to receive(:from_library)
         .and_return(mock_language)
 
-      TreeHaver.backend = :ffi
+      TreeHaver.backend = :mri
       language = TreeHaver::Language.from_library(mock_path, symbol: mock_symbol)
       expect(language).to eq(mock_language)
     end
   end
 end
-

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe TreeHaver::Backends::Citrus do
   let(:backend) { described_class }
 
@@ -159,10 +161,13 @@ RSpec.describe TreeHaver::Backends::Citrus do
       end
       let(:mock_grammar) { double("grammar", parse: nil) }
 
-      it "accepts a Language wrapper" do
+      it "accepts a Language wrapper's grammar_module" do
+        # Citrus::Parser expects the unwrapped grammar module, not the wrapper
+        # TreeHaver::Parser handles unwrapping, but when testing the backend directly,
+        # we need to pass the grammar module
         language = backend::Language.new(mock_grammar)
         expect {
-          parser.language = language
+          parser.language = language.grammar_module
         }.not_to raise_error
       end
 

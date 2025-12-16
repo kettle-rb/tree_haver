@@ -66,3 +66,41 @@ rescue LoadError
     warn("NOTE: stone_checksums isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
   end
 end
+
+### SPEC TASKS
+# Run FFI specs first (before the collision of MRI+FFI backends pollutes the environment),
+# then run remaining specs. This ensures FFI tests get a clean environment
+# while still validating that BackendConflict protection works.
+begin
+  require "rspec/core/rake_task"
+
+  # FFI specs run first in a clean environment
+  desc("Run FFI backend specs first (before MRI loads)")
+  RSpec::Core::RakeTask.new(:ffi_specs) do |t|
+    t.pattern = "./spec/**/*_spec.rb"
+    t.rspec_opts = "--tag ffi"
+  end
+
+  # Matrix checks will run in between FFI and MRI
+  desc("Run Backend Matrix Specs")
+  RSpec::Core::RakeTask.new(:backend_matrix_specs) do |t|
+    t.pattern = "./spec_matrix/**/*_spec.rb"
+  end
+
+  # All other specs run after FFI specs
+  desc("Run non-FFI specs (after FFI specs have run)")
+  RSpec::Core::RakeTask.new(:remaining_specs) do |t|
+    t.pattern = "./spec/**/*_spec.rb"
+    t.rspec_opts = "--tag ~ffi"
+  end
+
+  # Override the default spec task to run in sequence
+  Rake::Task[:spec].clear if Rake::Task.task_defined?(:spec)
+  desc("Run specs with FFI tests first, then backend matrix, then remaining tests")
+  task(spec: [:ffi_specs, :backend_matrix_specs, :remaining_specs]) # rubocop:disable Rake/DuplicateTask:
+rescue LoadError
+  desc("(stub) spec is unavailable")
+  task(:spec) do # rubocop:disable Rake/DuplicateTask:
+    warn("NOTE: rspec isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
+  end
+end

@@ -44,7 +44,7 @@ Please file a bug if you notice a violation of semantic versioning.
 #### Examples and Discovery
 - Added 18 comprehensive examples demonstrating all backends and languages
   - JSON examples (5): auto, MRI, Rust, FFI, Java
-  - JSONC examples (5): auto, MRI, Rust, FFI, Java  
+  - JSONC examples (5): auto, MRI, Rust, FFI, Java
   - Bash examples (5): auto, MRI, Rust, FFI, Java
   - Citrus examples (3): TOML, Finitio, Dhall
   - All examples use bundler inline (self-contained, no Gemfile needed)

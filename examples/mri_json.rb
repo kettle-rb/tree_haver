@@ -66,4 +66,3 @@ puts "  - Fastest option for MRI Ruby"
 puts "  - Direct bindings to libtree-sitter"
 puts "  - Best for performance-critical applications"
 puts "=" * 70
-

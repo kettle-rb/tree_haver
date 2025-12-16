@@ -1,0 +1,941 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Backend Compatibility Matrix Test Script
+#
+# Tests how the order of gem loading affects backend compatibility,
+# and whether different backends can coexist when using different grammar files.
+#
+# Usage:
+#   bin/backend-matrix                           # Default: all backends, toml grammar
+#   bin/backend-matrix mri ffi rust              # Specific backend order
+#   bin/backend-matrix --all-permutations        # Test all backend combinations
+#   bin/backend-matrix --grammar=json            # Use JSON grammar
+#   bin/backend-matrix --grammars=json,bash,toml # Test multiple grammars
+#   bin/backend-matrix --cross-grammar           # Test backends with DIFFERENT grammars
+#
+# Cross-grammar testing (the interesting case):
+#   bin/backend-matrix --cross-grammar --grammars=json,toml
+#   # Tests: FFI+json then MRI+toml, MRI+json then FFI+toml, etc.
+#
+# Custom source files:
+#   bin/backend-matrix --toml-source=path/to/file.toml
+#   bin/backend-matrix --json-source=path/to/file.json
+#   bin/backend-matrix --bash-source=path/to/file.sh
+
+require "bundler/setup"
+require "optparse"
+require "table_tennis"
+
+# Map of backend names to their gem names (for Gem::Specification lookup)
+GEM_NAMES = {
+  "mri" => "ruby_tree_sitter",
+  "ffi" => "ffi",
+  "rust" => "tree_stump",
+}.freeze
+
+# Map of backend names to their require paths (may differ from gem name)
+GEM_REQUIRES = {
+  "mri" => "tree_sitter",
+  "ffi" => "ffi",
+  "rust" => "tree_stump",
+}.freeze
+
+BACKEND_SYMBOLS = {
+  "mri" => :mri,
+  "ffi" => :ffi,
+  "rust" => :rust,
+}.freeze
+
+# Grammar configuration
+GRAMMAR_ENV_VARS = {
+  "toml" => "TREE_SITTER_TOML_PATH",
+  "json" => "TREE_SITTER_JSON_PATH",
+  "bash" => "TREE_SITTER_BASH_PATH",
+  "jsonc" => "TREE_SITTER_JSONC_PATH",
+}.freeze
+
+GRAMMAR_SYMBOLS = {
+  "toml" => "tree_sitter_toml",
+  "json" => "tree_sitter_json",
+  "bash" => "tree_sitter_bash",
+  "jsonc" => "tree_sitter_json",  # jsonc uses json symbol
+}.freeze
+
+# Built-in sample source code for each grammar
+SAMPLE_SOURCES = {
+  "toml" => <<~TOML,
+    # Sample TOML
+    [database]
+    host = "localhost"
+    port = 5432
+  TOML
+  "json" => <<~JSON,
+    {
+      "name": "test",
+      "value": 42,
+      "enabled": true
+    }
+  JSON
+  "bash" => <<~BASH,
+    #!/bin/bash
+    echo "Hello, World!"
+    for i in 1 2 3; do
+      echo $i
+    done
+  BASH
+  "jsonc" => <<~JSONC,
+    {
+      // This is a comment
+      "name": "test",
+      "value": 42
+    }
+  JSONC
+}.freeze
+
+def print_header(message)
+  puts "\n#{"=" * 70}"
+  puts message
+  puts "=" * 70
+end
+
+def print_section(message)
+  puts "\n#{"-" * 50}"
+  puts message
+  puts "-" * 50
+end
+
+def gem_installed?(gem_name)
+  Gem::Specification.find_by_name(gem_name)
+  true
+rescue Gem::MissingSpecError
+  false
+end
+
+def grammar_available?(grammar)
+  env_var = GRAMMAR_ENV_VARS[grammar]
+  return false unless env_var
+
+  path = ENV[env_var]
+  path && File.exist?(path)
+end
+
+def get_grammar_path(grammar)
+  env_var = GRAMMAR_ENV_VARS[grammar]
+  return unless env_var
+
+  ENV[env_var]
+end
+
+def get_source_for_grammar(grammar, custom_sources)
+  if custom_sources[grammar]
+    File.read(custom_sources[grammar])
+  else
+    SAMPLE_SOURCES[grammar]
+  end
+end
+
+def load_gems_in_order(order)
+  puts "\nLoading gems in order: #{order.join(" -> ")}"
+
+  loaded = []
+  order.each do |backend|
+    gem_name = GEM_NAMES[backend]
+    require_path = GEM_REQUIRES[backend]
+    unless gem_name
+      puts "  ⚠ Unknown backend: #{backend}"
+      next
+    end
+
+    unless gem_installed?(gem_name)
+      puts "  ⚠ #{backend}: gem '#{gem_name}' not installed, skipping"
+      next
+    end
+
+    begin
+      require require_path
+      puts "  ✓ #{backend}: loaded '#{gem_name}' (require '#{require_path}')"
+      loaded << backend
+    rescue LoadError => e
+      puts "  ✗ #{backend}: failed to load '#{require_path}': #{e.message}"
+    end
+  end
+
+  loaded
+end
+
+def test_backend_with_grammar(backend_sym, grammar, custom_sources)
+  # Load TreeHaver (after gems are loaded)
+  require_relative "../lib/tree_haver"
+
+  # Disable backend protection so we can test conflicts
+  TreeHaver.backend_protect = false
+
+  path = get_grammar_path(grammar)
+  unless path && File.exist?(path)
+    return {status: :skip, message: "#{GRAMMAR_ENV_VARS[grammar]} not set or file not found"}
+  end
+
+  source = get_source_for_grammar(grammar, custom_sources)
+  symbol = GRAMMAR_SYMBOLS[grammar]
+
+  TreeHaver::LanguageRegistry.clear_cache!
+  TreeHaver.reset_backend!(to: :auto)
+
+  TreeHaver.with_backend(backend_sym) do
+    # Test 1: Backend available?
+    backend_module = case backend_sym
+    when :mri then TreeHaver::Backends::MRI
+    when :ffi then TreeHaver::Backends::FFI
+    when :rust then TreeHaver::Backends::Rust
+    end
+
+    unless backend_module&.available?
+      return {status: :blocked, message: "Backend reports not available"}
+    end
+
+    # Test 2: Can load language?
+    lang = TreeHaver::Language.from_library(path, symbol: symbol)
+
+    # Test 3: Can create parser?
+    parser = TreeHaver::Parser.new
+
+    # Test 4: Can set language?
+    parser.language = lang
+
+    # Test 5: Can parse?
+    tree = parser.parse(source)
+    root_type = tree.root_node.type
+
+    {status: :ok, message: "Parsed #{grammar}, root: #{root_type}"}
+  end
+rescue TreeHaver::NotAvailable => e
+  {status: :unavailable, message: e.message}
+rescue => e
+  {status: :error, message: "#{e.class}: #{e.message}"}
+end
+
+def run_matrix(backends, grammars, custom_sources)
+  print_header("Backend Compatibility Matrix")
+  puts "Backends: #{backends.join(" -> ")}"
+  puts "Grammars: #{grammars.join(", ")}"
+
+  # Load gems in specified order
+  load_gems_in_order(backends)
+
+  print_section("Testing each backend with each grammar")
+
+  results = {}
+  table_rows = []
+
+  backends.each do |backend|
+    backend_sym = BACKEND_SYMBOLS[backend]
+    next unless backend_sym
+
+    results[backend] = {}
+
+    grammars.each do |grammar|
+      result = test_backend_with_grammar(backend_sym, grammar, custom_sources)
+      results[backend][grammar] = result
+
+      table_rows << {
+        "Backend" => backend,
+        "Grammar" => grammar,
+        "Status" => status_symbol(result[:status]),
+        "Details" => result[:message].to_s[0..50],
+      }
+    end
+  end
+
+  puts TableTennis.new(table_rows)
+
+  print_section("Summary")
+
+  summary_rows = backends.map do |backend|
+    working_grammars = results[backend]&.select { |_, r| r[:status] == :ok }&.keys || []
+    failed_grammars = results[backend]&.reject { |_, r| r[:status] == :ok }&.keys || []
+
+    {
+      "Backend" => backend,
+      "Working" => working_grammars.any? ? "✓ #{working_grammars.join(", ")}" : "-",
+      "Failed" => failed_grammars.any? ? "✗ #{failed_grammars.join(", ")}" : "-",
+    }
+  end
+  puts TableTennis.new(summary_rows)
+
+  results
+end
+
+def run_cross_grammar_test(backends, grammars, custom_sources)
+  # Test using different grammars with different backends in sequence
+  # e.g., for 3 backends: MRI+json → FFI+toml → Rust+bash
+  print_header("Cross-Grammar Backend Test")
+  puts "Testing whether backends can coexist when using DIFFERENT grammar files"
+  puts "Backends: #{backends.join(" → ")}"
+  puts "Grammars: #{grammars.join(", ")}"
+
+  if grammars.empty?
+    puts "\n⚠ Need at least 1 grammar for testing"
+    puts "  Use: --grammars=json"
+    return
+  end
+
+  if backends.size < 2
+    puts "\n⚠ Need at least 2 backends for cross-grammar testing"
+    return
+  end
+
+  # Load gems
+  load_gems_in_order(backends)
+
+  # Load TreeHaver
+  require_relative "../lib/tree_haver"
+
+  print_section("Cross-Grammar Chain Tests")
+  puts "\nTesting #{backends.size}-step chains"
+
+  if grammars.size >= backends.size
+    puts "Each backend uses a different grammar (#{grammars.size} grammars for #{backends.size} backends)"
+  else
+    puts "Grammars cycle across backends (#{grammars.size} grammars for #{backends.size} backends)"
+  end
+
+  # Generate grammar assignments for each backend
+  # If we have enough grammars, permute them so each backend gets a unique one
+  # If not, cycle through the available grammars
+  combinations = []
+
+  if grammars.size >= backends.size
+    # Enough grammars - permute so each backend gets a unique grammar
+    grammars.permutation(backends.size).each do |grammar_perm|
+      chain = backends.zip(grammar_perm)
+      combinations << chain
+    end
+  else
+    # Fewer grammars than backends - generate all possible grammar assignments
+    # Each position can use any grammar (grammars.size ^ backends.size combinations)
+    grammar_assignments = grammars.repeated_permutation(backends.size).to_a
+    grammar_assignments.each do |assignment|
+      chain = backends.zip(assignment)
+      combinations << chain
+    end
+  end
+
+  results = {}
+  table_rows = []
+
+  combinations.each do |chain|
+    chain_name = chain.map { |b, g| "#{b}+#{g}" }.join(" → ")
+
+    chain_results = []
+    all_success = true
+
+    # Test each step in the chain sequentially
+    chain.each_with_index do |(backend, grammar), step_idx|
+      backend_sym = BACKEND_SYMBOLS[backend]
+      result = test_backend_with_grammar(backend_sym, grammar, custom_sources)
+      chain_results << {backend: backend, grammar: grammar, result: result, step: step_idx + 1}
+
+      all_success = false unless result[:status] == :ok
+    end
+
+    results[chain_name] = {success: all_success, details: chain_results}
+
+    # Build table row showing each step
+    row = {"Chain" => chain_name}
+    chain_results.each_with_index do |step_result, idx|
+      step_name = "Step #{idx + 1}"
+      row[step_name] = status_symbol(step_result[:result][:status])
+    end
+    row["Result"] = all_success ? "✓ Pass" : "✗ Fail"
+    table_rows << row
+  end
+
+  # Print table
+  puts
+  puts TableTennis.new(table_rows)
+
+  print_section("Cross-Grammar Results Summary")
+
+  successful = results.select { |_, r| r[:success] }
+  failed = results.reject { |_, r| r[:success] }
+
+  puts "\nWorking: #{successful.size} | Failed: #{failed.size} | Total: #{results.size}"
+
+  if successful.any?
+    puts "\n✓ Working chains (all #{backends.size} backends worked sequentially):"
+    successful.each_key { |name| puts "  • #{name}" }
+  end
+
+  if failed.any?
+    puts "\n✗ Failed chains:"
+    failed.each do |name, data|
+      failures = data[:details].reject { |d| d[:result][:status] == :ok }
+      failure_info = failures.map { |d| "step #{d[:step]} #{d[:backend]}+#{d[:grammar]}: #{d[:result][:status]}" }.join(", ")
+      puts "  • #{name} (#{failure_info})"
+    end
+  end
+
+  # Key insight - analyze which backends block which
+  print_section("Analysis")
+
+  # Check which backends caused failures
+  blocking_analysis = Hash.new { |h, k| h[k] = {blocked_by: [], blocks: []} }
+
+  failed.each do |_name, data|
+    data[:details].each do |step|
+      next if step[:result][:status] == :ok
+
+      # This backend was blocked - find which previous backend might have blocked it
+      prev_steps = data[:details].select { |s| s[:step] < step[:step] && s[:result][:status] == :ok }
+      prev_steps.each do |prev|
+        blocking_analysis[step[:backend]][:blocked_by] << prev[:backend]
+        blocking_analysis[prev[:backend]][:blocks] << step[:backend]
+      end
+    end
+  end
+
+  if blocking_analysis.any?
+    puts "\nBlocking relationships detected:"
+    blocking_analysis.each do |backend, info|
+      blockers = info[:blocked_by].uniq
+      blocks = info[:blocks].uniq
+      if blockers.any?
+        puts "  • #{backend} is blocked by: #{blockers.join(", ")}"
+      end
+      if blocks.any?
+        puts "  • #{backend} blocks: #{blocks.join(", ")}"
+      end
+    end
+  end
+
+  # Check if any chains with FFI worked
+  ffi_chains = results.select { |name, _| name.include?("ffi") }
+  working_ffi = ffi_chains.select { |_, r| r[:success] }
+
+  if working_ffi.any?
+    puts "\n✓ FFI CAN participate in multi-backend chains!"
+    puts "  Working chains with FFI:"
+    working_ffi.each_key { |name| puts "    • #{name}" }
+  else
+    puts "\n✗ FFI cannot participate in any multi-backend chain"
+  end
+
+  results
+end
+
+def status_symbol(status)
+  case status
+  when :ok then "✓"
+  when :blocked then "⊘ blocked"
+  when :unavailable then "✗ unavail"
+  when :skip then "⚠ skip"
+  when :error then "? error"
+  else "?"
+  end
+end
+
+def run_single_test_subprocess(backends, grammars, custom_sources, cross_grammar: false)
+  # Build command for subprocess
+  args = backends.dup
+  args << "--grammars=#{grammars.join(",")}" if grammars.any?
+
+  # Only use cross-grammar mode if we have 2+ backends
+  # Single backend tests should just test all grammars normally
+  args << "--cross-grammar" if cross_grammar && backends.size >= 2
+
+  custom_sources.each do |grammar, path|
+    args << "--#{grammar}-source=#{path}"
+  end
+
+  cmd = "#{$PROGRAM_NAME} #{args.join(" ")}"
+  output = %x(#{cmd} 2>&1)
+
+  # Parse output based on mode
+  if output.include?("Cross-Grammar Results")
+    # Cross-grammar mode - parse the table output
+    # Look for "Working: X | Failed: Y | Total: Z" line
+    working_count = 0
+    failed_count = 0
+
+    if output =~ /Working:\s*(\d+)\s*\|\s*Failed:\s*(\d+)/
+      working_count = $1.to_i
+      failed_count = $2.to_i
+    end
+
+    # Extract working combinations from the bullet list
+    working_combos = []
+    if output =~ /✓ Working combinations:\s*\n((?:\s+• [^\n]+\n?)+)/m
+      working_combos = $1.scan(/• ([^\n]+)/).flatten
+    end
+
+    # Extract failed combinations
+    failed_combos = []
+    if output =~ /✗ Failed combinations:\s*\n((?:\s+• [^\n]+\n?)+)/m
+      failed_combos = $1.scan(/• ([^\n]+)/).flatten
+    end
+
+    # Check for FFI+MRI coexistence
+    ffi_mri_coexist = output.include?("FFI and MRI CAN coexist")
+
+    result = {
+      working: "#{working_count} working, #{failed_count} failed",
+      working_count: working_count,
+      failed_count: failed_count,
+      output: output,
+    }
+
+    result[:working_combos] = working_combos if working_combos.any?
+    result[:failed_combos] = failed_combos if failed_combos.any?
+    result[:ffi_mri_coexist] = true if ffi_mri_coexist
+
+    result
+  elsif output.include?("Summary")
+    # Same-grammar mode (single backend with multiple grammars)
+    # Parse the table to count working/failed
+    working_count = output.scan(/│\s*✓\s*│/).size
+    failed_count = output.scan(/│\s*[⊘✗]/).size
+
+    {
+      working: "#{working_count} passed, #{failed_count} failed",
+      working_count: working_count,
+      failed_count: failed_count,
+      output: output,
+    }
+  elsif output.include?("✓") || output.include?("✗")
+    # Generic fallback - count checkmarks in testing section only
+    # Avoid counting summary/analysis checkmarks
+    test_section = output[/Testing.*?(?:Summary|Results|Analysis)/m] || output
+    working_count = test_section.scan(/✓/).size
+    failed_count = test_section.scan(/[✗⊘]/).size
+
+    {
+      working: "#{working_count} passed, #{failed_count} failed",
+      working_count: working_count,
+      failed_count: failed_count,
+      output: output,
+    }
+  else
+    {error: "Failed to parse output", raw: output[0..500]}
+  end
+end
+
+def run_all_permutations(grammars, custom_sources, cross_grammar: false)
+  backends = %w[mri ffi rust]
+
+  # Generate all combinations of all sizes
+  all_combinations = []
+
+  # 1-backend tests (3 total) - test single backend with all grammars
+  backends.each { |b| all_combinations << [b] }
+
+  # 2-backend permutations (6 total)
+  backends.permutation(2).each { |perm| all_combinations << perm }
+
+  # 3-backend permutations (6 total)
+  backends.permutation(3).each { |perm| all_combinations << perm }
+
+  total = all_combinations.size
+  mode = cross_grammar ? "Cross-Grammar" : "Same-Grammar"
+
+  print_header("Testing All #{total} Backend Combinations (#{mode})")
+  puts "Grammars: #{grammars.join(", ")}"
+  puts "1-backend: #{backends.size} tests (each backend parses all #{grammars.size} grammars)"
+  puts "2-backend: #{backends.permutation(2).to_a.size} tests (A → B chains)"
+  puts "3-backend: #{backends.permutation(3).to_a.size} tests (A → B → C chains)"
+
+  puts "\nEach combination runs in a fresh subprocess"
+
+  all_results = {}
+
+  all_combinations.each_with_index do |combo, idx|
+    order_str = combo.join(" ")
+    combo_size = combo.size
+    grammar_count = grammars.size
+
+    # Calculate expected test count for this combination
+    if cross_grammar && combo_size >= 2
+      # Cross-grammar chains: each backend gets a different grammar
+      # Number of chains = P(grammars, backends) or grammars^backends if cycling
+      if grammar_count >= combo_size
+        # Permutations: P(g, n) = g! / (g-n)!
+        (1..grammar_count).to_a.last(combo_size).reduce(1, :*)
+        # Simpler: for P(g,n), multiply g × (g-1) × ... × (g-n+1)
+        expected_tests = (0...combo_size).reduce(1) { |acc, i| acc * (grammar_count - i) }
+      else
+        # Cycling: grammars^backends combinations
+        expected_tests = grammar_count**combo_size
+      end
+      puts "\n[#{idx + 1}/#{total}] Testing: #{order_str} (#{expected_tests} cross-grammar chains)"
+    else
+      puts "\n[#{idx + 1}/#{total}] Testing: #{order_str} (grammars: #{grammars.join(", ")})"
+    end
+
+    result = run_single_test_subprocess(combo, grammars, custom_sources, cross_grammar: cross_grammar)
+    all_results[order_str] = result
+
+    if result[:error]
+      puts "  → Error: #{result[:error]}"
+      puts "  → Raw: #{result[:raw]}" if result[:raw]
+    elsif result[:working]
+      puts "  → #{result[:working]}"
+      if result[:ffi_mri_coexist]
+        puts "    ★ FFI+MRI can coexist with different grammars!"
+      end
+      # Always show both working and failed when we have detailed combo info
+      if result[:working_combos]&.any?
+        working_display = result[:working_combos].first(3).join(", ")
+        working_display += "..." if result[:working_combos].size > 3
+        puts "    Working: #{working_display}"
+      end
+      if result[:failed_combos]&.any?
+        failed_display = result[:failed_combos].first(3).join(", ")
+        failed_display += "..." if result[:failed_combos].size > 3
+        puts "    Failed: #{failed_display}"
+      end
+    end
+  end
+
+  print_results_summary(backends, grammars, all_results, cross_grammar: cross_grammar)
+end
+
+def print_results_summary(backends, grammars, all_results, cross_grammar: false)
+  print_header("Results Summary")
+  puts "Grammars tested: #{grammars.join(", ")}"
+  puts "Mode: #{cross_grammar ? "Cross-Grammar (backends may use different .so files)" : "Same-Grammar"}"
+
+  # 1-backend results
+  print_section("1-Backend Tests (isolation with all grammars)")
+
+  single_rows = backends.map do |b|
+    result = all_results[b]
+    status = if result.nil?
+      "(not tested)"
+    elsif result[:error]
+      "ERROR: #{result[:error]}"
+    else
+      result[:working]
+    end
+    {"Backend" => b, "Result" => status}
+  end
+  puts TableTennis.new(single_rows)
+
+  # 2-backend results
+  print_section("2-Backend Tests (A then B)")
+
+  two_backend_rows = backends.permutation(2).map do |perm|
+    order_str = perm.join(" ")
+    result = all_results[order_str]
+    status = if result.nil?
+      "(not tested)"
+    elsif result[:error]
+      "ERROR"
+    else
+      result[:working] + (result[:ffi_mri_coexist] ? " ★" : "")
+    end
+    {"Order" => order_str, "Result" => status}
+  end
+  puts TableTennis.new(two_backend_rows)
+
+  # 3-backend results
+  print_section("3-Backend Tests (A → B → C chains)")
+
+  if cross_grammar
+    puts "\nNote: Each 3-backend test runs a full A → B → C chain where each backend"
+    puts "uses a different grammar (e.g., mri+json → ffi+toml → rust+bash)."
+    puts "Results may be similar across orderings because once a backend is blocked,"
+    puts "it remains blocked regardless of when it was loaded."
+  end
+
+  three_backend_rows = backends.permutation(3).map do |perm|
+    order_str = perm.join(" ")
+    result = all_results[order_str]
+    status = if result.nil?
+      "(not tested)"
+    elsif result[:error]
+      "ERROR"
+    else
+      result[:working] + (result[:ffi_mri_coexist] ? " ★" : "")
+    end
+    {"Order" => order_str, "Result" => status}
+  end
+  puts TableTennis.new(three_backend_rows)
+
+  # Cross-grammar specific summary
+  if cross_grammar
+    print_section("Cross-Grammar Key Findings (Data-Driven)")
+
+    # Analyze which backend pairs work together
+    backend_pairs = {}
+    backends.permutation(2).each do |pair|
+      order_str = pair.join(" ")
+      result = all_results[order_str]
+      next unless result
+
+      # Check if this pair has any working combinations using the counts
+      has_working = (result[:working_count] || 0) > 0 ||
+        result[:working_combos]&.any?
+      has_failed = (result[:failed_count] || 0) > 0 ||
+        result[:failed_combos]&.any?
+
+      pair_key = pair.sort.join("+")
+      backend_pairs[pair_key] ||= {working: false, failed: false, orders: [], working_count: 0, failed_count: 0}
+      backend_pairs[pair_key][:working] = true if has_working
+      backend_pairs[pair_key][:failed] = true if has_failed
+      backend_pairs[pair_key][:working_count] += result[:working_count] || 0
+      backend_pairs[pair_key][:failed_count] += result[:failed_count] || 0
+      backend_pairs[pair_key][:orders] << order_str
+    end
+
+    # Report findings as a table
+    pair_rows = backend_pairs.map do |pair, data|
+      status = if data[:working] && !data[:failed]
+        "✓ Fully compatible"
+      elsif data[:working] && data[:failed]
+        "⚠ Partially compatible"
+      else
+        "✗ Incompatible"
+      end
+      {
+        "Backend Pair" => pair,
+        "Compatibility" => status,
+        "Working" => data[:working_count].to_s,
+        "Failed" => data[:failed_count].to_s,
+      }
+    end
+    puts "\nBackend Pair Compatibility:"
+    puts TableTennis.new(pair_rows)
+
+    # FFI-specific findings table
+    ffi_mri = backend_pairs["ffi+mri"]
+    ffi_rust = backend_pairs["ffi+rust"]
+    mri_rust = backend_pairs["mri+rust"]
+
+    ffi_rows = []
+    ffi_rows << {
+      "Pair" => "FFI + MRI",
+      "Status" => ffi_mri&.dig(:working) ? "✓ Can coexist" : "✗ Cannot coexist",
+      "Reason" => ffi_mri&.dig(:working) ? "" : "libtree-sitter runtime conflict",
+    }
+    ffi_rows << {
+      "Pair" => "FFI + Rust",
+      "Status" => ffi_rust&.dig(:working) ? "✓ Can coexist" : "✗ Cannot coexist",
+      "Reason" => ffi_rust&.dig(:working) ? "" : "Unknown conflict",
+    }
+    ffi_rows << {
+      "Pair" => "MRI + Rust",
+      "Status" => if mri_rust&.dig(:working) && !mri_rust&.dig(:failed)
+                    "✓ Fully compatible"
+                  elsif mri_rust&.dig(:working)
+                    "⚠ Partially compatible"
+                  else
+                    "✗ Cannot coexist"
+                  end,
+      "Reason" => "",
+    }
+
+    puts "\nBackend Analysis:"
+    puts TableTennis.new(ffi_rows)
+  end
+
+  # Analysis
+  print_header("Analysis")
+
+  # FFI compatibility - data driven
+  print_section("FFI Compatibility")
+
+  ffi_alone = all_results["ffi"]
+  ffi_works_alone = ffi_alone && !ffi_alone[:error] &&
+    (ffi_alone[:working_count] || 0) > 0
+
+  if ffi_works_alone
+    puts "✓ FFI works in isolation"
+  else
+    puts "✗ FFI does NOT work in isolation"
+  end
+
+  # Check which backends FFI can work with
+  ffi_compatible_with = []
+  ffi_incompatible_with = []
+
+  %w[mri rust].each do |other|
+    # Check both orders
+    orders = ["ffi #{other}", "#{other} ffi"]
+    works_with_other = orders.any? do |order|
+      result = all_results[order]
+      result && (result[:working_count] || 0) > 0
+    end
+
+    if works_with_other
+      ffi_compatible_with << other
+    else
+      ffi_incompatible_with << other
+    end
+  end
+
+  if ffi_compatible_with.any?
+    puts "\n✓ FFI can coexist with: #{ffi_compatible_with.join(", ")}"
+  end
+
+  if ffi_incompatible_with.any?
+    puts "✗ FFI cannot coexist with: #{ffi_incompatible_with.join(", ")}"
+  end
+
+  # Statistics - count actual results
+  print_section("Statistics")
+
+  total_subprocess_runs = all_results.size
+
+  # Count actual test combinations using the parsed counts
+  total_combos = 0
+  working_combos = 0
+  failed_combos = 0
+
+  all_results.each do |order, result|
+    next if result[:error]
+
+    # Use the parsed counts directly
+    working_combos += result[:working_count] || 0
+    failed_combos += result[:failed_count] || 0
+    total_combos += (result[:working_count] || 0) + (result[:failed_count] || 0)
+  end
+
+  success_rate = (total_combos > 0) ? (working_combos.to_f / total_combos * 100).round(1) : 0
+
+  stats_rows = [
+    {"Metric" => "Subprocess runs", "Value" => total_subprocess_runs.to_s},
+    {"Metric" => "Grammar combinations tested", "Value" => total_combos.to_s},
+    {"Metric" => "Working combinations", "Value" => working_combos.to_s},
+    {"Metric" => "Failed combinations", "Value" => failed_combos.to_s},
+    {"Metric" => "Success rate", "Value" => "#{success_rate}%"},
+  ]
+  puts TableTennis.new(stats_rows)
+end
+
+# Parse command line options
+options = {
+  grammars: ["toml"],
+  custom_sources: {},
+  cross_grammar: false,
+  all_permutations: false,
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: bin/backend-matrix [backends...] [options]"
+
+  opts.on("--grammar=GRAMMAR", "Single grammar to test (toml, json, bash, jsonc)") do |g|
+    options[:grammars] = [g]
+  end
+
+  opts.on("--grammars=LIST", "Comma-separated list of grammars") do |list|
+    options[:grammars] = list.split(",").map(&:strip)
+  end
+
+  opts.on("--cross-grammar", "Test backends with different grammars (requires 2+ grammars)") do
+    options[:cross_grammar] = true
+  end
+
+  opts.on("--all-permutations", "Test all backend combinations in subprocesses") do
+    options[:all_permutations] = true
+  end
+
+  opts.on("--toml-source=PATH", "Custom TOML source file") do |path|
+    options[:custom_sources]["toml"] = path
+  end
+
+  opts.on("--json-source=PATH", "Custom JSON source file") do |path|
+    options[:custom_sources]["json"] = path
+  end
+
+  opts.on("--bash-source=PATH", "Custom Bash source file") do |path|
+    options[:custom_sources]["bash"] = path
+  end
+
+  opts.on("--jsonc-source=PATH", "Custom JSONC source file") do |path|
+    options[:custom_sources]["jsonc"] = path
+  end
+
+  opts.on("--list-grammars", "List available grammars and their paths") do
+    puts "Available grammars:"
+    GRAMMAR_ENV_VARS.each do |grammar, env_var|
+      path = ENV[env_var]
+      status = (path && File.exist?(path)) ? "✓" : "✗"
+      puts "  #{status} #{grammar}: #{env_var}=#{path || "(not set)"}"
+    end
+    exit
+  end
+
+  opts.on("-h", "--help", "Show this help") do
+    puts opts
+    puts <<~EXAMPLES
+
+      Examples:
+        # Test all backends with TOML grammar (default)
+        bin/backend-matrix
+
+        # Test specific backend order
+        bin/backend-matrix ffi mri rust
+
+        # Test with JSON grammar
+        bin/backend-matrix --grammar=json
+
+        # Test multiple grammars with each backend
+        bin/backend-matrix --grammars=json,toml,bash
+
+        # Cross-grammar test: can FFI+json coexist with MRI+toml?
+        bin/backend-matrix --cross-grammar --grammars=json,toml
+
+        # Full matrix: all backend permutations
+        bin/backend-matrix --all-permutations
+
+        # Full cross-grammar matrix
+        bin/backend-matrix --all-permutations --cross-grammar --grammars=json,toml
+
+        # Custom source files
+        bin/backend-matrix --toml-source=my_config.toml --json-source=data.json
+
+        # List available grammars
+        bin/backend-matrix --list-grammars
+    EXAMPLES
+    exit
+  end
+end
+
+# Parse known options, leave backends in ARGV
+backends = []
+remaining = []
+
+ARGV.each do |arg|
+  if arg.start_with?("-")
+    remaining << arg
+  else
+    backends << arg
+  end
+end
+
+parser.parse!(remaining)
+
+# Default backends if none specified
+backends = %w[ffi mri rust] if backends.empty?
+
+# Validate grammars
+options[:grammars].each do |grammar|
+  unless GRAMMAR_ENV_VARS.key?(grammar)
+    puts "Unknown grammar: #{grammar}"
+    puts "Available: #{GRAMMAR_ENV_VARS.keys.join(", ")}"
+    exit 1
+  end
+
+  unless grammar_available?(grammar)
+    puts "Warning: Grammar '#{grammar}' not available (#{GRAMMAR_ENV_VARS[grammar]} not set or file missing)"
+  end
+end
+
+# Run the appropriate mode
+if options[:all_permutations]
+  run_all_permutations(options[:grammars], options[:custom_sources], cross_grammar: options[:cross_grammar])
+elsif options[:cross_grammar]
+  run_cross_grammar_test(backends, options[:grammars], options[:custom_sources])
+else
+  run_matrix(backends, options[:grammars], options[:custom_sources])
+end

@@ -31,25 +31,36 @@
 #   end
 #
 # Negated tags (for testing behavior when dependencies are NOT available):
-#   it "only runs when FFI is NOT available", :not_ffi do
-#     # This test only runs when FFI is NOT available
-#   end
-#
 #   it "only runs when ruby_tree_sitter is NOT available", :not_mri_backend do
 #     # This test only runs when ruby_tree_sitter gem is NOT available
 #   end
 
 module TreeHaverDependencies
   class << self
-    # Check if FFI gem is available
+    # Check if FFI backend is actually usable (live check, not memoized)
+    #
+    # This method attempts to actually use the FFI backend by loading a language.
+    # This provides "live" validation of backend availability because:
+    # - If FFI gem is missing, it will fail
+    # - If MRI backend was used first, BackendConflict will be raised
+    # - If libtree-sitter is missing, it will fail
+    #
+    # NOT MEMOIZED: Each call re-checks availability. This validates that
+    # backend protection works correctly as tests run. FFI tests should run
+    # first (via `rake spec` which runs ffi_specs then remaining_specs).
+    #
+    # For isolated FFI testing, use bin/rspec-ffi
     def ffi_available?
-      return @ffi_available if defined?(@ffi_available)
-      @ffi_available = begin
-        require "ffi"
-        true
-      rescue LoadError
-        false
+      # Try to actually use the FFI backend
+      path = find_toml_grammar_path
+      return false unless path && File.exist?(path)
+
+      TreeHaver.with_backend(:ffi) do
+        TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
       end
+      true
+    rescue TreeHaver::BackendConflict, TreeHaver::NotAvailable, LoadError
+      false
     end
 
     # Check if ruby_tree_sitter gem is available (MRI backend)
@@ -150,8 +161,12 @@ RSpec.configure do |config|
   # Positive tags: run when dependency IS available
   # ============================================================
 
-  # Skip tests tagged :ffi when FFI is not available
-  config.filter_run_excluding ffi: true unless TreeHaverDependencies.ffi_available?
+  # FFI availability is checked dynamically per-test (not at load time)
+  # because FFI becomes unavailable after MRI backend is used.
+  # When running via `rake spec`, FFI tests run first in a clean environment.
+  config.before(:each, :ffi) do
+    skip "FFI backend not available (MRI backend may have been used)" unless TreeHaverDependencies.ffi_available?
+  end
 
   # Skip tests tagged :mri_backend when ruby_tree_sitter is not available
   config.filter_run_excluding mri_backend: true unless TreeHaverDependencies.mri_backend_available?
@@ -180,8 +195,12 @@ RSpec.configure do |config|
   # Use these to test fallback/error behavior when deps are missing
   # ============================================================
 
-  # Skip tests tagged :not_ffi when FFI IS available
-  config.filter_run_excluding not_ffi: true if TreeHaverDependencies.ffi_available?
+  # NOTE: :not_ffi tag is not provided because FFI availability is dynamic.
+  # FFI becomes unavailable after MRI backend is used (due to libtree-sitter
+  # runtime conflicts that cause segfaults). Since test order determines FFI
+  # availability, a static :not_ffi filter would be unreliable. Tests that
+  # need to verify behavior when FFI is unavailable should mock
+  # TreeHaver::Backends::FFI.available? instead.
 
   # Skip tests tagged :not_mri_backend when ruby_tree_sitter IS available
   config.filter_run_excluding not_mri_backend: true if TreeHaverDependencies.mri_backend_available?

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe TreeHaver::Backends::Java do
   let(:backend) { described_class }
 

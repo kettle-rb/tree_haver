@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe "Thread-local backend selection" do
+  # NOTE: Do NOT reset backends_used! The tracking is essential for backend_protect
+
   after do
     # Clean up thread-local state after each test
     Thread.current[:tree_haver_backend_context] = nil
@@ -24,7 +28,7 @@ RSpec.describe "Thread-local backend selection" do
     end
 
     it "is isolated per thread" do
-      Thread.current[:tree_haver_backend_context] = { backend: :ffi, depth: 1 }
+      Thread.current[:tree_haver_backend_context] = {backend: :ffi, depth: 1}
 
       other_context = nil
       thread = Thread.new do
@@ -186,7 +190,6 @@ RSpec.describe "Thread-local backend selection" do
 
     it "main thread is unaffected by other threads" do
       TreeHaver.backend = :ffi
-      main_thread_backend = nil
 
       thread = Thread.new do
         TreeHaver.with_backend(:mri) do
@@ -305,9 +308,10 @@ RSpec.describe "Thread-local backend selection" do
   end
 
   describe "TreeHaver.resolve_backend_module" do
-    it "returns correct module for explicit backend" do
-      mod = TreeHaver.resolve_backend_module(:ffi)
-      expect(mod).to eq(TreeHaver::Backends::FFI)
+    it "returns correct module for explicit backend (non-conflicting)" do
+      # Use citrus since it never conflicts
+      mod = TreeHaver.resolve_backend_module(:citrus)
+      expect(mod).to eq(TreeHaver::Backends::Citrus)
     end
 
     it "returns correct module for thread-local backend" do
@@ -317,14 +321,24 @@ RSpec.describe "Thread-local backend selection" do
       end
     end
 
-    it "returns correct module for each backend type" do
+    it "returns correct module for each backend type (respecting conflicts)" do
+      mri_loaded = defined?(TreeSitter::Parser)
+
       {
         mri: TreeHaver::Backends::MRI,
         rust: TreeHaver::Backends::Rust,
         ffi: TreeHaver::Backends::FFI,
         java: TreeHaver::Backends::Java,
-        citrus: TreeHaver::Backends::Citrus
+        citrus: TreeHaver::Backends::Citrus,
       }.each do |name, expected_module|
+        # Skip FFI test if MRI is loaded (would raise BackendConflict)
+        if name == :ffi && mri_loaded
+          expect {
+            TreeHaver.resolve_backend_module(name)
+          }.to raise_error(TreeHaver::BackendConflict)
+          next
+        end
+
         mod = TreeHaver.resolve_backend_module(name)
         # resolve_backend_module returns nil if backend is not available
         if expected_module.respond_to?(:available?) && !expected_module.available?
@@ -340,12 +354,23 @@ RSpec.describe "Thread-local backend selection" do
       expect(mod).to eq(TreeHaver.backend_module)
     end
 
-    it "respects thread-local context when no explicit backend" do
-      TreeHaver.with_backend(:ffi) do
+    it "respects thread-local context when no explicit backend (non-conflicting)" do
+      # Use citrus since it never conflicts
+      TreeHaver.with_backend(:citrus) do
         mod = TreeHaver.resolve_backend_module(nil)
-        expect(mod).to eq(TreeHaver::Backends::FFI)
+        expect(mod).to eq(TreeHaver::Backends::Citrus)
       end
+    end
+
+    it "raises BackendConflict when FFI requested after MRI used" do
+      skip "MRI not loaded, cannot test conflict" unless defined?(TreeSitter::Parser)
+
+      # Record MRI usage (it's already loaded)
+      TreeHaver.record_backend_usage(:mri)
+
+      expect {
+        TreeHaver.resolve_backend_module(:ffi)
+      }.to raise_error(TreeHaver::BackendConflict, /blocked by.*mri/i)
     end
   end
 end
-

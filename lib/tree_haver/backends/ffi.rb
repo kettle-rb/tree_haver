@@ -1,16 +1,6 @@
 # frozen_string_literal: true
 
 module TreeHaver
-  # The load condition isn't really worth testing, so :nocov:
-  # :nocov:
-  begin
-    require "ffi"
-    FFI_AVAILABLE = true
-  rescue LoadError
-    FFI_AVAILABLE = false
-  end
-  # :nocov:
-
   module Backends
     # FFI-based backend for calling libtree-sitter directly
     #
@@ -30,152 +20,184 @@ module TreeHaver
     # @see https://github.com/ffi/ffi Ruby FFI
     # @see https://tree-sitter.github.io/tree-sitter/ tree-sitter
     module FFI
+      # Check if the FFI gem is available (lazy evaluation)
+      #
+      # This method lazily checks for FFI gem availability to avoid
+      # polluting the environment at load time.
+      #
+      # @return [Boolean] true if FFI gem can be loaded
+      # @api private
+      def self.ffi_gem_available?
+        return @ffi_gem_available if defined?(@ffi_gem_available)
+
+        @ffi_gem_available = begin
+          require "ffi"
+          true
+        rescue LoadError
+          false
+        end
+      end
+
       # Native FFI bindings to libtree-sitter
       #
       # This module handles loading the tree-sitter runtime library and defining
       # FFI function attachments for the core tree-sitter API.
       #
+      # All FFI operations are lazy - nothing is loaded until actually needed.
+      # This prevents polluting the Ruby environment at require time.
+      #
       # @api private
       module Native
-        if FFI_AVAILABLE && defined?(::FFI)
-          extend ::FFI::Library
+        class << self
+          # Lazily extend with FFI::Library only when needed
+          #
+          # @return [Boolean] true if FFI was successfully extended
+          def ensure_ffi_extended!
+            return true if @ffi_extended
 
-          # FFI struct representation of TSNode
-          #
-          # Mirrors the C struct layout used by tree-sitter. TSNode is passed
-          # by value in the tree-sitter C API.
-          #
+            unless FFI.ffi_gem_available?
+              raise TreeHaver::NotAvailable, "FFI gem is not available"
+            end
+
+            extend(::FFI::Library)
+
+            define_ts_node_struct!
+            @ffi_extended = true
+          end
+
+          # Define the TSNode struct lazily
           # @api private
-          class TSNode < ::FFI::Struct
-            layout :context,
-              [:uint32, 4],
-              :id,
-              :pointer,
-              :tree,
-              :pointer
+          def define_ts_node_struct!
+            return if const_defined?(:TSNode, false)
+
+            # FFI struct representation of TSNode
+            # Mirrors the C struct layout used by tree-sitter
+            ts_node_class = Class.new(::FFI::Struct) do
+              layout :context,
+                [:uint32, 4],
+                :id,
+                :pointer,
+                :tree,
+                :pointer
+            end
+            const_set(:TSNode, ts_node_class)
+            typedef(ts_node_class.by_value, :ts_node)
           end
 
-          typedef TSNode.by_value, :ts_node
+          # Get the TSNode class, ensuring it's defined
+          # @return [Class] the TSNode FFI struct class
+          def ts_node_class
+            ensure_ffi_extended!
+            const_get(:TSNode)
+          end
 
-          class << self
-            # Get list of candidate library names for loading libtree-sitter
-            #
-            # The list is built dynamically to respect environment variables set at runtime.
-            # If TREE_SITTER_RUNTIME_LIB is set, it is tried first.
-            #
-            # @note TREE_SITTER_LIB is intentionally NOT supported
-            # @return [Array<String>] list of library names to try
-            # @example
-            #   Native.lib_candidates
-            #   # => ["tree-sitter", "libtree-sitter.so.0", "libtree-sitter.so", ...]
-            def lib_candidates
-              [
-                ENV["TREE_SITTER_RUNTIME_LIB"],
-                "tree-sitter",
-                "libtree-sitter.so.0",
-                "libtree-sitter.so",
-                "libtree-sitter.dylib",
-                "libtree-sitter.dll",
-              ].compact
+          # Get list of candidate library names for loading libtree-sitter
+          #
+          # The list is built dynamically to respect environment variables set at runtime.
+          # If TREE_SITTER_RUNTIME_LIB is set, it is tried first.
+          #
+          # @note TREE_SITTER_LIB is intentionally NOT supported
+          # @return [Array<String>] list of library names to try
+          def lib_candidates
+            [
+              ENV["TREE_SITTER_RUNTIME_LIB"],
+              "tree-sitter",
+              "libtree-sitter.so.0",
+              "libtree-sitter.so",
+              "libtree-sitter.dylib",
+              "libtree-sitter.dll",
+            ].compact
+          end
+
+          # Load the tree-sitter runtime library
+          #
+          # Tries each candidate library name in order until one succeeds.
+          # After loading, attaches FFI function definitions for the tree-sitter API.
+          #
+          # @raise [TreeHaver::NotAvailable] if no library can be loaded
+          # @return [void]
+          def try_load!
+            return if @loaded
+
+            ensure_ffi_extended!
+
+            # Warn about potential conflicts with MRI backend
+            if defined?(::TreeSitter) && defined?(::TreeSitter::Parser)
+              warn("TreeHaver: FFI backend loading after ruby_tree_sitter (MRI backend). " \
+                "This may cause symbol conflicts due to different libtree-sitter versions. " \
+                "Consider using only one backend per process, or set TREE_SITTER_RUNTIME_LIB " \
+                "to match the version used by ruby_tree_sitter.") if $VERBOSE
             end
 
-            # Load the tree-sitter runtime library
-            #
-            # Tries each candidate library name in order until one succeeds.
-            # After loading, attaches FFI function definitions for the tree-sitter API.
-            #
-            # @raise [TreeHaver::NotAvailable] if no library can be loaded
-            # @return [void]
-            # @example
-            #   TreeHaver::Backends::FFI::Native.try_load!
-            def try_load!
-              return if @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
-              last_error = nil
-              candidates = lib_candidates
-              candidates.each do |name|
-                ffi_lib(name)
-                @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
-                break
-              rescue ::FFI::NotFoundError, LoadError => e
-                last_error = e
+            last_error = nil
+            candidates = lib_candidates
+            candidates.each do |name|
+              ffi_lib(name)
+              @loaded = true
+              break
+            rescue ::FFI::NotFoundError, LoadError => e
+              last_error = e
+            end
+
+            unless @loaded
+              # :nocov:
+              tried = candidates.join(", ")
+              env_hint = ENV["TREE_SITTER_RUNTIME_LIB"] ? " TREE_SITTER_RUNTIME_LIB=#{ENV["TREE_SITTER_RUNTIME_LIB"]}." : ""
+              msg = if last_error
+                "Could not load libtree-sitter (tried: #{tried}).#{env_hint} #{last_error.class}: #{last_error.message}"
+              else
+                "Could not load libtree-sitter (tried: #{tried}).#{env_hint}"
               end
-              unless @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
-                # :nocov:
-                # This failure path cannot be tested in a shared test suite because:
-                # 1. Once FFI loads a library via ffi_lib, it cannot be unloaded
-                # 2. Other tests may load the library first (test order is randomized)
-                # 3. The @loaded flag can be reset, but ffi_lib state persists
-                # ENV precedence is tested implicitly by parsing tests that work when
-                # TREE_SITTER_RUNTIME_LIB is set correctly in the environment.
-                tried = candidates.join(", ")
-                env_hint = ENV["TREE_SITTER_RUNTIME_LIB"] ? " TREE_SITTER_RUNTIME_LIB=#{ENV["TREE_SITTER_RUNTIME_LIB"]}." : ""
-                msg = if last_error
-                  "Could not load libtree-sitter (tried: #{tried}).#{env_hint} #{last_error.class}: #{last_error.message}"
-                else
-                  "Could not load libtree-sitter (tried: #{tried}).#{env_hint}"
-                end
-                raise TreeHaver::NotAvailable, msg
-                # :nocov:
-              end
-
-              # Attach functions after lib is selected
-              attach_function(:ts_parser_new, [], :pointer)
-              attach_function(:ts_parser_delete, [:pointer], :void)
-              attach_function(:ts_parser_set_language, [:pointer, :pointer], :bool)
-              attach_function(:ts_parser_parse_string, [:pointer, :pointer, :string, :uint32], :pointer)
-
-              attach_function(:ts_tree_delete, [:pointer], :void)
-              attach_function(:ts_tree_root_node, [:pointer], :ts_node)
-
-              attach_function(:ts_node_type, [:ts_node], :string)
-              attach_function(:ts_node_child_count, [:ts_node], :uint32)
-              attach_function(:ts_node_child, [:ts_node, :uint32], :ts_node)
-              attach_function(:ts_node_start_byte, [:ts_node], :uint32)
-              attach_function(:ts_node_end_byte, [:ts_node], :uint32)
-              attach_function(:ts_node_start_point, [:ts_node], :pointer)
-              attach_function(:ts_node_end_point, [:ts_node], :pointer)
-              attach_function(:ts_node_is_null, [:ts_node], :bool)
-              attach_function(:ts_node_is_named, [:ts_node], :bool)
+              raise TreeHaver::NotAvailable, msg
+              # :nocov:
             end
 
-            def loaded?
-              !!@loaded
-            end
+            # Attach functions after lib is selected
+            attach_function(:ts_parser_new, [], :pointer)
+            attach_function(:ts_parser_delete, [:pointer], :void)
+            attach_function(:ts_parser_set_language, [:pointer, :pointer], :bool)
+            attach_function(:ts_parser_parse_string, [:pointer, :pointer, :string, :uint32], :pointer)
+
+            attach_function(:ts_tree_delete, [:pointer], :void)
+            attach_function(:ts_tree_root_node, [:pointer], :ts_node)
+
+            attach_function(:ts_node_type, [:ts_node], :string)
+            attach_function(:ts_node_child_count, [:ts_node], :uint32)
+            attach_function(:ts_node_child, [:ts_node, :uint32], :ts_node)
+            attach_function(:ts_node_start_byte, [:ts_node], :uint32)
+            attach_function(:ts_node_end_byte, [:ts_node], :uint32)
+            attach_function(:ts_node_start_point, [:ts_node], :pointer)
+            attach_function(:ts_node_end_point, [:ts_node], :pointer)
+            attach_function(:ts_node_is_null, [:ts_node], :bool)
+            attach_function(:ts_node_is_named, [:ts_node], :bool)
           end
-        else
-          # :nocov:
-          # Fallback stubs when FFI gem is not installed.
-          # These paths cannot be tested in a test suite where FFI is a dependency,
-          # since the gem is always available. They provide graceful degradation
-          # for environments where FFI cannot be installed.
-          class << self
-            def try_load!
-              raise TreeHaver::NotAvailable, "FFI not available"
-            end
 
-            def loaded?
-              false
-            end
+          def loaded?
+            !!@loaded
           end
-          # :nocov:
         end
       end
 
       class << self
         # Check if the FFI backend is available
         #
-        # Returns true if the `ffi` gem is present. The actual runtime library
-        # (libtree-sitter) is loaded lazily when needed.
+        # Returns true if:
+        # 1. The `ffi` gem is present
+        # 2. MRI backend (ruby_tree_sitter) has NOT been loaded
         #
-        # @return [Boolean] true if FFI gem is available
+        # FFI and MRI backends conflict at the libtree-sitter level.
+        # Once MRI loads, using FFI will cause segfaults.
+        #
+        # @return [Boolean] true if FFI backend can be used
         # @example
         #   if TreeHaver::Backends::FFI.available?
         #     puts "FFI backend is ready"
         #   end
         def available?
-          return false unless FFI_AVAILABLE && defined?(::FFI)
-          # We report available when ffi is present; loading lib happens lazily
-          true
+          return false unless TreeHaver::Backends::FFI.ffi_gem_available?
+
+          # Check if MRI backend has been loaded (which blocks FFI)
+          !defined?(::TreeSitter::Parser)
         end
 
         # Reset the load state (primarily for testing)
@@ -211,15 +233,69 @@ module TreeHaver
       #
       # Holds a pointer to a TSLanguage struct from a loaded shared library.
       class Language
+        include Comparable
+
         # The FFI pointer to the TSLanguage struct
         # @return [FFI::Pointer]
         attr_reader :pointer
 
+        # The backend this language is for
+        # @return [Symbol]
+        attr_reader :backend
+
+        # The path this language was loaded from (if known)
+        # @return [String, nil]
+        attr_reader :path
+
+        # The symbol name (if known)
+        # @return [String, nil]
+        attr_reader :symbol
+
         # @api private
         # @param ptr [FFI::Pointer] pointer to TSLanguage
-        def initialize(ptr)
+        # @param lib [FFI::DynamicLibrary, nil] the opened dynamic library
+        #   (kept as an instance variable to prevent it being GC'd/unloaded)
+        # @param path [String, nil] path language was loaded from
+        # @param symbol [String, nil] symbol name
+        def initialize(ptr, lib = nil, path: nil, symbol: nil)
           @pointer = ptr
+          @backend = :ffi
+          @path = path
+          @symbol = symbol
+          # Keep a reference to the DynamicLibrary that produced the language
+          # pointer so it isn't garbage-collected and unloaded while the
+          # pointer is still in use by the parser. Not keeping this reference
+          # can lead to the language pointer becoming invalid and causing
+          # segmentation faults when passed to native functions.
+          @library = lib
         end
+
+        # Compare languages for equality
+        #
+        # FFI languages are equal if they have the same backend, path, and symbol.
+        # Path and symbol uniquely identify a loaded language.
+        #
+        # @param other [Object] object to compare with
+        # @return [Integer, nil] -1, 0, 1, or nil if not comparable
+        def <=>(other)
+          return unless other.is_a?(Language)
+          return unless other.backend == @backend
+
+          # Compare by path first, then symbol
+          cmp = (@path || "") <=> (other.path || "")
+          return cmp unless cmp.zero?
+
+          (@symbol || "") <=> (other.symbol || "")
+        end
+
+        # Hash value for this language (for use in Sets/Hashes)
+        # @return [Integer]
+        def hash
+          [@backend, @path, @symbol].hash
+        end
+
+        # Alias eql? to ==
+        alias_method :eql?, :==
 
         # Convert to FFI pointer for passing to native functions
         #
@@ -249,8 +325,39 @@ module TreeHaver
         class << self
           def from_library(path, symbol: nil, name: nil)
             raise TreeHaver::NotAvailable, "FFI not available" unless Backends::FFI.available?
+
+            # Check for MRI backend conflict BEFORE loading the grammar
+            # If ruby_tree_sitter has already loaded this grammar file, the dynamic
+            # linker will return the cached library with symbols resolved against
+            # MRI's statically-linked tree-sitter, causing segfaults when FFI
+            # tries to use the pointer with its dynamically-linked libtree-sitter.
+            if defined?(::TreeSitter::Language)
+              # MRI backend has been loaded - check if it might have loaded this grammar
+              # We can't reliably detect which grammars MRI loaded, so we warn and
+              # attempt to proceed. The segfault will occur when setting language on parser.
+              warn("TreeHaver: FFI backend loading grammar after ruby_tree_sitter (MRI backend). " \
+                "This may cause segfaults due to tree-sitter symbol conflicts. " \
+                "For reliable operation, use only one backend per process.") if $VERBOSE
+            end
+
+            # Ensure the core libtree-sitter runtime is loaded first so
+            # the language shared library resolves its symbols against the
+            # same runtime. This prevents cases where the language pointer
+            # is incompatible with the parser (different lib instances).
+            Native.try_load!
+
             begin
-              dl = ::FFI::DynamicLibrary.open(path, ::FFI::DynamicLibrary::RTLD_LAZY)
+              # Prefer resolving symbols immediately and globally so the
+              # language library links to the already-loaded libtree-sitter
+              # (RTLD_NOW | RTLD_GLOBAL). If those constants are not present
+              # fall back to RTLD_LAZY for maximum compatibility.
+              flags = if defined?(::FFI::DynamicLibrary::RTLD_NOW) && defined?(::FFI::DynamicLibrary::RTLD_GLOBAL)
+                ::FFI::DynamicLibrary::RTLD_NOW | ::FFI::DynamicLibrary::RTLD_GLOBAL
+              else
+                ::FFI::DynamicLibrary::RTLD_LAZY
+              end
+
+              dl = ::FFI::DynamicLibrary.open(path, flags)
             rescue LoadError => e
               raise TreeHaver::NotAvailable, "Could not open language library at #{path}: #{e.message}"
             end
@@ -286,7 +393,9 @@ module TreeHaver
             # (e.g., during parsing). Creating the Language handle does not require core to be loaded.
             ptr = func.call
             raise TreeHaver::NotAvailable, "Language factory returned NULL for #{path}" if ptr.null?
-            new(ptr)
+            # Pass the opened DynamicLibrary into the Language instance so the
+            # library handle remains alive for the lifetime of the Language.
+            new(ptr, dl, path: path, symbol: symbol)
           end
 
           # Backward-compatible alias
@@ -321,11 +430,73 @@ module TreeHaver
 
         # Set the language for this parser
         #
-        # @param lang [Language] the language to use for parsing
+        # Note: FFI backend is special - it receives the wrapped Language object
+        # because it needs to call to_ptr to get the FFI pointer. TreeHaver::Parser
+        # detects FFI Language wrappers (respond_to?(:to_ptr)) and passes them through.
+        #
+        # @param lang [Language] the FFI language wrapper (not unwrapped)
         # @return [Language] the language that was set
         # @raise [TreeHaver::NotAvailable] if setting the language fails
         def language=(lang)
-          ok = Native.ts_parser_set_language(@parser, lang.to_ptr)
+          # Defensive check: ensure we received an FFI Language wrapper
+          unless lang.is_a?(Language)
+            raise TreeHaver::NotAvailable,
+              "FFI backend expected FFI::Language wrapper, got #{lang.class}. " \
+                "This usually means TreeHaver::Parser#unwrap_language passed the wrong type. " \
+                "Check that language caching respects backend boundaries."
+          end
+
+          # Additional check: verify the language is actually for FFI backend
+          if lang.respond_to?(:backend) && lang.backend != :ffi
+            raise TreeHaver::NotAvailable,
+              "FFI backend received Language for wrong backend: #{lang.backend}. " \
+                "Expected :ffi backend. Class: #{lang.class}. " \
+                "Path: #{lang.path.inspect}, Symbol: #{lang.symbol.inspect}"
+          end
+
+          # Verify the DynamicLibrary is still valid (not GC'd)
+          # The Language stores @library to prevent this, but let's verify
+          lib = lang.instance_variable_get(:@library)
+          if lib.nil?
+            raise TreeHaver::NotAvailable,
+              "FFI Language has no library reference. The dynamic library may have been unloaded. " \
+                "Path: #{lang.path.inspect}, Symbol: #{lang.symbol.inspect}"
+          end
+
+          # Verify the language has a valid pointer
+          ptr = lang.to_ptr
+
+          # Check ptr is actually an FFI::Pointer
+          unless ptr.is_a?(::FFI::Pointer)
+            raise TreeHaver::NotAvailable,
+              "FFI Language#to_ptr returned #{ptr.class}, expected FFI::Pointer. " \
+                "Language class: #{lang.class}. " \
+                "Path: #{lang.path.inspect}, Symbol: #{lang.symbol.inspect}"
+          end
+
+          ptr_address = ptr.address
+
+          # Check for NULL (0x0)
+          if ptr.nil? || ptr_address.zero?
+            raise TreeHaver::NotAvailable,
+              "FFI Language has NULL pointer. Language may not have loaded correctly. " \
+                "Path: #{lang.path.inspect}, Symbol: #{lang.symbol.inspect}"
+          end
+
+          # Check for small invalid addresses (< 4KB are typically unmapped memory)
+          # Common invalid addresses like 0x40 (64) indicate corrupted or uninitialized pointers
+          if ptr_address < 4096
+            raise TreeHaver::NotAvailable,
+              "FFI Language has invalid pointer (address 0x#{ptr_address.to_s(16)}). " \
+                "This usually indicates the language library was unloaded or never loaded correctly. " \
+                "Path: #{lang.path.inspect}, Symbol: #{lang.symbol.inspect}"
+          end
+
+          # Note: MRI backend conflict is now handled by TreeHaver::BackendConflict
+          # at a higher level (in TreeHaver.resolve_backend_module)
+
+          # lang is a wrapped FFI::Language that has to_ptr method
+          ok = Native.ts_parser_set_language(@parser, ptr)
           raise TreeHaver::NotAvailable, "Failed to set language on parser" unless ok
 
           lang

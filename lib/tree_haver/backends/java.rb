@@ -228,12 +228,56 @@ module TreeHaver
       # All Java backend implementation classes require JRuby and cannot be tested on MRI/CRuby.
       # JRuby-specific CI jobs would test this code.
       class Language
+        include Comparable
+
         attr_reader :impl
 
+        # The backend this language is for
+        # @return [Symbol]
+        attr_reader :backend
+
+        # The path this language was loaded from (if known)
+        # @return [String, nil]
+        attr_reader :path
+
+        # The symbol name (if known)
+        # @return [String, nil]
+        attr_reader :symbol
+
         # @api private
-        def initialize(impl)
+        def initialize(impl, path: nil, symbol: nil)
           @impl = impl
+          @backend = :java
+          @path = path
+          @symbol = symbol
         end
+
+        # Compare languages for equality
+        #
+        # Java languages are equal if they have the same backend, path, and symbol.
+        # Path and symbol uniquely identify a loaded language.
+        #
+        # @param other [Object] object to compare with
+        # @return [Integer, nil] -1, 0, 1, or nil if not comparable
+        def <=>(other)
+          return unless other.is_a?(Language)
+          return unless other.backend == @backend
+
+          # Compare by path first, then symbol
+          cmp = (@path || "") <=> (other.path || "")
+          return cmp unless cmp.zero?
+
+          (@symbol || "") <=> (other.symbol || "")
+        end
+
+        # Hash value for this language (for use in Sets/Hashes)
+        # @return [Integer]
+        def hash
+          [@backend, @path, @symbol].hash
+        end
+
+        # Alias eql? to ==
+        alias_method :eql?, :==
 
         # Load a language from a shared library
         #
@@ -298,7 +342,7 @@ module TreeHaver
               combined_lookup = grammar_lookup.or(Java.runtime_lookup)
 
               java_lang = Java.java_classes[:Language].load(combined_lookup, sym)
-              new(java_lang)
+              new(java_lang, path: path, symbol: symbol)
             rescue ::Java::JavaLang::RuntimeException => e
               cause = e.cause
               root_cause = cause&.cause || cause
@@ -354,7 +398,7 @@ module TreeHaver
               # java-tree-sitter's Language.load(String) searches for the language
               # in the classpath using standard naming conventions
               java_lang = Java.java_classes[:Language].load(name)
-              new(java_lang)
+              new(java_lang, symbol: "tree_sitter_#{name}")
             rescue ::Java::JavaLang::RuntimeException => e
               raise TreeHaver::NotAvailable,
                 "Failed to load language '#{name}': #{e.message}. " \
@@ -383,11 +427,14 @@ module TreeHaver
 
         # Set the language for this parser
         #
-        # @param lang [Language] the language to use
+        # Note: TreeHaver::Parser unwraps language objects before calling this method.
+        # This backend receives the Language wrapper's inner impl (java Language object).
+        #
+        # @param lang [Object] the Java language object (already unwrapped)
         # @return [void]
         def language=(lang)
-          java_lang = lang.is_a?(Language) ? lang.impl : lang
-          @parser.language = java_lang
+          # lang is already unwrapped by TreeHaver::Parser
+          @parser.language = lang
         end
 
         # Parse source code
@@ -402,18 +449,20 @@ module TreeHaver
 
         # Parse source code with optional incremental parsing
         #
+        # Note: old_tree is already unwrapped by TreeHaver::Parser before reaching this method.
+        # The backend receives the raw Tree wrapper's impl, not a TreeHaver::Tree.
+        #
         # When old_tree is provided and has been edited, tree-sitter will reuse
         # unchanged nodes for better performance.
         #
-        # @param old_tree [TreeHaver::Tree, nil] previous tree for incremental parsing
+        # @param old_tree [Tree, nil] previous backend tree for incremental parsing (already unwrapped)
         # @param source [String] the source code to parse
         # @return [Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
         # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Parser.html#parse(io.github.treesitter.jtreesitter.Tree,java.lang.String)
         def parse_string(old_tree, source)
+          # old_tree is already unwrapped to Tree wrapper's impl by TreeHaver::Parser
           if old_tree
-            # Unwrap TreeHaver::Tree to get inner tree
-            inner_old_tree = old_tree.respond_to?(:inner_tree) ? old_tree.inner_tree : old_tree
-            java_old_tree = inner_old_tree.is_a?(Tree) ? inner_old_tree.impl : inner_old_tree
+            java_old_tree = old_tree.is_a?(Tree) ? old_tree.impl : old_tree
             java_tree = @parser.parse(java_old_tree, source)
           else
             java_tree = @parser.parse(source)

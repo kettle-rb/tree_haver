@@ -45,4 +45,3 @@ tree = parser.parse(bash_source)
 root = tree.root_node
 puts "✓ Parsed: #{root.type} with #{root.child_count} children"
 puts "✓ MRI backend - fastest for shell script analysis"
-

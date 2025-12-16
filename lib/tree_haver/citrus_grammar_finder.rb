@@ -76,7 +76,7 @@ module TreeHaver
 
         # Verify it responds to parse
         unless @grammar_module.respond_to?(:parse)
-          warn "#{@grammar_const} doesn't respond to :parse"
+          warn("#{@grammar_const} doesn't respond to :parse")
           @available = false
           return false
         end
@@ -84,16 +84,16 @@ module TreeHaver
         @available = true
       rescue LoadError => e
         # Always show LoadError for debugging
-        warn "CitrusGrammarFinder: Failed to load '#{@require_path}': #{e.class}: #{e.message}"
+        warn("CitrusGrammarFinder: Failed to load '#{@require_path}': #{e.class}: #{e.message}")
         @available = false
       rescue NameError => e
         # Always show NameError for debugging
-        warn "CitrusGrammarFinder: Failed to resolve '#{@grammar_const}': #{e.class}: #{e.message}"
+        warn("CitrusGrammarFinder: Failed to resolve '#{@grammar_const}': #{e.class}: #{e.message}")
         @available = false
       rescue => e
         # Catch any other errors
-        warn "CitrusGrammarFinder: Unexpected error: #{e.class}: #{e.message}"
-        warn e.backtrace.first(3).join("\n") if ENV["TREE_HAVER_DEBUG"]
+        warn("CitrusGrammarFinder: Unexpected error: #{e.class}: #{e.message}")
+        warn(e.backtrace.first(3).join("\n")) if ENV["TREE_HAVER_DEBUG"]
         @available = false
       end
 
@@ -127,7 +127,7 @@ module TreeHaver
       TreeHaver.register_language(
         @language_name,
         grammar_module: @grammar_module,
-        gem_name: @gem_name
+        gem_name: @gem_name,
       )
       true
     end
@@ -168,4 +168,3 @@ module TreeHaver
     end
   end
 end
-

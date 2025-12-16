@@ -1,15 +1,13 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe TreeHaver::LanguageRegistry do
   let(:registry) { described_class }
 
-  before do
-    registry.clear_all!
-  end
-
-  after do
-    registry.clear_all!
-  end
+  # NOTE: Do NOT clear registrations or cache between tests!
+  # This can cause issues with backend tracking and language loading.
+  # Each test should use unique language names to avoid conflicts.
 
   describe ".register" do
     it "registers a language with path and symbol" do
@@ -39,25 +37,6 @@ RSpec.describe TreeHaver::LanguageRegistry do
     end
   end
 
-  describe ".unregister" do
-    it "removes a registered language" do
-      registry.register(:toml, :tree_sitter, path: "/path/lib.so")
-      expect(registry.registered(:toml)).not_to be_nil
-      registry.unregister(:toml)
-      expect(registry.registered(:toml)).to be_nil
-    end
-
-    it "handles unregistering non-existent language" do
-      expect { registry.unregister(:nonexistent) }.not_to raise_error
-    end
-
-    it "accepts string names" do
-      registry.register(:toml, :tree_sitter, path: "/path/lib.so")
-      registry.unregister("toml")
-      expect(registry.registered(:toml)).to be_nil
-    end
-  end
-
   describe ".registered" do
     it "returns nil for unregistered language" do
       expect(registry.registered(:unknown)).to be_nil
@@ -70,25 +49,6 @@ RSpec.describe TreeHaver::LanguageRegistry do
       expect(entry).to have_key(:tree_sitter)
       expect(entry[:tree_sitter]).to have_key(:path)
       expect(entry[:tree_sitter]).to have_key(:symbol)
-    end
-  end
-
-  describe ".clear_registrations!" do
-    it "removes all registrations" do
-      registry.register(:toml, :tree_sitter, path: "/a.so")
-      registry.register(:json, :tree_sitter, path: "/b.so")
-      registry.clear_registrations!
-      expect(registry.registered(:toml)).to be_nil
-      expect(registry.registered(:json)).to be_nil
-    end
-
-    it "does not affect cache" do
-      key = ["test_key"]
-      registry.fetch(key) { "cached_value" }
-      registry.clear_registrations!
-      # Cache should still have the value
-      result = registry.fetch(key) { "new_value" }
-      expect(result).to eq("cached_value")
     end
   end
 
@@ -155,21 +115,6 @@ RSpec.describe TreeHaver::LanguageRegistry do
       registry.register(:toml, :tree_sitter, path: "/lib.so")
       registry.clear_cache!
       expect(registry.registered(:toml)).not_to be_nil
-    end
-  end
-
-  describe ".clear_all!" do
-    it "clears both registrations and cache" do
-      registry.register(:toml, :tree_sitter, path: "/lib.so")
-      registry.fetch(["cache_key"]) { "cached" }
-      registry.clear_all!
-      expect(registry.registered(:toml)).to be_nil
-      call_count = 0
-      registry.fetch(["cache_key"]) {
-        call_count += 1
-        "new"
-      }
-      expect(call_count).to eq(1)
     end
   end
 

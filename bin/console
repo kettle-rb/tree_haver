@@ -4,6 +4,15 @@
 require "bundler/setup"
 require "tree_haver"
 
+# Optional dependency, but loading it here makes piping `|`
+#   from command line into console possible!
+#     echo "
+#     lang = TreeSitter::Language.load('toml', ENV['TREE_SITTER_TOML_PATH'])
+#     puts 'All methods:'
+#     puts (lang.methods - Object.methods).sort.join(\"\\n\")
+#     " | bin/console 2>&1
+require "tree_sitter"
+
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
 

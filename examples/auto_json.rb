@@ -109,7 +109,7 @@ end
 objects = find_objects(root)
 puts "JSON Objects Found: #{objects.count}"
 objects.each_with_index do |obj, i|
-  puts "  #{i + 1}. #{obj.text[0..50].gsub("\n", " ")}"
+  puts "  #{i + 1}. #{obj.text[0..50].tr("\n", " ")}"
 end
 puts
 
@@ -121,4 +121,3 @@ puts "✓ No manual configuration needed"
 puts "✓ Works across MRI, JRuby, TruffleRuby"
 puts "✓ Priority: MRI > Rust > FFI > Java > Citrus"
 puts "=" * 70
-

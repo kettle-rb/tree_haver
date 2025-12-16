@@ -6,6 +6,26 @@ module TreeHaver
   # This class wraps backend-specific tree objects and provides a unified interface.
   # It stores the source text to enable text extraction from nodes.
   #
+  # == Wrapping/Unwrapping Contract
+  #
+  # TreeHaver follows a consistent pattern for object wrapping:
+  #
+  # 1. **TreeHaver::Parser** (top level) handles ALL wrapping/unwrapping
+  # 2. **Backends** work exclusively with raw backend objects
+  # 3. **User-facing API** uses only TreeHaver wrapper classes
+  #
+  # Specifically for trees:
+  # - Backend Parser#parse returns raw backend tree (TreeSitter::Tree, TreeStump::Tree, etc.)
+  # - TreeHaver::Parser#parse wraps it in TreeHaver::Tree
+  # - TreeHaver::Parser#parse_string unwraps old_tree before passing to backend
+  # - Backend Parser#parse_string receives raw backend tree, returns raw backend tree
+  # - TreeHaver::Parser#parse_string wraps the returned tree
+  #
+  # This ensures:
+  # - Backends are simple and consistent
+  # - All complexity is in one place (TreeHaver top level)
+  # - Users always work with TreeHaver wrapper classes
+  #
   # @example Basic usage
   #   parser = TreeHaver::Parser.new
   #   parser.language = TreeHaver::Language.toml
@@ -107,14 +127,30 @@ module TreeHaver
     #   # Re-parse with the edited tree for incremental parsing
     #   new_tree = parser.parse_string(tree, "x = 42")
     def edit(start_byte:, old_end_byte:, new_end_byte:, start_point:, old_end_point:, new_end_point:)
-      @inner_tree.edit(
-        start_byte: start_byte,
-        old_end_byte: old_end_byte,
-        new_end_byte: new_end_byte,
-        start_point: start_point,
-        old_end_point: old_end_point,
-        new_end_point: new_end_point,
-      )
+      # MRI backend (ruby_tree_sitter) requires an InputEdit object
+      if defined?(::TreeSitter::InputEdit) && @inner_tree.is_a?(::TreeSitter::Tree)
+        input_edit = ::TreeSitter::InputEdit.new
+        input_edit.start_byte = start_byte
+        input_edit.old_end_byte = old_end_byte
+        input_edit.new_end_byte = new_end_byte
+
+        # Convert hash points to Point objects if needed
+        input_edit.start_point = make_point(start_point)
+        input_edit.old_end_point = make_point(old_end_point)
+        input_edit.new_end_point = make_point(new_end_point)
+
+        @inner_tree.edit(input_edit)
+      else
+        # Other backends may accept keyword arguments directly
+        @inner_tree.edit(
+          start_byte: start_byte,
+          old_end_byte: old_end_byte,
+          new_end_byte: new_end_byte,
+          start_point: start_point,
+          old_end_point: old_end_point,
+          new_end_point: new_end_point,
+        )
+      end
     rescue NoMethodError => e
       # Re-raise as NotAvailable if it's about the edit method
       raise unless e.name == :edit || e.message.include?("edit")
@@ -122,6 +158,23 @@ module TreeHaver
         "Incremental parsing not supported by current backend. " \
           "Use MRI (ruby_tree_sitter), Rust (tree_stump), or Java (java-tree-sitter) backend."
     end
+
+    private
+
+    # Convert a point hash to a TreeSitter::Point if available
+    # @api private
+    def make_point(point_hash)
+      if defined?(::TreeSitter::Point)
+        pt = ::TreeSitter::Point.new
+        pt.row = point_hash[:row]
+        pt.column = point_hash[:column]
+        pt
+      else
+        point_hash
+      end
+    end
+
+    public
 
     # Check if the current backend supports incremental parsing
     #
@@ -151,7 +204,8 @@ module TreeHaver
     # String representation
     # @return [String]
     def inspect
-      "#<#{self.class} source_length=#{@source&.bytesize || "unknown"}>"
+      inner_class = @inner_tree ? @inner_tree.class.name : "nil"
+      "#<#{self.class} source_length=#{@source&.bytesize || "unknown"} inner_tree=#{inner_class}>"
     end
 
     # Check if tree responds to a method (includes delegation to inner_tree)

@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe TreeHaver::Backends::Rust do
   let(:backend) { described_class }
 
-  # Store original state to restore after tests
   before do
-    @original_load_attempted = backend.instance_variable_get(:@load_attempted)
-    @original_loaded = backend.instance_variable_get(:@loaded)
+    TreeHaver::LanguageRegistry.clear_cache!
   end
 
   after do
-    # Restore original state
-    backend.instance_variable_set(:@load_attempted, @original_load_attempted)
-    backend.instance_variable_set(:@loaded, @original_loaded)
+    backend.reset!
+    TreeHaver::LanguageRegistry.clear_cache!
     TreeHaver.reset_backend!(to: :auto)
   end
 
@@ -70,7 +69,7 @@ RSpec.describe TreeHaver::Backends::Rust do
         expect(caps[:backend]).to eq(:rust)
         expect(caps[:query]).to be true
         expect(caps[:bytes_field]).to be true
-        expect(caps[:incremental]).to be true
+        expect(caps[:incremental]).to be false  # TreeStump doesn't expose incremental parsing to Ruby
       end
     end
 
@@ -212,15 +211,15 @@ RSpec.describe TreeHaver::Backends::Rust do
 
       it "parses source code and returns a tree" do
         tree = parser.parse("x = 42")
-        expect(tree).to be_a(TreeHaver::Tree)
-        expect(tree.inner_tree).to be_a(TreeStump::Tree)
+        # Backend returns raw TreeStump::Tree (TreeHaver::Parser wraps it)
+        expect(tree).to be_a(TreeStump::Tree)
       end
 
       it "parses valid TOML and provides access to root node" do
         tree = parser.parse("title = \"Hi\"")
+        # Backend returns raw tree with raw nodes
         root = tree.root_node
-        expect(root).to be_a(TreeHaver::Node)
-        expect(root.inner_node).to be_a(TreeStump::Node)
+        expect(root).to be_a(TreeStump::Node)
       end
     end
 
@@ -234,15 +233,16 @@ RSpec.describe TreeHaver::Backends::Rust do
 
       it "parses source code with nil old_tree" do
         tree = parser.parse_string(nil, "x = 42")
-        expect(tree).to be_a(TreeHaver::Tree)
-        expect(tree.inner_tree).to be_a(TreeStump::Tree)
+        # Backend returns raw TreeStump::Tree (TreeHaver::Parser wraps it)
+        expect(tree).to be_a(TreeStump::Tree)
       end
 
       it "parses source code with existing tree for incremental parsing" do
         old_tree = parser.parse("x = 1")
         new_tree = parser.parse_string(old_tree, "x = 42")
-        expect(new_tree).to be_a(TreeHaver::Tree)
-        expect(new_tree.inner_tree).to be_a(TreeStump::Tree)
+        # Backend returns raw TreeStump::Tree (TreeHaver::Parser wraps it)
+        # Note: TreeStump doesn't support incremental parsing, so old_tree is ignored
+        expect(new_tree).to be_a(TreeStump::Tree)
       end
     end
   end
