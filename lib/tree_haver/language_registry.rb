@@ -4,17 +4,27 @@ module TreeHaver
   # Thread-safe language registrations and cache for loaded Language handles
   #
   # The LanguageRegistry provides two main functions:
-  # 1. **Registrations**: Store mappings from language names to shared library paths
+  # 1. **Registrations**: Store mappings from language names to backend-specific configurations
   # 2. **Cache**: Memoize loaded Language objects to avoid repeated dlopen calls
   #
-  # All operations are thread-safe and protected by a mutex.
+  # The registry supports multiple backends for the same language, allowing runtime
+  # switching, benchmarking, and fallback scenarios.
   #
-  # @example Register and cache a language
-  #   TreeHaver::LanguageRegistry.register(:toml, path: "/path/to/lib.so", symbol: "tree_sitter_toml")
-  #   lang = TreeHaver::LanguageRegistry.fetch(["/path/to/lib.so", "tree_sitter_toml", "toml"]) do
-  #     # This block is called only if not cached
-  #     load_language_from_library(...)
-  #   end
+  # Registration structure:
+  # @registrations = {
+  #   toml: {
+  #     tree_sitter: { path: "/path/to/lib.so", symbol: "tree_sitter_toml" },
+  #     citrus: { grammar_module: TomlRB::Document, gem_name: "toml-rb" }
+  #   }
+  # }
+  #
+  # @example Register tree-sitter grammar
+  #   TreeHaver::LanguageRegistry.register(:toml, :tree_sitter,
+  #     path: "/path/to/lib.so", symbol: "tree_sitter_toml")
+  #
+  # @example Register Citrus grammar
+  #   TreeHaver::LanguageRegistry.register(:toml, :citrus,
+  #     grammar_module: TomlRB::Document, gem_name: "toml-rb")
   #
   # @api private
   module LanguageRegistry
@@ -24,22 +34,32 @@ module TreeHaver
 
     module_function
 
-    # Register a language helper by name
+    # Register a language for a specific backend
     #
-    # Stores a mapping from a language name to its shared library path and
-    # optional exported symbol name. After registration, the language can be
-    # accessed via dynamic helpers on {TreeHaver::Language}.
+    # Stores backend-specific configuration for a language. Multiple backends
+    # can be registered for the same language without conflict.
     #
     # @param name [Symbol, String] language identifier (e.g., :toml, :json)
-    # @param path [String] absolute path to the language shared library
-    # @param symbol [String, nil] optional exported factory symbol (e.g., "tree_sitter_toml")
+    # @param backend_type [Symbol] backend type (:tree_sitter, :citrus, :mri, :rust, :ffi, :java)
+    # @param config [Hash] backend-specific configuration
+    # @option config [String] :path tree-sitter library path (for tree-sitter backends)
+    # @option config [String] :symbol exported symbol name (for tree-sitter backends)
+    # @option config [Module] :grammar_module Citrus grammar module (for Citrus backend)
+    # @option config [String] :gem_name gem name for error messages (for Citrus backend)
     # @return [void]
-    # @example
-    #   LanguageRegistry.register(:toml, path: "/usr/local/lib/libtree-sitter-toml.so")
-    def register(name, path:, symbol: nil)
+    # @example Register tree-sitter grammar
+    #   LanguageRegistry.register(:toml, :tree_sitter,
+    #     path: "/usr/local/lib/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
+    # @example Register Citrus grammar
+    #   LanguageRegistry.register(:toml, :citrus,
+    #     grammar_module: TomlRB::Document, gem_name: "toml-rb")
+    def register(name, backend_type, **config)
       key = name.to_sym
+      backend_key = backend_type.to_sym
+
       @mutex.synchronize do
-        @registrations[key] = {path: path, symbol: symbol}
+        @registrations[key] ||= {}
+        @registrations[key][backend_key] = config.compact
       end
       nil
     end
@@ -60,17 +80,33 @@ module TreeHaver
       nil
     end
 
-    # Fetch a registration entry
+    # Fetch registration entries for a language
     #
-    # Returns the stored path and symbol for a registered language name.
+    # Returns all backend-specific configurations for a language.
     #
     # @param name [Symbol, String] language identifier
-    # @return [Hash{Symbol => String, nil}, nil] hash with :path and :symbol keys, or nil if not registered
-    # @example
-    #   entry = LanguageRegistry.registered(:toml)
-    #   # => { path: "/usr/local/lib/libtree-sitter-toml.so", symbol: "tree_sitter_toml" }
-    def registered(name)
-      @mutex.synchronize { @registrations[name.to_sym] }
+    # @param backend_type [Symbol, nil] optional backend type to filter by
+    # @return [Hash{Symbol => Hash}, Hash, nil] all backends or specific backend config
+    # @example Get all backends
+    #   entries = LanguageRegistry.registered(:toml)
+    #   # => {
+    #   #   tree_sitter: { path: "/usr/local/lib/libtree-sitter-toml.so", symbol: "tree_sitter_toml" },
+    #   #   citrus: { grammar_module: TomlRB::Document, gem_name: "toml-rb" }
+    #   # }
+    # @example Get specific backend
+    #   entry = LanguageRegistry.registered(:toml, :citrus)
+    #   # => { grammar_module: TomlRB::Document, gem_name: "toml-rb" }
+    def registered(name, backend_type = nil)
+      @mutex.synchronize do
+        lang_config = @registrations[name.to_sym]
+        return nil unless lang_config
+
+        if backend_type
+          lang_config[backend_type.to_sym]
+        else
+          lang_config
+        end
+      end
     end
 
     # Clear all registrations

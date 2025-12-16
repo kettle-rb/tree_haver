@@ -20,13 +20,45 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Added `TreeHaver::CitrusGrammarFinder` for language-agnostic discovery and registration of Citrus-based grammar gems
+  - Automatically discovers Citrus grammar gems by gem name and grammar constant path
+  - Validates grammar modules respond to `.parse(source)` before registration
+  - Provides helpful error messages when grammars are not found
+- Added multi-backend language registry supporting multiple backends per language simultaneously
+  - Restructured `LanguageRegistry` to use nested hash: `{ language: { backend_type: config } }`
+  - Enables registering both tree-sitter and Citrus grammars for the same language without conflicts
+  - Supports runtime backend switching, benchmarking, and fallback scenarios
+- Added `LanguageRegistry.register(name, backend_type, **config)` with backend-specific configuration storage
+- Added `LanguageRegistry.registered(name, backend_type = nil)` to query by specific backend or get all backends
+- Added `TreeHaver::Backends::Citrus::Node#structural?` method to distinguish structural nodes from terminals
+  - Uses Citrus grammar's `terminal?` method to dynamically determine node classification
+  - Works with any Citrus grammar without language-specific knowledge
+
 ### Changed
+
+- **BREAKING**: `LanguageRegistry.register` signature changed from `register(name, path:, symbol:)` to `register(name, backend_type, **config)`
+  - This enables proper separation of tree-sitter and Citrus configurations
+  - Users should update to use `TreeHaver.register_language` instead of calling `LanguageRegistry.register` directly
+- Updated `TreeHaver.register_language` to support both tree-sitter and Citrus grammars in single call or separate calls
+  - Can now register: `register_language(:toml, path: "...", symbol: "...", grammar_module: TomlRB::Document)`
+  - Multiple registrations for same language now merge instead of overwrite
+- Updated `Language.method_missing` to automatically select appropriate grammar based on active backend
+  - tree-sitter backends (MRI, Rust, FFI, Java) query `:tree_sitter` registry key
+  - Citrus backend queries `:citrus` registry key
+  - Provides clear error messages when requested backend has no registered grammar
+- Improved `TreeHaver::Backends::Citrus::Node#type` to use dynamic Citrus grammar introspection
+  - Uses event `.name` method and Symbol events for accurate type extraction
+  - Works with any Citrus grammar without language-specific code
+  - Handles compound rules (Repeat, Choice, Optional) intelligently
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Fixed registry conflicts when registering multiple backend types for the same language
+- Fixed `CitrusGrammarFinder` to properly handle gems with non-standard require paths (e.g., `toml-rb.rb` vs `toml/rb.rb`)
 
 ### Security
 

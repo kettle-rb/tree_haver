@@ -121,6 +121,19 @@ module TreeHaver
   # @see PathValidator
   autoload :GrammarFinder, File.join(__dir__, "tree_haver", "grammar_finder")
 
+  # Citrus grammar finder for discovering and registering Citrus-based parsers
+  #
+  # @example Register toml-rb
+  #   finder = TreeHaver::CitrusGrammarFinder.new(
+  #     language: :toml,
+  #     gem_name: "toml-rb",
+  #     grammar_const: "TomlRB::Document"
+  #   )
+  #   finder.register! if finder.available?
+  #
+  # @see CitrusGrammarFinder
+  autoload :CitrusGrammarFinder, File.join(__dir__, "tree_haver", "citrus_grammar_finder")
+
   # Unified Node wrapper providing consistent API across backends
   autoload :Node, File.join(__dir__, "tree_haver", "node")
 
@@ -240,23 +253,63 @@ module TreeHaver
     # Allows opting-in dynamic helpers like TreeHaver::Language.toml without
     # advertising all names by default.
 
-    # Register a language helper by name
+    # Register a language helper by name (backend-agnostic)
     #
     # After registration, you can use dynamic helpers like `TreeHaver::Language.toml`
-    # to load the registered language.
+    # to load the registered language. TreeHaver will automatically use the appropriate
+    # grammar based on the active backend.
+    #
+    # You can register multiple backends for the same language, enabling runtime
+    # switching, benchmarking, and fallback scenarios.
     #
     # @param name [Symbol, String] language identifier (e.g., :toml, :json)
-    # @param path [String] absolute path to the language shared library
+    # @param path [String, nil] absolute path to the language shared library (for tree-sitter)
     # @param symbol [String, nil] optional exported factory symbol (e.g., "tree_sitter_toml")
+    # @param grammar_module [Module, nil] Citrus grammar module that responds to .parse(source)
+    # @param gem_name [String, nil] optional gem name for error messages
     # @return [void]
-    # @example Register TOML grammar
+    # @example Register tree-sitter grammar only
     #   TreeHaver.register_language(
     #     :toml,
     #     path: "/usr/local/lib/libtree-sitter-toml.so",
     #     symbol: "tree_sitter_toml"
     #   )
-    def register_language(name, path:, symbol: nil)
-      LanguageRegistry.register(name, path: path, symbol: symbol)
+    # @example Register Citrus grammar only
+    #   TreeHaver.register_language(
+    #     :toml,
+    #     grammar_module: TomlRB::Document
+    #   )
+    # @example Register BOTH (call twice or use both params)
+    #   TreeHaver.register_language(:toml,
+    #     path: "/usr/local/lib/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
+    #   TreeHaver.register_language(:toml,
+    #     grammar_module: TomlRB::Document)
+    def register_language(name, path: nil, symbol: nil, grammar_module: nil, gem_name: nil)
+      # Register tree-sitter backend if path provided
+      if path
+        LanguageRegistry.register(name, :tree_sitter,
+          path: path,
+          symbol: symbol
+        )
+      end
+
+      # Register Citrus backend if grammar_module provided
+      if grammar_module
+        unless grammar_module.respond_to?(:parse)
+          raise ArgumentError, "Grammar module must respond to :parse"
+        end
+
+        LanguageRegistry.register(name, :citrus,
+          grammar_module: grammar_module,
+          gem_name: gem_name
+        )
+      end
+
+      if path.nil? && grammar_module.nil?
+        raise ArgumentError, "Must provide at least one of: path (tree-sitter) or grammar_module (Citrus)"
+      end
+
+      nil
     end
 
     # Unregister a previously registered language helper
@@ -380,31 +433,68 @@ module TreeHaver
       # Dynamic helper to load a registered language by name
       #
       # After registering a language with {TreeHaver.register_language},
-      # you can load it using a method call:
+      # you can load it using a method call. The appropriate backend will be
+      # used based on registration and current backend.
       #
-      # @example
+      # @example With tree-sitter
       #   TreeHaver.register_language(:toml, path: "/path/to/libtree-sitter-toml.so")
       #   language = TreeHaver::Language.toml
       #
-      # @example With overrides
-      #   language = TreeHaver::Language.toml(path: "/custom/path.so")
+      # @example With both backends
+      #   TreeHaver.register_language(:toml,
+      #     path: "/path/to/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
+      #   TreeHaver.register_language(:toml,
+      #     grammar_module: TomlRB::Document)
+      #   language = TreeHaver::Language.toml  # Uses appropriate grammar for active backend
       #
       # @param method_name [Symbol] the registered language name
-      # @param args [Array] positional arguments (first is used as path if provided)
-      # @param kwargs [Hash] keyword arguments (:path, :symbol, :name)
+      # @param args [Array] positional arguments
+      # @param kwargs [Hash] keyword arguments
       # @return [Language] loaded language handle
       # @raise [NoMethodError] if the language name is not registered
       def method_missing(method_name, *args, **kwargs, &block)
         # Resolve only if the language name was registered
-        reg = TreeHaver.registered_language(method_name)
-        return super unless reg
+        all_backends = TreeHaver.registered_language(method_name)
+        return super unless all_backends
 
-        # Allow per-call overrides; otherwise use registered defaults
-        path = kwargs[:path] || args.first || reg[:path]
-        raise ArgumentError, "path is required" unless path
-        symbol = kwargs.key?(:symbol) ? kwargs[:symbol] : (reg[:symbol] || "tree_sitter_#{method_name}")
-        name = kwargs[:name] || method_name.to_s
-        from_library(path, symbol: symbol, name: name)
+        # Check current backend
+        current_backend = TreeHaver.backend_module
+
+        # Determine which backend type to use
+        backend_type = if current_backend == Backends::Citrus
+          :citrus
+        else
+          :tree_sitter  # MRI, Rust, FFI, Java all use tree-sitter
+        end
+
+        # Get backend-specific registration
+        reg = all_backends[backend_type]
+
+        # If Citrus backend is active
+        if backend_type == :citrus
+          if reg && reg[:grammar_module]
+            return Backends::Citrus::Language.new(reg[:grammar_module])
+          end
+
+          # Fall back to error if no Citrus grammar registered
+          raise NotAvailable,
+            "Citrus backend is active but no Citrus grammar registered for :#{method_name}. " \
+            "Either register a Citrus grammar or use a tree-sitter backend. " \
+            "Registered backends: #{all_backends.keys.inspect}"
+        end
+
+        # For tree-sitter backends, use the path
+        if reg && reg[:path]
+          path = kwargs[:path] || args.first || reg[:path]
+          symbol = kwargs.key?(:symbol) ? kwargs[:symbol] : (reg[:symbol] || "tree_sitter_#{method_name}")
+          name = kwargs[:name] || method_name.to_s
+          return from_library(path, symbol: symbol, name: name)
+        end
+
+        # No appropriate registration found
+        raise ArgumentError,
+          "No grammar registered for :#{method_name} compatible with #{backend_type} backend. " \
+          "Registered backends: #{all_backends.keys.inspect}"
       end
 
       # @api private

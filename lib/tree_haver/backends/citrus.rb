@@ -213,6 +213,10 @@ module TreeHaver
       # - matches: child matches
       # - captures: named groups
       #
+      # Language-specific helpers can be mixed in for convenience:
+      #   require "tree_haver/backends/citrus/toml_helpers"
+      #   TreeHaver::Backends::Citrus::Node.include(TreeHaver::Backends::Citrus::TomlHelpers)
+      #
       # @api private
       class Node
         attr_reader :match, :source
@@ -224,16 +228,103 @@ module TreeHaver
 
         # Get node type from Citrus rule name
         #
+        # Uses Citrus grammar introspection to dynamically determine node types.
+        # Works with any Citrus grammar without language-specific knowledge.
+        #
+        # Strategy:
+        # 1. Check if first event has a .name method (returns Symbol) - use that
+        # 2. If first event is a Symbol directly - use that
+        # 3. For compound rules (Repeat, Choice), recurse into first match
+        #
         # @return [String] rule name from grammar
         def type
-          # Citrus stores the rule name in events[0]
           return "unknown" unless @match.respond_to?(:events)
           return "unknown" unless @match.events.is_a?(Array)
           return "unknown" if @match.events.empty?
 
-          first = @match.events.first
-          first.is_a?(Symbol) ? first.to_s : "unknown"
+          extract_type_from_event(@match.events.first)
         end
+
+        # Check if this node represents a structural element vs a terminal/token
+        #
+        # Uses Citrus grammar's terminal? method to determine if this is
+        # a structural rule (like "table", "keyvalue") vs a terminal token
+        # (like "[", "=", whitespace).
+        #
+        # @return [Boolean] true if this is a structural (non-terminal) node
+        def structural?
+          return false unless @match.respond_to?(:events)
+          return false if @match.events.empty?
+
+          first_event = @match.events.first
+
+          # Check if event has terminal? method (Citrus rule object)
+          if first_event.respond_to?(:terminal?)
+            return !first_event.terminal?
+          end
+
+          # For Symbol events, try to look up in grammar
+          if first_event.is_a?(Symbol) && @match.respond_to?(:grammar)
+            grammar = @match.grammar
+            if grammar.respond_to?(:rules) && grammar.rules.key?(first_event)
+              rule = grammar.rules[first_event]
+              return !rule.terminal? if rule.respond_to?(:terminal?)
+            end
+          end
+
+          # Default: assume structural if not a simple string/regex terminal
+          true
+        end
+
+        private
+
+        # Extract type name from a Citrus event object
+        #
+        # Handles different event types:
+        # - Objects with .name method (Citrus rule objects) -> use .name
+        # - Symbol -> use directly
+        # - Compound rules (Repeat, Choice) -> check string representation
+        #
+        # @param event [Object] Citrus event object
+        # @return [String] type name
+        def extract_type_from_event(event)
+          # Case 1: Event has .name method (returns Symbol)
+          if event.respond_to?(:name)
+            name = event.name
+            return name.to_s if name.is_a?(Symbol)
+          end
+
+          # Case 2: Event is a Symbol directly (most common for child nodes)
+          return event.to_s if event.is_a?(Symbol)
+
+          # Case 3: Event is a String
+          return event if event.is_a?(String)
+
+          # Case 4: For compound rules (Repeat, Choice), try string parsing first
+          # This avoids recursion issues
+          str = event.to_s
+
+          # Try to extract rule name from string representation
+          # Examples: "table", "(comment | table)*", "space?", etc.
+          if str =~ /^([a-z_][a-z0-9_]*)/i
+            return $1
+          end
+
+          # If we have a pattern like "(rule1 | rule2)*", we can't determine
+          # the type without looking at actual matches, but that causes recursion
+          # So just return a generic type based on the pattern
+          if str =~ /^\(.*\)\*$/
+            return "repeat"
+          elsif str =~ /^\(.*\)\?$/
+            return "optional"
+          elsif str =~ /^.*\|.*$/
+            return "choice"
+          end
+
+          "unknown"
+        end
+
+        public
 
         def start_byte
           @match.offset
