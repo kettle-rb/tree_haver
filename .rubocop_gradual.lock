@@ -1,5 +1,5 @@
 {
-  "README.md:833347597": [
+  "README.md:2107906670": [
     [804, 29, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403],
     [811, 36, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403]
   ],

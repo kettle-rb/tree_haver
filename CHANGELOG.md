@@ -20,12 +20,33 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [3.0.0] - 2025-12-16
+
+- TAG: [v3.0.0][3.0.0t]
+- COVERAGE: 85.19% -- 909/1067 lines in 11 files
+- BRANCH COVERAGE: 67.47% -- 338/501 branches in 11 files
+- 92.93% documented
+
+### Added
+
 #### Backend Requirements
+
 - **MRI Backend**: Requires `ruby_tree_sitter` v2.0+ (exceptions inherit from `Exception` not `StandardError`)
   - In ruby_tree_sitter v2.0, TreeSitter errors were changed to inherit from Exception for thread-safety
   - TreeHaver now properly handles: `ParserNotFoundError`, `LanguageLoadError`, `SymbolNotFoundError`, etc.
 
 #### Thread-Safe Backend Selection (Hybrid Approach)
+
 - **NEW: Block-based backend API** - `TreeHaver.with_backend(:ffi) { ... }` for thread-safe backend selection
   - Thread-local context with proper nesting support
   - Exception-safe (context restored even on errors)
@@ -42,6 +63,7 @@ Please file a bug if you notice a violation of semantic versioning.
 - Added `TreeHaver.resolve_backend_module(explicit_backend)` - resolves backend module with precedence
 
 #### Examples and Discovery
+
 - Added 18 comprehensive examples demonstrating all backends and languages
   - JSON examples (5): auto, MRI, Rust, FFI, Java
   - JSONC examples (5): auto, MRI, Rust, FFI, Java
@@ -66,6 +88,8 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- **BREAKING**: All errors now inherit from `TreeHaver::Error` which inherits from `Exception`
+  - see: https://github.com/Faveod/ruby-tree-sitter/pull/83 for reasoning
 - **BREAKING**: `LanguageRegistry.register` signature changed from `register(name, path:, symbol:)` to `register(name, backend_type, **config)`
   - This enables proper separation of tree-sitter and Citrus configurations
   - Users should update to use `TreeHaver.register_language` instead of calling `LanguageRegistry.register` directly
@@ -78,6 +102,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Improved
 
 #### Code Quality and Documentation
+
 - **Uniform backend API**: All backends now implement `reset!` method for consistent testing interface
   - Eliminates need for tests to manipulate private instance variables
   - Provides clean way to reset backend state between tests
@@ -90,9 +115,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Added complete examples showing both single-backend and multi-backend registration
   - Documented backend precedence chain and thread-safety guarantees
 - **Comprehensive test coverage** for thread-safe backend selection
-  - Thread-local context tests (`spec/tree_haver/thread_local_backend_spec.rb`)
-  - Parser backend parameter tests (`spec/tree_haver/parser_backend_spec.rb`)
-  - Language backend parameter tests (`spec/tree_haver/language_backend_spec.rb`)
+  - Thread-local context tests
+  - Parser backend parameter tests
+  - Language backend parameter tests
   - Concurrent parsing tests with multiple backends
   - Backend-aware cache isolation tests
   - Nested block behavior tests (inner blocks override outer blocks)
@@ -110,6 +135,7 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 #### Thread-Safety and Backend Selection
+
 - Fixed `resolve_backend_module` to properly handle mocked backends without `available?` method
   - Assumes modules without `available?` are available (for test compatibility and backward compatibility)
   - Only rejects if module explicitly has `available?` method and returns false
@@ -123,47 +149,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Added comprehensive inline comments explaining why no early return
   - Added extensive YARD documentation with examples
 
-### Deprecated
-
-### Removed
-
-### Known Issues
-
-### Notes on Backward Compatibility
-
-Despite the major version bump to 3.0.0 (following semver due to the breaking `LanguageRegistry.register` signature change), **most users will experience NO BREAKING CHANGES**:
-
-#### Why 3.0.0?
-- `LanguageRegistry.register` signature changed to support multi-backend registration
-- However, most users should use `TreeHaver.register_language` (which remains backward compatible)
-- Direct calls to `LanguageRegistry.register` are rare in practice
-
-#### What Stays the Same?
-- **Global backend setting**: `TreeHaver.backend = :ffi` works unchanged
-- **Parser creation**: `Parser.new` without parameters works as before
-- **Language loading**: `Language.from_library(path)` works as before
-- **Auto-detection**: Backend auto-selection still works when backend is `:auto`
-- **All existing code** continues to work without modifications
-
-#### What's New (All Optional)?
-- Thread-safe block API: `TreeHaver.with_backend(:ffi) { ... }`
-- Explicit backend parameters: `Parser.new(backend: :mri)`
-- Backend introspection: `parser.backend`
-- Multi-backend language registration
-
-**Migration Path**: Existing codebases can upgrade to 3.0.0 and gain access to new thread-safe features without changing any existing code. The new features are purely additive and opt-in.
-
-- **MRI backend + Bash grammar**: ABI/symbol loading incompatibility
-  - The ruby_tree_sitter gem cannot load tree-sitter-bash grammar (symbol not found)
-  - Workaround: Use FFI backend instead (works perfectly)
-  - This is documented in examples and test runner
-- **Rust backend + Bash grammar**: Version mismatch due to static linking
-  - tree_stump statically links tree-sitter at compile time
-  - System bash.so may be compiled with different tree-sitter version
-  - Workaround: Use FFI backend (dynamic linking avoids version conflicts)
-  - This is documented in examples with detailed explanations
-
-### Fixed
+#### Backend Bug Fixes
 
 - Fixed critical double-wrapping bug in ALL backends (MRI, Rust, FFI, Java, Citrus)
   - Backend `Parser#parse` and `parse_string` methods now return raw backend trees
@@ -192,7 +178,44 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 - Fixed Citrus backend infinite recursion in `Node#extract_type_from_event`
   - Added cycle detection to prevent stack overflow when traversing recursive grammar structures
 
-### Security
+### Known Issues
+
+- **MRI backend + Bash grammar**: ABI/symbol loading incompatibility
+  - The ruby_tree_sitter gem cannot load tree-sitter-bash grammar (symbol not found)
+  - Workaround: Use FFI backend instead (works perfectly)
+  - This is documented in examples and test runner
+- **Rust backend + Bash grammar**: Version mismatch due to static linking
+  - tree_stump statically links tree-sitter at compile time
+  - System bash.so may be compiled with different tree-sitter version
+  - Workaround: Use FFI backend (dynamic linking avoids version conflicts)
+  - This is documented in examples with detailed explanations
+
+### Notes on Backward Compatibility
+
+Despite the major version bump to 3.0.0 (following semver due to the breaking `LanguageRegistry.register` signature change), **most users will experience NO BREAKING CHANGES**:
+
+#### Why 3.0.0?
+
+- `LanguageRegistry.register` signature changed to support multi-backend registration
+- However, most users should use `TreeHaver.register_language` (which remains backward compatible)
+- Direct calls to `LanguageRegistry.register` are rare in practice
+
+#### What Stays the Same?
+
+- **Global backend setting**: `TreeHaver.backend = :ffi` works unchanged
+- **Parser creation**: `Parser.new` without parameters works as before
+- **Language loading**: `Language.from_library(path)` works as before
+- **Auto-detection**: Backend auto-selection still works when backend is `:auto`
+- **All existing code** continues to work without modifications
+
+#### What's New (All Optional)?
+
+- Thread-safe block API: `TreeHaver.with_backend(:ffi) { ... }`
+- Explicit backend parameters: `Parser.new(backend: :mri)`
+- Backend introspection: `parser.backend`
+- Multi-backend language registration
+
+**Migration Path**: Existing codebases can upgrade to 3.0.0 and gain access to new thread-safe features without changing any existing code. The new features are purely additive and opt-in.
 
 ## [2.0.0] - 2025-12-15
 
@@ -249,7 +272,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/kettle-rb/tree_haver/compare/v2.0.0...v3.0.0
+[3.0.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.0.0
 [2.0.0]: https://github.com/kettle-rb/tree_haver/compare/v1.0.0...v2.0.0
 [2.0.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v2.0.0
 [1.0.0]: https://github.com/kettle-rb/tree_haver/compare/a89211bff10f4440b96758a8ac9d7d539001b0c8...v1.0.0
