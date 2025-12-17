@@ -115,12 +115,14 @@ module TreeHaver
   # - {Backends::FFI} - Uses Ruby FFI to call libtree-sitter directly
   # - {Backends::Java} - Uses JRuby's Java integration
   # - {Backends::Citrus} - Uses Citrus PEG parser (pure Ruby, portable)
+  # - {Backends::Prism} - Uses Ruby's built-in Prism parser (Ruby-only, stdlib in 3.4+)
   module Backends
     autoload :MRI, File.join(__dir__, "tree_haver", "backends", "mri")
     autoload :Rust, File.join(__dir__, "tree_haver", "backends", "rust")
     autoload :FFI, File.join(__dir__, "tree_haver", "backends", "ffi")
     autoload :Java, File.join(__dir__, "tree_haver", "backends", "java")
     autoload :Citrus, File.join(__dir__, "tree_haver", "backends", "citrus")
+    autoload :Prism, File.join(__dir__, "tree_haver", "backends", "prism")
 
     # Known backend conflicts
     #
@@ -135,6 +137,7 @@ module TreeHaver
       ffi: [:mri],  # FFI segfaults if MRI (ruby_tree_sitter) has been loaded
       java: [],
       citrus: [],
+      prism: [],    # Prism has no conflicts with other backends
     }.freeze
   end
 
@@ -267,6 +270,7 @@ module TreeHaver
       when "ffi" then :ffi
       when "java" then :java
       when "citrus" then :citrus
+      when "prism" then :prism
       else :auto
       end
     end
@@ -463,6 +467,8 @@ module TreeHaver
         Backends::Java
       when :citrus
         Backends::Citrus
+      when :prism
+        Backends::Prism
       when :auto
         backend_module  # Fall back to normal resolution for :auto
       else
@@ -519,6 +525,8 @@ module TreeHaver
         Backends::Java
       when :citrus
         Backends::Citrus
+      when :prism
+        Backends::Prism
       else
         # auto-select: prefer native/fast backends, fall back to pure Ruby (Citrus)
         if defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby" && Backends::Java.available?
