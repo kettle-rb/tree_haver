@@ -35,6 +35,23 @@ Please file a bug if you notice a violation of semantic versioning.
   - Psych-specific methods: `mapping?`, `sequence?`, `scalar?`, `alias?`, `mapping_entries`, `anchor`, `tag`, `value`
   - Registered with `:psych` backend name, no conflicts with other backends
 
+- **Commonmarker Backend** – New backend wrapping the Commonmarker gem (comrak Rust parser)
+  - `TreeHaver::Backends::Commonmarker::Language` - Language wrapper with parse options passthrough
+  - `TreeHaver::Backends::Commonmarker::Parser` - Parser with `parse` and `parse_string` methods
+  - `TreeHaver::Backends::Commonmarker::Tree` - Tree wrapper with `root_node`
+  - `TreeHaver::Backends::Commonmarker::Node` - Node wrapper implementing TreeHaver::Node protocol
+  - Commonmarker-specific methods: `header_level`, `fence_info`, `url`, `title`, `next_sibling`, `previous_sibling`, `parent`
+  - Registered with `:commonmarker` backend name, no conflicts with other backends
+
+- **Markly Backend** – New backend wrapping the Markly gem (cmark-gfm C library)
+  - `TreeHaver::Backends::Markly::Language` - Language wrapper with flags and extensions passthrough
+  - `TreeHaver::Backends::Markly::Parser` - Parser with `parse` and `parse_string` methods
+  - `TreeHaver::Backends::Markly::Tree` - Tree wrapper with `root_node`
+  - `TreeHaver::Backends::Markly::Node` - Node wrapper implementing TreeHaver::Node protocol
+  - Type normalization: `:header` → `"heading"`, `:hrule` → `"thematic_break"`, `:html` → `"html_block"`
+  - Markly-specific methods: `header_level`, `fence_info`, `url`, `title`, `next_sibling`, `previous_sibling`, `parent`, `raw_type`
+  - Registered with `:markly` backend name, no conflicts with other backends
+
 ### Changed
 
 ### Deprecated

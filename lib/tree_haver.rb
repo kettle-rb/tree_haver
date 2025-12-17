@@ -124,6 +124,8 @@ module TreeHaver
     autoload :Citrus, File.join(__dir__, "tree_haver", "backends", "citrus")
     autoload :Prism, File.join(__dir__, "tree_haver", "backends", "prism")
     autoload :Psych, File.join(__dir__, "tree_haver", "backends", "psych")
+    autoload :Commonmarker, File.join(__dir__, "tree_haver", "backends", "commonmarker")
+    autoload :Markly, File.join(__dir__, "tree_haver", "backends", "markly")
 
     # Known backend conflicts
     #
@@ -138,8 +140,10 @@ module TreeHaver
       ffi: [:mri],  # FFI segfaults if MRI (ruby_tree_sitter) has been loaded
       java: [],
       citrus: [],
-      prism: [],    # Prism has no conflicts with other backends
-      psych: [],    # Psych has no conflicts with other backends
+      prism: [],        # Prism has no conflicts with other backends
+      psych: [],        # Psych has no conflicts with other backends
+      commonmarker: [], # Commonmarker has no conflicts with other backends
+      markly: [],       # Markly has no conflicts with other backends
     }.freeze
   end
 
@@ -274,6 +278,8 @@ module TreeHaver
       when "citrus" then :citrus
       when "prism" then :prism
       when "psych" then :psych
+      when "commonmarker" then :commonmarker
+      when "markly" then :markly
       else :auto
       end
     end
