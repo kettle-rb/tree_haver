@@ -20,12 +20,20 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- **Prism Backend** - New backend wrapping Ruby's official Prism parser (stdlib in Ruby 3.4+, gem for 3.2+)
+- **Prism Backend** – New backend wrapping Ruby's official Prism parser (stdlib in Ruby 3.4+, gem for 3.2+)
   - `TreeHaver::Backends::Prism::Language` - Language wrapper (Ruby-only)
   - `TreeHaver::Backends::Prism::Parser` - Parser with `parse` and `parse_string` methods
   - `TreeHaver::Backends::Prism::Tree` - Tree wrapper with `root_node`, `errors`, `warnings`, `comments`
   - `TreeHaver::Backends::Prism::Node` - Node wrapper implementing full TreeHaver::Node protocol
   - Registered with `:prism` backend name, no conflicts with other backends
+
+- **Psych Backend** – New backend wrapping Ruby's standard library YAML parser
+  - `TreeHaver::Backends::Psych::Language` - Language wrapper (YAML-only)
+  - `TreeHaver::Backends::Psych::Parser` - Parser with `parse` and `parse_string` methods
+  - `TreeHaver::Backends::Psych::Tree` - Tree wrapper with `root_node`, `errors`
+  - `TreeHaver::Backends::Psych::Node` - Node wrapper implementing TreeHaver::Node protocol
+  - Psych-specific methods: `mapping?`, `sequence?`, `scalar?`, `alias?`, `mapping_entries`, `anchor`, `tag`, `value`
+  - Registered with `:psych` backend name, no conflicts with other backends
 
 ### Changed
 

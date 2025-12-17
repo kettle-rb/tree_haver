@@ -123,6 +123,7 @@ module TreeHaver
     autoload :Java, File.join(__dir__, "tree_haver", "backends", "java")
     autoload :Citrus, File.join(__dir__, "tree_haver", "backends", "citrus")
     autoload :Prism, File.join(__dir__, "tree_haver", "backends", "prism")
+    autoload :Psych, File.join(__dir__, "tree_haver", "backends", "psych")
 
     # Known backend conflicts
     #
@@ -138,6 +139,7 @@ module TreeHaver
       java: [],
       citrus: [],
       prism: [],    # Prism has no conflicts with other backends
+      psych: [],    # Psych has no conflicts with other backends
     }.freeze
   end
 
@@ -271,6 +273,7 @@ module TreeHaver
       when "java" then :java
       when "citrus" then :citrus
       when "prism" then :prism
+      when "psych" then :psych
       else :auto
       end
     end
