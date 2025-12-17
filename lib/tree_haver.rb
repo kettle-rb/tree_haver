@@ -61,11 +61,14 @@ require_relative "tree_haver/language_registry"
 # @see GrammarFinder For automatic grammar library discovery
 module TreeHaver
   # Base error class for TreeHaver exceptions
+  # @see https://github.com/Faveod/ruby-tree-sitter/pull/83 for inherit from Exception reasoning
   #
   # @abstract Subclass to create specific error types
-  class Error < StandardError; end
+  class Error < Exception; end  # rubocop:disable Lint/InheritException
 
   # Raised when a requested backend or feature is not available
+  # These are serious errors that extends Exception (not StandardError).
+  # @see https://github.com/Faveod/ruby-tree-sitter/pull/83 for inherit from Exception reasoning
   #
   # This can occur when:
   # - Required native libraries are not installed
@@ -102,7 +105,7 @@ module TreeHaver
   # @example Disabling protection (not recommended)
   #   TreeHaver.backend_protect = false
   #   # Now you can test backend conflicts (at risk of segfaults)
-  class BackendConflict < Exception; end  # rubocop:disable Lint/InheritException
+  class BackendConflict < Error; end
 
   # Namespace for backend implementations
   #

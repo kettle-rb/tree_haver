@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: TODO
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "TODO";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: TODO</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="todo-release-preparation-checklist">TODO: Release Preparation Checklist</h1>
+
+<h2 id="high-priority---before-merging">High Priority - Before Merging</h2>
+
+<h3 id="1-documentation-updates">1. Documentation Updates</h3>
+
+<h4 id="readmemd">README.md</h4>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add section on thread-safe concurrent parsing</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Show <code>with_backend</code> block API usage</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Document explicit <code>backend:</code> parameters</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add concurrent parsing example</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add benchmarking example</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update API reference table with new methods</li>
+</ul>
+
+<p><strong>Example section to add:</strong></p>
+<pre class="code language-markdown"><code class="language-markdown">### Thread-Safe Concurrent Parsing
+
+TreeHaver 2.0 introduces thread-safe backend selection, allowing different threads to use different backends simultaneously:
+
+\`\`\`ruby
+thread1 = Thread.new do
+  TreeHaver.with_backend(:ffi) do
+    parser = TreeHaver::Parser.new
+    tree = parser.parse(source)
+  end
+end
+
+thread2 = Thread.new do
+  TreeHaver.with_backend(:mri) do
+    parser = TreeHaver::Parser.new
+    tree = parser.parse(source)
+  end
+end
+
+thread1.join
+thread2.join
+\`\`\`
+</code></pre>
+
+<h4 id="changelogmd">CHANGELOG.md</h4>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update UNRELEASED section with all new features:
+    <ul>
+      <li>
+<code>TreeHaver.with_backend(name) { ... }</code> block API</li>
+      <li>
+<code>backend:</code> parameter for <code>Parser.new</code> and <code>Language.from_library</code>
+</li>
+      <li>
+<code>Parser#backend</code> introspection method</li>
+      <li>Thread-safe backend selection</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Emphasize: NO BREAKING CHANGES (fully backward compatible)</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Document code quality improvements:
+    <ul>
+      <li>Uniform <code>reset!</code> API across all backends</li>
+      <li>Enhanced documentation with rationale</li>
+      <li>Multi-backend registration support documented</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Move UNRELEASED to [3.0.0] when ready for release</li>
+</ul>
+
+<p><strong>Example CHANGELOG entry to add to UNRELEASED section:</strong></p>
+<pre class="code language-markdown"><code class="language-markdown">### Added - Thread-Safe Backend Selection (v3.0.0)
+
+### Added - Thread-Safe Backend Selection
+
+- **Block-based backend API**: `TreeHaver.with_backend(:ffi) { ... }` for thread-safe backend selection
+- **Explicit backend parameters**: `Parser.new(backend: :mri)` and `Language.from_library(path, backend: :ffi)`
+- **Backend introspection**: `parser.backend` method to check which backend is in use
+- **Thread-local context**: Each thread can use different backends independently
+- **Proper nesting**: Inner `with_backend` blocks override outer blocks
+- **Exception safety**: Context restored even when blocks raise errors
+
+### Changed
+
+- Language cache now includes backend in cache key (prevents pollution)
+- All backends now implement `reset!` method for consistent testing API
+
+### Improved
+
+- Extensively documented `register_language` multi-backend registration capability
+- Enhanced YARD documentation with complete examples including `gem_name` parameter
+- Documented FFI Tree finalizer design decisions
+- Clarified `resolve_backend_module` logic with inline rationale
+
+### No Breaking Changes
+
+All changes are purely additive. Existing code continues to work unchanged.
+</code></pre>
+
+<h3 id="2-code-quality">2. Code Quality</h3>
+
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Run rubocop: <code>bundle exec rubocop</code>
+    <ul>
+      <li>Fix any violations</li>
+      <li>Update <code>.rubocop_todo.yml</code> if needed</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Run reek: <code>bundle exec reek</code>
+    <ul>
+      <li>Address any code smells</li>
+      <li>Document intentional patterns</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Verify YARD documentation: <code>bundle exec yard doc</code>
+    <ul>
+      <li>Check for missing documentation</li>
+      <li>Ensure all examples are syntactically correct</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="3-version-management">3. Version Management</h3>
+
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update <code>lib/tree_haver/version.rb</code> to <code>3.0.0</code> (when ready for release)</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update any version references in documentation</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Verify gemspec version matches</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Move UNRELEASED to [3.0.0] in CHANGELOG.md</li>
+</ul>
+
+<h2 id="medium-priority---before-tagging">Medium Priority - Before Tagging</h2>
+
+<h3 id="4-migration-guide-optional-but-recommended">4. Migration Guide (Optional but Recommended)</h3>
+
+<p>Create <code>MIGRATION.md</code>:</p>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Explain new features even though backward compatible</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Show upgrade examples</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Document best practices for thread-safe usage</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Provide before/after code samples</li>
+</ul>
+
+<h3 id="5-performance-documentation">5. Performance Documentation</h3>
+
+<p>Add to README or separate <code>PERFORMANCE.md</code>:</p>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Document thread-local lookup overhead (negligible)</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Show benchmark results</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Provide guidance on backend selection</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Compare backend performance characteristics</li>
+</ul>
+
+<h3 id="6-examples">6. Examples</h3>
+
+<p>Create example scripts in <code>examples/</code>:</p>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled><code>concurrent_parsing.rb</code> - Show thread-safe parsing</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled><code>backend_comparison.rb</code> - Benchmark different backends</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled><code>explicit_backend.rb</code> - Show explicit parameter usage</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update existing examples if needed</li>
+</ul>
+
+<h2 id="low-priority---nice-to-have">Low Priority - Nice to Have</h2>
+
+<h3 id="7-additional-testing">7. Additional Testing</h3>
+
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Load testing with many threads</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Memory profiling with different backends</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Performance regression tests</li>
+</ul>
+
+<h3 id="8-community">8. Community</h3>
+
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Prepare announcement blog post</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update project website if applicable</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Notify major users of new features</li>
+</ul>
+
+<h2 id="before-release">Before Release</h2>
+
+<h3 id="pre-release-checklist">Pre-Release Checklist</h3>
+
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>All high priority items complete</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Tests passing: <code>bundle exec rspec</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>No rubocop violations: <code>bundle exec rubocop</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Documentation built successfully: <code>bundle exec yard doc</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>README examples verified manually</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>CHANGELOG UNRELEASED section reviewed and accurate</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Version bumped to 3.0.0 and UNRELEASED moved to [3.0.0]</li>
+</ul>
+
+<h3 id="release-steps">Release Steps</h3>
+
+<ol class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Commit all changes: <code>git add -A &amp;&amp; git commit -m "Release v3.0.0: Thread-safe backend selection"</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Tag release: <code>git tag -a v3.0.0 -m "Version 3.0.0: Thread-safe backend selection"</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Push changes: <code>git push origin main --tags</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Build gem: <code>gem build tree_haver.gemspec</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Test gem installation: <code>gem install tree_haver-3.0.0.gem</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Push to RubyGems: <code>gem push tree_haver-3.0.0.gem</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Create GitHub release with CHANGELOG excerpt</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Announce on social media / mailing lists</li>
+</ol>
+
+<h2 id="estimated-time">Estimated Time</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task</th>
+      <th>Time Estimate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>README updates</td>
+      <td>1-2 hours</td>
+    </tr>
+    <tr>
+      <td>CHANGELOG</td>
+      <td>30 minutes</td>
+    </tr>
+    <tr>
+      <td>Rubocop fixes</td>
+      <td>30-60 minutes</td>
+    </tr>
+    <tr>
+      <td>Reek review</td>
+      <td>30 minutes</td>
+    </tr>
+    <tr>
+      <td>YARD verification</td>
+      <td>15 minutes</td>
+    </tr>
+    <tr>
+      <td>Version bump</td>
+      <td>5 minutes</td>
+    </tr>
+    <tr>
+      <td>Migration guide</td>
+      <td>1 hour</td>
+    </tr>
+    <tr>
+      <td>Examples</td>
+      <td>1 hour</td>
+    </tr>
+    <tr>
+      <td>Final review &amp; release</td>
+      <td>30 minutes</td>
+    </tr>
+    <tr>
+      <td><strong>Total</strong></td>
+      <td><strong>5-7 hours</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="notes">Notes</h2>
+
+<ul>
+  <li>All core implementation is COMPLETE ✅</li>
+  <li>All tests PASSING (373 examples, 0 failures) ✅</li>
+  <li>Zero breaking changes - backward compatible ✅</li>
+  <li>Code quality improved with documentation enhancements ✅</li>
+</ul>
+
+<p>The remaining work is primarily documentation and release preparation, not code changes.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Tue Dec 16 19:08:22 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>

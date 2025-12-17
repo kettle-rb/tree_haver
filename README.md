@@ -67,7 +67,11 @@ If you've used [Faraday](https://github.com/lostisland/faraday), [multi_json](ht
 | **multi_xml**  | XML parsing         | Nokogiri, LibXML, Ox                                 |
 | **TreeHaver**  | tree-sitter parsing | ruby_tree_sitter, tree_stump, FFI, Java JARs, Citrus |
 
-**Write once, run anywhere.** Just as Faraday lets you swap HTTP adapters without changing your code, TreeHaver lets you swap tree-sitter backends. Your parsing code remains the same whether you're running on MRI with native C extensions, JRuby with FFI, or TruffleRuby.
+**Write once, run anywhere.** 
+
+**Learn once, write anywhere.**
+
+Just as Faraday lets you swap HTTP adapters without changing your code, TreeHaver lets you swap tree-sitter backends. Your parsing code remains the same whether you're running on MRI with native C extensions, JRuby with FFI, or TruffleRuby.
 
 ```ruby
 # Your code stays the same regardless of backend

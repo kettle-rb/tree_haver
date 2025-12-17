@@ -1,23 +1,11 @@
 {
-  "LANGUAGE-BACKEND-ATTRIBUTE.md:2750603768": [
-    [51, 1, 5, "Lint/Syntax: class definition in method body\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 176918699],
-    [56, 21, 1, "Lint/Syntax: unexpected token tCOMMA\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 177545],
-    [56, 29, 3, "Lint/Syntax: cannot assign to a keyword\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193419246],
-    [209, 4, 5, "Lint/Syntax: class definition in method body\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 176918699]
+  "README.md:833347597": [
+    [804, 29, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403],
+    [811, 36, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403]
   ],
-  "LANGUAGE-COMPARABLE.md:4090614183": [
-    [244, 33, 1, "Lint/Syntax: unexpected token tRBRACK\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 177656]
-  ],
-  "README.md:478198170": [
-    [800, 29, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403],
-    [807, 36, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403]
-  ],
-  "TEST-IMPROVEMENT-LANGUAGE-MOCKS.md:1656551295": [
-    [55, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
-  ],
-  "lib/tree_haver.rb:3555778388": [
-    [201, 5, 28, "ThreadSafety/ClassAndModuleAttributes: Avoid mutating class and module attributes.", 1973484748],
-    [957, 7, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
+  "lib/tree_haver.rb:3051625986": [
+    [204, 5, 28, "ThreadSafety/ClassAndModuleAttributes: Avoid mutating class and module attributes.", 1973484748],
+    [960, 7, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
   ],
   "lib/tree_haver/backends/ffi.rb:344054470": [
     [30, 7, 231, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 4278263153],
@@ -247,7 +235,7 @@
     [979, 20, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
     [983, 11, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2882422563]
   ],
-  "spec_matrix/backend_compatibility_matrix_spec.rb:618681091": [
+  "spec_matrix/backend_compatibility_matrix_spec.rb:3531572031": [
     [27, 16, 30, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3871666292],
     [31, 3, 37, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 1678232489],
     [35, 3, 135, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 656725830],
@@ -255,10 +243,10 @@
     [43, 3, 41, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 1965425945],
     [44, 3, 49, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 2984228143],
     [45, 3, 47, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 3577695641],
-    [118, 15, 20, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 2894417152],
-    [148, 17, 39, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 3406914204],
-    [186, 17, 59, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 2370425067],
-    [259, 5, 49, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 2560971490],
-    [265, 17, 38, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 767453439]
+    [132, 15, 20, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 2894417152],
+    [162, 17, 39, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 3406914204],
+    [200, 17, 59, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 2370425067],
+    [273, 5, 49, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 2560971490],
+    [279, 17, 38, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 767453439]
   ]
 }
