@@ -36,6 +36,17 @@ To search inside vendor gems:
 2. Use `list_dir` to explore the directory structure
 3. Do NOT rely on `grep_search` with `includePattern: "vendor/**"` - it will return no results
 
+**Working approach for finding code in vendor gems:**
+```
+# Step 1: List the directory structure
+list_dir("/home/pboling/src/kettle-rb/ast-merge/vendor/markdown-merge/lib/markdown/merge")
+
+# Step 2: Read specific files you need to search
+read_file("/home/pboling/src/kettle-rb/ast-merge/vendor/markdown-merge/lib/markdown/merge/file_analysis.rb", 0, 100)
+
+# Step 3: If looking for a specific method, read more of the file or multiple files
+```
+
 ### grep_search includePattern (for non-nested-git directories)
 
 **IMPORTANT**: The `includePattern` parameter uses glob patterns relative to the workspace root.
@@ -171,6 +182,27 @@ This runs tests with coverage instrumentation and generates detailed coverage re
 4. **`merged_source` doesn't exist** - `merge` returns a String directly
 
 ## Terminal Command Restrictions
+
+### Terminal Session Management
+
+**How `run_in_terminal` works**:
+- The tool sends commands to a **single persistent Copilot terminal**
+- Commands run in sequence in the same terminal session
+- Environment variables and working directory persist between calls
+- The first command in a session either does not run at all, or runs before the shell initialization (direnv, motd, etc.) so it should always be a noop, like `true`.
+
+**When things go wrong**:
+- If output shows only shell banner/motd without command results, the command most likely worked, but the tool has lost the ability to see terminal output. This happens FREQUENTLY.
+- EVERY TIME you do not see output, STOP and confirm output status with the user.
+- Solution: Ask the user to share the output they see.
+
+**Best practices**:
+1. **Combine related commands** - Use `&&` to chain commands:
+   ```bash
+   cd /path && bundle exec rspec spec/some_spec.rb
+   ```
+2. **Use `get_terminal_output`** - Check output of background processes
+3. **Prefer internal tools** - Use `grep_search`, `read_file`, `list_dir` instead of terminal for information gathering
 
 ### NEVER Pipe Test Commands Through head/tail
 

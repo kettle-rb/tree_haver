@@ -309,7 +309,7 @@ RSpec.describe TreeHaver::Node do
       end
     end
 
-    it "has field as an alias" do
+    it "has field as an alias", :toml_grammar do
       expect(root_node).to respond_to(:field)
       expect(root_node.method(:field)).to eq(root_node.method(:child_by_field_name))
     end
@@ -439,7 +439,7 @@ RSpec.describe TreeHaver::Node do
       expect(root_node.respond_to?(method)).to be true
     end
 
-    it "returns false for non-existent methods" do
+    it "returns false for non-existent methods", :toml_grammar do
       expect(root_node.respond_to?(:totally_fake_method_xyz)).to be false
     end
   end
@@ -471,7 +471,7 @@ RSpec.describe TreeHaver::Node do
       end
     end
 
-    it "raises NoMethodError for non-existent methods" do
+    it "raises NoMethodError for non-existent methods", :toml_grammar do
       expect {
         root_node.totally_fake_method_xyz
       }.to raise_error(NoMethodError)
