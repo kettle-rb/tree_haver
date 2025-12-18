@@ -93,11 +93,13 @@ module TreeHaver
           @backend = :psych
         end
 
-        # Create a YAML language instance
-        #
-        # @return [Language] YAML language
-        def self.yaml
-          new(:yaml)
+        class << self
+          # Create a YAML language instance
+          #
+          # @return [Language] YAML language
+          def yaml
+            new(:yaml)
+          end
         end
 
         # Comparison for sorting/equality
@@ -507,12 +509,12 @@ module TreeHaver
             result = []
             (start_line..end_line).each do |ln|
               line = @lines[ln] || ""
-              if ln == start_line
-                result << line[start_col..]
+              result << if ln == start_line
+                line[start_col..]
               elsif ln == end_line
-                result << line[0...end_col]
+                line[0...end_col]
               else
-                result << line
+                line
               end
             end
             result.compact.join
@@ -553,4 +555,3 @@ module TreeHaver
     end
   end
 end
-

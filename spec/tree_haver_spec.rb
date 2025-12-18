@@ -898,7 +898,7 @@ RSpec.describe TreeHaver do
         end
       end
 
-      context "without appropriate registration" do
+      context "with Citrus-only registration and tree-sitter backend" do
         before do
           TreeHaver.backend = :mri
           # Register only for Citrus, not tree-sitter - use unique name
@@ -913,10 +913,11 @@ RSpec.describe TreeHaver do
           TreeHaver.backend = :auto
         end
 
-        it "raises ArgumentError when no compatible registration found" do
-          expect {
-            TreeHaver::Language.test_lang_citrus_only
-          }.to raise_error(ArgumentError, /No grammar registered for :test_lang_citrus_only compatible with/)
+        it "falls back to Citrus when tree-sitter registration not available" do
+          # With our new fallback behavior, when only Citrus is registered
+          # and tree-sitter backend is active, we fall back to Citrus
+          language = TreeHaver::Language.test_lang_citrus_only
+          expect(language).to be_a(TreeHaver::Backends::Citrus::Language)
         end
       end
     end

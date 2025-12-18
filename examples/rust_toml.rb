@@ -1,31 +1,23 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Example: MRI Backend with TOML
+# Example: Rust Backend with TOML
 #
-# Forces the MRI backend (ruby_tree_sitter gem).
-# Requires MRI Ruby with native C extension support.
-
-# Check Ruby implementation
-unless RUBY_ENGINE == "ruby"
-  puts "⚠️  MRI backend requires MRI Ruby (CRuby)"
-  puts "Current Ruby: #{RUBY_ENGINE} #{RUBY_VERSION}"
-  puts "Run with MRI Ruby"
-  exit 1
-end
+# Forces the Rust backend (tree_stump gem).
+# Requires the tree_stump gem which provides Rust bindings.
 
 require "bundler/inline"
 
 gemfile do
   source "https://rubygems.org"
   gem "tree_haver", path: File.expand_path("..", __dir__)
-  gem "ruby_tree_sitter"
+  gem "tree_stump"
 end
 
 require "tree_haver"
 
 puts "=" * 70
-puts "TreeHaver MRI Backend - TOML Parsing"
+puts "TreeHaver Rust Backend - TOML Parsing"
 puts "=" * 70
 puts
 
@@ -35,8 +27,8 @@ toml_source = <<~TOML
   version = "3.0.0"
   
   [features]
-  mri_backend = true
-  native = true
+  rust_backend = true
+  fast = true
 TOML
 
 puts "TOML Source:"
@@ -56,8 +48,8 @@ else
   exit 1
 end
 
-# Force MRI backend
-TreeHaver.backend = :mri
+# Force Rust backend
+TreeHaver.backend = :rust
 puts "Backend: #{TreeHaver.backend_module}"
 puts "Capabilities: #{TreeHaver.capabilities.inspect}"
 puts "Ruby Engine: #{RUBY_ENGINE}"
@@ -80,9 +72,9 @@ end
 puts
 
 puts "=" * 70
-puts "MRI Backend:"
-puts "  - Uses ruby_tree_sitter gem (C extension)"
-puts "  - Fastest performance (native)"
-puts "  - MRI only (C extension)"
-puts "  - Requires tree-sitter development headers"
+puts "Rust Backend:"
+puts "  - Uses tree_stump gem (Rust bindings)"
+puts "  - Very fast native performance"
+puts "  - Requires Rust compilation during gem install"
+puts "  - MRI only (native extension)"
 puts "=" * 70

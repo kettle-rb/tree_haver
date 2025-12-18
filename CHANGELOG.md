@@ -52,6 +52,31 @@ Please file a bug if you notice a violation of semantic versioning.
   - Markly-specific methods: `header_level`, `fence_info`, `url`, `title`, `next_sibling`, `previous_sibling`, `parent`, `raw_type`
   - Registered with `:markly` backend name, no conflicts with other backends
 
+- **Automatic Citrus Fallback** – When tree-sitter fails, automatically fall back to Citrus backend
+  - `TreeHaver::Language.method_missing` now catches tree-sitter loading errors (`NotAvailable`, `ArgumentError`, `LoadError`, `FFI::NotFoundError`) and falls back to registered Citrus grammar
+  - `TreeHaver::Parser#initialize` now catches parser creation errors and falls back to Citrus parser when backend is `:auto`
+  - `TreeHaver::Parser#language=` automatically switches to Citrus parser when a Citrus language is assigned
+  - Enables seamless use of pure-Ruby parsers (like toml-rb) when tree-sitter runtime is unavailable
+
+- **GrammarFinder Runtime Check** – `GrammarFinder#available?` now verifies tree-sitter runtime is actually usable
+  - New `GrammarFinder.tree_sitter_runtime_usable?` class method tests if parser can be created
+  - `TREE_SITTER_BACKENDS` constant defines which backends use tree-sitter (MRI, FFI, Rust, Java)
+  - Prevents registration of grammars when tree-sitter runtime isn't functional
+  - `GrammarFinder.reset_runtime_check!` for testing
+
+- **Empty ENV Variable as Explicit Skip** – Setting `TREE_SITTER_<LANG>_PATH=''` explicitly disables that grammar
+  - Previously, empty string was treated same as unset (would search paths)
+  - Now, empty string means "do not use tree-sitter for this language"
+  - Allows explicit opt-out to force fallback to alternative backends like Citrus
+  - Useful for testing and environments where tree-sitter isn't desired
+
+- **TOML Examples** – New example scripts demonstrating TOML parsing with various backends
+  - `examples/auto_toml.rb` - Auto backend selection with Citrus fallback demonstration
+  - `examples/ffi_toml.rb` - FFI backend with TOML
+  - `examples/mri_toml.rb` - MRI backend with TOML
+  - `examples/rust_toml.rb` - Rust backend with TOML
+  - `examples/java_toml.rb` - Java backend with TOML (JRuby only)
+
 ### Changed
 
 ### Deprecated
@@ -59,6 +84,12 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 ### Fixed
+
+- **BREAKING**: `TreeHaver::Language.method_missing` no longer raises `ArgumentError` when only Citrus grammar is registered and tree-sitter backend is active – it now falls back to Citrus instead
+  - Previously: Would raise "No grammar registered for :lang compatible with tree_sitter backend"
+  - Now: Returns `TreeHaver::Backends::Citrus::Language` if Citrus grammar is registered
+  - Migration: If you were catching this error, update your code to handle the fallback behavior
+  - This is a bug fix, but would be a breaking change for some users who were relying on the old behavior
 
 ### Security
 

@@ -3,9 +3,9 @@
     [804, 29, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403],
     [811, 36, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403]
   ],
-  "lib/tree_haver.rb:3051625986": [
-    [204, 5, 28, "ThreadSafety/ClassAndModuleAttributes: Avoid mutating class and module attributes.", 1973484748],
-    [960, 7, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
+  "lib/tree_haver.rb:957472042": [
+    [213, 5, 28, "ThreadSafety/ClassAndModuleAttributes: Avoid mutating class and module attributes.", 1973484748],
+    [1032, 7, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
   ],
   "lib/tree_haver/backends/ffi.rb:344054470": [
     [30, 7, 231, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 4278263153],
@@ -21,9 +21,9 @@
   "lib/tree_haver/backends/rust.rb:1781628214": [
     [178, 11, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
   ],
-  "lib/tree_haver/node.rb:1340423843": [
-    [438, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974],
-    [441, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
+  "lib/tree_haver/node.rb:412681772": [
+    [484, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974],
+    [487, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
   ],
   "spec/integration/backend_edge_cases_spec.rb:3125406541": [
     [235, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
@@ -99,7 +99,7 @@
     [183, 3, 735, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [123]", 40123026],
     [200, 3, 561, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [106]", 785340960]
   ],
-  "spec/tree_haver_spec.rb:121033795": [
+  "spec/tree_haver_spec.rb:3691604787": [
     [7, 5, 9, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver`.", 2434546347],
     [16, 7, 9, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver`.", 2434546347],
     [19, 7, 9, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver`.", 2434546347],
@@ -166,7 +166,7 @@
     [275, 11, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
     [276, 11, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
     [298, 20, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
-    [305, 3, 6938, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [925]", 2537497996],
+    [305, 3, 6938, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [926]", 2537497996],
     [314, 13, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
     [335, 20, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
     [377, 13, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974],
@@ -222,18 +222,18 @@
     [838, 14, 9, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver`.", 2434546347],
     [843, 7, 9, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver`.", 2434546347],
     [844, 14, 9, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver`.", 2434546347],
-    [883, 3, 1188, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [190]", 2420809468],
+    [883, 3, 1314, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [190]", 2420809468],
     [896, 13, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
-    [918, 13, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
-    [925, 3, 2716, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [305]", 2106721677],
-    [952, 20, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
-    [955, 11, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [957].", 1684201356],
-    [957, 11, 73, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [955].", 4287233125],
-    [959, 11, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2882422563],
-    [965, 20, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
-    [973, 11, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2882422563],
-    [979, 20, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
-    [983, 11, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2882422563]
+    [919, 22, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
+    [926, 3, 2716, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [305]", 2106721677],
+    [953, 20, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
+    [956, 11, 66, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [958].", 1684201356],
+    [958, 11, 73, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [956].", 4287233125],
+    [960, 11, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2882422563],
+    [966, 20, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
+    [974, 11, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2882422563],
+    [980, 20, 17, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Parser`.", 1511523948],
+    [984, 11, 12, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 2882422563]
   ],
   "spec_matrix/backend_compatibility_matrix_spec.rb:3531572031": [
     [27, 16, 30, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3871666292],

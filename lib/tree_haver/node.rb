@@ -189,6 +189,52 @@ module TreeHaver
       end
     end
 
+    # Get the 1-based line number where this node starts
+    #
+    # Convenience method that converts 0-based row to 1-based line number.
+    # This is useful for error messages and matching with editor line numbers.
+    #
+    # @return [Integer] 1-based line number
+    def start_line
+      start_point.row + 1
+    end
+
+    # Get the 1-based line number where this node ends
+    #
+    # Convenience method that converts 0-based row to 1-based line number.
+    #
+    # @return [Integer] 1-based line number
+    def end_line
+      end_point.row + 1
+    end
+
+    # Get position information as a hash
+    #
+    # Returns a hash with 1-based line numbers and 0-based columns.
+    # This format is compatible with *-merge gems' FileAnalysisBase.
+    #
+    # @return [Hash{Symbol => Integer}] Position hash
+    # @example
+    #   node.source_position
+    #   # => { start_line: 1, end_line: 3, start_column: 0, end_column: 10 }
+    def source_position
+      {
+        start_line: start_line,
+        end_line: end_line,
+        start_column: start_point.column,
+        end_column: end_point.column,
+      }
+    end
+
+    # Get the first child node
+    #
+    # Convenience method for iteration patterns that expect first_child.
+    #
+    # @return [Node, nil] First child node or nil if no children
+    def first_child
+      child(0)
+    end
+
     # Get the node's text content
     #
     # @return [String]

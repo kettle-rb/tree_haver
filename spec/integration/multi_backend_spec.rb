@@ -233,7 +233,7 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
       }.to raise_error(TreeHaver::NotAvailable, /no Citrus grammar registered/)
     end
 
-    it "raises appropriate error when tree-sitter config missing for tree-sitter backend" do
+    it "falls back to Citrus when tree-sitter config missing for tree-sitter backend" do
       require "toml-rb"
 
       # Only register Citrus, not tree-sitter
@@ -243,11 +243,10 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
         gem_name: "toml-rb",
       )
 
-      # Try to load with MRI (which has no tree-sitter configuration for this language)
+      # Try to load with MRI backend - should fall back to Citrus
       TreeHaver.backend = :mri
-      expect {
-        TreeHaver::Language.citrus_only
-      }.to raise_error(ArgumentError, /No grammar registered.*compatible with tree_sitter backend/)
+      language = TreeHaver::Language.citrus_only
+      expect(language).to be_a(TreeHaver::Backends::Citrus::Language)
     rescue LoadError
       skip "toml-rb gem not available"
     end

@@ -390,6 +390,46 @@ module TreeHaver
           {row: (loc.end_line - 1), column: loc.end_column}
         end
 
+        # Get the 1-based line number where this node starts
+        #
+        # @return [Integer] 1-based line number
+        def start_line
+          return 1 if @inner_node.nil? || !@inner_node.respond_to?(:location)
+          loc = @inner_node.location
+          loc&.start_line || 1
+        end
+
+        # Get the 1-based line number where this node ends
+        #
+        # @return [Integer] 1-based line number
+        def end_line
+          return 1 if @inner_node.nil? || !@inner_node.respond_to?(:location)
+          loc = @inner_node.location
+          loc&.end_line || 1
+        end
+
+        # Get position information as a hash
+        #
+        # Returns a hash with 1-based line numbers and 0-based columns.
+        # Compatible with *-merge gems' FileAnalysisBase.
+        #
+        # @return [Hash{Symbol => Integer}] Position hash
+        def source_position
+          {
+            start_line: start_line,
+            end_line: end_line,
+            start_column: start_point[:column],
+            end_column: end_point[:column],
+          }
+        end
+
+        # Get the first child node
+        #
+        # @return [Node, nil] First child or nil
+        def first_child
+          child(0)
+        end
+
         # Get the text content of this node
         #
         # @return [String]
@@ -422,11 +462,11 @@ module TreeHaver
         # @param index [Integer] child index
         # @return [Node, nil] wrapped child node
         def child(index)
-          return nil if @inner_node.nil?
-          return nil unless @inner_node.respond_to?(:child_nodes)
+          return if @inner_node.nil?
+          return unless @inner_node.respond_to?(:child_nodes)
 
           children_array = @inner_node.child_nodes.compact
-          return nil if index >= children_array.size
+          return if index >= children_array.size
 
           Node.new(children_array[index], @source)
         end
@@ -497,17 +537,15 @@ module TreeHaver
         # @param name [String, Symbol] field/accessor name
         # @return [Node, nil] wrapped child node
         def child_by_field_name(name)
-          return nil if @inner_node.nil?
-          return nil unless @inner_node.respond_to?(name)
+          return if @inner_node.nil?
+          return unless @inner_node.respond_to?(name)
 
           result = @inner_node.public_send(name)
-          return nil if result.nil?
+          return if result.nil?
 
           # Wrap if it's a node, otherwise return nil
           if result.is_a?(::Prism::Node)
             Node.new(result, @source)
-          else
-            nil
           end
         end
 

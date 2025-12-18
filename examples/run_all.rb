@@ -32,6 +32,13 @@ EXAMPLES = [
   {file: "ffi_bash.rb", name: "Bash (FFI)", backend: "ffi", language: "Bash"},
   {file: "java_bash.rb", name: "Bash (Java)", backend: "java", language: "Bash"},
 
+  # TOML examples
+  {file: "auto_toml.rb", name: "TOML (Auto)", backend: "auto", language: "TOML"},
+  {file: "mri_toml.rb", name: "TOML (MRI)", backend: "mri", language: "TOML"},
+  {file: "rust_toml.rb", name: "TOML (Rust)", backend: "rust", language: "TOML"},
+  {file: "ffi_toml.rb", name: "TOML (FFI)", backend: "ffi", language: "TOML"},
+  {file: "java_toml.rb", name: "TOML (Java)", backend: "java", language: "TOML"},
+
   # Citrus examples
   {file: "citrus_toml.rb", name: "TOML (Citrus)", backend: "citrus", language: "TOML"},
   {file: "citrus_finitio.rb", name: "Finitio (Citrus)", backend: "citrus", language: "Finitio"},

@@ -137,12 +137,25 @@ module TreeHaver
     # @note Paths from ENV are validated using {PathValidator.safe_library_path?}
     #   to prevent path traversal and other attacks. Invalid ENV paths are ignored.
     #
+    # @note Setting the ENV variable to an empty string explicitly disables
+    #   this grammar. This allows fallback to alternative backends (e.g., Citrus).
+    #
     # @return [String, nil] the path to the library, or nil if not found
     # @see #find_library_path_safe For stricter validation (trusted directories only)
     def find_library_path
       # Check environment variable first (highest priority)
-      env_path = ENV[env_var_name]
-      if env_path
+      # Use key? to distinguish between "not set" and "set to empty"
+      if ENV.key?(env_var_name)
+        env_path = ENV[env_var_name]
+
+        # Empty string means "explicitly skip this grammar"
+        # This allows users to disable tree-sitter for specific languages
+        # and fall back to alternative backends like Citrus
+        if env_path.empty?
+          @env_rejection_reason = "explicitly disabled (set to empty string)"
+          return
+        end
+
         # Store why env path was rejected for better error messages
         @env_rejection_reason = validate_env_path(env_path)
         return env_path if @env_rejection_reason.nil?
@@ -188,11 +201,67 @@ module TreeHaver
       end
     end
 
-    # Check if the grammar library is available
+    # Check if the grammar library is available AND usable
     #
-    # @return [Boolean] true if the library can be found
+    # This checks:
+    # 1. The grammar library file exists
+    # 2. The tree-sitter runtime is functional (can create a parser)
+    #
+    # This prevents registering grammars when tree-sitter isn't actually usable,
+    # allowing clean fallback to alternative backends like Citrus.
+    #
+    # @return [Boolean] true if the library can be found AND tree-sitter runtime works
     def available?
-      !find_library_path.nil?
+      path = find_library_path
+      return false if path.nil?
+
+      # Check if tree-sitter runtime is actually functional
+      # This is cached at the class level since it's the same for all grammars
+      self.class.tree_sitter_runtime_usable?
+    end
+
+    # Backends that use tree-sitter (require native runtime libraries)
+    # Other backends (Citrus, Prism, Psych, etc.) don't use tree-sitter
+    TREE_SITTER_BACKENDS = [
+      TreeHaver::Backends::MRI,
+      TreeHaver::Backends::FFI,
+      TreeHaver::Backends::Rust,
+      TreeHaver::Backends::Java,
+    ].freeze
+
+    class << self
+      # Check if the tree-sitter runtime is usable
+      #
+      # Tests whether we can actually create a tree-sitter parser.
+      # Result is cached since this is expensive and won't change during runtime.
+      #
+      # @return [Boolean] true if tree-sitter runtime is functional
+      def tree_sitter_runtime_usable?
+        return @tree_sitter_runtime_usable if defined?(@tree_sitter_runtime_usable)
+
+        @tree_sitter_runtime_usable = begin
+          # Try to create a parser using the current backend
+          mod = TreeHaver.resolve_backend_module(nil)
+
+          # Only tree-sitter backends are relevant here
+          # Non-tree-sitter backends (Citrus, Prism, Psych, etc.) don't use grammar files
+          return false if mod.nil?
+          return false unless TREE_SITTER_BACKENDS.include?(mod)
+
+          # Try to instantiate a parser - this will fail if runtime isn't available
+          mod::Parser.new
+          true
+        rescue NoMethodError, FFI::NotFoundError, LoadError, NotAvailable => _e
+          false
+        end
+      end
+
+      # Reset the cached tree-sitter runtime check (for testing)
+      #
+      # @api private
+      def reset_runtime_check!
+        remove_instance_variable(:@tree_sitter_runtime_usable) if defined?(@tree_sitter_runtime_usable)
+      end
     end
 
     # Check if the grammar library is available in a trusted directory

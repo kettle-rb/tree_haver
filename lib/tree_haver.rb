@@ -844,7 +844,8 @@ module TreeHaver
               "Registered backends: #{all_backends.keys.inspect}"
         end
 
-        # For tree-sitter backends, use the path
+        # For tree-sitter backends, try to load from path
+        # If that fails, fall back to Citrus if available
         if reg && reg[:path]
           path = kwargs[:path] || args.first || reg[:path]
           # Symbol priority: kwargs override > registration > derive from method_name
@@ -859,7 +860,30 @@ module TreeHaver
           # Using symbol-derived name ensures ruby_tree_sitter gets the correct language name
           # e.g., "toml" not "toml_both" when symbol is "tree_sitter_toml"
           name = kwargs[:name] || symbol&.sub(/\Atree_sitter_/, "")
-          return from_library(path, symbol: symbol, name: name)
+
+          begin
+            return from_library(path, symbol: symbol, name: name)
+          rescue NotAvailable, ArgumentError, LoadError, FFI::NotFoundError => _e
+            # Tree-sitter failed to load - check for Citrus fallback
+            # This handles cases where:
+            # - The .so file doesn't exist or can't be loaded (NotAvailable, LoadError)
+            # - FFI can't find required symbols like ts_parser_new (FFI::NotFoundError)
+            # - Invalid arguments were provided (ArgumentError)
+            citrus_reg = all_backends[:citrus]
+            if citrus_reg && citrus_reg[:grammar_module]
+              return Backends::Citrus::Language.new(citrus_reg[:grammar_module])
+            end
+            # No Citrus fallback available, re-raise the original error
+            raise
+          end
+        end
+
+        # No tree-sitter path registered - check for Citrus fallback
+        # This enables auto-fallback when tree-sitter grammar is not installed
+        # but a Citrus grammar (pure Ruby) is available
+        citrus_reg = all_backends[:citrus]
+        if citrus_reg && citrus_reg[:grammar_module]
+          return Backends::Citrus::Language.new(citrus_reg[:grammar_module])
         end
 
         # No appropriate registration found
@@ -930,8 +954,28 @@ module TreeHaver
         end
       end
 
-      @impl = mod::Parser.new
-      @explicit_backend = backend  # Remember for introspection (always a Symbol or nil)
+      # Try to create the parser, with fallback to Citrus if tree-sitter fails
+      # This enables auto-fallback when tree-sitter runtime isn't available
+      begin
+        @impl = mod::Parser.new
+        @explicit_backend = backend  # Remember for introspection (always a Symbol or nil)
+      rescue NoMethodError, FFI::NotFoundError, LoadError => e
+        # Tree-sitter backend failed (likely missing runtime library)
+        # Try Citrus as fallback if we weren't explicitly asked for a specific backend
+        if backend.nil? || backend == :auto
+          if Backends::Citrus.available?
+            @impl = Backends::Citrus::Parser.new
+            @explicit_backend = :citrus
+          else
+            # No fallback available, re-raise original error
+            raise NotAvailable, "Tree-sitter backend failed: #{e.message}. " \
+              "Citrus fallback not available. Install tree-sitter runtime or citrus gem."
+          end
+        else
+          # Explicit backend was requested, don't fallback
+          raise
+        end
+      end
     end
 
     # Get the backend this parser is using (for introspection)
@@ -969,6 +1013,17 @@ module TreeHaver
     # @example
     #   parser.language = TreeHaver::Language.from_library("/path/to/grammar.so")
     def language=(lang)
+      # Check if this is a Citrus language - if so, we need a Citrus parser
+      # This enables automatic backend switching when tree-sitter fails and
+      # falls back to Citrus
+      if lang.is_a?(Backends::Citrus::Language)
+        unless @impl.is_a?(Backends::Citrus::Parser)
+          # Switch to Citrus parser to match the Citrus language
+          @impl = Backends::Citrus::Parser.new
+          @explicit_backend = :citrus
+        end
+      end
+
       # Unwrap the language before passing to backend
       # Backends receive raw language objects, never TreeHaver wrappers
       inner_lang = unwrap_language(lang)

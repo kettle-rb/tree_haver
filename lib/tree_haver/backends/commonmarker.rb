@@ -94,12 +94,14 @@ module TreeHaver
           @options = options
         end
 
-        # Create a Markdown language instance
-        #
-        # @param options [Hash] Commonmarker parse options
-        # @return [Language] Markdown language
-        def self.markdown(options: {})
-          new(:markdown, options: options)
+        class << self
+          # Create a Markdown language instance
+          #
+          # @param options [Hash] Commonmarker parse options
+          # @return [Language] Markdown language
+          def markdown(options: {})
+            new(:markdown, options: options)
+          end
         end
 
         # Comparison for sorting/equality
@@ -234,31 +236,112 @@ module TreeHaver
         end
 
         # Position information
-        # Commonmarker provides sourcepos as [start_line, start_col, end_line, end_col]
+        # Commonmarker 2.x provides source_position as a hash with start_line, start_column, end_line, end_column
 
         def start_byte
-          # Approximate from line/column
-          pos = @inner_node.sourcepos rescue nil
-          return 0 unless pos
-          calculate_byte_offset(pos[0] - 1, pos[1] - 1)
+          sp = start_point
+          calculate_byte_offset(sp.row, sp.column)
         end
 
         def end_byte
-          pos = @inner_node.sourcepos rescue nil
-          return start_byte unless pos
-          calculate_byte_offset(pos[2] - 1, pos[3] - 1)
+          ep = end_point
+          calculate_byte_offset(ep.row, ep.column)
         end
 
         def start_point
-          pos = @inner_node.sourcepos rescue nil
+          if @inner_node.respond_to?(:source_position)
+            pos = begin
+              @inner_node.source_position
+            rescue
+              nil
+            end
+            if pos && pos[:start_line]
+              return Point.new(pos[:start_line] - 1, (pos[:start_column] || 1) - 1)
+            end
+          end
+          pos = begin
+            @inner_node.sourcepos
+          rescue
+            nil
+          end
           return Point.new(0, 0) unless pos
-          Point.new(pos[0] - 1, pos[1] - 1)  # Convert to 0-based
+          Point.new(pos[0] - 1, pos[1] - 1)
         end
 
         def end_point
-          pos = @inner_node.sourcepos rescue nil
+          if @inner_node.respond_to?(:source_position)
+            pos = begin
+              @inner_node.source_position
+            rescue
+              nil
+            end
+            if pos && pos[:end_line]
+              return Point.new(pos[:end_line] - 1, (pos[:end_column] || 1) - 1)
+            end
+          end
+          pos = begin
+            @inner_node.sourcepos
+          rescue
+            nil
+          end
           return Point.new(0, 0) unless pos
-          Point.new(pos[2] - 1, pos[3] - 1)  # Convert to 0-based
+          Point.new(pos[2] - 1, pos[3] - 1)
+        end
+
+        def start_line
+          if @inner_node.respond_to?(:source_position)
+            pos = begin
+              @inner_node.source_position
+            rescue
+              nil
+            end
+            return pos[:start_line] if pos && pos[:start_line]
+          end
+          pos = begin
+            @inner_node.sourcepos
+          rescue
+            nil
+          end
+          pos ? pos[0] : 1
+        end
+
+        def end_line
+          if @inner_node.respond_to?(:source_position)
+            pos = begin
+              @inner_node.source_position
+            rescue
+              nil
+            end
+            return pos[:end_line] if pos && pos[:end_line]
+          end
+          pos = begin
+            @inner_node.sourcepos
+          rescue
+            nil
+          end
+          pos ? pos[2] : 1
+        end
+
+        # Get position information as a hash
+        #
+        # Returns a hash with 1-based line numbers and 0-based columns.
+        # Compatible with *-merge gems' FileAnalysisBase.
+        #
+        # @return [Hash{Symbol => Integer}] Position hash
+        def source_position
+          {
+            start_line: start_line,
+            end_line: end_line,
+            start_column: start_point.column,
+            end_column: end_point.column,
+          }
+        end
+
+        # Get the first child node
+        #
+        # @return [Node, nil] First child or nil
+        def first_child
+          children.first
         end
 
         def named?
@@ -292,46 +375,70 @@ module TreeHaver
         # @return [Integer, nil]
         def header_level
           return unless type == "heading"
-          @inner_node.header_level rescue nil
+          begin
+            @inner_node.header_level
+          rescue
+            nil
+          end
         end
 
         # Get fence info for code blocks
         # @return [String, nil]
         def fence_info
           return unless type == "code_block"
-          @inner_node.fence_info rescue nil
+          begin
+            @inner_node.fence_info
+          rescue
+            nil
+          end
         end
 
         # Get URL for links/images
         # @return [String, nil]
         def url
-          @inner_node.url rescue nil
+          @inner_node.url
+        rescue
+          nil
         end
 
         # Get title for links/images
         # @return [String, nil]
         def title
-          @inner_node.title rescue nil
+          @inner_node.title
+        rescue
+          nil
         end
 
         # Get the next sibling
         # @return [Node, nil]
         def next_sibling
-          sibling = @inner_node.next_sibling rescue nil
+          sibling = begin
+            @inner_node.next_sibling
+          rescue
+            nil
+          end
           sibling ? Node.new(sibling, @source, @lines) : nil
         end
 
         # Get the previous sibling
         # @return [Node, nil]
         def previous_sibling
-          sibling = @inner_node.previous_sibling rescue nil
+          sibling = begin
+            @inner_node.previous_sibling
+          rescue
+            nil
+          end
           sibling ? Node.new(sibling, @source, @lines) : nil
         end
 
         # Get the parent node
         # @return [Node, nil]
         def parent
-          p = @inner_node.parent rescue nil
+          p = begin
+            @inner_node.parent
+          rescue
+            nil
+          end
           p ? Node.new(p, @source, @lines) : nil
         end
 
@@ -375,4 +482,3 @@ module TreeHaver
     end
   end
 end
-

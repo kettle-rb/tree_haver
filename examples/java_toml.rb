@@ -1,16 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Example: MRI Backend with TOML
+# Example: Java Backend with TOML
 #
-# Forces the MRI backend (ruby_tree_sitter gem).
-# Requires MRI Ruby with native C extension support.
+# Forces the Java backend (JRuby only).
+# Uses java-tree-sitter JAR for native Java bindings.
 
 # Check Ruby implementation
-unless RUBY_ENGINE == "ruby"
-  puts "⚠️  MRI backend requires MRI Ruby (CRuby)"
+unless RUBY_ENGINE == "jruby"
+  puts "⚠️  Java backend requires JRuby"
   puts "Current Ruby: #{RUBY_ENGINE} #{RUBY_VERSION}"
-  puts "Run with MRI Ruby"
+  puts "Run with: jruby #{__FILE__}"
   exit 1
 end
 
@@ -19,13 +19,12 @@ require "bundler/inline"
 gemfile do
   source "https://rubygems.org"
   gem "tree_haver", path: File.expand_path("..", __dir__)
-  gem "ruby_tree_sitter"
 end
 
 require "tree_haver"
 
 puts "=" * 70
-puts "TreeHaver MRI Backend - TOML Parsing"
+puts "TreeHaver Java Backend - TOML Parsing"
 puts "=" * 70
 puts
 
@@ -35,8 +34,8 @@ toml_source = <<~TOML
   version = "3.0.0"
   
   [features]
-  mri_backend = true
-  native = true
+  java_backend = true
+  jruby = true
 TOML
 
 puts "TOML Source:"
@@ -56,8 +55,8 @@ else
   exit 1
 end
 
-# Force MRI backend
-TreeHaver.backend = :mri
+# Force Java backend
+TreeHaver.backend = :java
 puts "Backend: #{TreeHaver.backend_module}"
 puts "Capabilities: #{TreeHaver.capabilities.inspect}"
 puts "Ruby Engine: #{RUBY_ENGINE}"
@@ -80,9 +79,9 @@ end
 puts
 
 puts "=" * 70
-puts "MRI Backend:"
-puts "  - Uses ruby_tree_sitter gem (C extension)"
-puts "  - Fastest performance (native)"
-puts "  - MRI only (C extension)"
-puts "  - Requires tree-sitter development headers"
+puts "Java Backend:"
+puts "  - Uses java-tree-sitter JAR"
+puts "  - JRuby only"
+puts "  - Native Java performance"
+puts "  - Requires TREE_SITTER_JAVA_JARS_DIR env var"
 puts "=" * 70
