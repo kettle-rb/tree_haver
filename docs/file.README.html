@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><p>#&lt;–rubocop/md–&gt;| 📍 NOTE                                                                                                                                                                                                       |<br>
+#&lt;–rubocop/md–&gt;|—————————————————————————————————————————————————————————————————————|<br>
+#&lt;–rubocop/md–&gt;| RubyGems (the [GitHub org][rubygems-org], not the website) [suffered][draper-security] a [hostile takeover][ellen-takeover] in September 2025.                                                                |<br>
+#&lt;–rubocop/md–&gt;| Ultimately [4 maintainers][simi-removed] were [hard removed][martin-removed] and a reason has been given for only 1 of those, while 2 others resigned in protest.                                             |<br>
+#&lt;–rubocop/md–&gt;| It is a [complicated story][draper-takeover] which is difficult to [parse quickly][draper-lies].                                                                                                              |<br>
+#&lt;–rubocop/md–&gt;| Simply put - there was active policy for adding or removing maintainers/owners of [rubygems][rubygems-maint-policy] and [bundler][bundler-maint-policy], and those [policies were not followed][policy-fail]. |<br>
+#&lt;–rubocop/md–&gt;| I’m adding notes like this to gems because I [don’t condone theft][draper-theft] of repositories or gems from their rightful owners.                                                                          |<br>
+#&lt;–rubocop/md–&gt;| If a similar theft happened with my repos/gems, I’d hope some would stand up for me.                                                                                                                          |<br>
+#&lt;–rubocop/md–&gt;| Disenfranchised former-maintainers have started [gem.coop][gem-coop].                                                                                                                                         |<br>
+#&lt;–rubocop/md–&gt;| Once available I will publish there exclusively; unless RubyCentral makes amends with the community.                                                                                                          |<br>
+#&lt;–rubocop/md–&gt;| The [“Technology for Humans: Joel Draper”][reinteractive-podcast] podcast episode by [reinteractive][reinteractive] is the most cogent summary I’m aware of.                                                  |<br>
+#&lt;–rubocop/md–&gt;| See [here][gem-naming], [here][gem-coop] and [here][martin-ann] for more info on what comes next.                                                                                                             |<br>
+#&lt;–rubocop/md–&gt;| What I’m doing: A (WIP) proposal for [bundler/gem scopes][gem-scopes], and a (WIP) proposal for a federated [gem server][gem-server].                                                                         |<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;[rubygems-org]: https://github.com/rubygems/<br>
+#&lt;–rubocop/md–&gt;[draper-security]: https://joel.drapper.me/p/ruby-central-security-measures/<br>
+#&lt;–rubocop/md–&gt;[draper-takeover]: https://joel.drapper.me/p/ruby-central-takeover/<br>
+#&lt;–rubocop/md–&gt;[ellen-takeover]: https://pup-e.com/blog/goodbye-rubygems/<br>
+#&lt;–rubocop/md–&gt;[simi-removed]: https://www.reddit.com/r/ruby/s/gOk42POCaV<br>
+#&lt;–rubocop/md–&gt;[martin-removed]: https://bsky.app/profile/martinemde.com/post/3m3occezxxs2q<br>
+#&lt;–rubocop/md–&gt;[draper-lies]: https://joel.drapper.me/p/ruby-central-fact-check/<br>
+#&lt;–rubocop/md–&gt;[draper-theft]: https://joel.drapper.me/p/ruby-central/<br>
+#&lt;–rubocop/md–&gt;[reinteractive]: https://reinteractive.com/ruby-on-rails<br>
+#&lt;–rubocop/md–&gt;[gem-coop]: https://gem.coop<br>
+#&lt;–rubocop/md–&gt;[gem-naming]: https://github.com/gem-coop/gem.coop/issues/12<br>
+#&lt;–rubocop/md–&gt;[martin-ann]: https://martinemde.com/2025/10/05/announcing-gem-coop.html<br>
+#&lt;–rubocop/md–&gt;[gem-scopes]: https://github.com/galtzo-floss/bundle-namespace<br>
+#&lt;–rubocop/md–&gt;[gem-server]: https://github.com/galtzo-floss/gem-server<br>
+#&lt;–rubocop/md–&gt;[reinteractive-podcast]: https://youtu.be/_H4qbtC5qzU?si=BvuBU90R2wAqD2E6<br>
+#&lt;–rubocop/md–&gt;[bundler-maint-policy]: https://github.com/ruby/rubygems/blob/b1ab33a3d52310a84d16b193991af07f5a6a07c0/doc/bundler/playbooks/TEAM_CHANGES.md<br>
+#&lt;–rubocop/md–&gt;[rubygems-maint-policy]: https://github.com/ruby/rubygems/blob/b1ab33a3d52310a84d16b193991af07f5a6a07c0/doc/rubygems/POLICIES.md?plain=1#L187-L196<br>
+#&lt;–rubocop/md–&gt;[policy-fail]: https://www.reddit.com/r/ruby/comments/1ove9vp/rubycentral_hates_this_one_fact/<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;[![Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0][🖼️galtzo-i]][🖼️galtzo-discord] [![ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5][🖼️ruby-lang-i]][🖼️ruby-lang] [![kettle-rb Logo by Aboling0, CC BY-SA 4.0][🖼️kettle-rb-i]][🖼️kettle-rb]<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;[🖼️galtzo-i]: https://logos.galtzo.com/assets/images/galtzo-floss/avatar-192px.svg<br>
+#&lt;–rubocop/md–&gt;[🖼️galtzo-discord]: https://discord.gg/3qme4XHNKN<br>
+#&lt;–rubocop/md–&gt;[🖼️ruby-lang-i]: https://logos.galtzo.com/assets/images/ruby-lang/avatar-192px.svg<br>
+#&lt;–rubocop/md–&gt;[🖼️ruby-lang]: https://www.ruby-lang.org/<br>
+#&lt;–rubocop/md–&gt;[🖼️kettle-rb-i]: https://logos.galtzo.com/assets/images/kettle-rb/avatar-192px.svg<br>
+#&lt;–rubocop/md–&gt;[🖼️kettle-rb]: https://github.com/kettle-rb<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;# 🌴 TreeHaver<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;[![Version][👽versioni]][👽version] [![GitHub tag (latest SemVer)][⛳️tag-img]][⛳️tag] [![License: MIT][📄license-img]][📄license-ref] [![Downloads Rank][👽dl-ranki]][👽dl-rank] [![Open Source Helpers][👽oss-helpi]][👽oss-help] [![CodeCov Test Coverage][🏀codecovi]][🏀codecov] [![Coveralls Test Coverage][🏀coveralls-img]][🏀coveralls] [![QLTY Test Coverage][🏀qlty-covi]][🏀qlty-cov] [![QLTY Maintainability][🏀qlty-mnti]][🏀qlty-mnt] [![CI Heads][🚎3-hd-wfi]][🚎3-hd-wf] [![CI Runtime Dependencies @ HEAD][🚎12-crh-wfi]][🚎12-crh-wf] [![CI Current][🚎11-c-wfi]][🚎11-c-wf] [![CI Truffle Ruby][🚎9-t-wfi]][🚎9-t-wf] [![Deps Locked][🚎13-🔒️-wfi]][🚎13-🔒️-wf] [![Deps Unlocked][🚎14-🔓️-wfi]][🚎14-🔓️-wf] [![CI Supported][🚎6-s-wfi]][🚎6-s-wf] [![CI Test Coverage][🚎2-cov-wfi]][🚎2-cov-wf] [![CI Style][🚎5-st-wfi]][🚎5-st-wf] [![CodeQL][🖐codeQL-img]][🖐codeQL] [![Apache SkyWalking Eyes License Compatibility Check][🚎15-🪪-wfi]][🚎15-🪪-wf]<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;<code>if ci_badges.map(&amp;:color).detect { it != "green"}</code> ☝️ [let me know][🖼️galtzo-discord], as I may have missed the [discord notification][🖼️galtzo-discord].<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;—<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;<code>if ci_badges.map(&amp;:color).all? { it == "green"}</code> 👇️ send money so I can do more of this. FLOSS maintenance is now my full-time job.<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;[![OpenCollective Backers][🖇osc-backers-i]][🖇osc-backers] [![OpenCollective Sponsors][🖇osc-sponsors-i]][🖇osc-sponsors] [![Sponsor Me on Github][🖇sponsor-img]][🖇sponsor] [![Liberapay Goal Progress][⛳liberapay-img]][⛳liberapay] [![Donate on PayPal][🖇paypal-img]][🖇paypal] [![Buy me a coffee][🖇buyme-small-img]][🖇buyme] [![Donate on Polar][🖇polar-img]][🖇polar] [![Donate at ko-fi.com][🖇kofi-img]][🖇kofi]<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;## 🌻 Synopsis<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;TreeHaver is a cross-Ruby adapter for the <a href="https://tree-sitter.github.io/tree-sitter/">tree-sitter</a> and <a href="https://github.com/mjackson/citrus">Citrus</a> parsing libraries and other dedicated parsing tools that works seamlessly across MRI Ruby, JRuby, and TruffleRuby. It provides a unified API for parsing source code using grammars, regardless of your Ruby implementation.<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;### The Adapter Pattern: Like Faraday, but for Parsing<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;If you’ve used <a href="https://github.com/lostisland/faraday">Faraday</a>, <a href="https://github.com/intridea/multi_json">multi_json</a>, or <a href="https://github.com/sferik/multi_xml">multi_xml</a>, you’ll feel right at home with TreeHaver. These gems share a common philosophy:<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;| Gem            | Unified API for     | Backend Examples                                                           |<br>
+#&lt;–rubocop/md–&gt;|—————-|———————|—————————————————————————-|<br>
+#&lt;–rubocop/md–&gt;| <strong>Faraday</strong>    | HTTP requests       | Net::HTTP, Typhoeus, Patron, Excon                                         |<br>
+#&lt;–rubocop/md–&gt;| <strong>multi_json</strong> | JSON parsing        | Oj, Yajl, JSON gem                                                         |<br>
+#&lt;–rubocop/md–&gt;| <strong>multi_xml</strong>  | XML parsing         | Nokogiri, LibXML, Ox                                                 |<br>
+#&lt;–rubocop/md–&gt;| <strong>TreeHaver</strong>  | Code parsing        | MRI, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus (&amp;) |<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;<strong>Write once, run anywhere.</strong><br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;<strong>Learn once, write anywhere.</strong><br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;Just as Faraday lets you swap HTTP adapters without changing your code, TreeHaver lets you swap tree-sitter backends. Your parsing code remains the same whether you’re running on MRI with native C extensions, JRuby with FFI, or TruffleRuby.<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;```ruby</p>
+<h1 id="your-code-stays-the-same-regardless-of-backend">Your code stays the same regardless of backend</h1>
+<p>parser = TreeHaver::Parser.new<br>
+parser.language = TreeHaver::Language.from_library(“/path/to/grammar.so”)<br>
+tree = parser.parse(source_code)</p>
+
+<h1 id="treehaver-automatically-picks-the-best-backend">TreeHaver automatically picks the best backend:</h1>
+<h1 id="--mri--ruby_tree_sitter-c-extensions">- MRI → ruby_tree_sitter (C extensions)</h1>
+<h1 id="--jruby--ffi-systems-libtree-sitter">- JRuby → FFI (system’s libtree-sitter)</h1>
+<h1 id="--truffleruby--ffi-or-mri-backend">- TruffleRuby → FFI or MRI backend</h1>
+<p>#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Key Features
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- **Universal Ruby Support**: Works on MRI Ruby, JRuby, and TruffleRuby
+#&lt;--rubocop/md--&gt;- **10 Parsing Backends** - Choose the right backend for your needs:
+#&lt;--rubocop/md--&gt;  - **Tree-sitter Backends** (high-performance, incremental parsing):
+#&lt;--rubocop/md--&gt;    - **MRI Backend**: Leverages [`ruby_tree_sitter`](https://github.com/Faveod/ruby-tree-sitter) gem (C extension, fastest on MRI)
+#&lt;--rubocop/md--&gt;    - **Rust Backend**: Uses [`tree_stump`](https://github.com/anthropics/tree_stump) gem (Rust with precompiled binaries)
+#&lt;--rubocop/md--&gt;      - **Note**: Currently requires [pboling's fork](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13](https://github.com/joker1007/tree_stump/pull/13) are merged
+#&lt;--rubocop/md--&gt;    - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby, TruffleRuby)
+#&lt;--rubocop/md--&gt;    - **Java Backend**: Native Java integration for JRuby with java-tree-sitter grammar JARs
+#&lt;--rubocop/md--&gt;  - **Language-Specific Backends** (native parser integration):
+#&lt;--rubocop/md--&gt;    - **Prism Backend**: Ruby's official parser ([Prism](https://github.com/ruby/prism), stdlib in Ruby 3.4+)
+#&lt;--rubocop/md--&gt;    - **Psych Backend**: Ruby's YAML parser ([Psych](https://github.com/ruby/psych), stdlib)
+#&lt;--rubocop/md--&gt;    - **Commonmarker Backend**: Fast Markdown parser ([Commonmarker](https://github.com/gjtorikian/commonmarker), comrak Rust)
+#&lt;--rubocop/md--&gt;    - **Markly Backend**: GitHub Flavored Markdown ([Markly](https://github.com/ioquatix/markly), cmark-gfm C)
+#&lt;--rubocop/md--&gt;  - **Pure Ruby Fallback**:
+#&lt;--rubocop/md--&gt;    - **Citrus Backend**: Pure Ruby parsing via [`citrus`](https://github.com/mjackson/citrus) (no native dependencies)
+#&lt;--rubocop/md--&gt;- **Automatic Backend Selection**: Intelligently selects the best backend for your Ruby implementation
+#&lt;--rubocop/md--&gt;- **Language Agnostic**: Parse any language - Ruby, Markdown, YAML, JSON, Bash, TOML, JavaScript, etc.
+#&lt;--rubocop/md--&gt;- **Grammar Discovery**: Built-in `GrammarFinder` utility for platform-aware grammar library discovery
+#&lt;--rubocop/md--&gt;- **Unified Position API**: Consistent `start_line`, `end_line`, `source_position` across all backends
+#&lt;--rubocop/md--&gt;- **Thread-Safe**: Built-in language registry with thread-safe caching
+#&lt;--rubocop/md--&gt;- **Minimal API Surface**: Simple, focused API that covers the most common use cases
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Backend Requirements
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver has minimal dependencies and automatically selects the best backend for your Ruby implementation. Each backend has specific version requirements:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### MRI Backend (ruby_tree_sitter, C extensions)
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Requires `ruby_tree_sitter` v2.0+**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;In ruby_tree_sitter v2.0, all TreeSitter exceptions were changed to inherit from `Exception` (not `StandardError`). This was an intentional breaking change made for thread-safety and signal handling reasons.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Exception Mapping**: TreeHaver catches `TreeSitter::TreeSitterError` and its subclasses, converting them to `TreeHaver::NotAvailable` while preserving the original error message. This provides a consistent exception API across all backends:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;| ruby_tree_sitter Exception          | TreeHaver Exception        | When It Occurs                                 |
+#&lt;--rubocop/md--&gt;|-------------------------------------|----------------------------|------------------------------------------------|
+#&lt;--rubocop/md--&gt;| `TreeSitter::ParserNotFoundError`   | `TreeHaver::NotAvailable`  | Parser library file cannot be loaded           |
+#&lt;--rubocop/md--&gt;| `TreeSitter::LanguageLoadError`     | `TreeHaver::NotAvailable`  | Language symbol loads but returns nothing      |
+#&lt;--rubocop/md--&gt;| `TreeSitter::SymbolNotFoundError`   | `TreeHaver::NotAvailable`  | Symbol not found in library                    |
+#&lt;--rubocop/md--&gt;| `TreeSitter::ParserVersionError`    | `TreeHaver::NotAvailable`  | Parser version incompatible with tree-sitter   |
+#&lt;--rubocop/md--&gt;| `TreeSitter::QueryCreationError`    | `TreeHaver::NotAvailable`  | Query creation fails                           |
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="add-to-your-gemfile-for-mri-backend">Add to your Gemfile for MRI backend</h1>
+<p>gem “ruby_tree_sitter”, “~&gt; 2.0”<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Rust Backend (tree_stump)
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Currently requires [pboling's fork](https://github.com/pboling/tree_stump/tree/tree_haver) until upstream PRs are merged.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="add-to-your-gemfile-for-rust-backend">Add to your Gemfile for Rust backend</h1>
+<p>gem “tree_stump”, github: “pboling/tree_stump”, branch: “tree_haver”<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### FFI Backend
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Requires the `ffi` gem and a system installation of `libtree-sitter`:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="add-to-your-gemfile-for-ffi-backend">Add to your Gemfile for FFI backend</h1>
+<p>gem “ffi”, “&gt;= 1.15”, “&lt; 2.0”<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>bash<br>
+#&lt;–rubocop/md–&gt;# Install libtree-sitter on your system:<br>
+#&lt;–rubocop/md–&gt;# macOS<br>
+#&lt;–rubocop/md–&gt;brew install tree-sitter<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;# Ubuntu/Debian<br>
+#&lt;–rubocop/md–&gt;apt-get install libtree-sitter0 libtree-sitter-dev<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;# Fedora<br>
+#&lt;–rubocop/md–&gt;dnf install tree-sitter tree-sitter-devel<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Citrus Backend
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Pure Ruby parser with no native dependencies:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="add-to-your-gemfile-for-citrus-backend">Add to your Gemfile for Citrus backend</h1>
+<p>gem “citrus”, “~&gt; 3.0”<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Java Backend (JRuby only)
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;No additional dependencies required beyond grammar JARs built for java-tree-sitter.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Why TreeHaver?
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;tree-sitter is a powerful parser generator that creates incremental parsers for many programming languages. However, integrating it into Ruby applications can be challenging:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- MRI-based C extensions don't work on JRuby
+#&lt;--rubocop/md--&gt;- FFI-based solutions may not be optimal for MRI
+#&lt;--rubocop/md--&gt;- Managing different backends for different Ruby implementations is cumbersome
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver solves these problems by providing a unified API that automatically selects the appropriate backend for your Ruby implementation, allowing you to write code once and run it anywhere.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Comparison with Other Ruby AST / Parser Bindings
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;| Feature                   | [tree_haver] (this gem)                | [ruby_tree_sitter] | [tree_stump]   | [citrus]    |
+#&lt;--rubocop/md--&gt;|---------------------------|----------------------------------------|--------------------|----------------|-------------|
+#&lt;--rubocop/md--&gt;| **MRI Ruby**              | ✅ Yes                                  | ✅ Yes              | ✅ Yes          | ✅ Yes       |
+#&lt;--rubocop/md--&gt;| **JRuby**                 | ✅ Yes (FFI, Java, or Citrus backend)   | ❌ No               | ❌ No           | ✅ Yes       |
+#&lt;--rubocop/md--&gt;| **TruffleRuby**           | ✅ Yes (FFI or Citrus)                  | ❌ No               | ❓ Unknown      | ✅ Yes       |
+#&lt;--rubocop/md--&gt;| **Backend**               | Multi (MRI C, Rust, FFI, Java, Citrus) | C extension only   | Rust extension | Pure Ruby   |
+#&lt;--rubocop/md--&gt;| **Incremental Parsing**   | ✅ Via MRI C/Rust/Java backend          | ✅ Yes              | ✅ Yes          | ❌ No        |
+#&lt;--rubocop/md--&gt;| **Query API**             | ⚡ Via MRI/Rust/Java backend            | ✅ Yes              | ✅ Yes          | ❌ No        |
+#&lt;--rubocop/md--&gt;| **Grammar Discovery**     | ✅ Built-in `GrammarFinder`             | ❌ Manual           | ❌ Manual       | ❌ Manual    |
+#&lt;--rubocop/md--&gt;| **Security Validations**  | ✅ `PathValidator`                      | ❌ No               | ❌ No           | ❌ No        |
+#&lt;--rubocop/md--&gt;| **Language Registration** | ✅ Thread-safe registry                 | ❌ No               | ❌ No           | ❌ No        |
+#&lt;--rubocop/md--&gt;| **Native Performance**    | ⚡ Backend-dependent                    | ✅ Native C         | ✅ Native Rust  | ❌ Pure Ruby |
+#&lt;--rubocop/md--&gt;| **Precompiled Binaries**  | ⚡ Via Rust backend                     | ✅ Yes              | ✅ Yes          | ✅ Pure Ruby |
+#&lt;--rubocop/md--&gt;| **Zero Native Deps**      | ⚡ Via Citrus backend                   | ❌ No               | ❌ No           | ✅ Yes       |
+#&lt;--rubocop/md--&gt;| **Minimum Ruby**          | 3.2+                                   | 3.0+               | 3.1+           | 0+          |
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;[ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
+#&lt;--rubocop/md--&gt;[tree_stump]: https://github.com/anthropics/tree_stump
+#&lt;--rubocop/md--&gt;[citrus]: https://github.com/mjackson/citrus
+#&lt;--rubocop/md--&gt;[tree_haver]: https://github.com/kettle-rb/tree_haver
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Note:** Java backend works with grammar JARs built specifically for java-tree-sitter, or grammar .so files that statically link tree-sitter. This is why FFI is recommended for JRuby &amp; TruffleRuby.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Note:** TreeHaver can use `ruby_tree_sitter` (MRI) or `tree_stump` (MRI, JRuby?) as backends, or `jruby-tree-sitter` (JRuby), giving you TreeHaver's unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Note:** `tree_stump` currently requires [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until upstream PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13](https://github.com/joker1007/tree_stump/pull/13) are merged.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### When to Use Each
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Choose TreeHaver when:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- You need JRuby or TruffleRuby support
+#&lt;--rubocop/md--&gt;- You're building a library that should work across Ruby implementations
+#&lt;--rubocop/md--&gt;- You want automatic grammar discovery and security validations
+#&lt;--rubocop/md--&gt;- You want flexibility to switch backends without code changes
+#&lt;--rubocop/md--&gt;- You need incremental parsing with a unified API
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Choose ruby_tree_sitter directly when:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- You only target MRI Ruby
+#&lt;--rubocop/md--&gt;- You need the full Query API without abstraction
+#&lt;--rubocop/md--&gt;- You want the most battle-tested C bindings
+#&lt;--rubocop/md--&gt;- You don't need TreeHaver's grammar discovery
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Choose tree_stump directly when:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- You only target MRI Ruby
+#&lt;--rubocop/md--&gt;- You prefer Rust-based native extensions
+#&lt;--rubocop/md--&gt;- You want precompiled binaries without system dependencies
+#&lt;--rubocop/md--&gt;- You don't need TreeHaver's grammar discovery
+#&lt;--rubocop/md--&gt;- **Note:** Use [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), [#13](https://github.com/joker1007/tree_stump/pull/13) are merged
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Choose citrus directly when:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- You need zero native dependencies (pure Ruby)
+#&lt;--rubocop/md--&gt;- You're using a Citrus grammar (not tree-sitter grammars)
+#&lt;--rubocop/md--&gt;- Performance is less critical than portability
+#&lt;--rubocop/md--&gt;- You don't need TreeHaver's unified API
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;## 💡 Info you can shake a stick at
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;| Tokens to Remember      | [![Gem name][⛳️name-img]][⛳️gem-name] [![Gem namespace][⛳️namespace-img]][⛳️gem-namespace]                                                                                                                                                                                                                                                                    |
+#&lt;--rubocop/md--&gt;| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+#&lt;--rubocop/md--&gt;| Works with JRuby        | [![JRuby 10.0 Compat][💎jruby-c-i]][🚎11-c-wf] [![JRuby HEAD Compat][💎jruby-headi]][🚎3-hd-wf]                                                                                                                                                                                                                                                                   |
+#&lt;--rubocop/md--&gt;| Works with Truffle Ruby | [![Truffle Ruby 23.1 Compat][💎truby-23.1i]][🚎9-t-wf] [![Truffle Ruby 24.1 Compat][💎truby-c-i]][🚎11-c-wf]                                                                                                                                                                                                                                                      |
+#&lt;--rubocop/md--&gt;| Works with MRI Ruby 3   | [![Ruby 3.2 Compat][💎ruby-3.2i]][🚎6-s-wf] [![Ruby 3.3 Compat][💎ruby-3.3i]][🚎6-s-wf] [![Ruby 3.4 Compat][💎ruby-c-i]][🚎11-c-wf] [![Ruby HEAD Compat][💎ruby-headi]][🚎3-hd-wf]                                                                                                                                                                                |
+#&lt;--rubocop/md--&gt;| Support &amp; Community     | [![Join Me on Daily.dev's RubyFriends][✉️ruby-friends-img]][✉️ruby-friends] [![Live Chat on Discord][✉️discord-invite-img-ftb]][✉️discord-invite] [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]][👨🏼‍🏫expsup-upwork] [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]][👨🏼‍🏫expsup-codementor]                                                         |
+#&lt;--rubocop/md--&gt;| Source                  | [![Source on GitLab.com][📜src-gl-img]][📜src-gl] [![Source on CodeBerg.org][📜src-cb-img]][📜src-cb] [![Source on Github.com][📜src-gh-img]][📜src-gh] [![The best SHA: dQw4w9WgXcQ!][🧮kloc-img]][🧮kloc]                                                                                                                                                       |
+#&lt;--rubocop/md--&gt;| Documentation           | [![Current release on RubyDoc.info][📜docs-cr-rd-img]][🚎yard-current] [![YARD on Galtzo.com][📜docs-head-rd-img]][🚎yard-head] [![Maintainer Blog][🚂maint-blog-img]][🚂maint-blog] [![GitLab Wiki][📜gl-wiki-img]][📜gl-wiki] [![GitHub Wiki][📜gh-wiki-img]][📜gh-wiki]                                                                                        |
+#&lt;--rubocop/md--&gt;| Compliance              | [![License: MIT][📄license-img]][📄license-ref] [![Compatible with Apache Software Projects: Verified by SkyWalking Eyes][📄license-compat-img]][📄license-compat] [![📄ilo-declaration-img]][📄ilo-declaration] [![Security Policy][🔐security-img]][🔐security] [![Contributor Covenant 2.1][🪇conduct-img]][🪇conduct] [![SemVer 2.0.0][📌semver-img]][📌semver] |
+#&lt;--rubocop/md--&gt;| Style                   | [![Enforced Code Style Linter][💎rlts-img]][💎rlts] [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]][📗keep-changelog] [![Gitmoji Commits][📌gitmoji-img]][📌gitmoji] [![Compatibility appraised by: appraisal2][💎appraisal2-img]][💎appraisal2]                                                                                                                |
+#&lt;--rubocop/md--&gt;| Maintainer 🎖️           | [![Follow Me on LinkedIn][💖🖇linkedin-img]][💖🖇linkedin] [![Follow Me on Ruby.Social][💖🐘ruby-mast-img]][💖🐘ruby-mast] [![Follow Me on Bluesky][💖🦋bluesky-img]][💖🦋bluesky] [![Contact Maintainer][🚂maint-contact-img]][🚂maint-contact] [![My technical writing][💖💁🏼‍♂️devto-img]][💖💁🏼‍♂️devto]                                                                |
+#&lt;--rubocop/md--&gt;| `...` 💖                | [![Find Me on WellFound:][💖✌️wellfound-img]][💖✌️wellfound] [![Find Me on CrunchBase][💖💲crunchbase-img]][💖💲crunchbase] [![My LinkTree][💖🌳linktree-img]][💖🌳linktree] [![More About Me][💖💁🏼‍♂️aboutme-img]][💖💁🏼‍♂️aboutme] [🧊][💖🧊berg] [🐙][💖🐙hub] [🛖][💖🛖hut] [🧪][💖🧪lab]                                                                            |
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Compatibility
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Compatible with MRI Ruby 3.2.0+, and concordant releases of JRuby, and TruffleRuby.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;| 🚚 _Amazing_ test matrix was brought to you by | 🔎 appraisal2 🔎 and the color 💚 green 💚               |
+#&lt;--rubocop/md--&gt;| ---------------------------------------------- | -------------------------------------------------------- |
+#&lt;--rubocop/md--&gt;| 👟 Check it out!                               | ✨ [github.com/appraisal-rb/appraisal2][💎appraisal2] ✨ |
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Federated DVCS
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;details markdown="1"&gt;
+#&lt;--rubocop/md--&gt;  &lt;summary&gt;Find this repo on federated forges (Coming soon!)&lt;/summary&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;| Federated [DVCS][💎d-in-dvcs] Repository        | Status                                                                | Issues                    | PRs                      | Wiki                      | CI                       | Discussions                  |
+#&lt;--rubocop/md--&gt;| ----------------------------------------------- | --------------------------------------------------------------------- | ------------------------- | ------------------------ | ------------------------- | ------------------------ | ---------------------------- |
+#&lt;--rubocop/md--&gt;| 🧪 [kettle-rb/tree_haver on GitLab][📜src-gl]   | The Truth                                                             | [💚][🤝gl-issues]         | [💚][🤝gl-pulls]         | [💚][📜gl-wiki]           | 🐭 Tiny Matrix           | ➖                           |
+#&lt;--rubocop/md--&gt;| 🧊 [kettle-rb/tree_haver on CodeBerg][📜src-cb] | An Ethical Mirror ([Donate][🤝cb-donate])                             | [💚][🤝cb-issues]         | [💚][🤝cb-pulls]         | ➖                        | ⭕️ No Matrix            | ➖                           |
+#&lt;--rubocop/md--&gt;| 🐙 [kettle-rb/tree_haver on GitHub][📜src-gh]   | Another Mirror                                                        | [💚][🤝gh-issues]         | [💚][🤝gh-pulls]         | [💚][📜gh-wiki]           | 💯 Full Matrix           | [💚][gh-discussions]         |
+#&lt;--rubocop/md--&gt;| 🎮️ [Discord Server][✉️discord-invite]          | [![Live Chat on Discord][✉️discord-invite-img-ftb]][✉️discord-invite] | [Let's][✉️discord-invite] | [talk][✉️discord-invite] | [about][✉️discord-invite] | [this][✉️discord-invite] | [library!][✉️discord-invite] |
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;/details&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;[gh-discussions]: https://github.com/kettle-rb/tree_haver/discussions
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Enterprise Support [![Tidelift](https://tidelift.com/badges/package/rubygems/tree_haver)](https://tidelift.com/subscription/pkg/rubygems-tree_haver?utm_source=rubygems-tree_haver&amp;utm_medium=referral&amp;utm_campaign=readme)
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Available as part of the Tidelift Subscription.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;details markdown="1"&gt;
+#&lt;--rubocop/md--&gt;  &lt;summary&gt;Need enterprise-level guarantees?&lt;/summary&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;The maintainers of this and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source packages you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact packages you use.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;[![Get help from me on Tidelift][🏙️entsup-tidelift-img]][🏙️entsup-tidelift]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- 💡Subscribe for support guarantees covering _all_ your FLOSS dependencies
+#&lt;--rubocop/md--&gt;- 💡Tidelift is part of [Sonar][🏙️entsup-tidelift-sonar]
+#&lt;--rubocop/md--&gt;- 💡Tidelift pays maintainers to maintain the software you depend on!&lt;br/&gt;📊`@`Pointy Haired Boss: An [enterprise support][🏙️entsup-tidelift] subscription is "[never gonna let you down][🧮kloc]", and _supports_ open source maintainers
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Alternatively:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- [![Live Chat on Discord][✉️discord-invite-img-ftb]][✉️discord-invite]
+#&lt;--rubocop/md--&gt;- [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]][👨🏼‍🏫expsup-upwork]
+#&lt;--rubocop/md--&gt;- [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]][👨🏼‍🏫expsup-codementor]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;/details&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;## ✨ Installation
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Install the gem and add to the application's Gemfile by executing:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>console<br>
+#&lt;–rubocop/md–&gt;bundle add tree_haver<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;If bundler is not being used to manage dependencies, install the gem by executing:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>console<br>
+#&lt;–rubocop/md–&gt;gem install tree_haver<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### 🔒 Secure Installation
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;details markdown="1"&gt;
+#&lt;--rubocop/md--&gt;  &lt;summary&gt;For Medium or High Security Installations&lt;/summary&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;This gem is cryptographically signed, and has verifiable [SHA-256 and SHA-512][💎SHA_checksums] checksums by
+#&lt;--rubocop/md--&gt;[stone_checksums][💎stone_checksums]. Be sure the gem you install hasn’t been tampered with
+#&lt;--rubocop/md--&gt;by following the instructions below.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Add my public key (if you haven’t already, expires 2045-04-29) as a trusted certificate:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>console<br>
+#&lt;–rubocop/md–&gt;gem cert –add &lt;(curl -Ls https://raw.github.com/galtzo-floss/certs/main/pboling.pem)<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;You only need to do that once. Then proceed to install with:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>console<br>
+#&lt;–rubocop/md–&gt;gem install tree_haver -P HighSecurity<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;The `HighSecurity` trust profile will verify signed gems, and not allow the installation of unsigned dependencies.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;If you want to up your security game full-time:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>console<br>
+#&lt;–rubocop/md–&gt;bundle config set –global trust-policy MediumSecurity<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;`MediumSecurity` instead of `HighSecurity` is necessary if not all the gems you use are signed.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;NOTE: Be prepared to track down certs for signed gems and add them the same way you added mine.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;/details&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;## ⚙️ Configuration
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Available Backends
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver supports 10 parsing backends, each with different trade-offs. The `auto` backend automatically selects the best available option.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Tree-sitter Backends (Universal Parsing)
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;| Backend | Description | Performance | Portability | Examples |
+#&lt;--rubocop/md--&gt;|---------|-------------|-------------|-------------|----------|
+#&lt;--rubocop/md--&gt;| **Auto** | Auto-selects best backend | Varies | ✅ Universal | [JSON](examples/auto_json.rb) · [JSONC](examples/auto_jsonc.rb) · [Bash](examples/auto_bash.rb) · [TOML](examples/auto_toml.rb) |
+#&lt;--rubocop/md--&gt;| **MRI** | C extension via ruby_tree_sitter | ⚡ Fastest | MRI only | [JSON](examples/mri_json.rb) · [JSONC](examples/mri_jsonc.rb) · ~~Bash~~* · [TOML](examples/mri_toml.rb) |
+#&lt;--rubocop/md--&gt;| **Rust** | Precompiled via tree_stump | ⚡ Very Fast | ✅ Good | [JSON](examples/rust_json.rb) · [JSONC](examples/rust_jsonc.rb) · ~~Bash~~* · [TOML](examples/rust_toml.rb) |
+#&lt;--rubocop/md--&gt;| **FFI** | Dynamic linking via FFI | 🔵 Fast | ✅ Universal | [JSON](examples/ffi_json.rb) · [JSONC](examples/ffi_jsonc.rb) · [Bash](examples/ffi_bash.rb) · [TOML](examples/ffi_toml.rb) |
+#&lt;--rubocop/md--&gt;| **Java** | JNI bindings | ⚡ Very Fast | JRuby only | [JSON](examples/java_json.rb) · [JSONC](examples/java_jsonc.rb) · [Bash](examples/java_bash.rb) · [TOML](examples/java_toml.rb) |
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Language-Specific Backends (Native Parser Integration)
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;| Backend | Description | Performance | Portability | Examples |
+#&lt;--rubocop/md--&gt;|---------|-------------|-------------|-------------|----------|
+#&lt;--rubocop/md--&gt;| **Prism** | Ruby's official parser | ⚡ Very Fast | ✅ Universal | [Ruby](examples/prism_ruby.rb) |
+#&lt;--rubocop/md--&gt;| **Psych** | Ruby's YAML parser (stdlib) | ⚡ Very Fast | ✅ Universal | [YAML](examples/psych_yaml.rb) |
+#&lt;--rubocop/md--&gt;| **Commonmarker** | Markdown via comrak (Rust) | ⚡ Very Fast | ✅ Good | [Markdown](examples/commonmarker_markdown.rb) · [Merge](examples/commonmarker_merge_example.rb) |
+#&lt;--rubocop/md--&gt;| **Markly** | GFM via cmark-gfm (C) | ⚡ Very Fast | ✅ Good | [Markdown](examples/markly_markdown.rb) · [Merge](examples/markly_merge_example.rb) |
+#&lt;--rubocop/md--&gt;| **Citrus** | Pure Ruby parsing | 🟡 Slower | ✅ Universal | [TOML](examples/citrus_toml.rb) · [Finitio](examples/citrus_finitio.rb) · [Dhall](examples/citrus_dhall.rb) |
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Selection Priority (Auto mode):** MRI → Rust → FFI → Java → Prism → Psych → Commonmarker → Markly → Citrus
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Known Issues:**
+#&lt;--rubocop/md--&gt;- *MRI + Bash: ABI incompatibility (use FFI instead)
+#&lt;--rubocop/md--&gt;- *Rust + Bash: Version mismatch (use FFI instead)
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Backend Requirements:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="tree-sitter-backends">Tree-sitter backends</h1>
+<p>gem “ruby_tree_sitter”, “~&gt; 2.0”  # MRI backend<br>
+gem “tree_stump”                   # Rust backend<br>
+gem “ffi”, “&gt;= 1.15”, “&lt; 2.0”     # FFI backend</p>
+<h1 id="java-backend-no-gem-required-uses-jrubys-built-in-jni">Java backend: no gem required (uses JRuby’s built-in JNI)</h1>
+
+<h1 id="language-specific-backends">Language-specific backends</h1>
+<p>gem “prism”, “~&gt; 1.0”              # Ruby parsing (stdlib in Ruby 3.4+)</p>
+<h1 id="psych-no-gem-required-ruby-stdlib">Psych: no gem required (Ruby stdlib)</h1>
+<p>gem “commonmarker”, “&gt;= 0.23”      # Markdown parsing (comrak)<br>
+gem “markly”, “~&gt; 0.11”            # GFM parsing (cmark-gfm)</p>
+
+<h1 id="pure-ruby-fallback">Pure Ruby fallback</h1>
+<p>gem “citrus”, “~&gt; 3.0”             # Citrus backend</p>
+<h1 id="plus-grammar-gems-toml-rb-dhall-finitio-etc">Plus grammar gems: toml-rb, dhall, finitio, etc.</h1>
+<p>#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Force Specific Backend:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="tree-sitter-backends-1">Tree-sitter backends</h1>
+<p>TreeHaver.backend = :mri    # Force MRI backend (ruby_tree_sitter)<br>
+TreeHaver.backend = :rust   # Force Rust backend (tree_stump)<br>
+TreeHaver.backend = :ffi    # Force FFI backend<br>
+TreeHaver.backend = :java   # Force Java backend (JRuby only)</p>
+
+<h1 id="language-specific-backends-1">Language-specific backends</h1>
+<p>TreeHaver.backend = :prism        # Force Prism (Ruby parsing)<br>
+TreeHaver.backend = :psych        # Force Psych (YAML parsing)<br>
+TreeHaver.backend = :commonmarker # Force Commonmarker (Markdown)<br>
+TreeHaver.backend = :markly       # Force Markly (GFM Markdown)</p>
+
+<h1 id="pure-ruby-fallback-1">Pure Ruby fallback</h1>
+<p>TreeHaver.backend = :citrus # Force Citrus backend</p>
+
+<h1 id="auto-selection-default">Auto-selection (default)</h1>
+<p>TreeHaver.backend = :auto   # Let TreeHaver choose<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Block-based Backend Switching:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Use `with_backend` to temporarily switch backends for a specific block of code.
+#&lt;--rubocop/md--&gt;This is thread-safe and supports nesting—the previous backend is automatically
+#&lt;--rubocop/md--&gt;restored when the block exits (even if an exception is raised).
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="temporarily-use-a-specific-backend">Temporarily use a specific backend</h1>
+<p>TreeHaver.with_backend(:mri) do<br>
+  parser = TreeHaver::Parser.new<br>
+  tree = parser.parse(source)<br>
+  # All operations in this block use the MRI backend<br>
+end</p>
+<h1 id="backend-is-restored-to-its-previous-value-here">Backend is restored to its previous value here</h1>
+
+<h1 id="nested-blocks-work-correctly">Nested blocks work correctly</h1>
+<p>TreeHaver.with_backend(:rust) do<br>
+  # Uses :rust<br>
+  TreeHaver.with_backend(:citrus) do<br>
+    # Uses :citrus<br>
+    parser = TreeHaver::Parser.new<br>
+  end<br>
+  # Back to :rust<br>
+end</p>
+<h1 id="back-to-original-backend">Back to original backend</h1>
+<p>#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;This is particularly useful for:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- **Testing**: Test the same code with different backends
+#&lt;--rubocop/md--&gt;- **Performance comparison**: Benchmark different backends
+#&lt;--rubocop/md--&gt;- **Fallback scenarios**: Try one backend, fall back to another
+#&lt;--rubocop/md--&gt;- **Thread isolation**: Each thread can use a different backend safely
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="example-testing-with-multiple-backends">Example: Testing with multiple backends</h1>
+<p>[:mri, :rust, :citrus].each do |backend_name|<br>
+  TreeHaver.with_backend(backend_name) do<br>
+    parser = TreeHaver::Parser.new<br>
+    result = parser.parse(source)<br>
+    puts “#backend_name: #resultresult.root_noderesult.root_node.type”<br>
+  end<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Check Backend Capabilities:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+TreeHaver.backend              # =&gt; :ffi<br>
+TreeHaver.backend_module       # =&gt; TreeHaver::Backends::FFI<br>
+TreeHaver.capabilities         # =&gt; { backend: :ffi, parse: true, query: false, … }<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;See [examples/](examples/) directory for **26 complete working examples** demonstrating all 10 backends with multiple languages (JSON, JSONC, Bash, TOML, Ruby, YAML, Markdown) plus markdown-merge integration examples.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Security Considerations
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**⚠️ Loading shared libraries (.so/.dylib/.dll) executes arbitrary native code.**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver provides defense-in-depth validations, but you should understand the risks:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Attack Vectors Mitigated
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver's `PathValidator` module protects against:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- **Path traversal**: Paths containing `/../` or `/./` are rejected
+#&lt;--rubocop/md--&gt;- **Null byte injection**: Paths containing null bytes are rejected
+#&lt;--rubocop/md--&gt;- **Non-absolute paths**: Relative paths are rejected to prevent CWD-based attacks
+#&lt;--rubocop/md--&gt;- **Invalid extensions**: Only `.so`, `.dylib`, and `.dll` files are accepted
+#&lt;--rubocop/md--&gt;- **Malicious filenames**: Filenames must match a safe pattern (alphanumeric, hyphens, underscores)
+#&lt;--rubocop/md--&gt;- **Invalid language names**: Language names must be lowercase alphanumeric with underscores
+#&lt;--rubocop/md--&gt;- **Invalid symbol names**: Symbol names must be valid C identifiers
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Secure Usage
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="standard-usage---paths-from-env-are-validated">Standard usage - paths from ENV are validated</h1>
+<p>finder = TreeHaver::GrammarFinder.new(:toml)<br>
+path = finder.find_library_path  # Validates ENV path before returning</p>
+
+<h1 id="maximum-security---only-trusted-system-directories">Maximum security - only trusted system directories</h1>
+<p>path = finder.find_library_path_safe  # Ignores ENV, only /usr/lib etc.</p>
+
+<h1 id="manual-validation">Manual validation</h1>
+<p>if TreeHaver::PathValidator.safe_library_path?(user_provided_path)<br>
+  language = TreeHaver::Language.from_library(user_provided_path)<br>
+end</p>
+
+<h1 id="get-validation-errors-for-debugging">Get validation errors for debugging</h1>
+<p>errors = TreeHaver::PathValidator.validation_errors(path)</p>
+<h1 id="-path-is-not-absolute-path-contains-traversal-sequence">=&gt; [“Path is not absolute”, “Path contains traversal sequence”]</h1>
+<p>#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Trusted Directories
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;The `find_library_path_safe` method only returns paths in trusted directories.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Default trusted directories:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- `/usr/lib`, `/usr/lib64`
+#&lt;--rubocop/md--&gt;- `/usr/lib/x86_64-linux-gnu`, `/usr/lib/aarch64-linux-gnu`
+#&lt;--rubocop/md--&gt;- `/usr/local/lib`
+#&lt;--rubocop/md--&gt;- `/opt/homebrew/lib`, `/opt/local/lib`
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Adding custom trusted directories:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;For non-standard installations (Homebrew on Linux, luarocks, mise, asdf, etc.), register additional trusted directories:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="programmatically-at-application-startup">Programmatically at application startup</h1>
+<p>TreeHaver::PathValidator.add_trusted_directory(“/home/linuxbrew/.linuxbrew/Cellar”)<br>
+TreeHaver::PathValidator.add_trusted_directory(“~/.local/share/mise/installs/lua”)</p>
+
+<h1 id="or-via-environment-variable-comma-separated-in-your-shell-profile">Or via environment variable (comma-separated, in your shell profile)</h1>
+<p>export TREE_HAVER_TRUSTED_DIRS = “/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua”<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Example: Fedora Silverblue with Homebrew and luarocks**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>bash<br>
+#&lt;–rubocop/md–&gt;# In ~/.bashrc or ~/.zshrc<br>
+#&lt;–rubocop/md–&gt;export TREE_HAVER_TRUSTED_DIRS=”/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua”<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;# tree-sitter runtime library<br>
+#&lt;–rubocop/md–&gt;export TREE_SITTER_RUNTIME_LIB=/home/linuxbrew/.linuxbrew/Cellar/tree-sitter/0.26.3/lib/libtree-sitter.so<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;# Language grammar (luarocks-installed)<br>
+#&lt;–rubocop/md–&gt;export TREE_SITTER_TOML_PATH=~/.local/share/mise/installs/lua/5.4.8/luarocks/lib/luarocks/rocks-5.4/tree-sitter-toml/0.0.31-1/parser/toml.so<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Recommendations
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;1. **Production**: Consider using `find_library_path_safe` to ignore ENV overrides
+#&lt;--rubocop/md--&gt;2. **Development**: Standard `find_library_path` is convenient for testing
+#&lt;--rubocop/md--&gt;3. **User Input**: Always validate paths before passing to `Language.from_library`
+#&lt;--rubocop/md--&gt;4. **CI/CD**: Be cautious of ENV vars that could be set by untrusted sources
+#&lt;--rubocop/md--&gt;5. **Custom installs**: Register trusted directories via `TREE_HAVER_TRUSTED_DIRS` or `add_trusted_directory`
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Backend Selection
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver automatically selects the best backend for your Ruby implementation, but you can override this behavior:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="automatic-backend-selection-default">Automatic backend selection (default)</h1>
+<p>TreeHaver.backend = :auto</p>
+
+<h1 id="force-a-specific-backend">Force a specific backend</h1>
+<p>TreeHaver.backend = :mri     # Use ruby_tree_sitter (MRI only, C extension)<br>
+TreeHaver.backend = :rust    # Use tree_stump (MRI, Rust extension with precompiled binaries)<br>
+                             # Note: Requires pboling’s fork until PRs #5, #7, #11, #13 are merged<br>
+                             # See: https://github.com/pboling/tree_stump/tree/tree_haver<br>
+TreeHaver.backend = :ffi     # Use FFI bindings (works on MRI and JRuby)<br>
+TreeHaver.backend = :java    # Use Java bindings (JRuby only, coming soon)<br>
+TreeHaver.backend = :citrus  # Use Citrus pure Ruby parser<br>
+                             # NOTE: Portable, all Ruby implementations<br>
+                             # CAVEAT: few major language grammars, but many esoteric grammars<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Auto-selection priority on MRI:** MRI → Rust → FFI → Citrus
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;You can also set the backend via environment variable:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>bash<br>
+#&lt;–rubocop/md–&gt;export TREE_HAVER_BACKEND=rust<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Environment Variables
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver recognizes several environment variables for configuration:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Note**: All path-based environment variables are validated before use. Invalid paths are ignored.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Security Configuration
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- **`TREE_HAVER_TRUSTED_DIRS`**: Comma-separated list of additional trusted directories for grammar libraries
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt; </code>bash<br>
+#&lt;–rubocop/md–&gt;  # For Homebrew on Linux and luarocks<br>
+#&lt;–rubocop/md–&gt;  export TREE_HAVER_TRUSTED_DIRS=”/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua”<br>
+#&lt;–rubocop/md–&gt;  <code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;  Tilde (`~`) is expanded to the user's home directory. Directories listed here are considered safe for `find_library_path_safe`.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Core Runtime Library
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- **`TREE_SITTER_RUNTIME_LIB`**: Absolute path to the core `libtree-sitter` shared library
+#&lt;--rubocop/md--&gt; </code>bash<br>
+#&lt;–rubocop/md–&gt;  export TREE_SITTER_RUNTIME_LIB=/usr/local/lib/libtree-sitter.so<br>
+#&lt;–rubocop/md–&gt;  <code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;If not set, TreeHaver tries these names in order:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- `tree-sitter`
+#&lt;--rubocop/md--&gt;- `libtree-sitter.so.0`
+#&lt;--rubocop/md--&gt;- `libtree-sitter.so`
+#&lt;--rubocop/md--&gt;- `libtree-sitter.dylib`
+#&lt;--rubocop/md--&gt;- `libtree-sitter.dll`
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Language Symbol Resolution
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;When loading a language grammar, if you don't specify the `symbol:` parameter, TreeHaver resolves it in this precedence:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;1. **`TREE_SITTER_LANG_SYMBOL`**: Explicit symbol override
+#&lt;--rubocop/md--&gt;2. Guessed from filename (e.g., `libtree-sitter-toml.so` → `tree_sitter_toml`)
+#&lt;--rubocop/md--&gt;3. Default fallback (`tree_sitter_toml`)
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>bash<br>
+#&lt;–rubocop/md–&gt;export TREE_SITTER_LANG_SYMBOL=tree_sitter_toml<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Language Library Paths
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;For specific languages, you can set environment variables to point to grammar libraries:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>bash<br>
+#&lt;–rubocop/md–&gt;export TREE_SITTER_TOML_PATH=/usr/local/lib/libtree-sitter-toml.so<br>
+#&lt;–rubocop/md–&gt;export TREE_SITTER_JSON_PATH=/usr/local/lib/libtree-sitter-json.so<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### JRuby-Specific: Java Backend JARs
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;For the Java backend on JRuby:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>bash<br>
+#&lt;–rubocop/md–&gt;export TREE_SITTER_JAVA_JARS_DIR=/path/to/java-tree-sitter/jars<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Language Registration
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Register languages once at application startup for convenient access:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="register-a-toml-grammar">Register a TOML grammar</h1>
+<p>TreeHaver.register_language(<br>
+  :toml,<br>
+  path: “/usr/local/lib/libtree-sitter-toml.so”,<br>
+  symbol: “tree_sitter_toml”,  # optional, will be inferred if omitted<br>
+)</p>
+
+<h1 id="now-you-can-use-the-convenient-helper">Now you can use the convenient helper</h1>
+<p>language = TreeHaver::Language.toml</p>
+
+<h1 id="or-still-override-pathsymbol-per-call">Or still override path/symbol per-call</h1>
+<p>language = TreeHaver::Language.toml(<br>
+  path: “/custom/path/libtree-sitter-toml.so”,<br>
+)<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Grammar Discovery with GrammarFinder
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;For libraries that need to automatically locate tree-sitter grammars (like the `*-merge` family of gems), TreeHaver provides the `GrammarFinder` utility class. It handles platform-aware grammar discovery without requiring language-specific code in TreeHaver itself.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="create-a-finder-for-any-language">Create a finder for any language</h1>
+<p>finder = TreeHaver::GrammarFinder.new(:toml)</p>
+
+<h1 id="check-if-the-grammar-is-available">Check if the grammar is available</h1>
+<p>if finder.available?<br>
+  puts “TOML grammar found at: #finderfinder.find_library_path”<br>
+else<br>
+  puts finder.not_found_message<br>
+  # =&gt; “tree-sitter toml grammar not found. Searched: /usr/lib/libtree-sitter-toml.so, …”<br>
+end</p>
+
+<h1 id="register-the-language-if-available">Register the language if available</h1>
+<p>finder.register! if finder.available?</p>
+
+<h1 id="now-use-the-registered-language">Now use the registered language</h1>
+<p>language = TreeHaver::Language.toml<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### GrammarFinder Automatic Derivation
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Given just the language name, `GrammarFinder` automatically derives:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;| Property         | Derived Value (for `:toml`)                          |
+#&lt;--rubocop/md--&gt;| ---------------- | ---------------------------------------------------- |
+#&lt;--rubocop/md--&gt;| ENV var          | `TREE_SITTER_TOML_PATH`                              |
+#&lt;--rubocop/md--&gt;| Library filename | `libtree-sitter-toml.so` (Linux) or `.dylib` (macOS) |
+#&lt;--rubocop/md--&gt;| Symbol name      | `tree_sitter_toml`                                   |
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Search Order
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;`GrammarFinder` searches for grammars in this order:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;1. **Environment variable**: `TREE_SITTER_&lt;LANG&gt;_PATH` (highest priority)
+#&lt;--rubocop/md--&gt;2. **Extra paths**: Custom paths provided at initialization
+#&lt;--rubocop/md--&gt;3. **System paths**: Common installation directories (`/usr/lib`, `/usr/local/lib`, `/opt/homebrew/lib`, etc.)
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Usage in \*-merge Gems
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;The `GrammarFinder` pattern enables clean integration in language-specific merge gems:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="in-toml-merge">In toml-merge</h1>
+<p>finder = TreeHaver::GrammarFinder.new(:toml)<br>
+finder.register! if finder.available?</p>
+
+<h1 id="in-json-merge">In json-merge</h1>
+<p>finder = TreeHaver::GrammarFinder.new(:json)<br>
+finder.register! if finder.available?</p>
+
+<h1 id="in-bash-merge">In bash-merge</h1>
+<p>finder = TreeHaver::GrammarFinder.new(:bash)<br>
+finder.register! if finder.available?<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Each gem uses the same API—only the language name changes.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Adding Custom Search Paths
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;For non-standard installations, provide extra search paths:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+finder = TreeHaver::GrammarFinder.new(:toml, extra_paths: [<br>
+  “/opt/custom/lib”,<br>
+  “/home/user/.local/lib”,<br>
+])<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Debug Information
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Get detailed information about the grammar search:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+finder = TreeHaver::GrammarFinder.new(:toml)<br>
+puts finder.search_info</p>
+<h1 id="-">=&gt; <h1 id="language-toml">language: :toml,</h1>
+<h1 id="env_var-tree_sitter_toml_path">env_var: “TREE_SITTER_TOML_PATH”,</h1>
+<h1 id="env_value-nil">env_value: nil,</h1>
+<h1 id="symbol-tree_sitter_toml">symbol: “tree_sitter_toml”,</h1>
+<h1 id="library_filename-libtree-sitter-tomlso">library_filename: “libtree-sitter-toml.so”,</h1>
+<h1 id="search_paths-usrliblibtree-sitter-tomlso-">search_paths: [“/usr/lib/libtree-sitter-toml.so”, …],</h1>
+<h1 id="found_path-usrliblibtree-sitter-tomlso">found_path: “/usr/lib/libtree-sitter-toml.so”,</h1>
+<h1 id="available-true">available: true</h1>
+<h1></h1>
+<p>#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Checking Capabilities
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Different backends may support different features:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+TreeHaver.capabilities</p>
+<h1 id="--backend-mri-query-true-bytes_field-true-">=&gt; { backend: :mri, query: true, bytes_field: true }</h1>
+<h1 id="or">or</h1>
+<h1 id="--backend-ffi-parse-true-query-false-bytes_field-true-">=&gt; { backend: :ffi, parse: true, query: false, bytes_field: true }</h1>
+<h1 id="or-1">or</h1>
+<h1 id="--backend-citrus-parse-true-query-false-bytes_field-false-">=&gt; { backend: :citrus, parse: true, query: false, bytes_field: false }</h1>
+<p>#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Compatibility Mode
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;For codebases migrating from `ruby_tree_sitter`, TreeHaver provides a compatibility shim:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+require “tree_haver/compat”</p>
+
+<h1 id="now-treesitter-constants-map-to-treehaver">Now TreeSitter constants map to TreeHaver</h1>
+<p>parser = TreeSitter::Parser.new  # Actually creates TreeHaver::Parser<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;This is safe and idempotent—if the real `TreeSitter` module is already loaded, the shim does nothing.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### ⚠️ Important: Exception Hierarchy
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Both ruby_tree_sitter v2+ and TreeHaver exceptions inherit from `Exception` (not `StandardError`).**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;This design decision follows ruby_tree_sitter's lead for thread-safety and signal handling reasons. See [ruby_tree_sitter PR #83](https://github.com/Faveod/ruby-tree-sitter/pull/83) for the rationale.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**What this means for exception handling:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="️-this-will-not-catch-treehaver-errors">⚠️ This will NOT catch TreeHaver errors</h1>
+<p>begin<br>
+  TreeHaver::Language.from_library(“/nonexistent.so”)<br>
+rescue =&gt; e<br>
+  puts “Caught!”  # Never reached - TreeHaver::Error inherits Exception<br>
+end</p>
+
+<h1 id="-explicit-rescue-is-required">✅ Explicit rescue is required</h1>
+<p>begin<br>
+  TreeHaver::Language.from_library(“/nonexistent.so”)<br>
+rescue TreeHaver::Error =&gt; e<br>
+  puts “Caught!”  # This works<br>
+end</p>
+
+<h1 id="-or-rescue-specific-exceptions">✅ Or rescue specific exceptions</h1>
+<p>begin<br>
+  TreeHaver::Language.from_library(“/nonexistent.so”)<br>
+rescue TreeHaver::NotAvailable =&gt; e<br>
+  puts “Grammar not available: #ee.message”<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**TreeHaver Exception Hierarchy:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+Exception<br>
+└── TreeHaver::Error              # Base error class<br>
+    ├── TreeHaver::NotAvailable   # Backend/grammar not available<br>
+    └── TreeHaver::BackendConflict # Backend incompatibility detected<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Compatibility Mode Behavior:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;The compat mode (`require "tree_haver/compat"`) creates aliases but **does not change the exception hierarchy**:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+require “tree_haver/compat”</p>
+
+<h1 id="treesitter-constants-are-now-aliases-to-treehaver">TreeSitter constants are now aliases to TreeHaver</h1>
+<p>TreeSitter::Error       # =&gt; TreeHaver::Error (still inherits Exception)<br>
+TreeSitter::Parser      # =&gt; TreeHaver::Parser<br>
+TreeSitter::Language    # =&gt; TreeHaver::Language</p>
+
+<h1 id="exception-handling-remains-the-same">Exception handling remains the same</h1>
+<p>begin<br>
+  TreeSitter::Language.load(“missing”, “/nonexistent.so”)<br>
+rescue TreeSitter::Error =&gt; e  # Still requires explicit rescue<br>
+  puts “Error: #ee.message”<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Best Practices:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;1. **Always use explicit rescue** for TreeHaver errors:
+#&lt;--rubocop/md--&gt;  </code>ruby<br>
+   begin<br>
+     finder = TreeHaver::GrammarFinder.new(:toml)<br>
+     finder.register! if finder.available?<br>
+     language = TreeHaver::Language.toml<br>
+   rescue TreeHaver::NotAvailable =&gt; e<br>
+     warn(“TOML grammar not available: #ee.message”)<br>
+     # Fallback to another backend or fail gracefully<br>
+   end<br>
+#&lt;–rubocop/md–&gt;   `````<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;2. <strong>Never rely on <code>rescue =&gt; e</code></strong> to catch TreeHaver errors (it won’t work)<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;<strong>Why inherit from Exception?</strong><br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;Following ruby_tree_sitter’s reasoning:<br>
+#&lt;–rubocop/md–&gt;- <strong>Thread safety</strong>: Prevents accidental catching in thread cleanup code<br>
+#&lt;–rubocop/md–&gt;- <strong>Signal handling</strong>: Ensures parsing errors don’t interfere with SIGTERM/SIGINT<br>
+#&lt;–rubocop/md–&gt;- <strong>Intentional handling</strong>: Forces developers to explicitly handle parsing errors<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;See <code>lib/tree_haver/compat.rb</code> for compatibility layer documentation.<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;## 🔧 Basic Usage<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;### Quick Start<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;TreeHaver works with any language through its 10 backends. Here are examples for different parsing needs:<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;#### Parsing with Tree-sitter (Universal Languages)<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;```ruby<br>
+require “tree_haver”</p>
+
+<h1 id="load-a-tree-sitter-grammar-works-with-mri-rust-ffi-or-java-backend">Load a tree-sitter grammar (works with MRI, Rust, FFI, or Java backend)</h1>
+<p>language = TreeHaver::Language.from_library(<br>
+  “/usr/local/lib/libtree-sitter-toml.so”,<br>
+  symbol: “tree_sitter_toml”,<br>
+)</p>
+
+<h1 id="create-a-parser">Create a parser</h1>
+<p>parser = TreeHaver::Parser.new<br>
+parser.language = language</p>
+
+<h1 id="parse-source-code">Parse source code</h1>
+<p>source = «~TOML<br>
+  [package]<br>
+  name = “my-app”<br>
+  version = “1.0.0”<br>
+TOML</p>
+
+<p>tree = parser.parse(source)</p>
+
+<h1 id="access-the-unified-position-api-works-across-all-backends">Access the unified Position API (works across all backends)</h1>
+<p>root = tree.root_node<br>
+puts “Root type: #root.type”              # =&gt; “document”<br>
+puts “Start line: #root.start_line”       # =&gt; 1 (1-based)<br>
+puts “End line: #root.end_line”           # =&gt; 3<br>
+puts “Position: #root.source_position”    # =&gt; 1, end_line: 3, …</p>
+
+<h1 id="traverse-the-tree">Traverse the tree</h1>
+<p>root.each do |child|<br>
+  puts “Child: #childchild.type at line #childchild.start_line”<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Parsing Ruby with Prism
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+require “tree_haver”</p>
+
+<p>TreeHaver.backend = :prism<br>
+parser = TreeHaver::Parser.new<br>
+parser.language = TreeHaver::Backends::Prism::Language.ruby</p>
+
+<p>source = «~RUBY<br>
+  class Example<br>
+    def hello<br>
+      puts “Hello, world!”<br>
+    end<br>
+  end<br>
+RUBY</p>
+
+<p>tree = parser.parse(source)<br>
+root = tree.root_node</p>
+
+<h1 id="find-all-method-definitions">Find all method definitions</h1>
+<p>def find_methods(node, results = [])<br>
+  results « node if node.type == “def_node”<br>
+  node.children.each { |child| find_methods(child, results) }<br>
+  results<br>
+end</p>
+
+<p>methods = find_methods(root)<br>
+methods.each do |method_node|<br>
+  pos = method_node.source_position<br>
+  puts “Method at lines #pos[:start_line]-#pos[:end_line]”<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Parsing YAML with Psych
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+require “tree_haver”</p>
+
+<p>TreeHaver.backend = :psych<br>
+parser = TreeHaver::Parser.new<br>
+parser.language = TreeHaver::Backends::Psych::Language.yaml</p>
+
+<p>source = «~YAML<br>
+  database:<br>
+    host: localhost<br>
+    port: 5432<br>
+YAML</p>
+
+<p>tree = parser.parse(source)<br>
+root = tree.root_node</p>
+
+<h1 id="navigate-yaml-structure">Navigate YAML structure</h1>
+<p>def show_structure(node, indent = 0)<br>
+  prefix = “  “ * indent<br>
+  puts “#prefix#nodenode.type (line #nodenode.start_line)”<br>
+  node.children.each { |child| show_structure(child, indent + 1) }<br>
+end</p>
+
+<p>show_structure(root)<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Parsing Markdown with Commonmarker or Markly
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+require “tree_haver”</p>
+
+<h1 id="choose-your-backend">Choose your backend</h1>
+<p>TreeHaver.backend = :commonmarker  # or :markly for GFM</p>
+
+<p>parser = TreeHaver::Parser.new<br>
+parser.language = TreeHaver::Backends::Commonmarker::Language.markdown</p>
+
+<p>source = «~MARKDOWN<br>
+  # My Document</p>
+
+<p>## Section</p>
+
+<ul>
+  <li>Item 1</li>
+  <li>Item 2<br>
+MARKDOWN</li>
+</ul>
+
+<p>tree = parser.parse(source)<br>
+root = tree.root_node</p>
+
+<h1 id="find-all-headings">Find all headings</h1>
+<p>def find_headings(node, results = [])<br>
+  results « node if node.type == “heading”<br>
+  node.children.each { |child| find_headings(child, results) }<br>
+  results<br>
+end</p>
+
+<p>headings = find_headings(root)<br>
+headings.each do |heading|<br>
+  level = heading.header_level<br>
+  text = heading.children.map(&amp;:text).join<br>
+  puts “H#level: #text (line #headingheading.start_line)”<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Using Language Registration
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;For cleaner code, register languages at startup:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="at-application-initialization">At application initialization</h1>
+<p>TreeHaver.register_language(<br>
+  :toml,<br>
+  path: “/usr/local/lib/libtree-sitter-toml.so”,<br>
+)</p>
+
+<p>TreeHaver.register_language(<br>
+  :json,<br>
+  path: “/usr/local/lib/libtree-sitter-json.so”,<br>
+)</p>
+
+<h1 id="later-in-your-code">Later in your code</h1>
+<p>toml_language = TreeHaver::Language.toml<br>
+json_language = TreeHaver::Language.json</p>
+
+<p>parser = TreeHaver::Parser.new<br>
+parser.language = toml_language<br>
+tree = parser.parse(toml_source)<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Flexible Language Names
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;The `name` parameter in `register_language` is an arbitrary identifier you choose—it doesn't
+#&lt;--rubocop/md--&gt;need to match the actual language name. The actual grammar identity comes from the `path`
+#&lt;--rubocop/md--&gt;and `symbol` parameters (for tree-sitter) or `grammar_module` (for Citrus).
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;This flexibility is useful for:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- **Aliasing**: Register the same grammar under multiple names
+#&lt;--rubocop/md--&gt;- **Versioning**: Register different grammar versions (e.g., `:ruby_2`, `:ruby_3`)
+#&lt;--rubocop/md--&gt;- **Testing**: Use unique names to avoid collisions between tests
+#&lt;--rubocop/md--&gt;- **Context-specific naming**: Use names that make sense for your application
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="register-the-same-toml-grammar-under-different-names-for-different-purposes">Register the same TOML grammar under different names for different purposes</h1>
+<p>TreeHaver.register_language(<br>
+  :config_parser,  # Custom name for your app<br>
+  path: “/usr/local/lib/libtree-sitter-toml.so”,<br>
+  symbol: “tree_sitter_toml”,<br>
+)</p>
+
+<p>TreeHaver.register_language(<br>
+  :toml_v1,  # Version-specific name<br>
+  path: “/usr/local/lib/libtree-sitter-toml.so”,<br>
+  symbol: “tree_sitter_toml”,<br>
+)</p>
+
+<h1 id="use-your-custom-names">Use your custom names</h1>
+<p>config_lang = TreeHaver::Language.config_parser<br>
+versioned_lang = TreeHaver::Language.toml_v1<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Parsing Different Languages
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver works with any tree-sitter grammar:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="parse-ruby-code">Parse Ruby code</h1>
+<p>ruby_lang = TreeHaver::Language.from_library(<br>
+  “/path/to/libtree-sitter-ruby.so”,<br>
+)<br>
+parser = TreeHaver::Parser.new<br>
+parser.language = ruby_lang<br>
+tree = parser.parse(“class Foo; end”)</p>
+
+<h1 id="parse-javascript">Parse JavaScript</h1>
+<p>js_lang = TreeHaver::Language.from_library(<br>
+  “/path/to/libtree-sitter-javascript.so”,<br>
+)<br>
+parser.language = js_lang  # Reuse the same parser<br>
+tree = parser.parse(“const x = 42;”)<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Walking the AST
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver provides simple node traversal:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+tree = parser.parse(source)<br>
+root = tree.root_node</p>
+
+<h1 id="recursive-tree-walk">Recursive tree walk</h1>
+<p>def walk_tree(node, depth = 0)<br>
+  puts “# “ * depth#nodenode.type”<br>
+  node.each { |child| walk_tree(child, depth + 1) }<br>
+end</p>
+
+<p>walk_tree(root)<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Incremental Parsing
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver supports incremental parsing when using the MRI or Rust backends. This is a major performance optimization for editors and IDEs that need to re-parse on every keystroke.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="check-if-current-backend-supports-incremental-parsing">Check if current backend supports incremental parsing</h1>
+<p>if TreeHaver.capabilities[:incremental]<br>
+  puts “Incremental parsing is available!”<br>
+end</p>
+
+<h1 id="initial-parse">Initial parse</h1>
+<p>parser = TreeHaver::Parser.new<br>
+parser.language = language<br>
+tree = parser.parse_string(nil, “x = 1”)</p>
+
+<h1 id="user-edits-the-source-x--1---x--42">User edits the source: “x = 1” -&gt; “x = 42”</h1>
+<h1 id="mark-the-tree-as-edited-tell-tree-sitter-what-changed">Mark the tree as edited (tell tree-sitter what changed)</h1>
+<p>tree.edit(<br>
+  start_byte: 4,           # edit starts at byte 4<br>
+  old_end_byte: 5,         # old text “1” ended at byte 5<br>
+  new_end_byte: 6,         # new text “42” ends at byte 6<br>
+  start_point: 0, column: 4,<br>
+  old_end_point: 0, column: 5,<br>
+  new_end_point: 0, column: 6,<br>
+)</p>
+
+<h1 id="re-parse-incrementally---tree-sitter-reuses-unchanged-nodes">Re-parse incrementally - tree-sitter reuses unchanged nodes</h1>
+<p>new_tree = parser.parse_string(tree, “x = 42”)<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Note:** Incremental parsing requires the MRI (`ruby_tree_sitter`), Rust (`tree_stump`), or Java (`java-tree-sitter`) backend. The FFI and Citrus backends do not currently support incremental parsing. You can check support with:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Note:** `tree_stump` requires [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), [#13](https://github.com/joker1007/tree_stump/pull/13) are merged.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+tree.supports_editing?  # =&gt; true if edit() is available<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Error Handling
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+begin<br>
+  language = TreeHaver::Language.from_library(“/path/to/grammar.so”)<br>
+rescue TreeHaver::NotAvailable =&gt; e<br>
+  puts “Failed to load grammar: #ee.message”<br>
+end</p>
+
+<h1 id="check-if-a-backend-is-available">Check if a backend is available</h1>
+<p>if TreeHaver.backend_module.nil?<br>
+  puts “No TreeHaver backend is available!”<br>
+  puts “Install ruby_tree_sitter (MRI), ffi gem with libtree-sitter, or citrus gem”<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Platform-Specific Examples
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### MRI Ruby
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;On MRI, TreeHaver uses `ruby_tree_sitter` by default:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="gemfile">Gemfile</h1>
+<p>gem “tree_haver”<br>
+gem “ruby_tree_sitter”  # MRI backend</p>
+
+<h1 id="code---no-changes-needed-treehaver-auto-selects-mri-backend">Code - no changes needed, TreeHaver auto-selects MRI backend</h1>
+<p>parser = TreeHaver::Parser.new<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### JRuby
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;On JRuby, TreeHaver can use the FFI backend, Java backend, or Citrus backend:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Option 1: FFI Backend (recommended for tree-sitter grammars)**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="gemfile-1">Gemfile</h1>
+<p>gem “tree_haver”<br>
+gem “ffi”  # Required for FFI backend</p>
+
+<h1 id="ensure-libtree-sitter-is-installed-on-your-system">Ensure libtree-sitter is installed on your system</h1>
+<h1 id="on-macos-with-homebrew">On macOS with Homebrew:</h1>
+<h1 id="brew-install-tree-sitter">brew install tree-sitter</h1>
+
+<h1 id="on-ubuntudebian">On Ubuntu/Debian:</h1>
+<h1 id="sudo-apt-get-install-libtree-sitter0-libtree-sitter-dev">sudo apt-get install libtree-sitter0 libtree-sitter-dev</h1>
+
+<h1 id="code---treehaver-auto-selects-ffi-backend-on-jruby">Code - TreeHaver auto-selects FFI backend on JRuby</h1>
+<p>parser = TreeHaver::Parser.new<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Option 2: Java Backend (native JVM performance)**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>bash<br>
+#&lt;–rubocop/md–&gt;# 1. Download java-tree-sitter JAR from Maven Central<br>
+#&lt;–rubocop/md–&gt;mkdir -p vendor/jars<br>
+#&lt;–rubocop/md–&gt;curl -fSL -o vendor/jars/jtreesitter-0.23.2.jar \<br>
+#&lt;–rubocop/md–&gt;  “https://repo1.maven.org/maven2/io/github/tree-sitter/jtreesitter/0.23.2/jtreesitter-0.23.2.jar”<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;# 2. Set environment variables<br>
+#&lt;–rubocop/md–&gt;export CLASSPATH=”$(pwd)/vendor/jars:$CLASSPATH”<br>
+#&lt;–rubocop/md–&gt;export LD_LIBRARY_PATH=”/path/to/libtree-sitter/lib:$LD_LIBRARY_PATH”<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;# 3. Run with JRuby (requires Java 22+ for Foreign Function API)<br>
+#&lt;–rubocop/md–&gt;JAVA_OPTS=”–enable-native-access=ALL-UNNAMED” jruby your_script.rb<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="force-java-backend">Force Java backend</h1>
+<p>TreeHaver.backend = :java</p>
+
+<h1 id="check-if-java-backend-is-available">Check if Java backend is available</h1>
+<p>if TreeHaver::Backends::Java.available?<br>
+  puts “Java backend is ready!”<br>
+  puts TreeHaver.capabilities<br>
+  # =&gt; { backend: :java, parse: true, query: true, bytes_field: true, incremental: true }<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**⚠️ Java Backend Limitation: Symbol Resolution**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;The Java backend uses Java's Foreign Function &amp; Memory (FFM) API which loads libraries in isolation. Unlike the system's dynamic linker (`dlopen`), FFM's `SymbolLookup.or()` chains symbol lookups but doesn't resolve dynamic library dependencies.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;This means grammar `.so` files with unresolved references to `libtree-sitter.so` symbols won't load correctly. Most grammars from luarocks, npm, or other sources have these dependencies.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Recommended approach for JRuby:** Use the **FFI backend**:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="on-jruby-use-ffi-backend-recommended">On JRuby, use FFI backend (recommended)</h1>
+<p>TreeHaver.backend = :ffi<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;The FFI backend uses Ruby's FFI gem which relies on the system's dynamic linker, correctly resolving symbol dependencies between `libtree-sitter.so` and grammar libraries.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;The Java backend will work with:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- Grammar JARs built specifically for java-tree-sitter (self-contained)
+#&lt;--rubocop/md--&gt;- Grammar `.so` files that statically link tree-sitter
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**Option 3: Citrus Backend (pure Ruby, portable)**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="gemfile-2">Gemfile</h1>
+<p>gem “tree_haver”<br>
+gem “citrus”  # Pure Ruby parser, zero native dependencies</p>
+
+<h1 id="code---force-citrus-backend-for-maximum-portability">Code - Force Citrus backend for maximum portability</h1>
+<p>TreeHaver.backend = :citrus</p>
+
+<h1 id="check-if-citrus-backend-is-available">Check if Citrus backend is available</h1>
+<p>if TreeHaver::Backends::Citrus.available?<br>
+  puts “Citrus backend is ready!”<br>
+  puts TreeHaver.capabilities<br>
+  # =&gt; { backend: :citrus, parse: true, query: false, bytes_field: false }<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**⚠️ Citrus Backend Limitations:**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;- Uses Citrus grammars (not tree-sitter grammars)
+#&lt;--rubocop/md--&gt;- No incremental parsing support
+#&lt;--rubocop/md--&gt;- No query API
+#&lt;--rubocop/md--&gt;- Pure Ruby performance (slower than native backends)
+#&lt;--rubocop/md--&gt;- Best for: prototyping, environments without native extension support, teaching
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### TruffleRuby
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TruffleRuby can use the MRI, FFI, or Citrus backend:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="use-ffi-backend-recommended-for-tree-sitter-grammars">Use FFI backend (recommended for tree-sitter grammars)</h1>
+<p>TreeHaver.backend = :ffi</p>
+
+<h1 id="or-try-mri-backend-if-ruby_tree_sitter-compiles-on-your-truffleruby-version">Or try MRI backend if ruby_tree_sitter compiles on your TruffleRuby version</h1>
+<p>TreeHaver.backend = :mri</p>
+
+<h1 id="or-use-citrus-backend-for-zero-native-dependencies">Or use Citrus backend for zero native dependencies</h1>
+<p>TreeHaver.backend = :citrus<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Advanced: Thread-Safe Backend Switching
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;TreeHaver provides `with_backend` for thread-safe, temporary backend switching. This is
+#&lt;--rubocop/md--&gt;essential for testing, benchmarking, and applications that need different backends in
+#&lt;--rubocop/md--&gt;different contexts.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Testing with Multiple Backends
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Test the same code path with different backends using `with_backend`:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby</p>
+<h1 id="in-your-test-setup">In your test setup</h1>
+<p>RSpec.describe(“MyParser”) do<br>
+  # Test with each available backend<br>
+  [:mri, :rust, :citrus].each do |backend_name|<br>
+    context “with #backend_name backend” do<br>
+      it “parses correctly” do<br>
+        TreeHaver.with_backend(backend_name) do<br>
+          parser = TreeHaver::Parser.new<br>
+          result = parser.parse(“x = 42”)<br>
+          expect(result.root_node.type).to(eq(“document”))<br>
+        end<br>
+        # Backend automatically restored after block<br>
+      end<br>
+    end<br>
+  end<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Thread Isolation
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Each thread can use a different backend safely—`with_backend` uses thread-local storage:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+threads = []</p>
+
+<p>threads « Thread.new do<br>
+  TreeHaver.with_backend(:mri) do<br>
+    # This thread uses MRI backend<br>
+    parser = TreeHaver::Parser.new<br>
+    100.times { parser.parse(“x = 1”) }<br>
+  end<br>
+end</p>
+
+<p>threads « Thread.new do<br>
+  TreeHaver.with_backend(:citrus) do<br>
+    # This thread uses Citrus backend simultaneously<br>
+    parser = TreeHaver::Parser.new<br>
+    100.times { parser.parse(“x = 1”) }<br>
+  end<br>
+end</p>
+
+<p>threads.each(&amp;:join)<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Nested Blocks
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;`with_backend` supports nesting—inner blocks override outer blocks:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+TreeHaver.with_backend(:rust) do<br>
+  puts TreeHaver.effective_backend  # =&gt; :rust</p>
+
+<p>TreeHaver.with_backend(:citrus) do<br>
+    puts TreeHaver.effective_backend  # =&gt; :citrus<br>
+  end</p>
+
+<p>puts TreeHaver.effective_backend  # =&gt; :rust (restored)<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;#### Fallback Pattern
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Try one backend, fall back to another on failure:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+def parse_with_fallback(source)<br>
+  TreeHaver.with_backend(:mri) do<br>
+    TreeHaver::Parser.new.tap { |p| p.language = load_language }.parse(source)<br>
+  end<br>
+rescue TreeHaver::NotAvailable<br>
+  # Fall back to Citrus if MRI backend unavailable<br>
+  TreeHaver.with_backend(:citrus) do<br>
+    TreeHaver::Parser.new.tap { |p| p.language = load_language }.parse(source)<br>
+  end<br>
+end<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Complete Real-World Example
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Here's a practical example that extracts package names from a TOML file:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+require “tree_haver”</p>
+
+<h1 id="setup">Setup</h1>
+<p>TreeHaver.register_language(<br>
+  :toml,<br>
+  path: “/usr/local/lib/libtree-sitter-toml.so”,<br>
+)</p>
+
+<p>def extract_package_name(toml_content)<br>
+  # Create parser<br>
+  parser = TreeHaver::Parser.new<br>
+  parser.language = TreeHaver::Language.toml</p>
+
+<p># Parse<br>
+  tree = parser.parse(toml_content)<br>
+  root = tree.root_node</p>
+
+<p># Find [package] table<br>
+  root.each do |child|<br>
+    next unless child.type == “table”</p>
+
+<pre class="code ruby"><code class="ruby">child.each do |table_elem|
+  if table_elem.type == &quot;pair&quot;
+    # Look for name = &quot;...&quot; pair
+    key = table_elem.each.first&amp;.type
+    # In a real implementation, you&#39;d extract the text value
+    # This is simplified for demonstration
+  end
+end   end end
+</code></pre>
+
+<h1 id="usage">Usage</h1>
+<p>toml = «~TOML<br>
+  [package]<br>
+  name = “awesome-app”<br>
+  version = “2.0.0”<br>
+TOML</p>
+
+<p>package_name = extract_package_name(toml)<br>
+#&lt;–rubocop/md–&gt;<code>
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;## 🦷 FLOSS Funding
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;While kettle-rb tools are free software and will always be, the project would benefit immensely from some funding.
+#&lt;--rubocop/md--&gt;Raising a monthly budget of... "dollars" would make the project more sustainable.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;We welcome both individual and corporate sponsors! We also offer a
+#&lt;--rubocop/md--&gt;wide array of funding channels to account for your preferences
+#&lt;--rubocop/md--&gt;(although currently [Open Collective][🖇osc] is our preferred funding platform).
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**If you're working in a company that's making significant use of kettle-rb tools we'd
+#&lt;--rubocop/md--&gt;appreciate it if you suggest to your company to become a kettle-rb sponsor.**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;You can support the development of kettle-rb tools via
+#&lt;--rubocop/md--&gt;[GitHub Sponsors][🖇sponsor],
+#&lt;--rubocop/md--&gt;[Liberapay][⛳liberapay],
+#&lt;--rubocop/md--&gt;[PayPal][🖇paypal],
+#&lt;--rubocop/md--&gt;[Open Collective][🖇osc]
+#&lt;--rubocop/md--&gt;and [Tidelift][🏙️entsup-tidelift].
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;| 📍 NOTE                                                                                                                                                                                                              |
+#&lt;--rubocop/md--&gt;| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+#&lt;--rubocop/md--&gt;| If doing a sponsorship in the form of donation is problematic for your company &lt;br/&gt; from an accounting standpoint, we'd recommend the use of Tidelift, &lt;br/&gt; where you can get a support-like subscription instead. |
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Open Collective for Individuals
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/kettle-rb#backer)]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;NOTE: [kettle-readme-backers][kettle-readme-backers] updates this list every day, automatically.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;!-- OPENCOLLECTIVE-INDIVIDUALS:START --&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;No backers yet. Be the first!
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;!-- OPENCOLLECTIVE-INDIVIDUALS:END --&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Open Collective for Organizations
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Become a sponsor and get your logo on our README on GitHub with a link to your site. [[Become a sponsor](https://opencollective.com/kettle-rb#sponsor)]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;NOTE: [kettle-readme-backers][kettle-readme-backers] updates this list every day, automatically.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;!-- OPENCOLLECTIVE-ORGANIZATIONS:START --&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;No sponsors yet. Be the first!
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;!-- OPENCOLLECTIVE-ORGANIZATIONS:END --&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;[kettle-readme-backers]: https://github.com/kettle-rb/tree_haver/blob/main/exe/kettle-readme-backers
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Another way to support open-source
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;I’m driven by a passion to foster a thriving open-source community – a space where people can tackle complex problems, no matter how small. Revitalizing libraries that have fallen into disrepair, and building new libraries focused on solving real-world challenges, are my passions. I was recently affected by layoffs, and the tech jobs market is unwelcoming. I’m reaching out here because your support would significantly aid my efforts to provide for my family, and my farm (11 🐔 chickens, 2 🐶 dogs, 3 🐰 rabbits, 8 🐈‍ cats).
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;If you work at a company that uses my work, please encourage them to support me as a corporate sponsor. My work on gems you use might show up in `bundle fund`.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;I’m developing a new library, [floss_funding][🖇floss-funding-gem], designed to empower open-source developers like myself to get paid for the work we do, in a sustainable way. Please give it a look.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;**[Floss-Funding.dev][🖇floss-funding.dev]: 👉️ No network calls. 👉️ No tracking. 👉️ No oversight. 👉️ Minimal crypto hashing. 💡 Easily disabled nags**
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;[![OpenCollective Backers][🖇osc-backers-i]][🖇osc-backers] [![OpenCollective Sponsors][🖇osc-sponsors-i]][🖇osc-sponsors] [![Sponsor Me on Github][🖇sponsor-img]][🖇sponsor] [![Liberapay Goal Progress][⛳liberapay-img]][⛳liberapay] [![Donate on PayPal][🖇paypal-img]][🖇paypal] [![Buy me a coffee][🖇buyme-small-img]][🖇buyme] [![Donate on Polar][🖇polar-img]][🖇polar] [![Donate to my FLOSS efforts at ko-fi.com][🖇kofi-img]][🖇kofi] [![Donate to my FLOSS efforts using Patreon][🖇patreon-img]][🖇patreon]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;## 🔐 Security
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;See [SECURITY.md][🔐security].
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;## 🤝 Contributing
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;If you need some ideas of where to help, you could work on adding more code coverage,
+#&lt;--rubocop/md--&gt;or if it is already 💯 (see [below](#code-coverage)) check [reek](REEK), [issues][🤝gh-issues], or [PRs][🤝gh-pulls],
+#&lt;--rubocop/md--&gt;or use the gem and think about how it could be better.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;We [![Keep A Changelog][📗keep-changelog-img]][📗keep-changelog] so if you make changes, remember to update it.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;See [CONTRIBUTING.md][🤝contributing] for more detailed instructions.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### 🚀 Release Instructions
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;See [CONTRIBUTING.md][🤝contributing].
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### Code Coverage
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;[![Coverage Graph][🏀codecov-g]][🏀codecov]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;[![Coveralls Test Coverage][🏀coveralls-img]][🏀coveralls]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;[![QLTY Test Coverage][🏀qlty-covi]][🏀qlty-cov]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;### 🪇 Code of Conduct
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Everyone interacting with this project's codebases, issue trackers,
+#&lt;--rubocop/md--&gt;chat rooms and mailing lists agrees to follow the [![Contributor Covenant 2.1][🪇conduct-img]][🪇conduct].
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;## 🌈 Contributors
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;[![Contributors][🖐contributors-img]][🖐contributors]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Made with [contributors-img][🖐contrib-rocks].
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;Also see GitLab Contributors: [https://gitlab.com/kettle-rb/tree_haver/-/graphs/main][🚎contributors-gl]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;details&gt;
+#&lt;--rubocop/md--&gt;    &lt;summary&gt;⭐️ Star History&lt;/summary&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;a href="https://star-history.com/#kettle-rb/tree_haver&amp;Date"&gt;
+#&lt;--rubocop/md--&gt; &lt;picture&gt;
+#&lt;--rubocop/md--&gt;   &lt;source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=kettle-rb/tree_haver&amp;type=Date&amp;theme=dark" /&gt;
+#&lt;--rubocop/md--&gt;   &lt;source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=kettle-rb/tree_haver&amp;type=Date" /&gt;
+#&lt;--rubocop/md--&gt;   &lt;img alt="Star History Chart" src="https://api.star-history.com/svg?repos=kettle-rb/tree_haver&amp;type=Date" /&gt;
+#&lt;--rubocop/md--&gt; &lt;/picture&gt;
+#&lt;--rubocop/md--&gt;&lt;/a&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&lt;/details&gt;
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;## 📌 Versioning
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;This Library adheres to [![Semantic Versioning 2.0.0][📌semver-img]][📌semver].
+#&lt;--rubocop/md--&gt;Violations of this scheme should be reported as bugs.
+#&lt;--rubocop/md--&gt;Specifically, if a minor or patch version is released that breaks backward compatibility,
+#&lt;--rubocop/md--&gt;a new version should be immediately released that restores compatibility.
+#&lt;--rubocop/md--&gt;Breaking changes to the public API will only be introduced with new major versions.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;&gt; dropping support for a platform is both obviously and objectively a breaking change &lt;br/&gt;
+#&lt;--rubocop/md--&gt;&gt; —Jordan Harband ([@ljharb](https://github.com/ljharb), maintainer of SemVer) [in SemVer issue 716][📌semver-breaking]
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;I understand that policy doesn't work universally ("exceptions to every rule!"),
+#&lt;--rubocop/md--&gt;but it is the policy here.
+#&lt;--rubocop/md--&gt;As such, in many cases it is good to specify a dependency on this library using
+#&lt;--rubocop/md--&gt;the [Pessimistic Version Constraint][📌pvc] with two digits of precision.
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;For example:
+#&lt;--rubocop/md--&gt;
+#&lt;--rubocop/md--&gt;</code>ruby<br>
+spec.add_dependency(“tree_haver”, “~&gt; 1.0”)<br>
+#&lt;–rubocop/md–&gt;```<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;<details>
+#&lt;–rubocop/md–&gt;&lt;summary&gt;📌 Is “Platform Support” part of the public API? More details inside.&lt;/summary&gt;
+#&lt;–rubocop/md–&gt;
+#&lt;–rubocop/md–&gt;SemVer should, IMO, but doesn’t explicitly, say that dropping support for specific Platforms
+#&lt;–rubocop/md–&gt;is a <em>breaking change</em> to an API, and for that reason the bike shedding is endless.
+#&lt;–rubocop/md–&gt;
+#&lt;–rubocop/md–&gt;To get a better understanding of how SemVer is intended to work over a project’s lifetime,
+#&lt;–rubocop/md–&gt;read this article from the creator of SemVer:
+#&lt;–rubocop/md–&gt;
+#&lt;–rubocop/md–&gt;- [“Major Version Numbers are Not Sacred”][📌major-versions-not-sacred]
+#&lt;–rubocop/md–&gt;
+#&lt;–rubocop/md–&gt;</details><br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;See [CHANGELOG.md][📌changelog] for a list of releases.<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;## 📄 License<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;The gem is available as open source under the terms of<br>
+#&lt;–rubocop/md–&gt;the [MIT License][📄license] [![License: MIT][📄license-img]][📄license-ref].<br>
+#&lt;–rubocop/md–&gt;See [LICENSE.txt][📄license] for the official [Copyright Notice][📄copyright-notice-explainer].<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;### © Copyright<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;&lt;ul&gt;<br>
+#&lt;–rubocop/md–&gt;    &lt;li&gt;<br>
+#&lt;–rubocop/md–&gt;        Copyright (c) 2025 Peter H. Boling, of<br>
+#&lt;–rubocop/md–&gt;        <a href="https://discord.gg/3qme4XHNKN">
+#&lt;–rubocop/md–&gt;            Galtzo.com
+#&lt;–rubocop/md–&gt;            <picture>
+#&lt;--rubocop/md--&gt;              <img src="https://logos.galtzo.com/assets/images/galtzo-floss/avatar-128px-blank.svg" alt="Galtzo.com Logo (Wordless) by Aboling0, CC BY-SA 4.0" width="24">
+#&lt;--rubocop/md--&gt;            </picture>
+#&lt;–rubocop/md–&gt;        </a>, and tree_haver contributors.<br>
+#&lt;–rubocop/md–&gt;    &lt;/li&gt;<br>
+#&lt;–rubocop/md–&gt;&lt;/ul&gt;<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;## 🤑 A request for help<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;Maintainers have teeth and need to pay their dentists.<br>
+#&lt;–rubocop/md–&gt;After getting laid off in an RIF in March, and encountering difficulty finding a new one,<br>
+#&lt;–rubocop/md–&gt;I began spending most of my time building open source tools.<br>
+#&lt;–rubocop/md–&gt;I’m hoping to be able to pay for my kids’ health insurance this month,<br>
+#&lt;–rubocop/md–&gt;so if you value the work I am doing, I need your support.<br>
+#&lt;–rubocop/md–&gt;Please consider sponsoring me or the project.<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;To join the community or get help 👇️ Join the Discord.<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;[![Live Chat on Discord][✉️discord-invite-img-ftb]][✉️discord-invite]<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;To say “thanks!” ☝️ Join the Discord or 👇️ send money.<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;[![Sponsor kettle-rb/tree_haver on Open Source Collective][🖇osc-all-bottom-img]][🖇osc] 💌 [![Sponsor me on GitHub Sponsors][🖇sponsor-bottom-img]][🖇sponsor] 💌 [![Sponsor me on Liberapay][⛳liberapay-bottom-img]][⛳liberapay] 💌 [![Donate on PayPal][🖇paypal-bottom-img]][🖇paypal]<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;### Please give the project a star ⭐ ♥.<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;Thanks for RTFM. ☺️<br>
+#&lt;–rubocop/md–&gt;<br>
+#&lt;–rubocop/md–&gt;[⛳liberapay-img]: https://img.shields.io/liberapay/goal/pboling.svg?logo=liberapay&amp;color=a51611&amp;style=flat<br>
+#&lt;–rubocop/md–&gt;[⛳liberapay-bottom-img]: https://img.shields.io/liberapay/goal/pboling.svg?style=for-the-badge&amp;logo=liberapay&amp;color=a51611<br>
+#&lt;–rubocop/md–&gt;[⛳liberapay]: https://liberapay.com/pboling/donate<br>
+#&lt;–rubocop/md–&gt;[🖇osc-all-img]: https://img.shields.io/opencollective/all/kettle-rb<br>
+#&lt;–rubocop/md–&gt;[🖇osc-sponsors-img]: https://img.shields.io/opencollective/sponsors/kettle-rb<br>
+#&lt;–rubocop/md–&gt;[🖇osc-backers-img]: https://img.shields.io/opencollective/backers/kettle-rb<br>
+#&lt;–rubocop/md–&gt;[🖇osc-backers]: https://opencollective.com/kettle-rb#backer<br>
+#&lt;–rubocop/md–&gt;[🖇osc-backers-i]: https://opencollective.com/kettle-rb/backers/badge.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[🖇osc-sponsors]: https://opencollective.com/kettle-rb#sponsor<br>
+#&lt;–rubocop/md–&gt;[🖇osc-sponsors-i]: https://opencollective.com/kettle-rb/sponsors/badge.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[🖇osc-all-bottom-img]: https://img.shields.io/opencollective/all/kettle-rb?style=for-the-badge<br>
+#&lt;–rubocop/md–&gt;[🖇osc-sponsors-bottom-img]: https://img.shields.io/opencollective/sponsors/kettle-rb?style=for-the-badge<br>
+#&lt;–rubocop/md–&gt;[🖇osc-backers-bottom-img]: https://img.shields.io/opencollective/backers/kettle-rb?style=for-the-badge<br>
+#&lt;–rubocop/md–&gt;[🖇osc]: https://opencollective.com/kettle-rb<br>
+#&lt;–rubocop/md–&gt;[🖇sponsor-img]: https://img.shields.io/badge/Sponsor_Me!-pboling.svg?style=social&amp;logo=github<br>
+#&lt;–rubocop/md–&gt;[🖇sponsor-bottom-img]: https://img.shields.io/badge/Sponsor_Me!-pboling-blue?style=for-the-badge&amp;logo=github<br>
+#&lt;–rubocop/md–&gt;[🖇sponsor]: https://github.com/sponsors/pboling<br>
+#&lt;–rubocop/md–&gt;[🖇polar-img]: https://img.shields.io/badge/polar-donate-a51611.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[🖇polar]: https://polar.sh/pboling<br>
+#&lt;–rubocop/md–&gt;[🖇kofi-img]: https://img.shields.io/badge/ko–fi-%E2%9C%93-a51611.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[🖇kofi]: https://ko-fi.com/O5O86SNP4<br>
+#&lt;–rubocop/md–&gt;[🖇patreon-img]: https://img.shields.io/badge/patreon-donate-a51611.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[🖇patreon]: https://patreon.com/galtzo<br>
+#&lt;–rubocop/md–&gt;[🖇buyme-small-img]: https://img.shields.io/badge/buy_me_a_coffee-%E2%9C%93-a51611.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[🖇buyme-img]: https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20latte&amp;emoji=&amp;slug=pboling&amp;button_colour=FFDD00&amp;font_colour=000000&amp;font_family=Cookie&amp;outline_colour=000000&amp;coffee_colour=ffffff<br>
+#&lt;–rubocop/md–&gt;[🖇buyme]: https://www.buymeacoffee.com/pboling<br>
+#&lt;–rubocop/md–&gt;[🖇paypal-img]: https://img.shields.io/badge/donate-paypal-a51611.svg?style=flat&amp;logo=paypal<br>
+#&lt;–rubocop/md–&gt;[🖇paypal-bottom-img]: https://img.shields.io/badge/donate-paypal-a51611.svg?style=for-the-badge&amp;logo=paypal&amp;color=0A0A0A<br>
+#&lt;–rubocop/md–&gt;[🖇paypal]: https://www.paypal.com/paypalme/peterboling<br>
+#&lt;–rubocop/md–&gt;[🖇floss-funding.dev]: https://floss-funding.dev<br>
+#&lt;–rubocop/md–&gt;[🖇floss-funding-gem]: https://github.com/galtzo-floss/floss_funding<br>
+#&lt;–rubocop/md–&gt;[✉️discord-invite]: https://discord.gg/3qme4XHNKN<br>
+#&lt;–rubocop/md–&gt;[✉️discord-invite-img-ftb]: https://img.shields.io/discord/1373797679469170758?style=for-the-badge&amp;logo=discord<br>
+#&lt;–rubocop/md–&gt;[✉️ruby-friends-img]: https://img.shields.io/badge/daily.dev-%F0%9F%92%8E_Ruby_Friends-0A0A0A?style=for-the-badge&amp;logo=dailydotdev&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[✉️ruby-friends]: https://app.daily.dev/squads/rubyfriends<br>
+#&lt;–rubocop/md–&gt;[✇bundle-group-pattern]: https://gist.github.com/pboling/4564780<br>
+#&lt;–rubocop/md–&gt;[⛳️gem-namespace]: https://github.com/kettle-rb/tree_haver<br>
+#&lt;–rubocop/md–&gt;[⛳️namespace-img]: https://img.shields.io/badge/namespace-TreeHaver-3C2D2D.svg?style=square&amp;logo=ruby&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[⛳️gem-name]: https://bestgems.org/gems/tree_haver<br>
+#&lt;–rubocop/md–&gt;[⛳️name-img]: https://img.shields.io/badge/name-tree__haver-3C2D2D.svg?style=square&amp;logo=rubygems&amp;logoColor=red<br>
+#&lt;–rubocop/md–&gt;[⛳️tag-img]: https://img.shields.io/github/tag/kettle-rb/tree_haver.svg<br>
+#&lt;–rubocop/md–&gt;[⛳️tag]: http://github.com/kettle-rb/tree_haver/releases<br>
+#&lt;–rubocop/md–&gt;[🚂maint-blog]: http://www.railsbling.com/tags/tree_haver<br>
+#&lt;–rubocop/md–&gt;[🚂maint-blog-img]: https://img.shields.io/badge/blog-railsbling-0093D0.svg?style=for-the-badge&amp;logo=rubyonrails&amp;logoColor=orange<br>
+#&lt;–rubocop/md–&gt;[🚂maint-contact]: http://www.railsbling.com/contact<br>
+#&lt;–rubocop/md–&gt;[🚂maint-contact-img]: https://img.shields.io/badge/Contact-Maintainer-0093D0.svg?style=flat&amp;logo=rubyonrails&amp;logoColor=red<br>
+#&lt;–rubocop/md–&gt;[💖🖇linkedin]: http://www.linkedin.com/in/peterboling<br>
+#&lt;–rubocop/md–&gt;[💖🖇linkedin-img]: https://img.shields.io/badge/PeterBoling-LinkedIn-0B66C2?style=flat&amp;logo=newjapanprowrestling<br>
+#&lt;–rubocop/md–&gt;[💖✌️wellfound]: https://wellfound.com/u/peter-boling<br>
+#&lt;–rubocop/md–&gt;[💖✌️wellfound-img]: https://img.shields.io/badge/peter–boling-orange?style=flat&amp;logo=wellfound<br>
+#&lt;–rubocop/md–&gt;[💖💲crunchbase]: https://www.crunchbase.com/person/peter-boling<br>
+#&lt;–rubocop/md–&gt;[💖💲crunchbase-img]: https://img.shields.io/badge/peter–boling-purple?style=flat&amp;logo=crunchbase<br>
+#&lt;–rubocop/md–&gt;[💖🐘ruby-mast]: https://ruby.social/@galtzo<br>
+#&lt;–rubocop/md–&gt;[💖🐘ruby-mast-img]: https://img.shields.io/mastodon/follow/109447111526622197?domain=https://ruby.social&amp;style=flat&amp;logo=mastodon&amp;label=Ruby%20@galtzo<br>
+#&lt;–rubocop/md–&gt;[💖🦋bluesky]: https://bsky.app/profile/galtzo.com<br>
+#&lt;–rubocop/md–&gt;[💖🦋bluesky-img]: https://img.shields.io/badge/@galtzo.com-0285FF?style=flat&amp;logo=bluesky&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[💖🌳linktree]: https://linktr.ee/galtzo<br>
+#&lt;–rubocop/md–&gt;[💖🌳linktree-img]: https://img.shields.io/badge/galtzo-purple?style=flat&amp;logo=linktree<br>
+#&lt;–rubocop/md–&gt;[💖💁🏼‍♂️devto]: https://dev.to/galtzo<br>
+#&lt;–rubocop/md–&gt;[💖💁🏼‍♂️devto-img]: https://img.shields.io/badge/dev.to-0A0A0A?style=flat&amp;logo=devdotto&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[💖💁🏼‍♂️aboutme]: https://about.me/peter.boling<br>
+#&lt;–rubocop/md–&gt;[💖💁🏼‍♂️aboutme-img]: https://img.shields.io/badge/about.me-0A0A0A?style=flat&amp;logo=aboutme&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[💖🧊berg]: https://codeberg.org/pboling<br>
+#&lt;–rubocop/md–&gt;[💖🐙hub]: https://github.org/pboling<br>
+#&lt;–rubocop/md–&gt;[💖🛖hut]: https://sr.ht/~galtzo/<br>
+#&lt;–rubocop/md–&gt;[💖🧪lab]: https://gitlab.com/pboling<br>
+#&lt;–rubocop/md–&gt;[👨🏼‍🏫expsup-upwork]: https://www.upwork.com/freelancers/~014942e9b056abdf86?mp_source=share<br>
+#&lt;–rubocop/md–&gt;[👨🏼‍🏫expsup-upwork-img]: https://img.shields.io/badge/UpWork-13544E?style=for-the-badge&amp;logo=Upwork&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[👨🏼‍🏫expsup-codementor]: https://www.codementor.io/peterboling?utm_source=github&amp;utm_medium=button&amp;utm_term=peterboling&amp;utm_campaign=github<br>
+#&lt;–rubocop/md–&gt;[👨🏼‍🏫expsup-codementor-img]: https://img.shields.io/badge/CodeMentor-Get_Help-1abc9c?style=for-the-badge&amp;logo=CodeMentor&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[🏙️entsup-tidelift]: https://tidelift.com/subscription/pkg/rubygems-tree_haver?utm_source=rubygems-tree_haver&amp;utm_medium=referral&amp;utm_campaign=readme<br>
+#&lt;–rubocop/md–&gt;[🏙️entsup-tidelift-img]: https://img.shields.io/badge/Tidelift_and_Sonar-Enterprise_Support-FD3456?style=for-the-badge&amp;logo=sonar&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[🏙️entsup-tidelift-sonar]: https://blog.tidelift.com/tidelift-joins-sonar<br>
+#&lt;–rubocop/md–&gt;[💁🏼‍♂️peterboling]: http://www.peterboling.com<br>
+#&lt;–rubocop/md–&gt;[🚂railsbling]: http://www.railsbling.com<br>
+#&lt;–rubocop/md–&gt;[📜src-gl-img]: https://img.shields.io/badge/GitLab-FBA326?style=for-the-badge&amp;logo=Gitlab&amp;logoColor=orange<br>
+#&lt;–rubocop/md–&gt;[📜src-gl]: https://gitlab.com/kettle-rb/tree_haver/<br>
+#&lt;–rubocop/md–&gt;[📜src-cb-img]: https://img.shields.io/badge/CodeBerg-4893CC?style=for-the-badge&amp;logo=CodeBerg&amp;logoColor=blue<br>
+#&lt;–rubocop/md–&gt;[📜src-cb]: https://codeberg.org/kettle-rb/tree_haver<br>
+#&lt;–rubocop/md–&gt;[📜src-gh-img]: https://img.shields.io/badge/GitHub-238636?style=for-the-badge&amp;logo=Github&amp;logoColor=green<br>
+#&lt;–rubocop/md–&gt;[📜src-gh]: https://github.com/kettle-rb/tree_haver<br>
+#&lt;–rubocop/md–&gt;[📜docs-cr-rd-img]: https://img.shields.io/badge/RubyDoc-Current_Release-943CD2?style=for-the-badge&amp;logo=readthedocs&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[📜docs-head-rd-img]: https://img.shields.io/badge/YARD_on_Galtzo.com-HEAD-943CD2?style=for-the-badge&amp;logo=readthedocs&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[📜gl-wiki]: https://gitlab.com/kettle-rb/tree_haver/-/wikis/home<br>
+#&lt;–rubocop/md–&gt;[📜gh-wiki]: https://github.com/kettle-rb/tree_haver/wiki<br>
+#&lt;–rubocop/md–&gt;[📜gl-wiki-img]: https://img.shields.io/badge/wiki-examples-943CD2.svg?style=for-the-badge&amp;logo=gitlab&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[📜gh-wiki-img]: https://img.shields.io/badge/wiki-examples-943CD2.svg?style=for-the-badge&amp;logo=github&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[👽dl-rank]: https://bestgems.org/gems/tree_haver<br>
+#&lt;–rubocop/md–&gt;[👽dl-ranki]: https://img.shields.io/gem/rd/tree_haver.svg<br>
+#&lt;–rubocop/md–&gt;[👽oss-help]: https://www.codetriage.com/kettle-rb/tree_haver<br>
+#&lt;–rubocop/md–&gt;[👽oss-helpi]: https://www.codetriage.com/kettle-rb/tree_haver/badges/users.svg<br>
+#&lt;–rubocop/md–&gt;[👽version]: https://bestgems.org/gems/tree_haver<br>
+#&lt;–rubocop/md–&gt;[👽versioni]: https://img.shields.io/gem/v/tree_haver.svg<br>
+#&lt;–rubocop/md–&gt;[🏀qlty-mnt]: https://qlty.sh/gh/kettle-rb/projects/tree_haver<br>
+#&lt;–rubocop/md–&gt;[🏀qlty-mnti]: https://qlty.sh/gh/kettle-rb/projects/tree_haver/maintainability.svg<br>
+#&lt;–rubocop/md–&gt;[🏀qlty-cov]: https://qlty.sh/gh/kettle-rb/projects/tree_haver/metrics/code?sort=coverageRating<br>
+#&lt;–rubocop/md–&gt;[🏀qlty-covi]: https://qlty.sh/gh/kettle-rb/projects/tree_haver/coverage.svg<br>
+#&lt;–rubocop/md–&gt;[🏀codecov]: https://codecov.io/gh/kettle-rb/tree_haver<br>
+#&lt;–rubocop/md–&gt;[🏀codecovi]: https://codecov.io/gh/kettle-rb/tree_haver/graph/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🏀coveralls]: https://coveralls.io/github/kettle-rb/tree_haver?branch=main<br>
+#&lt;–rubocop/md–&gt;[🏀coveralls-img]: https://coveralls.io/repos/github/kettle-rb/tree_haver/badge.svg?branch=main<br>
+#&lt;–rubocop/md–&gt;[🖐codeQL]: https://github.com/kettle-rb/tree_haver/security/code-scanning<br>
+#&lt;–rubocop/md–&gt;[🖐codeQL-img]: https://github.com/kettle-rb/tree_haver/actions/workflows/codeql-analysis.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎2-cov-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/coverage.yml<br>
+#&lt;–rubocop/md–&gt;[🚎2-cov-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/coverage.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎3-hd-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/heads.yml<br>
+#&lt;–rubocop/md–&gt;[🚎3-hd-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/heads.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎5-st-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/style.yml<br>
+#&lt;–rubocop/md–&gt;[🚎5-st-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/style.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎6-s-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/supported.yml<br>
+#&lt;–rubocop/md–&gt;[🚎6-s-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/supported.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎9-t-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/truffle.yml<br>
+#&lt;–rubocop/md–&gt;[🚎9-t-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/truffle.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎11-c-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml<br>
+#&lt;–rubocop/md–&gt;[🚎11-c-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎12-crh-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/dep-heads.yml<br>
+#&lt;–rubocop/md–&gt;[🚎12-crh-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/dep-heads.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎13-🔒️-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/locked_deps.yml<br>
+#&lt;–rubocop/md–&gt;[🚎13-🔒️-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/locked_deps.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎14-🔓️-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/unlocked_deps.yml<br>
+#&lt;–rubocop/md–&gt;[🚎14-🔓️-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/unlocked_deps.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[🚎15-🪪-wf]: https://github.com/kettle-rb/tree_haver/actions/workflows/license-eye.yml<br>
+#&lt;–rubocop/md–&gt;[🚎15-🪪-wfi]: https://github.com/kettle-rb/tree_haver/actions/workflows/license-eye.yml/badge.svg<br>
+#&lt;–rubocop/md–&gt;[💎ruby-3.2i]: https://img.shields.io/badge/Ruby-3.2-CC342D?style=for-the-badge&amp;logo=ruby&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[💎ruby-3.3i]: https://img.shields.io/badge/Ruby-3.3-CC342D?style=for-the-badge&amp;logo=ruby&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[💎ruby-c-i]: https://img.shields.io/badge/Ruby-current-CC342D?style=for-the-badge&amp;logo=ruby&amp;logoColor=green<br>
+#&lt;–rubocop/md–&gt;[💎ruby-headi]: https://img.shields.io/badge/Ruby-HEAD-CC342D?style=for-the-badge&amp;logo=ruby&amp;logoColor=blue<br>
+#&lt;–rubocop/md–&gt;[💎truby-23.1i]: https://img.shields.io/badge/Truffle_Ruby-23.1-34BCB1?style=for-the-badge&amp;logo=ruby&amp;logoColor=pink<br>
+#&lt;–rubocop/md–&gt;[💎truby-c-i]: https://img.shields.io/badge/Truffle_Ruby-current-34BCB1?style=for-the-badge&amp;logo=ruby&amp;logoColor=green<br>
+#&lt;–rubocop/md–&gt;[💎truby-headi]: https://img.shields.io/badge/Truffle_Ruby-HEAD-34BCB1?style=for-the-badge&amp;logo=ruby&amp;logoColor=blue<br>
+#&lt;–rubocop/md–&gt;[💎jruby-c-i]: https://img.shields.io/badge/JRuby-current-FBE742?style=for-the-badge&amp;logo=ruby&amp;logoColor=green<br>
+#&lt;–rubocop/md–&gt;[💎jruby-headi]: https://img.shields.io/badge/JRuby-HEAD-FBE742?style=for-the-badge&amp;logo=ruby&amp;logoColor=blue<br>
+#&lt;–rubocop/md–&gt;[🤝gh-issues]: https://github.com/kettle-rb/tree_haver/issues<br>
+#&lt;–rubocop/md–&gt;[🤝gh-pulls]: https://github.com/kettle-rb/tree_haver/pulls<br>
+#&lt;–rubocop/md–&gt;[🤝gl-issues]: https://gitlab.com/kettle-rb/tree_haver/-/issues<br>
+#&lt;–rubocop/md–&gt;[🤝gl-pulls]: https://gitlab.com/kettle-rb/tree_haver/-/merge_requests<br>
+#&lt;–rubocop/md–&gt;[🤝cb-issues]: https://codeberg.org/kettle-rb/tree_haver/issues<br>
+#&lt;–rubocop/md–&gt;[🤝cb-pulls]: https://codeberg.org/kettle-rb/tree_haver/pulls<br>
+#&lt;–rubocop/md–&gt;[🤝cb-donate]: https://donate.codeberg.org/<br>
+#&lt;–rubocop/md–&gt;[🤝contributing]: CONTRIBUTING.md<br>
+#&lt;–rubocop/md–&gt;[🏀codecov-g]: https://codecov.io/gh/kettle-rb/tree_haver/graphs/tree.svg<br>
+#&lt;–rubocop/md–&gt;[🖐contrib-rocks]: https://contrib.rocks<br>
+#&lt;–rubocop/md–&gt;[🖐contributors]: https://github.com/kettle-rb/tree_haver/graphs/contributors<br>
+#&lt;–rubocop/md–&gt;[🖐contributors-img]: https://contrib.rocks/image?repo=kettle-rb/tree_haver<br>
+#&lt;–rubocop/md–&gt;[🚎contributors-gl]: https://gitlab.com/kettle-rb/tree_haver/-/graphs/main<br>
+#&lt;–rubocop/md–&gt;[🪇conduct]: CODE_OF_CONDUCT.md<br>
+#&lt;–rubocop/md–&gt;[🪇conduct-img]: https://img.shields.io/badge/Contributor_Covenant-2.1-259D6C.svg<br>
+#&lt;–rubocop/md–&gt;[📌pvc]: http://guides.rubygems.org/patterns/#pessimistic-version-constraint<br>
+#&lt;–rubocop/md–&gt;[📌semver]: https://semver.org/spec/v2.0.0.html<br>
+#&lt;–rubocop/md–&gt;[📌semver-img]: https://img.shields.io/badge/semver-2.0.0-259D6C.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[📌semver-breaking]: https://github.com/semver/semver/issues/716#issuecomment-869336139<br>
+#&lt;–rubocop/md–&gt;[📌major-versions-not-sacred]: https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html<br>
+#&lt;–rubocop/md–&gt;[📌changelog]: CHANGELOG.md<br>
+#&lt;–rubocop/md–&gt;[📗keep-changelog]: https://keepachangelog.com/en/1.0.0/<br>
+#&lt;–rubocop/md–&gt;[📗keep-changelog-img]: https://img.shields.io/badge/keep–a–changelog-1.0.0-34495e.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[📌gitmoji]: https://gitmoji.dev<br>
+#&lt;–rubocop/md–&gt;[📌gitmoji-img]: https://img.shields.io/badge/gitmoji_commits-%20%F0%9F%98%9C%20%F0%9F%98%8D-34495e.svg?style=flat-square<br>
+#&lt;–rubocop/md–&gt;[🧮kloc]: https://www.youtube.com/watch?v=dQw4w9WgXcQ<br>
+#&lt;–rubocop/md–&gt;[🧮kloc-img]: https://img.shields.io/badge/KLOC-1.067-FFDD67.svg?style=for-the-badge&amp;logo=YouTube&amp;logoColor=blue<br>
+#&lt;–rubocop/md–&gt;[🔐security]: SECURITY.md<br>
+#&lt;–rubocop/md–&gt;[🔐security-img]: https://img.shields.io/badge/security-policy-259D6C.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[📄copyright-notice-explainer]: https://opensource.stackexchange.com/questions/5778/why-do-licenses-such-as-the-mit-license-specify-a-single-year<br>
+#&lt;–rubocop/md–&gt;[📄license]: LICENSE.txt<br>
+#&lt;–rubocop/md–&gt;[📄license-ref]: https://opensource.org/licenses/MIT<br>
+#&lt;–rubocop/md–&gt;[📄license-img]: https://img.shields.io/badge/License-MIT-259D6C.svg<br>
+#&lt;–rubocop/md–&gt;[📄license-compat]: https://dev.to/galtzo/how-to-check-license-compatibility-41h0<br>
+#&lt;–rubocop/md–&gt;[📄license-compat-img]: https://img.shields.io/badge/Apache_Compatible:<em>Category_A-%E2%9C%93-259D6C.svg?style=flat&amp;logo=Apache<br>
+#&lt;–rubocop/md–&gt;[📄ilo-declaration]: https://www.ilo.org/declaration/lang–en/index.htm<br>
+#&lt;–rubocop/md–&gt;[📄ilo-declaration-img]: https://img.shields.io/badge/ILO_Fundamental_Principles-✓-259D6C.svg?style=flat<br>
+#&lt;–rubocop/md–&gt;[🚎yard-current]: http://rubydoc.info/gems/tree_haver<br>
+#&lt;–rubocop/md–&gt;[🚎yard-head]: https://tree-haver.galtzo.com<br>
+#&lt;–rubocop/md–&gt;[💎stone_checksums]: https://github.com/galtzo-floss/stone_checksums<br>
+#&lt;–rubocop/md–&gt;[💎SHA_checksums]: https://gitlab.com/kettle-rb/tree_haver/-/tree/main/checksums<br>
+#&lt;–rubocop/md–&gt;[💎rlts]: https://github.com/rubocop-lts/rubocop-lts<br>
+#&lt;–rubocop/md–&gt;[💎rlts-img]: https://img.shields.io/badge/code_style</em>&amp;_linting-rubocop–lts-34495e.svg?plastic&amp;logo=ruby&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[💎appraisal2]: https://github.com/appraisal-rb/appraisal2<br>
+#&lt;–rubocop/md–&gt;[💎appraisal2-img]: https://img.shields.io/badge/appraised_by-appraisal2-34495e.svg?plastic&amp;logo=ruby&amp;logoColor=white<br>
+#&lt;–rubocop/md–&gt;[💎d-in-dvcs]: https://railsbling.com/posts/dvcs/put_the_d_in_dvcs/</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Thu Dec 18 11:57:46 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>

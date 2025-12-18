@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: BLOCK_BACKEND_IMPLEMENTATION
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "BLOCK_BACKEND_IMPLEMENTATION";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: BLOCK_BACKEND_IMPLEMENTATION</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="block-based-backend-implementation-example">Block-Based Backend Implementation Example</h1>
+
+<p>This document shows the concrete code changes needed to implement the <strong>Hybrid Approach</strong> for block-based backend selection.</p>
+
+<h2 id="-implementation-status-december-16-2025">✅ Implementation Status (December 16, 2025)</h2>
+
+<p><strong>PHASES 1-3 COMPLETE</strong>: All core functionality has been implemented and tested.</p>
+
+<ul>
+  <li>✅ <strong>Phase 1: Thread-Local Context</strong> - DONE</li>
+  <li>✅ <strong>Phase 2: Backend-Aware Caching</strong> - DONE</li>
+  <li>✅ <strong>Phase 3: Explicit Backend Parameters</strong> - DONE</li>
+  <li>✅ <strong>All Tests Passing</strong> - 373 examples, 0 failures</li>
+  <li>🚧 <strong>Documentation</strong> - README and CHANGELOG updates remain</li>
+</ul>
+
+<h3 id="key-achievements">Key Achievements</h3>
+
+<ol>
+  <li>
+<strong>Thread-safe block-based API</strong>: <code>TreeHaver.with_backend(:ffi) { ... }</code>
+</li>
+  <li>
+<strong>Explicit backend parameters</strong>: <code>Parser.new(backend: :mri)</code>
+</li>
+  <li>
+<strong>Backend introspection</strong>: <code>parser.backend</code> returns current backend</li>
+  <li>
+<strong>Proper nesting support</strong>: Inner blocks override outer blocks</li>
+  <li>
+<strong>Exception safety</strong>: Context restored even on errors</li>
+  <li>
+<strong>Backward compatible</strong>: No breaking changes to existing API</li>
+  <li>
+<strong>Comprehensive test coverage</strong>: Thread isolation, concurrent parsing, cache isolation</li>
+</ol>
+
+<h3 id="code-quality-improvements-made">Code Quality Improvements Made</h3>
+
+<ul>
+  <li>Added <code>reset!</code> method to all backends for uniform testing API</li>
+  <li>Documented FFI Tree finalizer design decisions</li>
+  <li>Clarified <code>resolve_backend_module</code> early-return logic with rationale</li>
+  <li>Extensively documented <code>register_language</code> multi-backend registration capability</li>
+  <li>Enhanced all YARD examples to include <code>gem_name</code> parameter where applicable</li>
+</ul>
+
+<h2 id="implementation-overview">Implementation Overview</h2>
+
+<h3 id="phase-1-thread-local-context-core-feature">Phase 1: Thread-Local Context (Core Feature)</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># lib/tree_haver.rb
+
+module TreeHaver
+  class &lt;&lt; self
+    # Thread-local backend context storage
+    # Structure: { backend: Symbol|nil, depth: Integer }
+    def current_backend_context
+      Thread.current[:tree_haver_backend_context] ||= {
+        backend: nil,  # nil means &quot;use global default&quot;
+        depth: 0,       # Track nesting depth for proper cleanup
+      }
+    end
+
+    # Get the effective backend for current context
+    # Priority: thread-local context → global @backend → :auto
+    # @return [Symbol] the backend to use
+    def effective_backend
+      ctx = current_backend_context
+      ctx[:backend] || backend || :auto
+    end
+
+    # Execute a block with a specific backend in thread-local context
+    # Supports nesting (inner block overrides outer block)
+    #
+    # @param name [Symbol, String] backend name (:mri, :rust, :ffi, :java, :citrus, :auto)
+    # @yield block to execute with the specified backend
+    # @return [Object] the return value of the block
+    # @example
+    #   TreeHaver.with_backend(:ffi) do
+    #     parser = TreeHaver::Parser.new
+    #     parser.parse(source)
+    #   end
+    def with_backend(name)
+      raise ArgumentError, &quot;Backend name required&quot; if name.nil?
+
+      ctx = current_backend_context
+      old_backend = ctx[:backend]
+      old_depth = ctx[:depth]
+
+      # Set new backend and increment depth
+      ctx[:backend] = name.to_sym
+      ctx[:depth] += 1
+
+      # Execute block
+      yield
+    ensure
+      # Restore previous backend and depth
+      # This ensures proper unwinding even with exceptions
+      ctx[:backend] = old_backend
+      ctx[:depth] = old_depth
+    end
+
+    # UPDATED: Use effective_backend instead of backend
+    def backend_module
+      case effective_backend  # Changed from: backend
+      when :mri
+        Backends::MRI
+      when :rust
+        Backends::Rust
+      when :ffi
+        Backends::FFI
+      when :java
+        Backends::Java
+      when :citrus
+        Backends::Citrus
+      else
+        # auto-select: prefer native/fast backends, fall back to pure Ruby (Citrus)
+        if defined?(RUBY_ENGINE) &amp;&amp; RUBY_ENGINE == &quot;jruby&quot; &amp;&amp; Backends::Java.available?
+          Backends::Java
+        elsif defined?(RUBY_ENGINE) &amp;&amp; RUBY_ENGINE == &quot;ruby&quot; &amp;&amp; Backends::MRI.available?
+          Backends::MRI
+        elsif defined?(RUBY_ENGINE) &amp;&amp; RUBY_ENGINE == &quot;ruby&quot; &amp;&amp; Backends::Rust.available?
+          Backends::Rust
+        elsif Backends::FFI.available?
+          Backends::FFI
+        elsif Backends::Citrus.available?
+          Backends::Citrus  # Pure Ruby fallback
+        else
+          # No backend available
+          nil
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<h3 id="phase-2-backend-aware-language-cache">Phase 2: Backend-Aware Language Cache</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># lib/tree_haver.rb
+
+module TreeHaver
+  class Language
+    class &lt;&lt; self
+      def from_library(path, symbol: nil, name: nil, validate: true)
+        # ... validation code (unchanged) ...
+
+        mod = TreeHaver.backend_module
+        raise NotAvailable, &quot;No TreeHaver backend is available&quot; unless mod
+
+        # UPDATED: Include effective_backend in cache key
+        # This prevents cache pollution when different backends are used
+        key = [
+          TreeHaver.effective_backend,  # NEW: backend-specific caching
+          path,
+          symbol,
+          name,
+          ENV[&quot;TREE_SITTER_LANG_SYMBOL&quot;],
+        ]
+
+        LanguageRegistry.fetch(key) do
+          if mod::Language.respond_to?(:from_library)
+            mod::Language.from_library(path, symbol: symbol, name: name)
+          else
+            mod::Language.from_path(path)
+          end
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<h3 id="phase-3-explicit-backend-parameters">Phase 3: Explicit Backend Parameters</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># lib/tree_haver.rb
+
+module TreeHaver
+  class &lt;&lt; self
+    # Resolve the effective backend considering explicit override
+    # Priority: explicit &gt; thread context &gt; global &gt; :auto
+    #
+    # @param explicit_backend [Symbol, String, nil] explicitly requested backend
+    # @return [Symbol] the backend to use
+    def resolve_effective_backend(explicit_backend = nil)
+      return explicit_backend.to_sym if explicit_backend
+      effective_backend
+    end
+
+    # Get backend module for a specific backend (with explicit override)
+    #
+    # @param explicit_backend [Symbol, String, nil] explicitly requested backend
+    # @return [Module, nil] the backend module or nil if not available
+    def resolve_backend_module(explicit_backend = nil)
+      # Temporarily override effective backend
+      requested = resolve_effective_backend(explicit_backend)
+
+      case requested
+      when :mri
+        Backends::MRI
+      when :rust
+        Backends::Rust
+      when :ffi
+        Backends::FFI
+      when :java
+        Backends::Java
+      when :citrus
+        Backends::Citrus
+      else
+        backend_module  # Fall back to normal resolution for :auto
+      end
+    end
+  end
+
+  # UPDATED: Parser with optional backend parameter
+  class Parser
+    # Create a new parser instance
+    #
+    # @param backend [Symbol, String, nil] optional backend to use (overrides context/global)
+    # @raise [NotAvailable] if no backend is available or requested backend is unavailable
+    # @example Default (uses context/global)
+    #   parser = TreeHaver::Parser.new
+    # @example Explicit backend
+    #   parser = TreeHaver::Parser.new(backend: :ffi)
+    def initialize(backend: nil)
+      mod = TreeHaver.resolve_backend_module(backend)
+
+      if mod.nil?
+        if backend
+          raise NotAvailable, &quot;Requested backend #{backend.inspect} is not available&quot;
+        else
+          raise NotAvailable, &quot;No TreeHaver backend is available&quot;
+        end
+      end
+
+      @impl = mod::Parser.new
+      @explicit_backend = backend  # Remember for introspection
+    end
+
+    # Get the backend this parser is using (for introspection)
+    # @return [Symbol] the backend name
+    def backend
+      @explicit_backend || TreeHaver.effective_backend
+    end
+
+    # ... rest of Parser methods unchanged ...
+  end
+
+  # UPDATED: Language with optional backend parameter
+  class Language
+    class &lt;&lt; self
+      def from_library(path, symbol: nil, name: nil, validate: true, backend: nil)
+        # ... validation code (unchanged) ...
+
+        mod = TreeHaver.resolve_backend_module(backend)
+
+        if mod.nil?
+          if backend
+            raise NotAvailable, &quot;Requested backend #{backend.inspect} is not available&quot;
+          else
+            raise NotAvailable, &quot;No TreeHaver backend is available&quot;
+          end
+        end
+
+        # Include both effective backend AND explicit backend in cache key
+        # This ensures correct caching even with explicit overrides
+        effective_b = TreeHaver.resolve_effective_backend(backend)
+        key = [
+          effective_b,
+          path,
+          symbol,
+          name,
+          ENV[&quot;TREE_SITTER_LANG_SYMBOL&quot;],
+        ]
+
+        LanguageRegistry.fetch(key) do
+          if mod::Language.respond_to?(:from_library)
+            mod::Language.from_library(path, symbol: symbol, name: name)
+          else
+            mod::Language.from_path(path)
+          end
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<hr>
+
+<h2 id="usage-examples">Usage Examples</h2>
+
+<h3 id="example-1-basic-block-usage">Example 1: Basic Block Usage</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># Thread-safe parsing with different backends
+thread1 = Thread.new do
+  TreeHaver.with_backend(:ffi) do
+    parser = TreeHaver::Parser.new
+    language = TreeHaver::Language.from_library(&quot;/path/to/libtree-sitter-toml.so&quot;)
+    parser.language = language
+    tree = parser.parse(toml_source)
+    puts &quot;FFI backend parsed: #{tree.root_node.type}&quot;
+  end
+end
+
+thread2 = Thread.new do
+  TreeHaver.with_backend(:citrus) do
+    parser = TreeHaver::Parser.new
+    # Citrus backend uses different language loading
+    language = TreeHaver::Language.toml  # Assumes CitrusGrammarFinder registered it
+    parser.language = language
+    tree = parser.parse(toml_source)
+    puts &quot;Citrus backend parsed: #{tree.root_node.type}&quot;
+  end
+end
+
+thread1.join
+thread2.join
+</code></pre>
+
+<h3 id="example-2-nested-blocks-inner-wins">Example 2: Nested Blocks (Inner Wins)</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">TreeHaver.with_backend(:ffi) do
+  parser1 = TreeHaver::Parser.new
+  puts parser1.backend  # =&gt; :ffi
+
+  TreeHaver.with_backend(:mri) do
+    parser2 = TreeHaver::Parser.new
+    puts parser2.backend  # =&gt; :mri (inner block overrides)
+  end
+
+  parser3 = TreeHaver::Parser.new
+  puts parser3.backend  # =&gt; :ffi (back to outer block)
+end
+</code></pre>
+
+<h3 id="example-3-explicit-override">Example 3: Explicit Override</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">TreeHaver.with_backend(:ffi) do
+  # This parser uses :ffi from context
+  parser1 = TreeHaver::Parser.new
+  puts parser1.backend  # =&gt; :ffi
+
+  # This parser explicitly uses :mri (overrides context)
+  parser2 = TreeHaver::Parser.new(backend: :mri)
+  puts parser2.backend  # =&gt; :mri
+
+  # Context still :ffi for next parser
+  parser3 = TreeHaver::Parser.new
+  puts parser3.backend  # =&gt; :ffi
+end
+</code></pre>
+
+<h3 id="example-4-backward-compatible-no-changes-needed">Example 4: Backward Compatible (No Changes Needed)</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># Old code continues to work unchanged
+TreeHaver.backend = :ffi
+
+parser = TreeHaver::Parser.new
+language = TreeHaver::Language.from_library(&quot;/path/to/grammar.so&quot;)
+parser.language = language
+tree = parser.parse(source)
+</code></pre>
+
+<h3 id="example-5-testing-multiple-backends">Example 5: Testing Multiple Backends</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">RSpec.describe(&quot;TreeHaver&quot;) do
+  describe &quot;parsing TOML&quot; do
+    [:mri, :rust, :ffi, :citrus].each do |backend_name|
+      context &quot;with #{backend_name} backend&quot; do
+        it &quot;parses valid TOML&quot; do
+          skip &quot;#{backend_name} backend not available&quot; unless backend_available?(backend_name)
+
+          TreeHaver.with_backend(backend_name) do
+            parser = TreeHaver::Parser.new
+            parser.language = load_toml_language
+            tree = parser.parse(&#39;[package]\nname = &quot;test&quot;&#39;)
+
+            expect(tree.root_node.type).to(eq(&quot;document&quot;))
+          end
+        end
+      end
+    end
+  end
+
+  def backend_available?(name)
+    mod = TreeHaver.resolve_backend_module(name)
+    mod&amp;.available? || false
+  end
+end
+</code></pre>
+
+<h3 id="example-6-benchmarking-backends">Example 6: Benchmarking Backends</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">require &quot;benchmark&quot;
+
+source = File.read(&quot;large_file.toml&quot;)
+backends = [:mri, :rust, :ffi, :citrus].select { |b| backend_available?(b) }
+
+puts &quot;Benchmarking #{backends.size} available backends:&quot;
+Benchmark.bm(10) do |x|
+  backends.each do |backend_name|
+    x.report(backend_name.to_s) do
+      TreeHaver.with_backend(backend_name) do
+        parser = TreeHaver::Parser.new
+        parser.language = TreeHaver::Language.toml
+
+        1000.times do
+          tree = parser.parse(source)
+          tree.root_node  # Force full parse
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<hr>
+
+<h2 id="testing-strategy">Testing Strategy</h2>
+
+<h3 id="unit-tests">Unit Tests</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># spec/tree_haver/thread_local_backend_spec.rb
+
+RSpec.describe(&quot;Thread-local backend selection&quot;) do
+  after do
+    # Clean up thread-local state
+    Thread.current[:tree_haver_backend_context] = nil
+  end
+
+  describe &quot;TreeHaver.with_backend&quot; do
+    it &quot;sets backend for duration of block&quot; do
+      expect(TreeHaver.effective_backend).to(eq(:auto))
+
+      TreeHaver.with_backend(:ffi) do
+        expect(TreeHaver.effective_backend).to(eq(:ffi))
+      end
+
+      expect(TreeHaver.effective_backend).to(eq(:auto))
+    end
+
+    it &quot;supports nested blocks (inner wins)&quot; do
+      TreeHaver.with_backend(:ffi) do
+        expect(TreeHaver.effective_backend).to(eq(:ffi))
+
+        TreeHaver.with_backend(:mri) do
+          expect(TreeHaver.effective_backend).to(eq(:mri))
+        end
+
+        expect(TreeHaver.effective_backend).to(eq(:ffi))
+      end
+    end
+
+    it &quot;restores backend even on exception&quot; do
+      expect do
+        TreeHaver.with_backend(:ffi) do
+          raise StandardError, &quot;test error&quot;
+        end
+      end.to(raise_error(StandardError))
+
+      expect(TreeHaver.effective_backend).to(eq(:auto))
+    end
+  end
+
+  describe &quot;Thread isolation&quot; do
+    it &quot;different threads can use different backends&quot; do
+      results = {}
+
+      thread1 = Thread.new do
+        TreeHaver.with_backend(:ffi) do
+          results[:thread1] = TreeHaver.effective_backend
+          sleep(0.1)  # Ensure overlap
+        end
+      end
+
+      thread2 = Thread.new do
+        TreeHaver.with_backend(:mri) do
+          results[:thread2] = TreeHaver.effective_backend
+          sleep(0.1)  # Ensure overlap
+        end
+      end
+
+      thread1.join
+      thread2.join
+
+      expect(results[:thread1]).to(eq(:ffi))
+      expect(results[:thread2]).to(eq(:mri))
+    end
+  end
+end
+</code></pre>
+
+<h3 id="integration-tests">Integration Tests</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># spec/integration/concurrent_parsing_spec.rb
+
+RSpec.describe(&quot;Concurrent parsing with different backends&quot;) do
+  let(:toml_source) { &#39;[package]\nname = &quot;test&quot;&#39; }
+  let(:toml_grammar_path) { &quot;/usr/local/lib/libtree-sitter-toml.so&quot; }
+
+  it &quot;parses correctly with concurrent threads using different backends&quot; do
+    skip &quot;FFI backend not available&quot; unless TreeHaver::Backends::FFI.available?
+    skip &quot;MRI backend not available&quot; unless TreeHaver::Backends::MRI.available?
+
+    results = Concurrent::Array.new
+
+    threads = []
+
+    # Thread 1: FFI backend
+    threads &lt;&lt; Thread.new do
+      TreeHaver.with_backend(:ffi) do
+        parser = TreeHaver::Parser.new
+        parser.language = TreeHaver::Language.from_library(toml_grammar_path)
+        tree = parser.parse(toml_source)
+        results &lt;&lt; {backend: :ffi, type: tree.root_node.type}
+      end
+    end
+
+    # Thread 2: MRI backend
+    threads &lt;&lt; Thread.new do
+      TreeHaver.with_backend(:mri) do
+        parser = TreeHaver::Parser.new
+        parser.language = TreeHaver::Language.from_library(toml_grammar_path)
+        tree = parser.parse(toml_source)
+        results &lt;&lt; {backend: :mri, type: tree.root_node.type}
+      end
+    end
+
+    threads.each(&amp;:join)
+
+    expect(results.size).to(eq(2))
+    expect(results.all? { |r| r[:type] == &quot;document&quot; }).to(be(true))
+    expect(results.map { |r| r[:backend] }).to(contain_exactly(:ffi, :mri))
+  end
+end
+</code></pre>
+
+<hr>
+
+<h2 id="performance-impact">Performance Impact</h2>
+
+<h3 id="benchmark-thread-local-lookup-overhead">Benchmark: Thread-Local Lookup Overhead</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">require &quot;benchmark/ips&quot;
+
+Benchmark.ips do |x|
+  x.report(&quot;global variable&quot;) do
+    @backend = :ffi
+  end
+
+  x.report(&quot;thread-local&quot;) do
+    Thread.current[:backend] = :ffi
+  end
+
+  x.report(&quot;effective_backend&quot;) do
+    TreeHaver.effective_backend
+  end
+
+  x.compare!
+end
+</code></pre>
+
+<p><strong>Expected Results:</strong></p>
+<pre class="code ruby"><code class="ruby">Comparison:
+     global variable:  50000000.0 i/s
+       thread-local:  45000000.0 i/s - 1.11x slower
+  effective_backend:  40000000.0 i/s - 1.25x slower
+</code></pre>
+
+<p><strong>Analysis:</strong> Negligible overhead (~25% slower but still 40M ops/sec). Parsing is orders of magnitude slower than this lookup, so impact is unmeasurable in real usage.</p>
+
+<hr>
+
+<h2 id="migration-checklist">Migration Checklist</h2>
+
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked><strong>Phase 1: Core Implementation</strong> ✅ COMPLETED
+    <ul class="task-list">
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add <code>current_backend_context</code> method</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add <code>effective_backend</code> method</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add <code>with_backend</code> method</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Update <code>backend_module</code> to use <code>effective_backend</code>
+</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked><strong>Phase 2: Backend-Aware Caching</strong> ✅ COMPLETED
+    <ul class="task-list">
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Update <code>Language.from_library</code> cache key</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add <code>resolve_effective_backend</code> helper</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked><strong>Phase 3: Explicit Parameters</strong> ✅ COMPLETED
+    <ul class="task-list">
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add <code>backend:</code> parameter to <code>Parser.new</code>
+</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add <code>backend:</code> parameter to <code>Language.from_library</code>
+</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add <code>resolve_backend_module</code> method</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add <code>Parser#backend</code> introspection method</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked><strong>Testing</strong> ✅ ALL TESTS PASSING (373 examples, 0 failures)
+    <ul class="task-list">
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Unit tests for <code>with_backend</code>
+</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Unit tests for nested blocks</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Unit tests for exception handling</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Integration tests for thread isolation</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Integration tests for concurrent parsing</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Tests for explicit backend parameters</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Tests for cache isolation</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked><strong>Code Quality Improvements</strong> ✅ COMPLETED
+    <ul class="task-list">
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add <code>reset!</code> method to all backends for uniform API</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Document FFI Tree finalizer behavior (intentional design)</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Fix and document <code>resolve_backend_module</code> logic</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Document <code>register_language</code> multi-backend registration</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Improve YARD documentation with complete examples</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled><strong>Documentation</strong> 🚧 IN PROGRESS
+    <ul class="task-list">
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update README with threading examples</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Add YARD docs for new methods</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled checked>Document precedence rules (in code comments)</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add migration guide</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update CHANGELOG</li>
+    </ul>
+  </li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled><strong>Cleanup</strong>
+    <ul class="task-list">
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Run rubocop</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Run reek</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update version number</li>
+      <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Tag release</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<h2 id="estimated-timeline">Estimated Timeline</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Phase</th>
+      <th>Tasks</th>
+      <th>Time</th>
+      <th>Dependencies</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Phase 1</strong></td>
+      <td>Core thread-local implementation</td>
+      <td>2-3 hours</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td><strong>Phase 2</strong></td>
+      <td>Backend-aware caching</td>
+      <td>1-2 hours</td>
+      <td>Phase 1</td>
+    </tr>
+    <tr>
+      <td><strong>Phase 3</strong></td>
+      <td>Explicit parameters</td>
+      <td>2-3 hours</td>
+      <td>Phase 1, 2</td>
+    </tr>
+    <tr>
+      <td><strong>Testing</strong></td>
+      <td>Unit + integration tests</td>
+      <td>3-4 hours</td>
+      <td>All phases</td>
+    </tr>
+    <tr>
+      <td><strong>Documentation</strong></td>
+      <td>README, YARD, guides</td>
+      <td>2-3 hours</td>
+      <td>All phases</td>
+    </tr>
+    <tr>
+      <td><strong>Review &amp; Polish</strong></td>
+      <td>Code review, cleanup</td>
+      <td>1-2 hours</td>
+      <td>All phases</td>
+    </tr>
+    <tr>
+      <td><strong>Total</strong></td>
+      <td> </td>
+      <td><strong>11-17 hours</strong></td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Recommendation:</strong> Implement over 2-3 days with proper testing and documentation.</p>
+
+<hr>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<h3 id="high-priority-before-release">High Priority (Before Release)</h3>
+
+<ol>
+  <li>
+<strong>Update README.md</strong>
+    <ul>
+      <li>Add threading examples showing <code>with_backend</code> usage</li>
+      <li>Document the new explicit <code>backend:</code> parameters</li>
+      <li>Show concurrent parsing examples</li>
+      <li>Add benchmarking example</li>
+    </ul>
+  </li>
+  <li>
+<strong>Update CHANGELOG.md</strong>
+    <ul>
+      <li>Document new features in v2.0.0 section</li>
+      <li>Emphasize backward compatibility (no breaking changes)</li>
+      <li>List all new methods and parameters</li>
+    </ul>
+  </li>
+  <li>
+<strong>Code Quality Checks</strong>
+    <ul>
+      <li>Run rubocop and fix any violations</li>
+      <li>Run reek and address any smells</li>
+      <li>Verify all documentation is up to date</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="medium-priority-nice-to-have">Medium Priority (Nice to Have)</h3>
+
+<ol>
+  <li>
+<strong>Migration Guide</strong>
+    <ul>
+      <li>Even though backward compatible, show new patterns</li>
+      <li>Provide upgrade examples</li>
+      <li>Document best practices for thread-safe usage</li>
+    </ul>
+  </li>
+  <li>
+<strong>Performance Documentation</strong>
+    <ul>
+      <li>Document thread-local lookup overhead (negligible)</li>
+      <li>Show benchmark results</li>
+      <li>Provide guidance on when to use which backend</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="before-tagging-release">Before Tagging Release</h3>
+
+<ol>
+  <li>
+<strong>Version Bump</strong>
+    <ul>
+      <li>Update <code>lib/tree_haver/version.rb</code> to 2.0.0</li>
+      <li>Ensure all version references are consistent</li>
+    </ul>
+  </li>
+  <li>
+<strong>Final Review</strong>
+    <ul>
+      <li>Review all code changes</li>
+      <li>Ensure test coverage is comprehensive</li>
+      <li>Verify examples in documentation actually work</li>
+    </ul>
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="rollout-strategy">Rollout Strategy</h2>
+
+<h3 id="version-planning">Version Planning</h3>
+
+<ul>
+  <li>
+<strong>v2.0.0</strong> - Major version with block-based backend support
+    <ul>
+      <li>BREAKING: None (fully backward compatible)</li>
+      <li>NEW: <code>TreeHaver.with_backend</code> block API</li>
+      <li>NEW: <code>backend:</code> parameter for <code>Parser.new</code> and <code>Language.from_library</code>
+</li>
+      <li>CHANGED: Language cache is now backend-aware</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="communication">Communication</h3>
+
+<ol>
+  <li>
+<strong>CHANGELOG.md</strong> - Document new features</li>
+  <li>
+<strong>README.md</strong> - Add threading examples early</li>
+  <li>
+<strong>Blog Post</strong> - Announce thread-safe concurrent parsing</li>
+  <li>
+<strong>Migration Guide</strong> - Even though backward compatible, show new patterns</li>
+</ol>
+
+<h3 id="deprecation-if-needed-in-future">Deprecation (if needed in future)</h3>
+
+<p>No deprecations needed - old API remains fully functional.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Thu Dec 18 11:57:45 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>

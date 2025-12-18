@@ -67,7 +67,7 @@ If you've used [Faraday](https://github.com/lostisland/faraday), [multi_json](ht
 | **multi_xml**  | XML parsing         | Nokogiri, LibXML, Ox                                                 |
 | **TreeHaver**  | Code parsing        | MRI, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus (&) |
 
-**Write once, run anywhere.** 
+**Write once, run anywhere.**
 
 **Learn once, write anywhere.**
 
@@ -395,19 +395,19 @@ TreeHaver supports 10 parsing backends, each with different trade-offs. The `aut
 
 ```ruby
 # Tree-sitter backends
-gem 'ruby_tree_sitter', '~> 2.0'  # MRI backend
-gem 'tree_stump'                   # Rust backend
-gem 'ffi', '>= 1.15', '< 2.0'     # FFI backend
+gem "ruby_tree_sitter", "~> 2.0"  # MRI backend
+gem "tree_stump"                   # Rust backend
+gem "ffi", ">= 1.15", "< 2.0"     # FFI backend
 # Java backend: no gem required (uses JRuby's built-in JNI)
 
 # Language-specific backends
-gem 'prism', '~> 1.0'              # Ruby parsing (stdlib in Ruby 3.4+)
+gem "prism", "~> 1.0"              # Ruby parsing (stdlib in Ruby 3.4+)
 # Psych: no gem required (Ruby stdlib)
-gem 'commonmarker', '>= 0.23'      # Markdown parsing (comrak)
-gem 'markly', '~> 0.11'            # GFM parsing (cmark-gfm)
+gem "commonmarker", ">= 0.23"      # Markdown parsing (comrak)
+gem "markly", "~> 0.11"            # GFM parsing (cmark-gfm)
 
 # Pure Ruby fallback
-gem 'citrus', '~> 3.0'             # Citrus backend
+gem "citrus", "~> 3.0"             # Citrus backend
 # Plus grammar gems: toml-rb, dhall, finitio, etc.
 ```
 
@@ -798,63 +798,90 @@ parser = TreeSitter::Parser.new  # Actually creates TreeHaver::Parser
 
 This is safe and idempotent—if the real `TreeSitter` module is already loaded, the shim does nothing.
 
-#### ⚠️ Critical: Exception Hierarchy Incompatibility
+#### ⚠️ Important: Exception Hierarchy
 
-**ruby_tree_sitter v2+ exceptions inherit from `Exception` (not `StandardError`).**  
-**TreeHaver exceptions follow Ruby best practices and inherit from `StandardError`.**
+**Both ruby_tree_sitter v2+ and TreeHaver exceptions inherit from `Exception` (not `StandardError`).**
 
-This means exception handling behaves **differently** between the two:
+This design decision follows ruby_tree_sitter's lead for thread-safety and signal handling reasons. See [ruby_tree_sitter PR #83](https://github.com/Faveod/ruby-tree-sitter/pull/83) for the rationale.
 
-| Scenario | ruby_tree_sitter v2+ | TreeHaver Compat Mode |
-|----------|---------------------|----------------------|
-| `rescue => e` | Does NOT catch TreeSitter errors | DOES catch TreeHaver errors |
-| Behavior | Errors propagate (inherit Exception) | Errors caught (inherit StandardError) |
-
-**Example showing the difference:**
+**What this means for exception handling:**
 
 ```ruby
-# With real ruby_tree_sitter v2+
+# ⚠️ This will NOT catch TreeHaver errors
+begin
+  TreeHaver::Language.from_library("/nonexistent.so")
+rescue => e
+  puts "Caught!"  # Never reached - TreeHaver::Error inherits Exception
+end
+
+# ✅ Explicit rescue is required
+begin
+  TreeHaver::Language.from_library("/nonexistent.so")
+rescue TreeHaver::Error => e
+  puts "Caught!"  # This works
+end
+
+# ✅ Or rescue specific exceptions
+begin
+  TreeHaver::Language.from_library("/nonexistent.so")
+rescue TreeHaver::NotAvailable => e
+  puts "Grammar not available: #{e.message}"
+end
+```
+
+**TreeHaver Exception Hierarchy:**
+
+```
+Exception
+└── TreeHaver::Error              # Base error class
+    ├── TreeHaver::NotAvailable   # Backend/grammar not available
+    └── TreeHaver::BackendConflict # Backend incompatibility detected
+```
+
+**Compatibility Mode Behavior:**
+
+The compat mode (`require "tree_haver/compat"`) creates aliases but **does not change the exception hierarchy**:
+
+```ruby
+require "tree_haver/compat"
+
+# TreeSitter constants are now aliases to TreeHaver
+TreeSitter::Error       # => TreeHaver::Error (still inherits Exception)
+TreeSitter::Parser      # => TreeHaver::Parser
+TreeSitter::Language    # => TreeHaver::Language
+
+# Exception handling remains the same
 begin
   TreeSitter::Language.load("missing", "/nonexistent.so")
-rescue => e
-  puts "Caught!"  # Never reached - TreeSitter errors inherit Exception
-end
-
-# With TreeHaver compat mode
-require "tree_haver/compat"
-begin
-  TreeSitter::Language.load("missing", "/nonexistent.so")  # Actually TreeHaver
-rescue => e
-  puts "Caught!"  # WILL be reached - TreeHaver errors inherit StandardError
+rescue TreeSitter::Error => e  # Still requires explicit rescue
+  puts "Error: #{e.message}"
 end
 ```
 
-**To write compatible exception handling:**
+**Best Practices:**
 
-```ruby
-# Option 1: Catch specific exception (works with both)
-begin
-  TreeSitter::Language.load(...)
-rescue TreeSitter::TreeSitterError => e  # Explicit rescue
-  # Works with both ruby_tree_sitter and TreeHaver compat mode
-end
+1. **Always use explicit rescue** for TreeHaver errors:
+   ```ruby
+   begin
+     finder = TreeHaver::GrammarFinder.new(:toml)
+     finder.register! if finder.available?
+     language = TreeHaver::Language.toml
+   rescue TreeHaver::NotAvailable => e
+     warn("TOML grammar not available: #{e.message}")
+     # Fallback to another backend or fail gracefully
+   end
+   `````
 
-# Option 2: Use TreeHaver API directly (recommended)
-begin
-  TreeHaver::Language.from_library(...)
-rescue TreeHaver::NotAvailable => e  # TreeHaver's unified exception
-  # Clear and consistent when using TreeHaver
-end
-```
+2. **Never rely on `rescue => e`** to catch TreeHaver errors (it won't work)
 
-**Why TreeHaver uses StandardError:**
+**Why inherit from Exception?**
 
-1. **Ruby Best Practice**: The [Ruby style guide](https://rubystyle.guide/#exception-flow-control) recommends inheriting from `StandardError`
-2. **Safety**: Inheriting from `Exception` can catch system signals (`SIGTERM`, `SIGINT`) and `exit`, which is dangerous
-3. **Consistency**: Most Ruby libraries follow this convention
-4. **Testability**: StandardError exceptions are easier to test and mock
+Following ruby_tree_sitter's reasoning:
+- **Thread safety**: Prevents accidental catching in thread cleanup code
+- **Signal handling**: Ensures parsing errors don't interfere with SIGTERM/SIGINT
+- **Intentional handling**: Forces developers to explicitly handle parsing errors
 
-See `lib/tree_haver/compat.rb` for detailed documentation.
+See `lib/tree_haver/compat.rb` for compatibility layer documentation.
 
 ## 🔧 Basic Usage
 
@@ -974,9 +1001,9 @@ parser.language = TreeHaver::Backends::Commonmarker::Language.markdown
 
 source = <<~MARKDOWN
   # My Document
-  
+
   ## Section
-  
+
   - Item 1
   - Item 2
 MARKDOWN
@@ -1294,7 +1321,7 @@ RSpec.describe("MyParser") do
         TreeHaver.with_backend(backend_name) do
           parser = TreeHaver::Parser.new
           result = parser.parse("x = 42")
-          expect(result.root_node.type).to eq("document")
+          expect(result.root_node.type).to(eq("document"))
         end
         # Backend automatically restored after block
       end

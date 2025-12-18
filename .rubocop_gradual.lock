@@ -1,8 +1,4 @@
 {
-  "README.md:855364408": [
-    [837, 29, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403],
-    [844, 36, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403]
-  ],
   "lib/tree_haver.rb:594464984": [
     [237, 5, 28, "ThreadSafety/ClassAndModuleAttributes: Avoid mutating class and module attributes.", 1973484748],
     [1068, 7, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
