@@ -10,6 +10,8 @@ eval_gemfile("modular/documentation.gemfile")
 
 eval_gemfile("modular/optional.gemfile")
 
+eval_gemfile("modular/rspec.gemfile")
+
 eval_gemfile("modular/style.gemfile")
 
 eval_gemfile("modular/tree_sitter.gemfile")

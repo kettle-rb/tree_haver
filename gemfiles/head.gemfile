@@ -6,6 +6,8 @@ gem "benchmark", "~> 0.4", ">= 0.4.1"
 
 gemspec path: "../"
 
+eval_gemfile("modular/rspec.gemfile")
+
 eval_gemfile("modular/tree_sitter.gemfile")
 
 eval_gemfile("modular/x_std_libs.gemfile")
