@@ -360,6 +360,46 @@ module TreeHaver
           Point.new(row, col)
         end
 
+        # Get the 1-based line number where this node starts
+        #
+        # Psych provides 0-based line numbers, so we add 1.
+        #
+        # @return [Integer] 1-based line number
+        def start_line
+          row = start_point.row
+          row + 1
+        end
+
+        # Get the 1-based line number where this node ends
+        #
+        # @return [Integer] 1-based line number
+        def end_line
+          row = end_point.row
+          row + 1
+        end
+
+        # Get position information as a hash
+        #
+        # Returns a hash with 1-based line numbers and 0-based columns.
+        # Compatible with *-merge gems' FileAnalysisBase.
+        #
+        # @return [Hash{Symbol => Integer}] Position hash
+        def source_position
+          {
+            start_line: start_line,
+            end_line: end_line,
+            start_column: start_point.column,
+            end_column: end_point.column,
+          }
+        end
+
+        # Get the first child node
+        #
+        # @return [Node, nil] First child or nil
+        def first_child
+          children.first
+        end
+
         # Check if this is a named (structural) node
         #
         # All Psych nodes are structural.

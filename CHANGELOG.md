@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- **Position API Enhancements** – Added consistent position methods to all backend Node classes for compatibility with `*-merge` gems
+  - `start_line` - Returns 1-based line number where node starts (converts 0-based `start_point.row` to 1-based)
+  - `end_line` - Returns 1-based line number where node ends (converts 0-based `end_point.row` to 1-based)
+  - `source_position` - Returns hash `{start_line:, end_line:, start_column:, end_column:}` with 1-based lines and 0-based columns
+  - `first_child` - Convenience method that returns `children.first` for iteration compatibility
+  - **Fixed:** `TreeHaver::Node#start_point` and `#end_point` now handle both Point objects and hashes from backends (Prism, Citrus return hashes)
+  - **Fixed:** Added Psych, Commonmarker, and Markly backends to `resolve_backend_module` and `backend_module` case statements so they can be explicitly selected with `TreeHaver.backend = :psych` etc.
+  - **Fixed:** Added Prism, Psych, Commonmarker, and Markly backends to `unwrap_language` method so language objects are properly passed to backend parsers
+  - **Fixed:** Commonmarker backend's `text` method now safely handles container nodes that don't have string_content (wraps in rescue TypeError)
+  - **Added to:**
+    - Main `TreeHaver::Node` wrapper (used by tree-sitter backends: MRI, FFI, Java, Rust)
+    - `Backends::Commonmarker::Node` - uses Commonmarker's `sourcepos` (already 1-based)
+    - `Backends::Markly::Node` - uses Markly's `source_position` (already 1-based)
+    - `Backends::Prism::Node` - uses Prism's `location` (already 1-based)
+    - `Backends::Psych::Node` - calculates from `start_point`/`end_point` (0-based)
+    - `Backends::Citrus::Node` - calculates from `start_point`/`end_point` (0-based)
+  - **Backward Compatible:** Existing `start_point`/`end_point` methods continue to work unchanged
+  - **Purpose:** Enables all `*-merge` gems to use consistent position API without backend-specific workarounds
+
 - **Prism Backend** – New backend wrapping Ruby's official Prism parser (stdlib in Ruby 3.4+, gem for 3.2+)
   - `TreeHaver::Backends::Prism::Language` - Language wrapper (Ruby-only)
   - `TreeHaver::Backends::Prism::Parser` - Parser with `parse` and `parse_string` methods

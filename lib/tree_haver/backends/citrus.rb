@@ -372,6 +372,42 @@ module TreeHaver
           calculate_point(@match.offset + @match.length)
         end
 
+        # Get the 1-based line number where this node starts
+        #
+        # @return [Integer] 1-based line number
+        def start_line
+          start_point[:row] + 1
+        end
+
+        # Get the 1-based line number where this node ends
+        #
+        # @return [Integer] 1-based line number
+        def end_line
+          end_point[:row] + 1
+        end
+
+        # Get position information as a hash
+        #
+        # Returns a hash with 1-based line numbers and 0-based columns.
+        # Compatible with *-merge gems' FileAnalysisBase.
+        #
+        # @return [Hash{Symbol => Integer}] Position hash
+        def source_position
+          {
+            start_line: start_line,
+            end_line: end_line,
+            start_column: start_point[:column],
+            end_column: end_point[:column],
+          }
+        end
+
+        # Get the first child node
+        #
+        # @return [Node, nil] First child or nil
+        def first_child
+          child(0)
+        end
+
         def text
           @match.string
         end

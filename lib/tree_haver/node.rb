@@ -165,10 +165,20 @@ module TreeHaver
     def start_point
       if @inner_node.respond_to?(:start_point)
         point = @inner_node.start_point
-        Point.new(point.row, point.column)
+        # Handle both Point objects and hashes
+        if point.is_a?(Hash)
+          Point.new(point[:row], point[:column])
+        else
+          Point.new(point.row, point.column)
+        end
       elsif @inner_node.respond_to?(:start_position)
         point = @inner_node.start_position
-        Point.new(point.row, point.column)
+        # Handle both Point objects and hashes
+        if point.is_a?(Hash)
+          Point.new(point[:row], point[:column])
+        else
+          Point.new(point.row, point.column)
+        end
       else
         raise TreeHaver::Error, "Backend node does not support start_point/start_position"
       end
@@ -180,10 +190,20 @@ module TreeHaver
     def end_point
       if @inner_node.respond_to?(:end_point)
         point = @inner_node.end_point
-        Point.new(point.row, point.column)
+        # Handle both Point objects and hashes
+        if point.is_a?(Hash)
+          Point.new(point[:row], point[:column])
+        else
+          Point.new(point.row, point.column)
+        end
       elsif @inner_node.respond_to?(:end_position)
         point = @inner_node.end_position
-        Point.new(point.row, point.column)
+        # Handle both Point objects and hashes
+        if point.is_a?(Hash)
+          Point.new(point[:row], point[:column])
+        else
+          Point.new(point.row, point.column)
+        end
       else
         raise TreeHaver::Error, "Backend node does not support end_point/end_position"
       end

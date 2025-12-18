@@ -256,26 +256,6 @@ def parse(source)
 end
 ```
 
-## Migration Guide
-
-If you have existing code that does wrapping/unwrapping in backends:
-
-1. **Remove unwrapping from backend `language=`**
-   - TreeHaver::Parser now calls `unwrap_language` first
-   - Backend receives raw object
-
-2. **Remove unwrapping from backend `parse_string`**
-   - TreeHaver::Parser now unwraps `old_tree.inner_tree`
-   - Backend receives raw tree
-
-3. **Remove wrapping from backend `parse` and `parse_string`**
-   - Return raw backend objects
-   - TreeHaver::Parser wraps them
-
-4. **Update documentation**
-   - Note that backend receives unwrapped objects
-   - Note that backend returns unwrapped objects
-
 ## Testing Strategy
 
 ### Unit Tests (Backend)

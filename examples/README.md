@@ -1,6 +1,6 @@
 # TreeHaver Examples
 
-This directory contains **18 executable examples** demonstrating tree_haver's capabilities across multiple backends and languages.
+This directory contains **24 executable examples** demonstrating tree_haver's capabilities across multiple backends and languages.
 
 ## Quick Start
 
@@ -118,7 +118,115 @@ ruby examples/citrus_dhall.rb
 
 ---
 
-## Examples by Backend
+### Markdown (2 examples)
+
+Parse Markdown with different backends:
+
+- **`commonmarker_markdown.rb`** - Commonmarker (comrak Rust parser)
+- **`markly_markdown.rb`** - Markly (cmark-gfm C library)
+
+```bash
+ruby examples/commonmarker_markdown.rb
+ruby examples/markly_markdown.rb
+```
+
+**What they show:**
+- Position API: `start_line`, `end_line`, `source_position`, `first_child`
+- Finding headings with header levels
+- Finding code blocks with language info
+- GitHub Flavored Markdown extensions (Markly)
+- CommonMark compliance
+
+**Use cases:**
+- Documentation processing
+- Markdown linting and formatting
+- README rendering
+- Static site generators
+
+---
+
+### Ruby (1 example)
+
+Parse Ruby code with Prism:
+
+- **`prism_ruby.rb`** - Ruby parsing with Prism (official Ruby parser)
+
+```bash
+ruby examples/prism_ruby.rb
+```
+
+**What it shows:**
+- Official Ruby parser (stdlib in Ruby 3.4+, gem for 3.2-3.3)
+- Finding classes, methods, calls
+- Excellent error recovery
+- Position API with 1-based line numbers
+- Parse errors, warnings, and comments
+
+**Use cases:**
+- Ruby code analysis
+- Linters and formatters (RuboCop, etc.)
+- Refactoring tools
+- Documentation generators
+- AST-based transformations
+
+---
+
+### YAML (1 example)
+
+Parse YAML with Psych:
+
+- **`psych_yaml.rb`** - YAML parsing with Psych (Ruby stdlib)
+
+```bash
+ruby examples/psych_yaml.rb
+```
+
+**What it shows:**
+- Ruby standard library YAML parser (always available)
+- Node type checks: `mapping?`, `sequence?`, `scalar?`, `alias?`
+- `mapping_entries` for extracting key-value pairs
+- Position API with 1-based line numbers
+- Anchors and tags
+
+**Use cases:**
+- Configuration file parsing
+- CI/CD pipeline configs (GitHub Actions, etc.)
+- Kubernetes manifests
+- Docker Compose files
+
+---
+
+### Markdown Merge (2 examples)
+
+Demonstrate intelligent template-to-destination Markdown merging using markdown-merge gem:
+
+- **`commonmarker_merge_example.rb`** - Smart merge with Commonmarker backend
+- **`markly_merge_example.rb`** - Smart GFM merge with Markly backend
+
+```bash
+ruby examples/commonmarker_merge_example.rb
+ruby examples/markly_merge_example.rb
+```
+
+**What they show:**
+- Real-world usage of Position API in markdown-merge
+- Template-to-destination merge (template updates + destination customizations)
+- Preserving destination customizations while applying template structure
+- Structure-aware section matching and merging
+- GFM features: tables, task lists, strikethrough
+- Merge statistics and warnings
+
+**Use cases:**
+- Update project READMEs from template while preserving customizations
+- Maintain consistent documentation structure across projects
+- Apply template updates to API docs without losing custom content
+- GitHub documentation template workflows
+
+**Note:** These examples require the `markdown-merge` and `ast-merge` gems in addition to `tree_haver`.
+
+---
+
+## Common Patterns
 
 ### Auto Backend
 
@@ -205,6 +313,83 @@ ruby examples/citrus_dhall.rb    # Dhall (configuration language)
 ```
 
 **Best for:** Pure Ruby portability, fallback, type-safe configs
+
+---
+
+### Commonmarker Backend
+
+Fast Markdown parsing with comrak (Rust):
+
+```bash
+ruby examples/commonmarker_markdown.rb  # Markdown
+```
+
+**What it shows:**
+- Fast CommonMark-compliant parsing
+- Position API: `start_line`, `end_line`, `source_position`, `first_child`
+- Finding headings with `header_level`
+- Finding code blocks with `fence_info`
+- GitHub Flavored Markdown support
+
+**Best for:** Documentation processing, Markdown linting, content management
+
+---
+
+### Markly Backend
+
+Markdown parsing with cmark-gfm (C library):
+
+```bash
+ruby examples/markly_markdown.rb  # Markdown
+```
+
+**What it shows:**
+- GitHub's official Markdown implementation
+- GFM extensions: tables, strikethrough, task lists, autolinks
+- Position API with 1-based line numbers
+- Type normalization (`header` → `heading`)
+- Multiple output formats: HTML, CommonMark, plaintext
+
+**Best for:** GitHub-compatible Markdown, README rendering, issue/PR parsing
+
+---
+
+### Prism Backend
+
+Ruby parsing with Prism (official Ruby parser):
+
+```bash
+ruby examples/prism_ruby.rb  # Ruby
+```
+
+**What it shows:**
+- Official Ruby parser (stdlib in Ruby 3.4+)
+- Excellent error recovery
+- Position API: `start_line`, `end_line`, `source_position`
+- Finding classes, methods, calls
+- Parse errors, warnings, comments
+- Works on all Ruby implementations
+
+**Best for:** Ruby code analysis, linters, formatters, refactoring tools
+
+---
+
+### Psych Backend
+
+YAML parsing with Psych (Ruby stdlib):
+
+```bash
+ruby examples/psych_yaml.rb  # YAML
+```
+
+**What it shows:**
+- Ruby's standard library YAML parser
+- Position API with 1-based line numbers
+- Node type checks: `mapping?`, `sequence?`, `scalar?`, `alias?`
+- `mapping_entries` for key-value pairs
+- Always available (part of stdlib)
+
+**Best for:** Configuration files, CI/CD configs, Kubernetes manifests
 
 ---
 

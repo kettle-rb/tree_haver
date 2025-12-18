@@ -86,6 +86,159 @@ RSpec.describe TreeHaver::Node do
     end
   end
 
+  describe "#start_line" do
+    it "returns 1-based line number", :toml_grammar do
+      expect(root_node.start_line).to be_a(Integer)
+      expect(root_node.start_line).to be >= 1
+    end
+
+    it "converts 0-based row to 1-based line", :toml_grammar do
+      # If start_point.row is 0, start_line should be 1
+      expect(root_node.start_line).to eq(root_node.start_point.row + 1)
+    end
+
+    context "with multiline source" do
+      let(:source) { "x = 1\ny = 2\nz = 3" }
+
+      it "returns correct line numbers for nodes on different lines", :toml_grammar do
+        root_node.children.each do |child|
+          # Each line should have a 1-based line number
+          expect(child.start_line).to be >= 1
+          expect(child.start_line).to be <= 3
+        end
+      end
+    end
+  end
+
+  describe "#end_line" do
+    it "returns 1-based line number", :toml_grammar do
+      expect(root_node.end_line).to be_a(Integer)
+      expect(root_node.end_line).to be >= 1
+    end
+
+    it "converts 0-based row to 1-based line", :toml_grammar do
+      # If end_point.row is 0, end_line should be 1
+      expect(root_node.end_line).to eq(root_node.end_point.row + 1)
+    end
+
+    it "end_line is greater than or equal to start_line", :toml_grammar do
+      expect(root_node.end_line).to be >= root_node.start_line
+    end
+
+    context "with multiline node" do
+      let(:source) { "[table]\nx = 1\ny = 2" }
+
+      it "returns the line where the node ends", :toml_grammar do
+        # Root node should span multiple lines
+        if root_node.end_point.row > root_node.start_point.row
+          expect(root_node.end_line).to be > root_node.start_line
+        end
+      end
+    end
+  end
+
+  describe "#source_position" do
+    it "returns a hash with position information", :toml_grammar do
+      pos = root_node.source_position
+      expect(pos).to be_a(Hash)
+      expect(pos).to include(
+        :start_line,
+        :end_line,
+        :start_column,
+        :end_column,
+      )
+    end
+
+    it "has 1-based line numbers", :toml_grammar do
+      pos = root_node.source_position
+      expect(pos[:start_line]).to be >= 1
+      expect(pos[:end_line]).to be >= 1
+      expect(pos[:end_line]).to be >= pos[:start_line]
+    end
+
+    it "has 0-based column numbers", :toml_grammar do
+      pos = root_node.source_position
+      expect(pos[:start_column]).to be >= 0
+      expect(pos[:end_column]).to be >= 0
+    end
+
+    it "matches start_line and end_line methods", :toml_grammar do
+      pos = root_node.source_position
+      expect(pos[:start_line]).to eq(root_node.start_line)
+      expect(pos[:end_line]).to eq(root_node.end_line)
+    end
+
+    it "matches start_point and end_point columns", :toml_grammar do
+      pos = root_node.source_position
+      expect(pos[:start_column]).to eq(root_node.start_point.column)
+      expect(pos[:end_column]).to eq(root_node.end_point.column)
+    end
+
+    context "with complex multiline source" do
+      let(:source) { "[section]\nkey = \"value\"\n# comment\nother = 123" }
+
+      it "provides correct positions for all nodes", :toml_grammar do
+        root_node.children.each do |child|
+          pos = child.source_position
+
+          # All values should be valid integers
+          expect(pos[:start_line]).to be_a(Integer)
+          expect(pos[:end_line]).to be_a(Integer)
+          expect(pos[:start_column]).to be_a(Integer)
+          expect(pos[:end_column]).to be_a(Integer)
+
+          # Lines should be 1-based
+          expect(pos[:start_line]).to be >= 1
+          expect(pos[:end_line]).to be >= pos[:start_line]
+
+          # Columns should be 0-based
+          expect(pos[:start_column]).to be >= 0
+          expect(pos[:end_column]).to be >= 0
+        end
+      end
+    end
+  end
+
+  describe "#first_child" do
+    it "returns the first child node", :toml_grammar do
+      if root_node.child_count > 0
+        expect(root_node.first_child).to be_a(TreeHaver::Node)
+        expect(root_node.first_child).to eq(root_node.children.first)
+        expect(root_node.first_child).to eq(root_node.child(0))
+      end
+    end
+
+    it "returns nil when node has no children", :toml_grammar do
+      # Find a leaf node (no children)
+      leaf_node = nil
+      root_node.children.each do |child|
+        if child.child_count == 0
+          leaf_node = child
+          break
+        end
+      end
+
+      if leaf_node
+        expect(leaf_node.first_child).to be_nil
+      end
+    end
+
+    context "with multiple children" do
+      let(:source) { "x = 1\ny = 2\nz = 3" }
+
+      it "returns the first child consistently", :toml_grammar do
+        if root_node.child_count > 1
+          first = root_node.first_child
+          expect(first).to be_a(TreeHaver::Node)
+
+          # Should be the same as children[0]
+          expect(first.start_byte).to eq(root_node.children[0].start_byte)
+          expect(first.end_byte).to eq(root_node.children[0].end_byte)
+        end
+      end
+    end
+  end
+
   describe "#text" do
     it "returns the node's text content", :toml_grammar do
       expect(root_node.text).to be_a(String)

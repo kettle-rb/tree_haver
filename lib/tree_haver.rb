@@ -478,6 +478,12 @@ module TreeHaver
         Backends::Citrus
       when :prism
         Backends::Prism
+      when :psych
+        Backends::Psych
+      when :commonmarker
+        Backends::Commonmarker
+      when :markly
+        Backends::Markly
       when :auto
         backend_module  # Fall back to normal resolution for :auto
       else
@@ -536,6 +542,12 @@ module TreeHaver
         Backends::Citrus
       when :prism
         Backends::Prism
+      when :psych
+        Backends::Psych
+      when :commonmarker
+        Backends::Commonmarker
+      when :markly
+        Backends::Markly
       else
         # auto-select: prefer native/fast backends, fall back to pure Ruby (Citrus)
         if defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby" && Backends::Java.available?
@@ -1100,6 +1112,14 @@ module TreeHaver
         return lang.impl if lang.respond_to?(:impl)
       when :citrus
         return lang.grammar_module if lang.respond_to?(:grammar_module)
+      when :prism
+        return lang  # Prism backend expects the Language wrapper
+      when :psych
+        return lang  # Psych backend expects the Language wrapper
+      when :commonmarker
+        return lang  # Commonmarker backend expects the Language wrapper
+      when :markly
+        return lang  # Markly backend expects the Language wrapper
       else
         # Unknown backend (e.g., test backend)
         # Try generic unwrapping methods for flexibility in testing

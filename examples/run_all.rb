@@ -43,6 +43,20 @@ EXAMPLES = [
   {file: "citrus_toml.rb", name: "TOML (Citrus)", backend: "citrus", language: "TOML"},
   {file: "citrus_finitio.rb", name: "Finitio (Citrus)", backend: "citrus", language: "Finitio"},
   {file: "citrus_dhall.rb", name: "Dhall (Citrus)", backend: "citrus", language: "Dhall"},
+
+  # Markdown examples
+  {file: "commonmarker_markdown.rb", name: "Markdown (Commonmarker)", backend: "commonmarker", language: "Markdown"},
+  {file: "markly_markdown.rb", name: "Markdown (Markly)", backend: "markly", language: "Markdown"},
+
+  # Ruby examples
+  {file: "prism_ruby.rb", name: "Ruby (Prism)", backend: "prism", language: "Ruby"},
+
+  # YAML examples
+  {file: "psych_yaml.rb", name: "YAML (Psych)", backend: "psych", language: "YAML"},
+
+  # Markdown-merge examples (demonstrate 3-way merge)
+  {file: "commonmarker_merge_example.rb", name: "Markdown Merge (Commonmarker)", backend: "commonmarker", language: "Markdown"},
+  {file: "markly_merge_example.rb", name: "Markdown Merge (Markly)", backend: "markly", language: "Markdown"},
 ].freeze
 
 # ANSI color codes

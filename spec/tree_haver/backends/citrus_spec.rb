@@ -485,6 +485,97 @@ RSpec.describe TreeHaver::Backends::Citrus do
       end
     end
 
+    describe "#start_line" do
+      it "returns 1-based line number" do
+        expect(node.start_line).to be_a(Integer)
+        expect(node.start_line).to be >= 1
+      end
+
+      it "converts 0-based row to 1-based" do
+        expect(node.start_line).to eq(node.start_point[:row] + 1)
+      end
+
+      context "with multiline source" do
+        let(:source) { "x = 1\ny = 2\nz = 3" }
+        let(:tree) { parser.parse(source) }
+        let(:node) { tree.root_node }
+
+        it "returns correct line number for first line" do
+          if node.start_point[:row] == 0
+            expect(node.start_line).to eq(1)
+          end
+        end
+      end
+    end
+
+    describe "#end_line" do
+      it "returns 1-based line number" do
+        expect(node.end_line).to be_a(Integer)
+        expect(node.end_line).to be >= 1
+      end
+
+      it "converts 0-based row to 1-based" do
+        expect(node.end_line).to eq(node.end_point[:row] + 1)
+      end
+
+      it "is greater than or equal to start_line" do
+        expect(node.end_line).to be >= node.start_line
+      end
+    end
+
+    describe "#source_position" do
+      it "returns hash with position information" do
+        pos = node.source_position
+        expect(pos).to be_a(Hash)
+        expect(pos).to include(
+          :start_line,
+          :end_line,
+          :start_column,
+          :end_column,
+        )
+      end
+
+      it "has 1-based line numbers" do
+        pos = node.source_position
+        expect(pos[:start_line]).to be >= 1
+        expect(pos[:end_line]).to be >= 1
+        expect(pos[:end_line]).to be >= pos[:start_line]
+      end
+
+      it "has 0-based column numbers" do
+        pos = node.source_position
+        expect(pos[:start_column]).to be >= 0
+        expect(pos[:end_column]).to be >= 0
+      end
+
+      it "matches start_line and end_line methods" do
+        pos = node.source_position
+        expect(pos[:start_line]).to eq(node.start_line)
+        expect(pos[:end_line]).to eq(node.end_line)
+      end
+
+      it "matches start_point and end_point columns" do
+        pos = node.source_position
+        expect(pos[:start_column]).to eq(node.start_point[:column])
+        expect(pos[:end_column]).to eq(node.end_point[:column])
+      end
+    end
+
+    describe "#first_child" do
+      it "returns the first child node" do
+        if node.child_count > 0
+          expect(node.first_child).to be_a(backend::Node)
+          expect(node.first_child).to eq(node.child(0))
+        end
+      end
+
+      it "returns nil when node has no children" do
+        if node.child_count == 0
+          expect(node.first_child).to be_nil
+        end
+      end
+    end
+
     describe "#has_error?" do
       it "always returns false" do
         expect(node.has_error?).to be false

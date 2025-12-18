@@ -203,8 +203,14 @@ module TreeHaver
         # @return [String] Node text
         def text
           # Commonmarker nodes have string_content for text nodes
+          # Container nodes don't have string_content and will raise TypeError
           if @inner_node.respond_to?(:string_content)
-            @inner_node.string_content.to_s
+            begin
+              @inner_node.string_content.to_s
+            rescue TypeError
+              # Container node - concatenate children's text
+              children.map(&:text).join
+            end
           else
             # For container nodes, concatenate children's text
             children.map(&:text).join
