@@ -25,8 +25,10 @@ env:
   #   because it would be redundant with the coverage workflow.
   # Also we can validate all output formats without breaking CodeCov,
   #   since we aren't submitting these reports anywhere.
-  K_SOUP_COV_MIN_BRANCH: 71
-  K_SOUP_COV_MIN_LINE: 86
+  # Because we run tests in different rake tasks,
+  #   we don't get a complete coverage picture, and this is artificially low.
+  K_SOUP_COV_MIN_BRANCH: 10
+  K_SOUP_COV_MIN_LINE: 40
   K_SOUP_COV_MIN_HARD: false
   K_SOUP_COV_FORMATTERS: "html,xml,rcov,lcov,json,tty"
   K_SOUP_COV_DO: true
