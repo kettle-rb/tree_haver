@@ -157,10 +157,15 @@ module TreeHaver
           rescue NameError => e
             # TreeSitter constant doesn't exist - backend not loaded
             raise TreeHaver::NotAvailable, "ruby_tree_sitter not available: #{e.message}"
-          rescue TreeSitter::TreeSitterError => e
+          rescue Exception => e # rubocop:disable Lint/RescueException
             # TreeSitter errors inherit from Exception (not StandardError) in ruby_tree_sitter v2+
-            # This includes: ParserNotFoundError, LanguageLoadError, SymbolNotFoundError, etc.
-            raise TreeHaver::NotAvailable, "Could not load language: #{e.message}"
+            # We rescue Exception and check the class name dynamically to avoid NameError
+            # at parse time when TreeSitter constant isn't loaded yet
+            if defined?(TreeSitter::TreeSitterError) && e.is_a?(TreeSitter::TreeSitterError)
+              raise TreeHaver::NotAvailable, "Could not load language: #{e.message}"
+            else
+              raise # Re-raise if it's not a TreeSitter error
+            end
           end
 
           # Load a language from a shared library path (legacy method)
@@ -188,9 +193,15 @@ module TreeHaver
         rescue NameError => e
           # TreeSitter constant doesn't exist - backend not loaded
           raise TreeHaver::NotAvailable, "ruby_tree_sitter not available: #{e.message}"
-        rescue TreeSitter::TreeSitterError => e
+        rescue Exception => e # rubocop:disable Lint/RescueException
           # TreeSitter errors inherit from Exception (not StandardError) in ruby_tree_sitter v2+
-          raise TreeHaver::NotAvailable, "Could not create parser: #{e.message}"
+          # We rescue Exception and check the class name dynamically to avoid NameError
+          # at parse time when TreeSitter constant isn't loaded yet
+          if defined?(TreeSitter::TreeSitterError) && e.is_a?(TreeSitter::TreeSitterError)
+            raise TreeHaver::NotAvailable, "Could not create parser: #{e.message}"
+          else
+            raise # Re-raise if it's not a TreeSitter error
+          end
         end
 
         # Set the language for this parser
@@ -209,9 +220,15 @@ module TreeHaver
 
           # Return the language object
           lang
-        rescue TreeSitter::TreeSitterError => e
+        rescue Exception => e # rubocop:disable Lint/RescueException
           # TreeSitter errors inherit from Exception (not StandardError) in ruby_tree_sitter v2+
-          raise TreeHaver::NotAvailable, "Could not set language: #{e.message}"
+          # We rescue Exception and check the class name dynamically to avoid NameError
+          # at parse time when TreeSitter constant isn't loaded yet
+          if defined?(TreeSitter::TreeSitterError) && e.is_a?(TreeSitter::TreeSitterError)
+            raise TreeHaver::NotAvailable, "Could not set language: #{e.message}"
+          else
+            raise # Re-raise if it's not a TreeSitter error
+          end
         end
 
         # Parse source code
@@ -228,9 +245,15 @@ module TreeHaver
           tree = @parser.parse_string(nil, source)
           raise TreeHaver::NotAvailable, "Parse returned nil - is language set?" if tree.nil?
           tree
-        rescue TreeSitter::TreeSitterError => e
+        rescue Exception => e # rubocop:disable Lint/RescueException
           # TreeSitter errors inherit from Exception (not StandardError) in ruby_tree_sitter v2+
-          raise TreeHaver::NotAvailable, "Could not parse source: #{e.message}"
+          # We rescue Exception and check the class name dynamically to avoid NameError
+          # at parse time when TreeSitter constant isn't loaded yet
+          if defined?(TreeSitter::TreeSitterError) && e.is_a?(TreeSitter::TreeSitterError)
+            raise TreeHaver::NotAvailable, "Could not parse source: #{e.message}"
+          else
+            raise # Re-raise if it's not a TreeSitter error
+          end
         end
 
         # Parse source code with optional incremental parsing
@@ -246,9 +269,15 @@ module TreeHaver
           # old_tree is already unwrapped by TreeHaver::Parser, pass it directly
           # Return raw tree - TreeHaver::Parser will wrap it
           @parser.parse_string(old_tree, source)
-        rescue TreeSitter::TreeSitterError => e
+        rescue Exception => e # rubocop:disable Lint/RescueException
           # TreeSitter errors inherit from Exception (not StandardError) in ruby_tree_sitter v2+
-          raise TreeHaver::NotAvailable, "Could not parse source: #{e.message}"
+          # We rescue Exception and check the class name dynamically to avoid NameError
+          # at parse time when TreeSitter constant isn't loaded yet
+          if defined?(TreeSitter::TreeSitterError) && e.is_a?(TreeSitter::TreeSitterError)
+            raise TreeHaver::NotAvailable, "Could not parse source: #{e.message}"
+          else
+            raise # Re-raise if it's not a TreeSitter error
+          end
         end
       end
     end
