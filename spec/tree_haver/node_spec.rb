@@ -523,7 +523,7 @@ RSpec.describe TreeHaver::Node do
         if root_node.child_count > 0
           child = root_node.child(0)
           sibling = child.next_sibling
-          expect(sibling).to be_a(TreeHaver::Node).or be_nil
+          expect(sibling).to be_a(described_class).or be_nil
         end
       end
     end
@@ -550,7 +550,7 @@ RSpec.describe TreeHaver::Node do
         if root_node.child_count > 1
           child = root_node.child(1)
           sibling = child.prev_sibling
-          expect(sibling).to be_a(TreeHaver::Node).or be_nil
+          expect(sibling).to be_a(described_class).or be_nil
         end
       end
     end

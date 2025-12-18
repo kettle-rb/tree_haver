@@ -1,11 +1,11 @@
 {
-  "README.md:2107906670": [
-    [804, 29, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403],
-    [811, 36, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403]
+  "README.md:855364408": [
+    [837, 29, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403],
+    [844, 36, 3, "Lint/Syntax: unexpected token tBDOT3\n(Using Ruby 3.2 parser; configure using `TargetRubyVersion` parameter, under `AllCops`)", 193347403]
   ],
-  "lib/tree_haver.rb:957472042": [
-    [213, 5, 28, "ThreadSafety/ClassAndModuleAttributes: Avoid mutating class and module attributes.", 1973484748],
-    [1032, 7, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
+  "lib/tree_haver.rb:594464984": [
+    [237, 5, 28, "ThreadSafety/ClassAndModuleAttributes: Avoid mutating class and module attributes.", 1973484748],
+    [1068, 7, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
   ],
   "lib/tree_haver/backends/ffi.rb:344054470": [
     [30, 7, 231, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 4278263153],
@@ -15,15 +15,15 @@
   "lib/tree_haver/backends/java.rb:1697176321": [
     [268, 11, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
   ],
-  "lib/tree_haver/backends/mri.rb:3301111084": [
+  "lib/tree_haver/backends/mri.rb:1201400393": [
     [113, 11, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
   ],
   "lib/tree_haver/backends/rust.rb:1781628214": [
     [178, 11, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
   ],
-  "lib/tree_haver/node.rb:412681772": [
-    [484, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974],
-    [487, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
+  "lib/tree_haver/node.rb:1991178476": [
+    [504, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974],
+    [507, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
   ],
   "spec/integration/backend_edge_cases_spec.rb:3125406541": [
     [235, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
@@ -62,23 +62,23 @@
     [101, 14, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
     [112, 14, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369]
   ],
-  "spec/tree_haver/node_spec.rb:2653933782": [
-    [96, 9, 28, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3667764013],
-    [130, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
-    [158, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
-    [204, 31, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [243, 36, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [268, 34, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [283, 32, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [322, 31, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [346, 34, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [373, 35, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [400, 35, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [515, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [518].", 3484858249],
-    [518, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [515].", 3767344958],
-    [728, 7, 65, "RSpec/IndexedLet: This `let` statement uses `1` in its name. Please give it a meaningful name.", 4132605332],
-    [729, 7, 65, "RSpec/IndexedLet: This `let` statement uses `2` in its name. Please give it a meaningful name.", 3915049431],
-    [730, 7, 65, "RSpec/IndexedLet: This `let` statement uses `3` in its name. Please give it a meaningful name.", 4085774230]
+  "spec/tree_haver/node_spec.rb:2196908309": [
+    [205, 47, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [232, 33, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [249, 9, 28, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3667764013],
+    [283, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
+    [311, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
+    [357, 31, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [396, 36, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [421, 34, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [436, 32, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [475, 31, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [499, 34, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+    [668, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [671].", 3484858249],
+    [671, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [668].", 3767344958],
+    [881, 7, 65, "RSpec/IndexedLet: This `let` statement uses `1` in its name. Please give it a meaningful name.", 4132605332],
+    [882, 7, 65, "RSpec/IndexedLet: This `let` statement uses `2` in its name. Please give it a meaningful name.", 3915049431],
+    [883, 7, 65, "RSpec/IndexedLet: This `let` statement uses `3` in its name. Please give it a meaningful name.", 4085774230]
   ],
   "spec/tree_haver/parser_backend_spec.rb:3758225329": [
     [5, 16, 42, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2414562915],

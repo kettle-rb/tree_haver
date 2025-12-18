@@ -104,20 +104,20 @@ def show_tree(node, indent = 0, max_depth = 3)
 
   prefix = "  " * indent
   marker = case node.type
-           when "stream" then "🌊"
-           when "document" then "📄"
-           when "mapping" then "🗺️"
-           when "sequence" then "📋"
-           when "scalar" then "📝"
-           when "alias" then "🔗"
-           else "•"
-           end
+  when "stream" then "🌊"
+  when "document" then "📄"
+  when "mapping" then "🗺️"
+  when "sequence" then "📋"
+  when "scalar" then "📝"
+  when "alias" then "🔗"
+  else "•"
+  end
 
   # Show node info with position
-  if node.scalar?
-    text_preview = node.value.to_s[0..40].gsub("\n", "\\n")
+  text_preview = if node.scalar?
+    node.value.to_s[0..40].gsub("\n", "\\n")
   else
-    text_preview = node.text[0..40].gsub("\n", "\\n")
+    node.text[0..40].gsub("\n", "\\n")
   end
   pos_info = "(L#{node.start_line}:#{node.end_line})"
   puts "#{prefix}#{marker} #{node.type} #{pos_info}: #{text_preview.inspect}"
@@ -225,7 +225,7 @@ if first_scalar
   puts "  start_point: row=#{first_scalar.start_point.row}, col=#{first_scalar.start_point.column} (0-based)"
   puts "  end_point: row=#{first_scalar.end_point.row}, col=#{first_scalar.end_point.column} (0-based)"
   puts "  source_position: #{first_scalar.source_position.inspect}"
-  puts "  first_child: #{first_scalar.first_child&.type || 'none (leaf node)'}"
+  puts "  first_child: #{first_scalar.first_child&.type || "none (leaf node)"}"
 end
 puts
 
@@ -287,4 +287,3 @@ puts "  - CI/CD pipeline configs (GitHub Actions, etc.)"
 puts "  - Kubernetes manifests"
 puts "  - Docker Compose files"
 puts "=" * 70
-

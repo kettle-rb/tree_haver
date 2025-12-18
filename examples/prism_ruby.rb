@@ -66,7 +66,7 @@ puts "Setting backend to Prism..."
 TreeHaver.backend = :prism
 puts "✓ Backend: #{TreeHaver.backend_module}"
 puts "✓ Ruby Version: #{RUBY_VERSION}"
-puts "✓ Prism: #{Prism.const_defined?(:VERSION) ? Prism::VERSION : 'stdlib'}"
+puts "✓ Prism: #{Prism.const_defined?(:VERSION) ? Prism::VERSION : "stdlib"}"
 puts
 
 # Check availability
@@ -111,15 +111,15 @@ def show_tree(node, indent = 0, max_depth = 3)
 
   prefix = "  " * indent
   marker = case node.type
-           when "program_node" then "📄"
-           when "class_node" then "🏛️"
-           when "def_node" then "⚙️"
-           when "call_node" then "📞"
-           when "constant_read_node" then "📌"
-           when "instance_variable_read_node" then "💾"
-           when "string_node" then "📝"
-           else "•"
-           end
+  when "program_node" then "📄"
+  when "class_node" then "🏛️"
+  when "def_node" then "⚙️"
+  when "call_node" then "📞"
+  when "constant_read_node" then "📌"
+  when "instance_variable_read_node" then "💾"
+  when "string_node" then "📝"
+  else "•"
+  end
 
   # Show node info with position
   text_preview = node.text[0..40].gsub("\n", "\\n")
@@ -151,7 +151,11 @@ end
 classes = find_nodes_by_type(root, "class_node")
 classes.each do |cls|
   # Get class name (Prism stores it differently than tree-sitter)
-  name = cls.text.lines.first.match(/class\s+(\w+)/)[1] rescue "Unknown"
+  name = begin
+    cls.text.lines.first.match(/class\s+(\w+)/)[1]
+  rescue
+    "Unknown"
+  end
   pos = cls.source_position
   puts "  Class #{name} (lines #{pos[:start_line]}-#{pos[:end_line]})"
 end
@@ -164,7 +168,11 @@ methods = find_nodes_by_type(root, "def_node")
 methods.each do |method|
   # Extract method name from source
   first_line = method.text.lines.first.strip
-  name = first_line.match(/def\s+(\w+)/)[1] rescue "unknown"
+  name = begin
+    first_line.match(/def\s+(\w+)/)[1]
+  rescue
+    "unknown"
+  end
   pos = method.source_position
   puts "  def #{name} (lines #{pos[:start_line]}-#{pos[:end_line]})"
 end
@@ -194,7 +202,7 @@ if first_class
   puts "  start_point: row=#{first_class.start_point[:row]}, col=#{first_class.start_point[:column]} (0-based)"
   puts "  end_point: row=#{first_class.end_point[:row]}, col=#{first_class.end_point[:column]} (0-based)"
   puts "  source_position: #{first_class.source_position.inspect}"
-  puts "  first_child: #{first_class.first_child&.type || 'none'}"
+  puts "  first_child: #{first_class.first_child&.type || "none"}"
   puts
   puts "  Source text:"
   first_class.text.lines.take(3).each { |line| puts "    #{line}" }
@@ -244,4 +252,3 @@ puts "  - Refactoring tools"
 puts "  - Documentation generators"
 puts "  - AST-based transformations"
 puts "=" * 70
-

@@ -124,7 +124,7 @@ puts "-" * 80
 merger = Markdown::Merge::SmartMerger.new(
   template_markdown,
   destination_markdown,
-  backend: :commonmarker
+  backend: :commonmarker,
 )
 
 result = merger.merge_result
@@ -186,4 +186,3 @@ puts "✓ Excellent error tolerance"
 puts "✓ Consistent Position API"
 puts "✓ Perfect for documentation workflows"
 puts "=" * 80
-

@@ -92,14 +92,14 @@ def show_tree(node, indent = 0, max_depth = 3)
 
   prefix = "  " * indent
   marker = case node.type
-           when "document" then "📄"
-           when "heading" then "📌"
-           when "paragraph" then "📝"
-           when "code_block" then "💻"
-           when "list" then "📋"
-           when "text" then "📖"
-           else "•"
-           end
+  when "document" then "📄"
+  when "heading" then "📌"
+  when "paragraph" then "📝"
+  when "code_block" then "💻"
+  when "list" then "📋"
+  when "text" then "📖"
+  else "•"
+  end
 
   # Show node info with position
   text_preview = node.text[0..40].gsub("\n", "\\n")
@@ -162,7 +162,7 @@ if first_heading
   puts "  start_point: row=#{first_heading.start_point.row}, col=#{first_heading.start_point.column} (0-based)"
   puts "  end_point: row=#{first_heading.end_point.row}, col=#{first_heading.end_point.column} (0-based)"
   puts "  source_position: #{first_heading.source_position.inspect}"
-  puts "  first_child: #{first_heading.first_child&.type || 'none'}"
+  puts "  first_child: #{first_heading.first_child&.type || "none"}"
 end
 puts
 
@@ -188,4 +188,3 @@ puts "  - Markdown linting and formatting"
 puts "  - Content management systems"
 puts "  - Static site generators"
 puts "=" * 70
-

@@ -496,13 +496,22 @@ RSpec.describe TreeHaver::Backends::Citrus do
       end
 
       context "with multiline source" do
-        let(:source) { "x = 1\ny = 2\nz = 3" }
-        let(:tree) { parser.parse(source) }
-        let(:node) { tree.root_node }
+        let(:multiline_source) { "x = 1\ny = 2\nz = 3" }
+        let(:multiline_match) do
+          double(
+            "multiline_match",
+            offset: 0,
+            length: multiline_source.length,
+            string: multiline_source,
+            events: [:root],
+            matches: [],
+          )
+        end
+        let(:multiline_node) { backend::Node.new(multiline_match, multiline_source) }
 
         it "returns correct line number for first line" do
-          if node.start_point[:row] == 0
-            expect(node.start_line).to eq(1)
+          if multiline_node.start_point[:row] == 0
+            expect(multiline_node.start_line).to eq(1)
           end
         end
       end
@@ -565,7 +574,9 @@ RSpec.describe TreeHaver::Backends::Citrus do
       it "returns the first child node" do
         if node.child_count > 0
           expect(node.first_child).to be_a(backend::Node)
-          expect(node.first_child).to eq(node.child(0))
+          # Compare by match object and position instead of object identity
+          expect(node.first_child.instance_variable_get(:@match)).to eq(node.child(0).instance_variable_get(:@match))
+          expect(node.first_child.start_byte).to eq(node.child(0).start_byte)
         end
       end
 

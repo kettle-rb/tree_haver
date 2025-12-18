@@ -10,12 +10,17 @@ require "set"
 require_relative "tree_haver/version"
 require_relative "tree_haver/language_registry"
 
-# TreeHaver is a cross-Ruby adapter for the tree-sitter parsing library.
+# TreeHaver is a cross-Ruby adapter for code parsing with 10 backends.
 #
-# It provides a unified API for parsing source code using tree-sitter grammars,
-# working seamlessly across MRI Ruby, JRuby, and TruffleRuby.
+# Provides a unified API for parsing source code across MRI Ruby, JRuby, and TruffleRuby
+# using tree-sitter grammars or language-specific native parsers.
 #
-# @example Basic usage with TOML
+# Supports 10 backends:
+# - Tree-sitter: MRI (C), Rust, FFI, Java
+# - Native parsers: Prism (Ruby), Psych (YAML), Commonmarker (Markdown), Markly (GFM)
+# - Pure Ruby: Citrus (portable fallback)
+#
+# @example Basic usage with tree-sitter
 #   # Load a language grammar
 #   language = TreeHaver::Language.from_library(
 #     "/usr/local/lib/libtree-sitter-toml.so",
@@ -30,8 +35,28 @@ require_relative "tree_haver/language_registry"
 #   tree = parser.parse("[package]\nname = \"my-app\"")
 #   root = tree.root_node
 #
-#   # Traverse the AST
-#   root.each { |child| puts child.type }
+#   # Use unified Position API (works across all backends)
+#   puts root.start_line      # => 1 (1-based)
+#   puts root.source_position # => {start_line:, end_line:, start_column:, end_column:}
+#
+# @example Using language-specific backends
+#   # Parse Ruby with Prism
+#   TreeHaver.backend = :prism
+#   parser = TreeHaver::Parser.new
+#   parser.language = TreeHaver::Backends::Prism::Language.ruby
+#   tree = parser.parse("class Example; end")
+#
+#   # Parse YAML with Psych
+#   TreeHaver.backend = :psych
+#   parser = TreeHaver::Parser.new
+#   parser.language = TreeHaver::Backends::Psych::Language.yaml
+#   tree = parser.parse("key: value")
+#
+#   # Parse Markdown with Commonmarker
+#   TreeHaver.backend = :commonmarker
+#   parser = TreeHaver::Parser.new
+#   parser.language = TreeHaver::Backends::Commonmarker::Language.markdown
+#   tree = parser.parse("# Heading\nParagraph")
 #
 # @example Using language registration
 #   TreeHaver.register_language(:toml, path: "/usr/local/lib/libtree-sitter-toml.so")
@@ -43,22 +68,21 @@ require_relative "tree_haver/language_registry"
 #   finder.register! if finder.available?
 #   language = TreeHaver::Language.toml
 #
-# @example Using GrammarFinder in a *-merge gem
-#   # Each merge gem (toml-merge, json-merge, bash-merge) uses the same pattern
-#   finder = TreeHaver::GrammarFinder.new(:toml)  # or :json, :bash, etc.
-#   if finder.available?
-#     finder.register!
-#   else
-#     warn finder.not_found_message
-#   end
-#
 # @example Selecting a backend
-#   TreeHaver.backend = :ffi  # Force FFI backend
-#   TreeHaver.backend = :mri  # Force MRI backend
-#   TreeHaver.backend = :auto # Auto-select (default)
+#   TreeHaver.backend = :mri          # Force MRI (ruby_tree_sitter)
+#   TreeHaver.backend = :rust         # Force Rust (tree_stump)
+#   TreeHaver.backend = :ffi          # Force FFI
+#   TreeHaver.backend = :java         # Force Java (JRuby)
+#   TreeHaver.backend = :prism        # Force Prism (Ruby)
+#   TreeHaver.backend = :psych        # Force Psych (YAML)
+#   TreeHaver.backend = :commonmarker # Force Commonmarker (Markdown)
+#   TreeHaver.backend = :markly       # Force Markly (GFM)
+#   TreeHaver.backend = :citrus       # Force Citrus (pure Ruby)
+#   TreeHaver.backend = :auto         # Auto-select (default)
 #
 # @see https://tree-sitter.github.io/tree-sitter/ tree-sitter documentation
 # @see GrammarFinder For automatic grammar library discovery
+# @see Backends For available parsing backends
 module TreeHaver
   # Base error class for TreeHaver exceptions
   # @see https://github.com/Faveod/ruby-tree-sitter/pull/83 for inherit from Exception reasoning

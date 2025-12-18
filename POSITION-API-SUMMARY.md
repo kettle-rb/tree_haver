@@ -1,7 +1,7 @@
 # Position API
 
-**Date:** December 18, 2025  
-**Feature:** Unified Position API for all tree_haver backends  
+**Date:** December 18, 2025
+**Feature:** Unified Position API for all tree_haver backends
 **Version:** Unreleased (planned for v3.1.0)
 
 ---
@@ -35,7 +35,7 @@ Added four position-related methods to all tree_haver backend Node classes to pr
 ## Backends Updated
 
 ### ✅ Main TreeHaver::Node Wrapper
-**File:** `vendor/tree_haver/lib/tree_haver/node.rb`  
+**File:** `vendor/tree_haver/lib/tree_haver/node.rb`
 **Lines:** 113-149, 230-241
 
 Added all four methods to the main unified Node wrapper. This automatically covers:
@@ -47,25 +47,25 @@ Added all four methods to the main unified Node wrapper. This automatically cove
 All tree-sitter backends use `TreeHaver::Node` to wrap their raw nodes, so they inherit these methods automatically.
 
 ### ✅ Commonmarker Backend (Already Complete)
-**File:** `vendor/tree_haver/lib/tree_haver/backends/commonmarker.rb`  
+**File:** `vendor/tree_haver/lib/tree_haver/backends/commonmarker.rb`
 **Lines:** 286-324, 342-348
 
 Already had all four methods implemented. Uses Commonmarker's `sourcepos` array which provides 1-based line numbers directly.
 
 ### ✅ Markly Backend (Already Complete)
-**File:** `vendor/tree_haver/lib/tree_haver/backends/markly.rb`  
+**File:** `vendor/tree_haver/lib/tree_haver/backends/markly.rb`
 **Lines:** 346-382
 
 Already had all four methods implemented. Uses Markly's `source_position` hash which provides 1-based line numbers directly.
 
 ### ✅ Prism Backend (Already Complete)
-**File:** `vendor/tree_haver/lib/tree_haver/backends/prism.rb`  
+**File:** `vendor/tree_haver/lib/tree_haver/backends/prism.rb`
 **Lines:** 398-438
 
 Already had all four methods implemented. Uses Prism's `Location` object which provides 1-based line numbers directly.
 
 ### ✅ Psych Backend (Newly Added)
-**File:** `vendor/tree_haver/lib/tree_haver/backends/psych.rb`  
+**File:** `vendor/tree_haver/lib/tree_haver/backends/psych.rb`
 **Lines:** 363-402
 
 Added all four methods:
@@ -75,7 +75,7 @@ Added all four methods:
 - `first_child` - Returns `children.first`
 
 ### ✅ Citrus Backend (Newly Added)
-**File:** `vendor/tree_haver/lib/tree_haver/backends/citrus.rb`  
+**File:** `vendor/tree_haver/lib/tree_haver/backends/citrus.rb`
 **Lines:** 375-409
 
 Added all four methods:
@@ -92,10 +92,10 @@ Added all four methods:
 
 Tested Psych backend successfully:
 ```ruby
-require 'tree_haver/backends/psych'
+require "tree_haver/backends/psych"
 parser = TreeHaver::Backends::Psych::Parser.new
 parser.language = TreeHaver::Backends::Psych::Language.yaml
-tree = parser.parse('foo: bar')
+tree = parser.parse("foo: bar")
 node = tree.root_node
 
 # Verified all methods work:

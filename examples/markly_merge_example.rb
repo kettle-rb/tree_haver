@@ -122,7 +122,7 @@ puts "-" * 80
 merger = Markdown::Merge::SmartMerger.new(
   template_markdown,
   destination_markdown,
-  backend: :markly
+  backend: :markly,
 )
 
 result = merger.merge_result
@@ -192,4 +192,3 @@ puts "  - Merge API documentation updates with custom endpoints"
 puts "  - Maintain consistent structure across team documentation"
 puts "  - Preserve team-specific task lists and tables"
 puts "=" * 80
-

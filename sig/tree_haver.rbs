@@ -1,6 +1,9 @@
 # Type definitions for TreeHaver
 #
-# TreeHaver is a cross-Ruby adapter for the tree-sitter parsing library
+# TreeHaver is a cross-Ruby adapter for code parsing with 10 backends:
+# - Tree-sitter: MRI, Rust, FFI, Java
+# - Native parsers: Prism (Ruby), Psych (YAML), Commonmarker (Markdown), Markly (GFM)
+# - Pure Ruby: Citrus
 
 module TreeHaver
   VERSION: String
@@ -133,6 +136,20 @@ module TreeHaver
 
     # Get the end point (row, column)
     def end_point: () -> Point
+
+    # Position API - consistent across all backends
+    # Get 1-based line number where node starts
+    def start_line: () -> Integer
+
+    # Get 1-based line number where node ends
+    def end_line: () -> Integer
+
+    # Get complete position information as hash
+    # Returns {start_line:, end_line:, start_column:, end_column:}
+    def source_position: () -> Hash[Symbol, Integer]
+
+    # Get first child node (convenience method)
+    def first_child: () -> Node?
 
     # Get the number of child nodes
     def child_count: () -> Integer

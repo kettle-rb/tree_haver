@@ -54,18 +54,18 @@
 
 ## 🌻 Synopsis
 
-TreeHaver is a cross-Ruby adapter for the [tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsing library that works seamlessly across MRI Ruby, JRuby, and TruffleRuby. It provides a unified API for parsing source code using tree-sitter grammars, regardless of your Ruby implementation.
+TreeHaver is a cross-Ruby adapter for the [tree-sitter](https://tree-sitter.github.io/tree-sitter/) and [Citrus](https://github.com/mjackson/citrus) parsing libraries and other dedicated parsing tools that works seamlessly across MRI Ruby, JRuby, and TruffleRuby. It provides a unified API for parsing source code using grammars, regardless of your Ruby implementation.
 
 ### The Adapter Pattern: Like Faraday, but for Parsing
 
 If you've used [Faraday](https://github.com/lostisland/faraday), [multi_json](https://github.com/intridea/multi_json), or [multi_xml](https://github.com/sferik/multi_xml), you'll feel right at home with TreeHaver. These gems share a common philosophy:
 
-| Gem            | Unified API for     | Backend Examples                                     |
-|----------------|---------------------|------------------------------------------------------|
-| **Faraday**    | HTTP requests       | Net::HTTP, Typhoeus, Patron, Excon                   |
-| **multi_json** | JSON parsing        | Oj, Yajl, JSON gem                                   |
-| **multi_xml**  | XML parsing         | Nokogiri, LibXML, Ox                                 |
-| **TreeHaver**  | tree-sitter parsing | ruby_tree_sitter, tree_stump, FFI, Java JARs, Citrus |
+| Gem            | Unified API for     | Backend Examples                                                           |
+|----------------|---------------------|----------------------------------------------------------------------------|
+| **Faraday**    | HTTP requests       | Net::HTTP, Typhoeus, Patron, Excon                                         |
+| **multi_json** | JSON parsing        | Oj, Yajl, JSON gem                                                         |
+| **multi_xml**  | XML parsing         | Nokogiri, LibXML, Ox                                                 |
+| **TreeHaver**  | Code parsing        | MRI, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus (&) |
 
 **Write once, run anywhere.** 
 
@@ -88,18 +88,26 @@ tree = parser.parse(source_code)
 ### Key Features
 
 - **Universal Ruby Support**: Works on MRI Ruby, JRuby, and TruffleRuby
-- **Multiple Backends**:
-  - **MRI Backend**: Leverages the excellent [`ruby_tree_sitter`](https://github.com/Faveod/ruby-tree-sitter) gem (C extension)
-  - **Rust Backend**: Uses [`tree_stump`](https://github.com/anthropics/tree_stump) gem (Rust extension with precompiled binaries)
-    - **Note**: Currently requires [pboling's fork](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13 (inclusive of the others)](https://github.com/joker1007/tree_stump/pull/13) are merged
-  - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby)
-  - **Java Backend**: Support for JRuby's native Java integration, and native java-tree-sitter grammar JARs
-  - **Citrus Backend**: Pure Ruby parser using [`citrus`](https://github.com/mjackson/citrus) gem (no native dependencies, portable)
+- **10 Parsing Backends** - Choose the right backend for your needs:
+  - **Tree-sitter Backends** (high-performance, incremental parsing):
+    - **MRI Backend**: Leverages [`ruby_tree_sitter`](https://github.com/Faveod/ruby-tree-sitter) gem (C extension, fastest on MRI)
+    - **Rust Backend**: Uses [`tree_stump`](https://github.com/anthropics/tree_stump) gem (Rust with precompiled binaries)
+      - **Note**: Currently requires [pboling's fork](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13](https://github.com/joker1007/tree_stump/pull/13) are merged
+    - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby, TruffleRuby)
+    - **Java Backend**: Native Java integration for JRuby with java-tree-sitter grammar JARs
+  - **Language-Specific Backends** (native parser integration):
+    - **Prism Backend**: Ruby's official parser ([Prism](https://github.com/ruby/prism), stdlib in Ruby 3.4+)
+    - **Psych Backend**: Ruby's YAML parser ([Psych](https://github.com/ruby/psych), stdlib)
+    - **Commonmarker Backend**: Fast Markdown parser ([Commonmarker](https://github.com/gjtorikian/commonmarker), comrak Rust)
+    - **Markly Backend**: GitHub Flavored Markdown ([Markly](https://github.com/ioquatix/markly), cmark-gfm C)
+  - **Pure Ruby Fallback**:
+    - **Citrus Backend**: Pure Ruby parsing via [`citrus`](https://github.com/mjackson/citrus) (no native dependencies)
 - **Automatic Backend Selection**: Intelligently selects the best backend for your Ruby implementation
-- **Language Agnostic**: Load any tree-sitter grammar dynamically (TOML, JSON, Ruby, JavaScript, etc.)
+- **Language Agnostic**: Parse any language - Ruby, Markdown, YAML, JSON, Bash, TOML, JavaScript, etc.
 - **Grammar Discovery**: Built-in `GrammarFinder` utility for platform-aware grammar library discovery
+- **Unified Position API**: Consistent `start_line`, `end_line`, `source_position` across all backends
 - **Thread-Safe**: Built-in language registry with thread-safe caching
-- **Minimal API Surface**: Simple, focused API that covers the most common tree-sitter use cases
+- **Minimal API Surface**: Simple, focused API that covers the most common use cases
 
 ### Backend Requirements
 
@@ -204,7 +212,7 @@ TreeHaver solves these problems by providing a unified API that automatically se
 
 **Note:** Java backend works with grammar JARs built specifically for java-tree-sitter, or grammar .so files that statically link tree-sitter. This is why FFI is recommended for JRuby & TruffleRuby.
 
-**Note:** TreeHaver can use `ruby_tree_sitter` or `tree_stump` as backends, giving you TreeHaver's unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.
+**Note:** TreeHaver can use `ruby_tree_sitter` (MRI) or `tree_stump` (MRI, JRuby?) as backends, or `jruby-tree-sitter` (JRuby), giving you TreeHaver's unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.
 
 **Note:** `tree_stump` currently requires [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until upstream PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13](https://github.com/joker1007/tree_stump/pull/13) are merged.
 
@@ -355,18 +363,29 @@ NOTE: Be prepared to track down certs for signed gems and add them the same way 
 
 ### Available Backends
 
-TreeHaver supports multiple parsing backends, each with different trade-offs. The `auto` backend automatically selects the best available option.
+TreeHaver supports 10 parsing backends, each with different trade-offs. The `auto` backend automatically selects the best available option.
+
+#### Tree-sitter Backends (Universal Parsing)
 
 | Backend | Description | Performance | Portability | Examples |
 |---------|-------------|-------------|-------------|----------|
-| **Auto** | Auto-selects best backend | Varies | ✅ Universal | [JSON](examples/auto_json.rb) · [JSONC](examples/auto_jsonc.rb) · [Bash](examples/auto_bash.rb) |
-| **MRI** | C extension via ruby_tree_sitter | ⚡ Fastest | MRI only | [JSON](examples/mri_json.rb) · [JSONC](examples/mri_jsonc.rb) · ~~Bash~~* |
-| **Rust** | Precompiled via tree_stump | ⚡ Very Fast | ✅ Good | [JSON](examples/rust_json.rb) · [JSONC](examples/rust_jsonc.rb) · ~~Bash~~* |
-| **FFI** | Dynamic linking via FFI | 🔵 Fast | ✅ Universal | [JSON](examples/ffi_json.rb) · [JSONC](examples/ffi_jsonc.rb) · [Bash](examples/ffi_bash.rb) |
-| **Java** | JNI bindings | ⚡ Very Fast | JRuby only | [JSON](examples/java_json.rb) · [JSONC](examples/java_jsonc.rb) · [Bash](examples/java_bash.rb) |
+| **Auto** | Auto-selects best backend | Varies | ✅ Universal | [JSON](examples/auto_json.rb) · [JSONC](examples/auto_jsonc.rb) · [Bash](examples/auto_bash.rb) · [TOML](examples/auto_toml.rb) |
+| **MRI** | C extension via ruby_tree_sitter | ⚡ Fastest | MRI only | [JSON](examples/mri_json.rb) · [JSONC](examples/mri_jsonc.rb) · ~~Bash~~* · [TOML](examples/mri_toml.rb) |
+| **Rust** | Precompiled via tree_stump | ⚡ Very Fast | ✅ Good | [JSON](examples/rust_json.rb) · [JSONC](examples/rust_jsonc.rb) · ~~Bash~~* · [TOML](examples/rust_toml.rb) |
+| **FFI** | Dynamic linking via FFI | 🔵 Fast | ✅ Universal | [JSON](examples/ffi_json.rb) · [JSONC](examples/ffi_jsonc.rb) · [Bash](examples/ffi_bash.rb) · [TOML](examples/ffi_toml.rb) |
+| **Java** | JNI bindings | ⚡ Very Fast | JRuby only | [JSON](examples/java_json.rb) · [JSONC](examples/java_jsonc.rb) · [Bash](examples/java_bash.rb) · [TOML](examples/java_toml.rb) |
+
+#### Language-Specific Backends (Native Parser Integration)
+
+| Backend | Description | Performance | Portability | Examples |
+|---------|-------------|-------------|-------------|----------|
+| **Prism** | Ruby's official parser | ⚡ Very Fast | ✅ Universal | [Ruby](examples/prism_ruby.rb) |
+| **Psych** | Ruby's YAML parser (stdlib) | ⚡ Very Fast | ✅ Universal | [YAML](examples/psych_yaml.rb) |
+| **Commonmarker** | Markdown via comrak (Rust) | ⚡ Very Fast | ✅ Good | [Markdown](examples/commonmarker_markdown.rb) · [Merge](examples/commonmarker_merge_example.rb) |
+| **Markly** | GFM via cmark-gfm (C) | ⚡ Very Fast | ✅ Good | [Markdown](examples/markly_markdown.rb) · [Merge](examples/markly_merge_example.rb) |
 | **Citrus** | Pure Ruby parsing | 🟡 Slower | ✅ Universal | [TOML](examples/citrus_toml.rb) · [Finitio](examples/citrus_finitio.rb) · [Dhall](examples/citrus_dhall.rb) |
 
-**Selection Priority (Auto mode):** MRI → Rust → FFI → Java → Citrus
+**Selection Priority (Auto mode):** MRI → Rust → FFI → Java → Prism → Psych → Commonmarker → Markly → Citrus
 
 **Known Issues:**
 - *MRI + Bash: ABI incompatibility (use FFI instead)
@@ -375,29 +394,43 @@ TreeHaver supports multiple parsing backends, each with different trade-offs. Th
 **Backend Requirements:**
 
 ```ruby
-# MRI Backend
-gem 'ruby_tree_sitter'
+# Tree-sitter backends
+gem 'ruby_tree_sitter', '~> 2.0'  # MRI backend
+gem 'tree_stump'                   # Rust backend
+gem 'ffi', '>= 1.15', '< 2.0'     # FFI backend
+# Java backend: no gem required (uses JRuby's built-in JNI)
 
-# Rust Backend  
-gem 'tree_stump'
+# Language-specific backends
+gem 'prism', '~> 1.0'              # Ruby parsing (stdlib in Ruby 3.4+)
+# Psych: no gem required (Ruby stdlib)
+gem 'commonmarker', '>= 0.23'      # Markdown parsing (comrak)
+gem 'markly', '~> 0.11'            # GFM parsing (cmark-gfm)
 
-# FFI Backend
-gem 'ffi'
-
-# Citrus Backend
-gem 'citrus'
+# Pure Ruby fallback
+gem 'citrus', '~> 3.0'             # Citrus backend
 # Plus grammar gems: toml-rb, dhall, finitio, etc.
 ```
 
 **Force Specific Backend:**
 
 ```ruby
+# Tree-sitter backends
+TreeHaver.backend = :mri    # Force MRI backend (ruby_tree_sitter)
+TreeHaver.backend = :rust   # Force Rust backend (tree_stump)
 TreeHaver.backend = :ffi    # Force FFI backend
-TreeHaver.backend = :mri    # Force MRI backend
-TreeHaver.backend = :rust   # Force Rust backend
-TreeHaver.backend = :java   # Force Java backend (JRuby)
+TreeHaver.backend = :java   # Force Java backend (JRuby only)
+
+# Language-specific backends
+TreeHaver.backend = :prism        # Force Prism (Ruby parsing)
+TreeHaver.backend = :psych        # Force Psych (YAML parsing)
+TreeHaver.backend = :commonmarker # Force Commonmarker (Markdown)
+TreeHaver.backend = :markly       # Force Markly (GFM Markdown)
+
+# Pure Ruby fallback
 TreeHaver.backend = :citrus # Force Citrus backend
-TreeHaver.backend = :auto   # Auto-select (default)
+
+# Auto-selection (default)
+TreeHaver.backend = :auto   # Let TreeHaver choose
 ```
 
 **Block-based Backend Switching:**
@@ -453,7 +486,7 @@ TreeHaver.backend_module       # => TreeHaver::Backends::FFI
 TreeHaver.capabilities         # => { backend: :ffi, parse: true, query: false, ... }
 ```
 
-See [examples/](examples/) directory for 18 complete working examples demonstrating all backends and languages.
+See [examples/](examples/) directory for **26 complete working examples** demonstrating all 10 backends with multiple languages (JSON, JSONC, Bash, TOML, Ruby, YAML, Markdown) plus markdown-merge integration examples.
 
 ### Security Considerations
 
@@ -827,12 +860,14 @@ See `lib/tree_haver/compat.rb` for detailed documentation.
 
 ### Quick Start
 
-Here's a complete example of parsing TOML with TreeHaver:
+TreeHaver works with any language through its 10 backends. Here are examples for different parsing needs:
+
+#### Parsing with Tree-sitter (Universal Languages)
 
 ```ruby
 require "tree_haver"
 
-# Load a language grammar
+# Load a tree-sitter grammar (works with MRI, Rust, FFI, or Java backend)
 language = TreeHaver::Language.from_library(
   "/usr/local/lib/libtree-sitter-toml.so",
   symbol: "tree_sitter_toml",
@@ -842,7 +877,7 @@ language = TreeHaver::Language.from_library(
 parser = TreeHaver::Parser.new
 parser.language = language
 
-# Parse some source code
+# Parse source code
 source = <<~TOML
   [package]
   name = "my-app"
@@ -851,16 +886,116 @@ TOML
 
 tree = parser.parse(source)
 
-# Access the root node
+# Access the unified Position API (works across all backends)
 root = tree.root_node
-puts "Root node type: #{root.type}"  # => "document"
+puts "Root type: #{root.type}"              # => "document"
+puts "Start line: #{root.start_line}"       # => 1 (1-based)
+puts "End line: #{root.end_line}"           # => 3
+puts "Position: #{root.source_position}"    # => {start_line: 1, end_line: 3, ...}
 
 # Traverse the tree
 root.each do |child|
-  puts "Child type: #{child.type}"
-  child.each do |grandchild|
-    puts "  Grandchild type: #{grandchild.type}"
+  puts "Child: #{child.type} at line #{child.start_line}"
+end
+```
+
+#### Parsing Ruby with Prism
+
+```ruby
+require "tree_haver"
+
+TreeHaver.backend = :prism
+parser = TreeHaver::Parser.new
+parser.language = TreeHaver::Backends::Prism::Language.ruby
+
+source = <<~RUBY
+  class Example
+    def hello
+      puts "Hello, world!"
+    end
   end
+RUBY
+
+tree = parser.parse(source)
+root = tree.root_node
+
+# Find all method definitions
+def find_methods(node, results = [])
+  results << node if node.type == "def_node"
+  node.children.each { |child| find_methods(child, results) }
+  results
+end
+
+methods = find_methods(root)
+methods.each do |method_node|
+  pos = method_node.source_position
+  puts "Method at lines #{pos[:start_line]}-#{pos[:end_line]}"
+end
+```
+
+#### Parsing YAML with Psych
+
+```ruby
+require "tree_haver"
+
+TreeHaver.backend = :psych
+parser = TreeHaver::Parser.new
+parser.language = TreeHaver::Backends::Psych::Language.yaml
+
+source = <<~YAML
+  database:
+    host: localhost
+    port: 5432
+YAML
+
+tree = parser.parse(source)
+root = tree.root_node
+
+# Navigate YAML structure
+def show_structure(node, indent = 0)
+  prefix = "  " * indent
+  puts "#{prefix}#{node.type} (line #{node.start_line})"
+  node.children.each { |child| show_structure(child, indent + 1) }
+end
+
+show_structure(root)
+```
+
+#### Parsing Markdown with Commonmarker or Markly
+
+```ruby
+require "tree_haver"
+
+# Choose your backend
+TreeHaver.backend = :commonmarker  # or :markly for GFM
+
+parser = TreeHaver::Parser.new
+parser.language = TreeHaver::Backends::Commonmarker::Language.markdown
+
+source = <<~MARKDOWN
+  # My Document
+  
+  ## Section
+  
+  - Item 1
+  - Item 2
+MARKDOWN
+
+tree = parser.parse(source)
+root = tree.root_node
+
+# Find all headings
+def find_headings(node, results = [])
+  results << node if node.type == "heading"
+  node.children.each { |child| find_headings(child, results) }
+  results
+end
+
+headings = find_headings(root)
+headings.each do |heading|
+  level = heading.header_level
+  text = heading.children.map(&:text).join
+  puts "H#{level}: #{text} (line #{heading.start_line})"
 end
 ```
 
