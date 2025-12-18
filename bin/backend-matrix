@@ -363,11 +363,9 @@ def run_cross_grammar_test(backends, grammars, custom_sources)
     return
   end
 
+  # TreeHaver is already loaded!
   # Load gems
   load_gems_in_order(backends)
-
-  # Load TreeHaver
-  require_relative "../lib/tree_haver"
 
   print_section("Cross-Grammar Chain Tests")
   puts "\nTesting #{backends.size}-step chains"

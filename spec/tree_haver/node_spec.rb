@@ -202,7 +202,7 @@ RSpec.describe TreeHaver::Node do
   describe "#first_child" do
     it "returns the first child node", :toml_grammar do
       if root_node.child_count > 0
-        expect(root_node.first_child).to be_a(TreeHaver::Node)
+        expect(root_node.first_child).to be_a(described_class)
         expect(root_node.first_child).to eq(root_node.children.first)
         expect(root_node.first_child).to eq(root_node.child(0))
       end
@@ -229,7 +229,7 @@ RSpec.describe TreeHaver::Node do
       it "returns the first child consistently", :toml_grammar do
         if root_node.child_count > 1
           first = root_node.first_child
-          expect(first).to be_a(TreeHaver::Node)
+          expect(first).to be_a(described_class)
 
           # Should be the same as children[0]
           expect(first.start_byte).to eq(root_node.children[0].start_byte)
@@ -354,7 +354,7 @@ RSpec.describe TreeHaver::Node do
     it "returns a wrapped Node for valid index", :toml_grammar do
       if root_node.child_count > 0
         child = root_node.child(0)
-        expect(child).to be_a(TreeHaver::Node)
+        expect(child).to be_a(described_class)
       end
     end
 
@@ -393,7 +393,7 @@ RSpec.describe TreeHaver::Node do
     it "returns an array of wrapped Nodes", :toml_grammar do
       children = root_node.children
       expect(children).to be_an(Array)
-      expect(children).to all(be_a(TreeHaver::Node))
+      expect(children).to all(be_a(described_class))
     end
 
     it "passes source to all children", :toml_grammar do
@@ -418,7 +418,7 @@ RSpec.describe TreeHaver::Node do
         if root_node.inner_node.respond_to?(:child_by_field_name)
           result = root_node.child_by_field_name(:nonexistent_field)
           # Result will be nil for non-existent field, which is fine
-          expect(result).to be_a(TreeHaver::Node).or be_nil
+          expect(result).to be_a(described_class).or be_nil
         end
       end
 
@@ -433,7 +433,7 @@ RSpec.describe TreeHaver::Node do
 
         node = described_class.new(field_node, source: source)
         result = node.child_by_field_name(:key)
-        expect(result).to be_a(TreeHaver::Node)
+        expect(result).to be_a(described_class)
         expect(result.inner_node).to eq(child_node)
       end
 
@@ -472,7 +472,7 @@ RSpec.describe TreeHaver::Node do
     it "iterates over children", :toml_grammar do
       count = 0
       root_node.each do |child|
-        expect(child).to be_a(TreeHaver::Node)
+        expect(child).to be_a(described_class)
         count += 1
       end
       expect(count).to eq(root_node.child_count)
@@ -496,7 +496,7 @@ RSpec.describe TreeHaver::Node do
         if root_node.child_count > 0
           child = root_node.child(0)
           parent = child.parent
-          expect(parent).to be_a(TreeHaver::Node).or be_nil
+          expect(parent).to be_a(described_class).or be_nil
         end
       end
     end
@@ -667,7 +667,7 @@ RSpec.describe TreeHaver::Node do
           # Stub respond_to? with default true, then override specific cases
           allow(kind_only_node).to receive(:respond_to?).and_return(true)
           allow(kind_only_node).to receive(:respond_to?).with(:type).and_return(false)
-          allow(kind_only_node).to receive(:respond_to?).with(:kind).and_return(true)
+          allow(kind_only_node).to receive(:respond_to?).with(:kind, anything).and_return(true)
           allow(kind_only_node).to receive(:kind).and_return("some_kind")
 
           node_with_kind = described_class.new(kind_only_node)

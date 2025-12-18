@@ -87,7 +87,7 @@ RSpec.describe TreeHaver::Language do
       TreeHaver.register_language(:nosymbol, path: "/path.so", symbol: nil)
       # When no symbol is registered, it derives "tree_sitter_#{method_name}"
       # and name is derived from symbol by stripping "tree_sitter_" prefix
-      expect(TreeHaver::Language).to receive(:from_library).with(
+      expect(described_class).to receive(:from_library).with(
         "/path.so",
         symbol: "tree_sitter_nosymbol",
         name: "nosymbol",
@@ -98,7 +98,7 @@ RSpec.describe TreeHaver::Language do
     it "allows name override via kwargs" do
       TreeHaver.register_language(:test, path: "/path.so")
       # Symbol is derived as "tree_sitter_test", but name is explicitly overridden
-      expect(TreeHaver::Language).to receive(:from_library).with(
+      expect(described_class).to receive(:from_library).with(
         "/path.so",
         symbol: "tree_sitter_test",
         name: "custom_name",
@@ -109,7 +109,7 @@ RSpec.describe TreeHaver::Language do
     it "allows symbol override via kwargs when key exists" do
       TreeHaver.register_language(:test2, path: "/path.so", symbol: "default_sym")
       # Symbol is overridden via kwargs, name is derived from the overridden symbol
-      expect(TreeHaver::Language).to receive(:from_library).with(
+      expect(described_class).to receive(:from_library).with(
         "/path.so",
         symbol: "custom_sym",
         name: "custom_sym",  # Derived from symbol (no tree_sitter_ prefix to strip)

@@ -8,22 +8,9 @@
   "spec/tree_haver/language_backend_spec.rb:3839571391": [
     [5, 16, 56, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2912587316]
   ],
-  "spec/tree_haver/language_spec.rb:2820796119": [
-    [90, 14, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
-    [101, 14, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
-    [112, 14, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369]
-  ],
-  "spec/tree_haver/node_spec.rb:24234771": [
-    [205, 47, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [232, 33, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
+  "spec/tree_haver/node_spec.rb:3657392405": [
     [283, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
     [311, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
-    [357, 31, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [396, 36, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [421, 34, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [436, 32, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [475, 31, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [499, 34, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
     [668, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [671].", 3484858249],
     [671, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [668].", 3767344958],
     [881, 7, 65, "RSpec/IndexedLet: This `let` statement uses `1` in its name. Please give it a meaningful name.", 4132605332],
