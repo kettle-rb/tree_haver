@@ -58,9 +58,9 @@ gemfile do
     gem "ruby_tree_sitter", require: false # DO NOT LOAD, because conflicts with FFI
     # Rust Backend
     gem "tree_stump",
-        # path: "../../vendor/tree_stump"
-        github: "pboling/tree_stump",
-        branch: "tree_haver"
+      # path: "../../vendor/tree_stump"
+      github: "pboling/tree_stump",
+      branch: "tree_haver"
   end
 end
 
@@ -830,23 +830,23 @@ def print_results_summary(backends, grammars, all_results, cross_grammar: false)
       pair_data = backend_pairs[pair_key]
 
       status = if pair_data&.dig(:working) && !pair_data&.dig(:failed)
-                 "✓ Fully compatible"
-               elsif pair_data&.dig(:working)
-                 "⚠ Partially compatible"
-               elsif pair_data&.dig(:failed)
-                 "✗ Cannot coexist"
-               else
-                 "(not tested)"
-               end
+        "✓ Fully compatible"
+      elsif pair_data&.dig(:working)
+        "⚠ Partially compatible"
+      elsif pair_data&.dig(:failed)
+        "✗ Cannot coexist"
+      else
+        "(not tested)"
+      end
 
       # Use provided reason for known conflicts, otherwise empty
       display_reason = if !pair_data&.dig(:working) && reason.empty?
-                         "Unknown conflict"
-                       elsif pair_data&.dig(:working)
-                         "—"
-                       else
-                         reason
-                       end
+        "Unknown conflict"
+      elsif pair_data&.dig(:working)
+        "—"
+      else
+        reason
+      end
 
       analysis_rows << {
         "Pair" => "#{backend1.upcase} + #{backend2.upcase}",

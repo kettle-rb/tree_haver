@@ -51,7 +51,7 @@ TreeHaver supports multiple backends with different characteristics:
 - **Rust**: tree_stump (Rust extension, tree-sitter grammars)
 - **Citrus**: Pure Ruby parser (TOML only via toml-rb grammar)
 
-Not all backends can coexist in the same Ruby process. Notably, **FFI and MRI backends conflict** 
+Not all backends can coexist in the same Ruby process. Notably, **FFI and MRI backends conflict**
 at the libtree-sitter runtime level—using both in the same process will cause segfaults.
 
 The **Citrus backend** works differently:

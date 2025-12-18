@@ -1,4 +1,7 @@
 {
+  "bin/backend-matrix:4241886561": [
+    [243, 7, 117, "Lint/ShadowedException: Do not shadow rescued Exceptions.", 674591231]
+  ],
   "lib/tree_haver.rb:594464984": [
     [237, 5, 28, "ThreadSafety/ClassAndModuleAttributes: Avoid mutating class and module attributes.", 1973484748],
     [1068, 7, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
