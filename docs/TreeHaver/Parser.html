@@ -374,9 +374,6 @@ set a language before parsing.</p>
       <pre class="lines">
 
 
-979
-980
-981
 982
 983
 984
@@ -410,10 +407,13 @@ set a language before parsing.</p>
 1012
 1013
 1014
-1015</pre>
+1015
+1016
+1017
+1018</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 979</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 982</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>backend:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Convert string backend names to symbols for consistency
@@ -508,9 +508,6 @@ set a language before parsing.</p>
       <pre class="lines">
 
 
-1022
-1023
-1024
 1025
 1026
 1027
@@ -529,10 +526,13 @@ set a language before parsing.</p>
 1040
 1041
 1042
-1043</pre>
+1043
+1044
+1045
+1046</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1022</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1025</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend'>backend</span>
   <span class='kw'>if</span> <span class='ivar'>@explicit_backend</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@explicit_backend</span> <span class='op'>!=</span> <span class='symbol'>:auto</span>
@@ -630,9 +630,6 @@ set a language before parsing.</p>
       <pre class="lines">
 
 
-1051
-1052
-1053
 1054
 1055
 1056
@@ -648,10 +645,13 @@ set a language before parsing.</p>
 1066
 1067
 1068
-1069</pre>
+1069
+1070
+1071
+1072</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1051</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1054</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_language='>language=</span><span class='lparen'>(</span><span class='id identifier rubyid_lang'>lang</span><span class='rparen'>)</span>
   <span class='comment'># Check if this is a Citrus language - if so, we need a Citrus parser
@@ -670,8 +670,8 @@ set a language before parsing.</p>
 </span>  <span class='id identifier rubyid_inner_lang'>inner_lang</span> <span class='op'>=</span> <span class='id identifier rubyid_unwrap_language'>unwrap_language</span><span class='lparen'>(</span><span class='id identifier rubyid_lang'>lang</span><span class='rparen'>)</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_lang'>inner_lang</span>
   <span class='comment'># Return the original (possibly wrapped) language for consistency
-</span>  <span class='id identifier rubyid_lang'>lang</span>
-<span class='kw'>end</span></pre>
+</span>  <span class='id identifier rubyid_lang'>lang</span> <span class='comment'># rubocop:disable Lint/Void (intentional return value)
+</span><span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -747,14 +747,14 @@ set a language before parsing.</p>
       <pre class="lines">
 
 
-1207
-1208
-1209
 1210
-1211</pre>
+1211
+1212
+1213
+1214</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1207</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1210</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_tree_impl'>tree_impl</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
@@ -892,9 +892,6 @@ new_tree = parser.parse_string(tree, &quot;x = 42&quot;)</code></pre>
       <pre class="lines">
 
 
-1246
-1247
-1248
 1249
 1250
 1251
@@ -915,10 +912,13 @@ new_tree = parser.parse_string(tree, &quot;x = 42&quot;)</code></pre>
 1266
 1267
 1268
-1269</pre>
+1269
+1270
+1271
+1272</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1246</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1249</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse_string'>parse_string</span><span class='lparen'>(</span><span class='id identifier rubyid_old_tree'>old_tree</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='comment'># Pass through to backend if it supports incremental parsing
@@ -954,7 +954,7 @@ new_tree = parser.parse_string(tree, &quot;x = 42&quot;)</code></pre>
 </div>
 
       <div id="footer">
-  Generated on Thu Dec 18 12:37:23 2025 by
+  Generated on Thu Dec 18 13:19:10 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-3.4.7).
 </div>

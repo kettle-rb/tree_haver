@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [3.1.0] - 2025-12-18
+
+- TAG: [v3.1.0][3.1.0t]
+- COVERAGE: 82.65% -- 943/1141 lines in 11 files
+- BRANCH COVERAGE: 63.80% -- 349/547 branches in 11 files
+- 88.97% documented
+
+### Added
+
 - **Position API Enhancements** – Added consistent position methods to all backend Node classes for compatibility with `*-merge` gems
   - `start_line` - Returns 1-based line number where node starts (converts 0-based `start_point.row` to 1-based)
   - `end_line` - Returns 1-based line number where node ends (converts 0-based `end_point.row` to 1-based)
@@ -96,12 +115,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - `examples/rust_toml.rb` - Rust backend with TOML
   - `examples/java_toml.rb` - Java backend with TOML (JRuby only)
 
-### Changed
-
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - **BREAKING**: `TreeHaver::Language.method_missing` no longer raises `ArgumentError` when only Citrus grammar is registered and tree-sitter backend is active – it now falls back to Citrus instead
@@ -109,8 +122,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - Now: Returns `TreeHaver::Backends::Citrus::Language` if Citrus grammar is registered
   - Migration: If you were catching this error, update your code to handle the fallback behavior
   - This is a bug fix, but would be a breaking change for some users who were relying on the old behavior
-
-### Security
 
 ## [3.0.0] - 2025-12-16
 
@@ -354,7 +365,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/kettle-rb/tree_haver/compare/v3.0.0...v3.1.0
+[3.1.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.1.0
 [3.0.0]: https://github.com/kettle-rb/tree_haver/compare/v2.0.0...v3.0.0
 [3.0.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.0.0
 [2.0.0]: https://github.com/kettle-rb/tree_haver/compare/v1.0.0...v2.0.0

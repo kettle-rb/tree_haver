@@ -1043,4 +1043,2640 @@ is being used.</p>
   <div id="constructor_details" class="method_details_list">
   <h2>Constructor Details</h2>
   
-    <div class="method_det
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(node, source: nil)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Returns a new instance of Node.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>node</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Backend-specific node object</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>source</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Source text for text extraction</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+127
+128
+129
+130</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 127</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='ivar'>@inner_node</span> <span class='op'>=</span> <span class='id identifier rubyid_node'>node</span>
+  <span class='ivar'>@source</span> <span class='op'>=</span> <span class='id identifier rubyid_source'>source</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+<div id="method_missing_details" class="method_details_list">
+  <h2>Dynamic Method Handling</h2>
+  <p class="notice this">
+    This class handles dynamic methods through the <tt>method_missing</tt> method
+    
+  </p>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="method_missing-instance_method">
+  
+    #<strong>method_missing</strong>(method_name, *args, **kwargs, &amp;block)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+  <div class="note notetag">
+    <strong>Note:</strong>
+    <div class='inline'><p>This maintains backward compatibility with code written for<br />
+specific backends while providing the benefits of the unified API</p>
+</div>
+  </div>
+
+<p>Delegate unknown methods to the underlying backend-specific node</p>
+
+<p>This provides passthrough access for advanced usage when you need<br />
+backend-specific features not exposed by TreeHaver’s unified API.</p>
+
+<p>The delegation is automatic and transparent - you can call backend-specific<br />
+methods directly on the TreeHaver::Node and they’ll be forwarded to the<br />
+underlying node implementation.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Using TreeStump-specific methods</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='comment'># These methods don&#39;t exist in the unified API but are in TreeStump
+</span><span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_grammar_name'>grammar_name</span>      <span class='comment'># =&gt; &quot;toml&quot; (delegated to inner_node)
+</span><span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_grammar_id'>grammar_id</span>        <span class='comment'># =&gt; Integer (delegated to inner_node)
+</span><span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_kind_id'>kind_id</span>           <span class='comment'># =&gt; Integer (delegated to inner_node)</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Safe usage with respond_to? check</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='kw'>if</span> <span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:grammar_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Using </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_grammar_name'>grammar_name</span><span class='embexpr_end'>}</span><span class='tstring_content'> grammar</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Equivalent explicit access</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_grammar_name'>grammar_name</span>              <span class='comment'># Via passthrough (method_missing)
+</span><span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_grammar_name'>grammar_name</span>   <span class='comment'># Explicit access (same result)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>method_name</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>method to call</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>args</span>
+      
+      
+        <span class='type'>(<tt>Array</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>arguments to pass</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>block</span>
+      
+      
+        <span class='type'>(<tt>Proc</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>block to pass</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>result from the underlying node</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+584
+585
+586
+587
+588
+589
+590</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 584</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_method_missing'>method_missing</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
+    <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='kw'>super</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="inner_node-instance_method">
+  
+    #<strong>inner_node</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>The wrapped backend-specific node object</p>
+
+<p>This provides direct access to the underlying backend node for advanced usage<br />
+when you need backend-specific features not exposed by the unified API.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Accessing backend-specific methods</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='comment'># TreeStump-specific: grammar information
+</span><span class='kw'>if</span> <span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:grammar_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_grammar_name'>grammar_name</span>  <span class='comment'># =&gt; &quot;toml&quot;
+</span>  <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_grammar_id'>grammar_id</span>    <span class='comment'># =&gt; Integer
+</span><span class='kw'>end</span>
+
+<span class='comment'># Check backend type
+</span><span class='kw'>case</span> <span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span>
+<span class='kw'>when</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>TreeStump</span><span class='regexp_end'>/</span></span>
+  <span class='comment'># TreeStump-specific code
+</span><span class='kw'>when</span> <span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>TreeSitter</span><span class='regexp_end'>/</span></span>
+  <span class='comment'># ruby_tree_sitter-specific code
+</span><span class='kw'>end</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The underlying node (TreeSitter::Node, TreeStump::Node, etc.)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+119
+120
+121</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 119</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_inner_node'>inner_node</span>
+  <span class='ivar'>@inner_node</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="source-instance_method">
+  
+    #<strong>source</strong>  &#x21d2; <tt>String</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>The source text for text extraction</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+123
+124
+125</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 123</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_source'>source</span>
+  <span class='ivar'>@source</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="<=>-instance_method">
+  
+    #<strong>&lt;=&gt;</strong>(other)  &#x21d2; <tt>Integer</tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Compare nodes for ordering (used by Comparable module)</p>
+
+<p>Nodes are ordered by their position in the source:</p>
+<ol>
+  <li>First by start_byte (earlier nodes come first)</li>
+  <li>Then by end_byte for tie-breaking (shorter spans come first)</li>
+  <li>Then by type for deterministic ordering</li>
+</ol>
+
+<p>This allows nodes to be sorted by position and used in sorted collections.<br />
+The Comparable module provides &lt;, &lt;=, ==, &gt;=, &gt;, and between? based on this.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>other</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>node to compare with</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>-1, 0, 1, or nil if not comparable</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 499</span>
+
+<span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='rparen'>)</span>
+
+  <span class='comment'># Compare by position first (start_byte, then end_byte)
+</span>  <span class='id identifier rubyid_cmp'>cmp</span> <span class='op'>=</span> <span class='id identifier rubyid_start_byte'>start_byte</span> <span class='op'>&lt;=&gt;</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_start_byte'>start_byte</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_cmp'>cmp</span> <span class='kw'>if</span> <span class='id identifier rubyid_cmp'>cmp</span><span class='period'>.</span><span class='id identifier rubyid_nonzero?'>nonzero?</span>
+
+  <span class='id identifier rubyid_cmp'>cmp</span> <span class='op'>=</span> <span class='id identifier rubyid_end_byte'>end_byte</span> <span class='op'>&lt;=&gt;</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_end_byte'>end_byte</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_cmp'>cmp</span> <span class='kw'>if</span> <span class='id identifier rubyid_cmp'>cmp</span><span class='period'>.</span><span class='id identifier rubyid_nonzero?'>nonzero?</span>
+
+  <span class='comment'># For nodes at the same position with same span, compare by type
+</span>  <span class='id identifier rubyid_type'>type</span> <span class='op'>&lt;=&gt;</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="==-instance_method">
+  
+    #<strong>==</strong>(other)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='eql?-instance_method'>eql?</span></span>
+    </span>
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check equality based on inner_node identity</p>
+
+<p>Two nodes are equal if they wrap the same backend node object.<br />
+This is separate from the &lt;=&gt; comparison which orders by position.<br />
+Nodes at the same position but wrapping different backend nodes are<br />
+equal according to &lt;=&gt; (positional equality) but not equal according to == (identity equality).</p>
+
+<p>Note: We override Comparable’s default == behavior to check inner_node identity<br />
+rather than just relying on &lt;=&gt; returning 0, because we want identity-based<br />
+equality for testing and collection membership, not position-based equality.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>other</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>object to compare with</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if both nodes wrap the same inner_node</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+526
+527
+528
+529</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 526</span>
+
+<span class='kw'>def</span> <span class='op'>==</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='rparen'>)</span>
+  <span class='ivar'>@inner_node</span> <span class='op'>==</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_inner_node'>inner_node</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="child-instance_method">
+  
+    #<strong>child</strong>(index)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get a child by index</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Child index</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Wrapped child node</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+327
+328
+329
+330
+331</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 327</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_child_node'>child_node</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='ivar'>@source</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="child_by_field_name-instance_method">
+  
+    #<strong>child_by_field_name</strong>(name)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='field-instance_method'>field</span></span>
+    </span>
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get a child by field name</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Field name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The child node for that field</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 431</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:child_by_field_name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_child_node'>child_node</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='ivar'>@source</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='comment'># Not all backends support field names
+</span>    <span class='kw'>nil</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="child_count-instance_method">
+  
+    #<strong>child_count</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the number of children</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+319
+320
+321</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 319</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_child_count'>child_count</span>
+  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child_count'>child_count</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="children-instance_method">
+  
+    #<strong>children</strong>  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span>&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get all children as wrapped nodes</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Array of wrapped child nodes</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+407
+408
+409</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 407</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_children'>children</span>
+  <span class='lparen'>(</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_child_count'>child_count</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_i'>i</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="each-instance_method">
+  
+    #<strong>each</strong> {|Node| ... } &#x21d2; <tt>Enumerator</tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Iterate over children</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Yields:</p>
+<ul class="yield">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Each child node</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Enumerator</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+422
+423
+424
+425</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 422</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_to_enum'>to_enum</span><span class='lparen'>(</span><span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+  <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="end_byte-instance_method">
+  
+    #<strong>end_byte</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the node’s end byte offset</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+158
+159
+160</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 158</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
+  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_end_byte'>end_byte</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="end_line-instance_method">
+  
+    #<strong>end_line</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the 1-based line number where this node ends</p>
+
+<p>Convenience method that converts 0-based row to 1-based line number.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>1-based line number</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+227
+228
+229</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 227</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_end_line'>end_line</span>
+  <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span> <span class='op'>+</span> <span class='int'>1</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="end_point-instance_method">
+  
+    #<strong>end_point</strong>  &#x21d2; <tt><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the node’s end position (row, column)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>with row and column accessors (also works as Hash)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 190</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
+  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:end_point</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_end_point'>end_point</span>
+    <span class='comment'># Handle both Point objects and hashes
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>elsif</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:end_position</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_end_position'>end_position</span>
+    <span class='comment'># Handle both Point objects and hashes
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="TreeHaver::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backend node does not support end_point/end_position</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="first_child-instance_method">
+  
+    #<strong>first_child</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the first child node</p>
+
+<p>Convenience method for iteration patterns that expect first_child.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>First child node or nil if no children</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+254
+255
+256</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 254</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_first_child'>first_child</span>
+  <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="has_error?-instance_method">
+  
+    #<strong>has_error?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if the node has an error</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+274
+275
+276</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 274</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
+  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_has_error?'>has_error?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="hash-instance_method">
+  
+    #<strong>hash</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Generate hash value for this node</p>
+
+<p>Uses the hash of the inner_node to ensure nodes wrapping the same<br />
+backend node have the same hash value.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>hash value</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+540
+541
+542</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 540</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_hash'>hash</span>
+  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="inspect-instance_method">
+  
+    #<strong>inspect</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>String representation for debugging</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+477
+478
+479</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 477</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#&lt;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'> type=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type'>type</span><span class='embexpr_end'>}</span><span class='tstring_content'> bytes=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='embexpr_end'>}</span><span class='tstring_content'>..</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_end_byte'>end_byte</span><span class='embexpr_end'>}</span><span class='tstring_content'>&gt;</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="missing?-instance_method">
+  
+    #<strong>missing?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if the node is missing</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+280
+281
+282
+283</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 280</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:missing?</span><span class='rparen'>)</span>
+  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_missing?'>missing?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="named?-instance_method">
+  
+    #<strong>named?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if the node is named</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+287
+288
+289
+290
+291
+292
+293
+294
+295</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 287</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
+  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:named?</span><span class='rparen'>)</span>
+    <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_named?'>named?</span>
+  <span class='kw'>elsif</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:is_named?</span><span class='rparen'>)</span>
+    <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_is_named?'>is_named?</span>
+  <span class='kw'>else</span>
+    <span class='kw'>true</span> <span class='comment'># Default to true if not supported
+</span>  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="named_child-instance_method">
+  
+    #<strong>named_child</strong>(index)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get a named child by index</p>
+
+<p>Returns the nth named child (skipping unnamed children).<br />
+Uses backend’s native named_child if available, otherwise provides fallback.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Named child index (0-based)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Wrapped named child node, or nil if index out of bounds</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 340</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_named_child'>named_child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='comment'># Try native implementation first
+</span>  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:named_child</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_child_node'>child_node</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_named_child'>named_child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='ivar'>@source</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Fallback: manually iterate through children and count named ones
+</span>  <span class='id identifier rubyid_named_count'>named_count</span> <span class='op'>=</span> <span class='int'>0</span>
+  <span class='lparen'>(</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_child_count'>child_count</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span>
+    <span class='id identifier rubyid_child_node'>child_node</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_i'>i</span><span class='rparen'>)</span>
+    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+    <span class='comment'># Check if this child is named
+</span>    <span class='id identifier rubyid_is_named'>is_named</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:named?</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_named?'>named?</span>
+    <span class='kw'>elsif</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:is_named?</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_is_named?'>is_named?</span>
+    <span class='kw'>else</span>
+      <span class='kw'>true</span>  <span class='comment'># Assume named if we can&#39;t determine
+</span>    <span class='kw'>end</span>
+
+    <span class='kw'>if</span> <span class='id identifier rubyid_is_named'>is_named</span>
+      <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='ivar'>@source</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_named_count'>named_count</span> <span class='op'>==</span> <span class='id identifier rubyid_index'>index</span>
+      <span class='id identifier rubyid_named_count'>named_count</span> <span class='op'>+=</span> <span class='int'>1</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>nil</span>  <span class='comment'># Index out of bounds
+</span><span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="named_child_count-instance_method">
+  
+    #<strong>named_child_count</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the count of named children</p>
+
+<p>Uses backend’s native named_child_count if available, otherwise provides fallback.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Number of named children</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 377</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_named_child_count'>named_child_count</span>
+  <span class='comment'># Try native implementation first
+</span>  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:named_child_count</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_named_child_count'>named_child_count</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Fallback: count named children manually
+</span>  <span class='id identifier rubyid_count'>count</span> <span class='op'>=</span> <span class='int'>0</span>
+  <span class='lparen'>(</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_child_count'>child_count</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span>
+    <span class='id identifier rubyid_child_node'>child_node</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_i'>i</span><span class='rparen'>)</span>
+    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+    <span class='comment'># Check if this child is named
+</span>    <span class='id identifier rubyid_is_named'>is_named</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:named?</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_named?'>named?</span>
+    <span class='kw'>elsif</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:is_named?</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_is_named?'>is_named?</span>
+    <span class='kw'>else</span>
+      <span class='kw'>true</span>  <span class='comment'># Assume named if we can&#39;t determine
+</span>    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_count'>count</span> <span class='op'>+=</span> <span class='int'>1</span> <span class='kw'>if</span> <span class='id identifier rubyid_is_named'>is_named</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_count'>count</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="named_children-instance_method">
+  
+    #<strong>named_children</strong>  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span>&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get named children only</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Array of named child nodes</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+414
+415
+416</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 414</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_named_children'>named_children</span>
+  <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:named?</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="next_sibling-instance_method">
+  
+    #<strong>next_sibling</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get next sibling</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+458
+459
+460
+461
+462
+463</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 458</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:next_sibling</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_next_sibling'>next_sibling</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_sibling'>sibling</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='ivar'>@source</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="parent-instance_method">
+  
+    #<strong>parent</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the parent node</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The parent node</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+448
+449
+450
+451
+452
+453</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 448</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:parent</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_parent_node'>parent_node</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_parent'>parent</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_parent_node'>parent_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_parent_node'>parent_node</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='ivar'>@source</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="prev_sibling-instance_method">
+  
+    #<strong>prev_sibling</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get previous sibling</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+468
+469
+470
+471
+472
+473</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 468</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:prev_sibling</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_sibling'>sibling</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='ivar'>@source</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="respond_to_missing?-instance_method">
+  
+    #<strong>respond_to_missing?</strong>(method_name, include_private = false)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if node responds to a method (includes delegation to inner_node)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>method_name</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>method to check</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>include_private</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>false</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>include private methods</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+549
+550
+551</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 549</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_respond_to_missing?'>respond_to_missing?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
+  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='kw'>super</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="source_position-instance_method">
+  
+    #<strong>source_position</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Integer}</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get position information as a hash</p>
+
+<p>Returns a hash with 1-based line numbers and 0-based columns.<br />
+This format is compatible with *-merge gems’ FileAnalysisBase.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='id identifier rubyid_node'>node</span><span class='period'>.</span><span class='id identifier rubyid_source_position'>source_position</span>
+<span class='comment'># =&gt; { start_line: 1, end_line: 3, start_column: 0, end_column: 10 }</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash{Symbol =&gt; Integer}</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Position hash</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+240
+241
+242
+243
+244
+245
+246
+247</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 240</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_source_position'>source_position</span>
+  <span class='lbrace'>{</span>
+    <span class='label'>start_line:</span> <span class='id identifier rubyid_start_line'>start_line</span><span class='comma'>,</span>
+    <span class='label'>end_line:</span> <span class='id identifier rubyid_end_line'>end_line</span><span class='comma'>,</span>
+    <span class='label'>start_column:</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='comma'>,</span>
+    <span class='label'>end_column:</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='comma'>,</span>
+  <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_byte-instance_method">
+  
+    #<strong>start_byte</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the node’s start byte offset</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+152
+153
+154</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 152</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
+  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_start_byte'>start_byte</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_line-instance_method">
+  
+    #<strong>start_line</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the 1-based line number where this node starts</p>
+
+<p>Convenience method that converts 0-based row to 1-based line number.<br />
+This is useful for error messages and matching with editor line numbers.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>1-based line number</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+218
+219
+220</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 218</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_start_line'>start_line</span>
+  <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span> <span class='op'>+</span> <span class='int'>1</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="start_point-instance_method">
+  
+    #<strong>start_point</strong>  &#x21d2; <tt><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the node’s start position (row, column)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>with row and column accessors (also works as Hash)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 165</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
+  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:start_point</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_start_point'>start_point</span>
+    <span class='comment'># Handle both Point objects and hashes
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>elsif</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:start_position</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_start_position'>start_position</span>
+    <span class='comment'># Handle both Point objects and hashes
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="TreeHaver::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backend node does not support start_point/start_position</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="structural?-instance_method">
+  
+    #<strong>structural?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if the node is structural (non-terminal)</p>
+
+<p>In tree-sitter, this is equivalent to being a “named” node.<br />
+Named nodes represent actual syntactic constructs (e.g., table, keyvalue, string)<br />
+while anonymous nodes are syntax/punctuation (e.g., [, =, whitespace).</p>
+
+<p>For Citrus backends, this checks if the node is a non-terminal rule.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if this is a structural (non-terminal) node</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 306</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_structural?'>structural?</span>
+  <span class='comment'># Delegate to inner_node if it has its own structural? method (e.g., Citrus)
+</span>  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:structural?</span><span class='rparen'>)</span>
+    <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_structural?'>structural?</span>
+  <span class='kw'>else</span>
+    <span class='comment'># For tree-sitter backends, named? is equivalent to structural?
+</span>    <span class='comment'># Named nodes are syntactic constructs; anonymous nodes are punctuation
+</span>    <span class='id identifier rubyid_named?'>named?</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="text-instance_method">
+  
+    #<strong>text</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the node’s text content</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 261</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_text'>text</span>
+  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:text</span><span class='rparen'>)</span>
+    <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_text'>text</span>
+  <span class='kw'>elsif</span> <span class='ivar'>@source</span>
+    <span class='comment'># Fallback: extract from source using byte positions
+</span>    <span class='ivar'>@source</span><span class='lbracket'>[</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='op'>...</span><span class='id identifier rubyid_end_byte'>end_byte</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="TreeHaver::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Cannot extract text: node has no text method and no source provided</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="to_s-instance_method">
+  
+    #<strong>to_s</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>String representation</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+483
+484
+485</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 483</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='id identifier rubyid_text'>text</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="type-instance_method">
+  
+    #<strong>type</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the node’s type/kind as a string</p>
+
+<p>Maps backend-specific methods to a unified API:</p>
+<ul>
+  <li>ruby_tree_sitter: node.type</li>
+  <li>tree_stump: node.kind</li>
+  <li>FFI: node.type</li>
+</ul>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The node type</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+140
+141
+142
+143
+144
+145
+146
+147
+148</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 140</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
+  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:type</span><span class='rparen'>)</span>
+    <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='kw'>elsif</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:kind</span><span class='rparen'>)</span>
+    <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="TreeHaver::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backend node does not support type/kind</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Thu Dec 18 13:19:10 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>

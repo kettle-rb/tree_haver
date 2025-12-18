@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: BLOCK_BACKEND_COMPARISON
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "BLOCK_BACKEND_COMPARISON";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: BLOCK_BACKEND_COMPARISON</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="block-based-backend-api-comparison">Block-Based Backend API Comparison</h1>
+
+<h2 id="quick-reference-api-options">Quick Reference: API Options</h2>
+
+<h3 id="current-api-global-state">Current API (Global State)</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># Single backend for entire process
+TreeHaver.backend = :ffi
+
+thread1 = Thread.new do
+  parser = TreeHaver::Parser.new  # Uses :ffi
+  tree = parser.parse(source)
+end
+
+thread2 = Thread.new do
+  # Can&#39;t use different backend!
+  parser = TreeHaver::Parser.new  # Still uses :ffi
+  tree = parser.parse(source)
+end
+</code></pre>
+
+<p>❌ <strong>Problem:</strong> Both threads forced to use same backend<br>
+❌ <strong>Problem:</strong> Race conditions if threads try to change global backend</p>
+
+<hr>
+
+<h2 id="proposed-api-options">Proposed API Options</h2>
+
+<h3 id="option-1-block-based-context-simple">Option 1: Block-Based Context (Simple)</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">thread1 = Thread.new do
+  TreeHaver.with_backend(:ffi) do
+    parser = TreeHaver::Parser.new
+    tree = parser.parse(source)
+    # Everything in this block uses :ffi
+  end
+end
+
+thread2 = Thread.new do
+  TreeHaver.with_backend(:citrus) do
+    parser = TreeHaver::Parser.new
+    tree = parser.parse(source)
+    # Everything in this block uses :citrus
+  end
+end
+</code></pre>
+
+<p>✅ Thread-safe by design<br>
+✅ Clear scope boundaries<br>
+✅ Simple mental model<br>
+⚠️ Requires wrapping code in blocks</p>
+
+<hr>
+
+<h3 id="option-2-parser-level-backend">Option 2: Parser-Level Backend</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">thread1 = Thread.new do
+  parser = TreeHaver::Parser.new(backend: :ffi)
+  tree = parser.parse(source)
+end
+
+thread2 = Thread.new do
+  parser = TreeHaver::Parser.new(backend: :citrus)
+  tree = parser.parse(source)
+end
+</code></pre>
+
+<p>✅ No block nesting<br>
+✅ Explicit per-parser<br>
+⚠️ Language loading separate concern<br>
+⚠️ Easy to forget backend parameter</p>
+
+<hr>
+
+<h3 id="option-3-hybrid-recommended">Option 3: Hybrid (RECOMMENDED)</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># Block-based for sections
+TreeHaver.with_backend(:ffi) do
+  parser = TreeHaver::Parser.new        # Uses :ffi from context
+  language = TreeHaver::Language.from_library(path)  # Uses :ffi from context
+  parser.language = language
+end
+
+# Explicit override when needed
+TreeHaver.with_backend(:citrus) do
+  # This parser will use :mri even though context says :citrus
+  parser = TreeHaver::Parser.new(backend: :mri)
+end
+
+# Backward compatible (no threads)
+TreeHaver.backend = :ffi
+parser = TreeHaver::Parser.new
+</code></pre>
+
+<p>✅ Maximum flexibility<br>
+✅ Explicit always wins<br>
+✅ Backward compatible<br>
+✅ Supports both patterns<br>
+⚠️ More complex (3 levels of precedence)</p>
+
+<p><strong>Precedence Order:</strong></p>
+<ol>
+  <li>Explicit parameter: <code>Parser.new(backend: :mri)</code> ← <strong>Highest</strong>
+</li>
+  <li>Block context: <code>with_backend(:ffi) { ... }</code>
+</li>
+  <li>Global setting: <code>TreeHaver.backend = :auto</code> ← <strong>Lowest</strong>
+</li>
+</ol>
+
+<hr>
+
+<h3 id="option-4-backend-instance-pattern">Option 4: Backend Instance Pattern</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">ffi_backend = TreeHaver::Backend.new(:ffi)
+citrus_backend = TreeHaver::Backend.new(:citrus)
+
+thread1 = Thread.new do
+  parser = ffi_backend.create_parser
+  tree = parser.parse(source)
+end
+
+thread2 = Thread.new do
+  parser = citrus_backend.create_parser
+  tree = parser.parse(source)
+end
+</code></pre>
+
+<p>✅ Very explicit<br>
+✅ No hidden state<br>
+✅ Easy dependency injection<br>
+❌ Major API break<br>
+❌ More verbose</p>
+
+<hr>
+
+<h2 id="comparison-matrix">Comparison Matrix</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Aspect</th>
+      <th>Block-Based</th>
+      <th>Parser-Level</th>
+      <th>Hybrid</th>
+      <th>Backend Instance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Thread-Safe</strong></td>
+      <td>✅ Yes</td>
+      <td>✅ Yes</td>
+      <td>✅ Yes</td>
+      <td>✅ Yes</td>
+    </tr>
+    <tr>
+      <td><strong>Backward Compatible</strong></td>
+      <td>✅ Yes</td>
+      <td>⚠️ Partial</td>
+      <td>✅ Yes</td>
+      <td>❌ No</td>
+    </tr>
+    <tr>
+      <td><strong>Code Changes Required</strong></td>
+      <td>Medium</td>
+      <td>Low</td>
+      <td>Medium</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td><strong>Mental Model</strong></td>
+      <td>Simple</td>
+      <td>Medium</td>
+      <td>Complex</td>
+      <td>Simple</td>
+    </tr>
+    <tr>
+      <td><strong>Flexibility</strong></td>
+      <td>Medium</td>
+      <td>Low</td>
+      <td>High</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td><strong>Verbosity</strong></td>
+      <td>Medium</td>
+      <td>Low</td>
+      <td>Low-Medium</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td><strong>Explicit Control</strong></td>
+      <td>Medium</td>
+      <td>High</td>
+      <td>Highest</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td><strong>Best For</strong></td>
+      <td>Team code</td>
+      <td>Quick scripts</td>
+      <td>Libraries</td>
+      <td>Frameworks</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="real-world-use-cases">Real-World Use Cases</h2>
+
+<h3 id="use-case-1-testing-multiple-backends">Use Case 1: Testing Multiple Backends</h3>
+
+<p><strong>Block-Based (Option 1):</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">RSpec.describe(&quot;Parser&quot;) do
+  [:mri, :ffi, :citrus].each do |backend_name|
+    context &quot;with #{backend_name} backend&quot; do
+      it &quot;parses TOML correctly&quot; do
+        TreeHaver.with_backend(backend_name) do
+          parser = TreeHaver::Parser.new
+          tree = parser.parse(toml_source)
+          expect(tree.root_node.type).to(eq(&quot;document&quot;))
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p><strong>Hybrid (Option 3):</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">RSpec.describe(&quot;Parser&quot;) do
+  [:mri, :ffi, :citrus].each do |backend_name|
+    context &quot;with #{backend_name} backend&quot; do
+      it &quot;parses TOML correctly&quot; do
+        parser = TreeHaver::Parser.new(backend: backend_name)
+        tree = parser.parse(toml_source)
+        expect(tree.root_node.type).to(eq(&quot;document&quot;))
+      end
+    end
+  end
+end
+</code></pre>
+
+<hr>
+
+<h3 id="use-case-2-concurrent-web-requests">Use Case 2: Concurrent Web Requests</h3>
+
+<p><strong>Block-Based (Option 1):</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">class ApiController &lt; ApplicationController
+  def parse_toml
+    backend = params[:backend] || :auto
+
+    result = TreeHaver.with_backend(backend) do
+      parser = TreeHaver::Parser.new
+      parser.language = TreeHaver::Language.toml
+      tree = parser.parse(request.body.read)
+      {ast: serialize_tree(tree)}
+    end
+
+    render(json: result)
+  end
+end
+</code></pre>
+
+<p><strong>Hybrid (Option 3):</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">class ApiController &lt; ApplicationController
+  def parse_toml
+    backend = params[:backend] || :auto
+    parser = TreeHaver::Parser.new(backend: backend)
+    parser.language = TreeHaver::Language.from_library(toml_path, backend: backend)
+    tree = parser.parse(request.body.read)
+
+    render(json: {ast: serialize_tree(tree)})
+  end
+end
+</code></pre>
+
+<hr>
+
+<h3 id="use-case-3-background-job-with-different-backend">Use Case 3: Background Job with Different Backend</h3>
+
+<p><strong>Block-Based (Option 1):</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">class ParseJob
+  def perform(source_code, backend: :ffi)
+    TreeHaver.with_backend(backend) do
+      parser = TreeHaver::Parser.new
+      parser.language = load_language
+      tree = parser.parse(source_code)
+      process_tree(tree)
+    end
+  end
+
+  private
+
+  def load_language
+    # Language loading automatically uses current backend context
+    TreeHaver::Language.from_library(grammar_path)
+  end
+end
+</code></pre>
+
+<p><strong>Hybrid (Option 3):</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">class ParseJob
+  def perform(source_code, backend: :ffi)
+    parser = TreeHaver::Parser.new(backend: backend)
+    parser.language = TreeHaver::Language.from_library(grammar_path, backend: backend)
+    tree = parser.parse(source_code)
+    process_tree(tree)
+  end
+end
+</code></pre>
+
+<hr>
+
+<h3 id="use-case-4-benchmark-different-backends">Use Case 4: Benchmark Different Backends</h3>
+
+<p><strong>Hybrid (Option 3) - Most Concise:</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">require &quot;benchmark&quot;
+
+backends = [:mri, :rust, :ffi, :citrus]
+source = File.read(&quot;large_file.toml&quot;)
+
+Benchmark.bm(10) do |x|
+  backends.each do |backend_name|
+    x.report(backend_name) do
+      TreeHaver.with_backend(backend_name) do
+        parser = TreeHaver::Parser.new
+        parser.language = TreeHaver::Language.toml
+        1000.times { parser.parse(source) }
+      end
+    end
+  end
+end
+</code></pre>
+
+<hr>
+
+<h2 id="architecture-before-vs-after">Architecture: Before vs. After</h2>
+
+<h3 id="before-global-state">Before (Global State)</h3>
+
+<pre class="code ruby"><code class="ruby">┌─────────────────────────────────────┐
+│  Global State: @backend = :ffi      │
+└──────────────┬──────────────────────┘
+               │
+               ├──────────┬──────────┐
+               ▼          ▼          ▼
+          ┌────────┐ ┌────────┐ ┌────────┐
+          │Thread 1│ │Thread 2│ │Thread 3│
+          └────────┘ └────────┘ └────────┘
+               │          │          │
+               ▼          ▼          ▼
+          All use :ffi backend
+          (Can&#39;t use different backends!)
+</code></pre>
+
+<h3 id="after-thread-local-context">After (Thread-Local Context)</h3>
+
+<pre class="code ruby"><code class="ruby">┌────────────────────────────────────────────────┐
+│  Global State: @backend = :auto (fallback)     │
+└───────────┬────────────────────────────────────┘
+            │
+            ├──────────────┬─────────────────┬──────────────┐
+            ▼              ▼                 ▼              ▼
+       ┌─────────┐    ┌─────────┐      ┌─────────┐   ┌─────────┐
+       │Thread 1 │    │Thread 2 │      │Thread 3 │   │Thread 4 │
+       │ctx: :ffi│    │ctx: :mri│      │ctx: nil │   │ctx: :ffi│
+       └─────────┘    └─────────┘      └─────────┘   └─────────┘
+            │              │                 │             │
+            ▼              ▼                 ▼             ▼
+       Uses :ffi      Uses :mri        Uses :auto    Uses :ffi
+                                      (global fallback)
+</code></pre>
+
+<hr>
+
+<h2 id="implementation-complexity">Implementation Complexity</h2>
+
+<h3 id="block-based-option-1">Block-Based (Option 1)</h3>
+<ul>
+  <li>
+<strong>Lines of Code:</strong> ~50</li>
+  <li>
+<strong>New Methods:</strong> 2 (<code>with_backend</code>, <code>effective_backend</code>)</li>
+  <li>
+<strong>Changed Methods:</strong> 1 (<code>backend_module</code>)</li>
+  <li>
+<strong>Risk:</strong> Low</li>
+  <li>
+<strong>Time to Implement:</strong> 2-4 hours</li>
+</ul>
+
+<h3 id="parser-level-option-2">Parser-Level (Option 2)</h3>
+<ul>
+  <li>
+<strong>Lines of Code:</strong> ~30</li>
+  <li>
+<strong>New Methods:</strong> 1 (<code>resolve_backend_module</code>)</li>
+  <li>
+<strong>Changed Methods:</strong> 2 (<code>Parser.new</code>, <code>Language.from_library</code>)</li>
+  <li>
+<strong>Risk:</strong> Low</li>
+  <li>
+<strong>Time to Implement:</strong> 1-2 hours</li>
+</ul>
+
+<h3 id="hybrid-option-3">Hybrid (Option 3)</h3>
+<ul>
+  <li>
+<strong>Lines of Code:</strong> ~80</li>
+  <li>
+<strong>New Methods:</strong> 3 (<code>with_backend</code>, <code>effective_backend</code>, <code>resolve_effective_backend</code>)</li>
+  <li>
+<strong>Changed Methods:</strong> 3 (<code>backend_module</code>, <code>Parser.new</code>, <code>Language.from_library</code>)</li>
+  <li>
+<strong>Risk:</strong> Medium (more moving parts)</li>
+  <li>
+<strong>Time to Implement:</strong> 4-6 hours</li>
+</ul>
+
+<h3 id="backend-instance-option-4">Backend Instance (Option 4)</h3>
+<ul>
+  <li>
+<strong>Lines of Code:</strong> ~200</li>
+  <li>
+<strong>New Classes:</strong> 1 (<code>Backend</code>)</li>
+  <li>
+<strong>Changed Methods:</strong> Many (full refactor)</li>
+  <li>
+<strong>Risk:</strong> High (breaking changes)</li>
+  <li>
+<strong>Time to Implement:</strong> 2-3 days</li>
+</ul>
+
+<hr>
+
+<h2 id="recommendation-summary">Recommendation Summary</h2>
+
+<h3 id="-choose-option-3-hybrid-approach">🏆 <strong>Choose Option 3: Hybrid Approach</strong>
+</h3>
+
+<p><strong>Why?</strong></p>
+<ol>
+  <li>
+<strong>Backward Compatible</strong> - Existing code works unchanged</li>
+  <li>
+<strong>Flexible</strong> - Supports both block-based and explicit patterns</li>
+  <li>
+<strong>Future-Proof</strong> - Can add more configuration options easily</li>
+  <li>
+<strong>Clear Precedence</strong> - Explicit &gt; Context &gt; Global (principle of least surprise)</li>
+  <li>
+<strong>Real-World Ready</strong> - Handles all common use cases elegantly</li>
+</ol>
+
+<p><strong>When to use each style within Hybrid:</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Scenario</th>
+      <th>Style</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Section of code needs specific backend</td>
+      <td>Block</td>
+      <td><code>with_backend(:ffi) { ... }</code></td>
+    </tr>
+    <tr>
+      <td>Single parser needs specific backend</td>
+      <td>Explicit</td>
+      <td><code>Parser.new(backend: :mri)</code></td>
+    </tr>
+    <tr>
+      <td>Testing/benchmarking</td>
+      <td>Either</td>
+      <td>Both work well</td>
+    </tr>
+    <tr>
+      <td>Background jobs</td>
+      <td>Block</td>
+      <td>Wraps entire job</td>
+    </tr>
+    <tr>
+      <td>Web requests</td>
+      <td>Explicit</td>
+      <td>More explicit per-request</td>
+    </tr>
+    <tr>
+      <td>Global default</td>
+      <td>Global</td>
+      <td><code>TreeHaver.backend = :auto</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<ol>
+  <li>✅ <strong>Review this design</strong> - Get stakeholder feedback</li>
+  <li>📝 <strong>Update CHANGELOG</strong> - Document as breaking/feature for next major version</li>
+  <li>🔨 <strong>Implement Phase 1</strong> - Thread-local context</li>
+  <li>✅ <strong>Add tests</strong> - Concurrent thread safety tests</li>
+  <li>📚 <strong>Update docs</strong> - README examples, API docs</li>
+  <li>🚀 <strong>Release</strong> - As part of next major version bump</li>
+</ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Thu Dec 18 13:19:09 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>
