@@ -13,7 +13,7 @@
 require "bundler/inline"
 
 gemfile do
-  source "https://rubygems.org"
+  source "https://gem.coop"
 
   # stdlib gems
   gem "benchmark"

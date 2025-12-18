@@ -12,7 +12,7 @@
 require "bundler/inline"
 
 gemfile do
-  source "https://rubygems.org"
+  source "https://gem.coop"
   gem "tree_haver", path: File.expand_path("..", __dir__)
   # Prism is stdlib in Ruby 3.4+, gem for 3.2-3.3
   gem "prism", "~> 1.0" if RUBY_VERSION < "3.4"

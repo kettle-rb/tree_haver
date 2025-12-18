@@ -16,7 +16,7 @@
 require "bundler/inline"
 
 gemfile do
-  source "https://rubygems.org"
+  source "https://gem.coop"
   gem "tree_haver", path: File.expand_path("..", __dir__)
   gem "tree_stump"
 end

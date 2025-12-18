@@ -12,7 +12,7 @@
 require "bundler/inline"
 
 gemfile do
-  source "https://rubygems.org"
+  source "https://gem.coop"
 
   # Load tree_haver from local path
   gem "tree_haver", path: File.expand_path("..", __dir__)

@@ -6,32 +6,70 @@
 # Tests how the order of gem loading affects backend compatibility,
 # and whether different backends can coexist when using different grammar files.
 #
+# Supported Backends:
+#   - mri: ruby_tree_sitter (C extension)
+#   - ffi: Pure Ruby FFI bindings to libtree-sitter
+#   - rust: tree_stump (Rust extension)
+#   - citrus: Pure Ruby parser (TOML only via toml-rb)
+#
 # Usage:
-#   bin/backend-matrix                           # Default: all backends, toml grammar
-#   bin/backend-matrix mri ffi rust              # Specific backend order
-#   bin/backend-matrix --all-permutations        # Test all backend combinations
-#   bin/backend-matrix --grammar=json            # Use JSON grammar
-#   bin/backend-matrix --grammars=json,bash,toml # Test multiple grammars
-#   bin/backend-matrix --cross-grammar           # Test backends with DIFFERENT grammars
+#   bin/backend-matrix                              # Default: all backends, toml grammar
+#   bin/backend-matrix mri ffi rust citrus          # Specific backend order
+#   bin/backend-matrix --all-permutations           # Test all backend combinations
+#   bin/backend-matrix --grammar=json               # Use JSON grammar
+#   bin/backend-matrix --grammars=json,bash,toml    # Test multiple grammars
+#   bin/backend-matrix --cross-grammar              # Test backends with DIFFERENT grammars
 #
 # Cross-grammar testing (the interesting case):
 #   bin/backend-matrix --cross-grammar --grammars=json,toml
 #   # Tests: FFI+json then MRI+toml, MRI+json then FFI+toml, etc.
+#
+# Testing with Citrus:
+#   bin/backend-matrix citrus mri ffi               # Citrus before tree-sitter backends
+#   bin/backend-matrix mri citrus ffi               # Citrus between tree-sitter backends
+#   bin/backend-matrix --grammar=toml citrus        # Citrus only supports TOML
 #
 # Custom source files:
 #   bin/backend-matrix --toml-source=path/to/file.toml
 #   bin/backend-matrix --json-source=path/to/file.json
 #   bin/backend-matrix --bash-source=path/to/file.sh
 
-require "bundler/setup"
-require "optparse"
-require "table_tennis"
+require "bundler/inline"
+
+gemfile do
+  source "https://gem.coop"
+
+  # stdlib
+  gem "optparse"
+
+  # script deps
+  gem "table_tennis"
+
+  # FFI Backend - works on MRI, JRuby, and TruffleRuby
+  gem "ffi", require: false # DO NOT LOAD, because conflicts with MRI
+  gem "toml-rb", require: false
+  gem "citrus", require: false
+
+  # Load tree_haver from local path
+  gem "tree_haver", path: File.expand_path("..", __dir__)
+
+  platform :mri do
+    # MRI Backend
+    gem "ruby_tree_sitter", require: false # DO NOT LOAD, because conflicts with FFI
+    # Rust Backend
+    gem "tree_stump",
+        # path: "../../vendor/tree_stump"
+        github: "pboling/tree_stump",
+        branch: "tree_haver"
+  end
+end
 
 # Map of backend names to their gem names (for Gem::Specification lookup)
 GEM_NAMES = {
   "mri" => "ruby_tree_sitter",
   "ffi" => "ffi",
   "rust" => "tree_stump",
+  "citrus" => "citrus",
 }.freeze
 
 # Map of backend names to their require paths (may differ from gem name)
@@ -39,12 +77,14 @@ GEM_REQUIRES = {
   "mri" => "tree_sitter",
   "ffi" => "ffi",
   "rust" => "tree_stump",
+  "citrus" => "citrus",
 }.freeze
 
 BACKEND_SYMBOLS = {
   "mri" => :mri,
   "ffi" => :ffi,
   "rust" => :rust,
+  "citrus" => :citrus,
 }.freeze
 
 # Grammar configuration
@@ -166,18 +206,12 @@ end
 
 def test_backend_with_grammar(backend_sym, grammar, custom_sources)
   # Load TreeHaver (after gems are loaded)
-  require_relative "../lib/tree_haver"
+  require "tree_haver"
 
   # Disable backend protection so we can test conflicts
   TreeHaver.backend_protect = false
 
-  path = get_grammar_path(grammar)
-  unless path && File.exist?(path)
-    return {status: :skip, message: "#{GRAMMAR_ENV_VARS[grammar]} not set or file not found"}
-  end
-
   source = get_source_for_grammar(grammar, custom_sources)
-  symbol = GRAMMAR_SYMBOLS[grammar]
 
   TreeHaver::LanguageRegistry.clear_cache!
   TreeHaver.reset_backend!(to: :auto)
@@ -188,11 +222,55 @@ def test_backend_with_grammar(backend_sym, grammar, custom_sources)
     when :mri then TreeHaver::Backends::MRI
     when :ffi then TreeHaver::Backends::FFI
     when :rust then TreeHaver::Backends::Rust
+    when :citrus then TreeHaver::Backends::Citrus
     end
 
     unless backend_module&.available?
       return {status: :blocked, message: "Backend reports not available"}
     end
+
+    # Citrus backend uses a different API (no .so files)
+    if backend_sym == :citrus
+      # Citrus only supports TOML via toml-rb grammar
+      unless grammar == "toml"
+        return {status: :skip, message: "Citrus backend only supports TOML grammar"}
+      end
+
+      # Load toml-rb grammar for Citrus
+      begin
+        require "citrus"
+        require "toml-rb"
+      rescue LoadError, Gem::LoadError => e
+        return {status: :skip, message: "Failed to load toml-rb: #{e.message}"}
+      end
+
+      # Register TOML grammar with TreeHaver (required for Citrus backend)
+      TreeHaver.register_language(
+        :toml,
+        grammar_module: TomlRB::Document,
+        gem_name: "toml-rb",
+      )
+
+      # Test 3: Can create parser?
+      parser = TreeHaver::Parser.new
+
+      # Test 4: Can set language?
+      parser.language = TreeHaver::Language.toml
+
+      # Test 5: Can parse?
+      tree = parser.parse(source)
+      root_type = tree.root_node.type
+
+      return {status: :ok, message: "Parsed #{grammar} with Citrus, root: #{root_type}"}
+    end
+
+    # Tree-sitter backends (MRI, FFI, Rust) use .so files
+    path = get_grammar_path(grammar)
+    unless path && File.exist?(path)
+      return {status: :skip, message: "#{GRAMMAR_ENV_VARS[grammar]} not set or file not found"}
+    end
+
+    symbol = GRAMMAR_SYMBOLS[grammar]
 
     # Test 2: Can load language?
     lang = TreeHaver::Language.from_library(path, symbol: symbol)
@@ -521,19 +599,22 @@ def run_single_test_subprocess(backends, grammars, custom_sources, cross_grammar
 end
 
 def run_all_permutations(grammars, custom_sources, cross_grammar: false)
-  backends = %w[mri ffi rust]
+  backends = %w[mri ffi rust citrus]
 
   # Generate all combinations of all sizes
   all_combinations = []
 
-  # 1-backend tests (3 total) - test single backend with all grammars
+  # 1-backend tests (4 total) - test single backend with all grammars
   backends.each { |b| all_combinations << [b] }
 
-  # 2-backend permutations (6 total)
+  # 2-backend permutations (12 total)
   backends.permutation(2).each { |perm| all_combinations << perm }
 
-  # 3-backend permutations (6 total)
+  # 3-backend permutations (24 total)
   backends.permutation(3).each { |perm| all_combinations << perm }
+
+  # 4-backend permutations (24 total)
+  backends.permutation(4).each { |perm| all_combinations << perm }
 
   total = all_combinations.size
   mode = cross_grammar ? "Cross-Grammar" : "Same-Grammar"
@@ -543,6 +624,7 @@ def run_all_permutations(grammars, custom_sources, cross_grammar: false)
   puts "1-backend: #{backends.size} tests (each backend parses all #{grammars.size} grammars)"
   puts "2-backend: #{backends.permutation(2).to_a.size} tests (A → B chains)"
   puts "3-backend: #{backends.permutation(3).to_a.size} tests (A → B → C chains)"
+  puts "4-backend: #{backends.permutation(4).to_a.size} tests (A → B → C → D chains)"
 
   puts "\nEach combination runs in a fresh subprocess"
 
@@ -661,6 +743,30 @@ def print_results_summary(backends, grammars, all_results, cross_grammar: false)
   end
   puts TableTennis.new(three_backend_rows)
 
+  # 4-backend results
+  print_section("4-Backend Tests (A → B → C → D chains)")
+
+  if cross_grammar
+    puts "\nNote: Each 4-backend test runs a full A → B → C → D chain where each backend"
+    puts "uses a different grammar (e.g., mri+json → ffi+toml → rust+bash → citrus+jsonc)."
+    puts "Results may be similar across orderings because once a backend is blocked,"
+    puts "it remains blocked regardless of when it was loaded."
+  end
+
+  four_backend_rows = backends.permutation(4).map do |perm|
+    order_str = perm.join(" ")
+    result = all_results[order_str]
+    status = if result.nil?
+      "(not tested)"
+    elsif result[:error]
+      "ERROR"
+    else
+      result[:working] + (result[:ffi_mri_coexist] ? " ★" : "")
+    end
+    {"Order" => order_str, "Result" => status}
+  end
+  puts TableTennis.new(four_backend_rows)
+
   # Cross-grammar specific summary
   if cross_grammar
     print_section("Cross-Grammar Key Findings (Data-Driven)")
@@ -706,36 +812,51 @@ def print_results_summary(backends, grammars, all_results, cross_grammar: false)
     puts "\nBackend Pair Compatibility:"
     puts TableTennis.new(pair_rows)
 
-    # FFI-specific findings table
-    ffi_mri = backend_pairs["ffi+mri"]
-    ffi_rust = backend_pairs["ffi+rust"]
-    mri_rust = backend_pairs["mri+rust"]
+    # Backend Analysis table - show key backend pairs
+    analysis_rows = []
 
-    ffi_rows = []
-    ffi_rows << {
-      "Pair" => "FFI + MRI",
-      "Status" => ffi_mri&.dig(:working) ? "✓ Can coexist" : "✗ Cannot coexist",
-      "Reason" => ffi_mri&.dig(:working) ? "" : "libtree-sitter runtime conflict",
-    }
-    ffi_rows << {
-      "Pair" => "FFI + Rust",
-      "Status" => ffi_rust&.dig(:working) ? "✓ Can coexist" : "✗ Cannot coexist",
-      "Reason" => ffi_rust&.dig(:working) ? "" : "Unknown conflict",
-    }
-    ffi_rows << {
-      "Pair" => "MRI + Rust",
-      "Status" => if mri_rust&.dig(:working) && !mri_rust&.dig(:failed)
-                    "✓ Fully compatible"
-                  elsif mri_rust&.dig(:working)
-                    "⚠ Partially compatible"
-                  else
-                    "✗ Cannot coexist"
-                  end,
-      "Reason" => "",
-    }
+    # Define important backend pairs to analyze
+    important_pairs = [
+      ["ffi", "mri", "libtree-sitter runtime conflict"],
+      ["ffi", "rust", ""],
+      ["ffi", "citrus", ""],
+      ["mri", "rust", ""],
+      ["mri", "citrus", ""],
+      ["rust", "citrus", ""],
+    ]
+
+    important_pairs.each do |backend1, backend2, reason|
+      pair_key = [backend1, backend2].sort.join("+")
+      pair_data = backend_pairs[pair_key]
+
+      status = if pair_data&.dig(:working) && !pair_data&.dig(:failed)
+                 "✓ Fully compatible"
+               elsif pair_data&.dig(:working)
+                 "⚠ Partially compatible"
+               elsif pair_data&.dig(:failed)
+                 "✗ Cannot coexist"
+               else
+                 "(not tested)"
+               end
+
+      # Use provided reason for known conflicts, otherwise empty
+      display_reason = if !pair_data&.dig(:working) && reason.empty?
+                         "Unknown conflict"
+                       elsif pair_data&.dig(:working)
+                         "—"
+                       else
+                         reason
+                       end
+
+      analysis_rows << {
+        "Pair" => "#{backend1.upcase} + #{backend2.upcase}",
+        "Status" => status,
+        "Reason" => display_reason,
+      }
+    end
 
     puts "\nBackend Analysis:"
-    puts TableTennis.new(ffi_rows)
+    puts TableTennis.new(analysis_rows)
   end
 
   # Analysis
@@ -758,7 +879,7 @@ def print_results_summary(backends, grammars, all_results, cross_grammar: false)
   ffi_compatible_with = []
   ffi_incompatible_with = []
 
-  %w[mri rust].each do |other|
+  %w[mri rust citrus].each do |other|
     # Check both orders
     orders = ["ffi #{other}", "#{other} ffi"]
     works_with_other = orders.any? do |order|
@@ -870,11 +991,11 @@ parser = OptionParser.new do |opts|
     puts <<~EXAMPLES
 
       Examples:
-        # Test all backends with TOML grammar (default)
+        # Test all backends with TOML grammar (default: ffi, mri, rust, citrus)
         bin/backend-matrix
 
         # Test specific backend order
-        bin/backend-matrix ffi mri rust
+        bin/backend-matrix ffi mri rust citrus
 
         # Test with JSON grammar
         bin/backend-matrix --grammar=json
@@ -916,7 +1037,7 @@ end
 parser.parse!(remaining)
 
 # Default backends if none specified
-backends = %w[ffi mri rust] if backends.empty?
+backends = %w[ffi mri rust citrus] if backends.empty?
 
 # Validate grammars
 options[:grammars].each do |grammar|

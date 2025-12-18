@@ -44,9 +44,21 @@ bin/rake -T
 
 ## Backend Compatibility Testing
 
-TreeHaver supports multiple backends (MRI, FFI, Rust, Citrus), but not all backends can coexist
-in the same Ruby process. Notably, **FFI and MRI backends conflict** at the libtree-sitter runtime
-level—using both in the same process will cause segfaults.
+TreeHaver supports multiple backends with different characteristics:
+
+- **MRI**: ruby_tree_sitter (C extension, tree-sitter grammars)
+- **FFI**: Pure Ruby FFI bindings (tree-sitter grammars)
+- **Rust**: tree_stump (Rust extension, tree-sitter grammars)
+- **Citrus**: Pure Ruby parser (TOML only via toml-rb grammar)
+
+Not all backends can coexist in the same Ruby process. Notably, **FFI and MRI backends conflict** 
+at the libtree-sitter runtime level—using both in the same process will cause segfaults.
+
+The **Citrus backend** works differently:
+- Uses pure Ruby parsing (no .so files)
+- Currently only supports TOML via toml-rb grammar
+- Can coexist with tree-sitter backends
+- Useful for testing multi-backend scenarios
 
 The `bin/backend-matrix` script helps test and document backend compatibility by running tests
 in isolated subprocesses.
@@ -57,14 +69,21 @@ in isolated subprocesses.
 # Test all backends with TOML grammar (default)
 bin/backend-matrix
 
-# Test specific backend order
-bin/backend-matrix ffi mri rust
+# Test specific backend order (including Citrus)
+bin/backend-matrix ffi mri rust citrus
+
+# Test Citrus with tree-sitter backends
+bin/backend-matrix citrus mri ffi    # Citrus before tree-sitter
+bin/backend-matrix mri citrus ffi    # Citrus between tree-sitter
 
 # Test with a different grammar
 bin/backend-matrix --grammar=json
 
 # Test multiple grammars
 bin/backend-matrix --grammars=json,toml,bash
+
+# Citrus only supports TOML
+bin/backend-matrix --grammar=toml citrus
 ```
 
 ### All Permutations Mode
@@ -72,11 +91,13 @@ bin/backend-matrix --grammars=json,toml,bash
 Test all possible backend combinations by spawning fresh subprocesses for each:
 
 ```shell
-# Test all 15 backend combinations (1-backend, 2-backend, 3-backend)
+# Test all 64 backend combinations (4 backends: 4 1-backend + 12 2-backend + 24 3-backend + 24 4-backend)
 bin/backend-matrix --all-permutations
 
 # With multiple grammars
 bin/backend-matrix --all-permutations --grammars=json,toml
+
+# Note: Citrus only supports TOML, so JSON/Bash tests will skip for Citrus
 ```
 
 ### Cross-Grammar Testing
@@ -121,18 +142,23 @@ Example findings:
 
 ```
 Backend Pair Compatibility:
-╭──────────────┬────────────────────┬─────────┬────────╮
-│ Backend Pair │ Compatibility      │ Working │ Failed │
-├──────────────┼────────────────────┼─────────┼────────┤
-│ ffi+mri      │ ✗ Incompatible     │       0 │      8 │
-│ mri+rust     │ ✓ Fully compatible │       8 │      0 │
-│ ffi+rust     │ ✓ Fully compatible │       8 │      0 │
-╰──────────────┴────────────────────┴─────────┴────────╯
+╭───────────────┬────────────────────┬─────────┬────────╮
+│ Backend Pair  │ Compatibility      │ Working │ Failed │
+├───────────────┼────────────────────┼─────────┼────────┤
+│ ffi+mri       │ ✗ Incompatible     │       0 │      8 │
+│ mri+rust      │ ✓ Fully compatible │       8 │      0 │
+│ ffi+rust      │ ✓ Fully compatible │       8 │      0 │
+│ citrus+mri    │ ✓ Fully compatible │       2 │      0 │
+│ citrus+ffi    │ ✓ Fully compatible │       2 │      0 │
+│ citrus+rust   │ ✓ Fully compatible │       2 │      0 │
+╰───────────────┴────────────────────┴─────────┴────────╯
+
+Note: Citrus only supports TOML, so it has fewer total combinations.
 ```
 
 ### Required Environment Variables
 
-The script requires grammar paths to be set:
+The script requires grammar paths to be set for tree-sitter backends:
 
 ```shell
 export TREE_SITTER_TOML_PATH=/path/to/libtree-sitter-toml.so
@@ -141,6 +167,12 @@ export TREE_SITTER_BASH_PATH=/path/to/libtree-sitter-bash.so
 ```
 
 See `.envrc` for examples of how these are typically configured.
+
+**For Citrus backend:**
+- Requires the `toml-rb` gem (pure Ruby TOML parser)
+  - **Auto-installs**: Script uses bundler inline to install `toml-rb` automatically if missing
+- No environment variables needed (doesn't use .so files)
+- Only supports TOML grammar
 
 ## Environment Variables for Local Development
 
