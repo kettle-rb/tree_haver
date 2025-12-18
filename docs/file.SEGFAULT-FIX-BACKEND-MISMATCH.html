@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: SEGFAULT-FIX-BACKEND-MISMATCH
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "SEGFAULT-FIX-BACKEND-MISMATCH";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: SEGFAULT-FIX-BACKEND-MISMATCH</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="segfault-fix-backend-mismatch-protection">Segfault Fix: Backend Mismatch Protection</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>Segfault occurred when FFI backend’s <code>ts_parser_set_language</code> was called with an invalid pointer (<code>0x0000000000000040</code>):</p>
+
+<pre class="code ruby"><code class="ruby">lib/tree_haver/backends/ffi.rb:414: [BUG] Segmentation fault
+c:0059 p:0051 s:0319 e:000318 METHOD .../ffi.rb:414
+</code></pre>
+
+<h3 id="root-cause">Root Cause</h3>
+
+<p>The segfault happened because:</p>
+<ol>
+  <li>A Language was created for one backend (e.g., FFI)</li>
+  <li>The backend was switched (or language was cached from different backend)</li>
+  <li>The Language object from wrong backend was passed to FFI’s native code</li>
+  <li>Invalid pointer → <strong>segfault</strong>
+</li>
+</ol>
+
+<h2 id="solution-multi-layer-defense">Solution: Multi-Layer Defense</h2>
+
+<h3 id="layer-1-backend-compatibility-check-unwrap_language">Layer 1: Backend Compatibility Check (unwrap_language)</h3>
+
+<p>Check backend compatibility <strong>before</strong> unwrapping and passing to native code:</p>
+
+<pre class="code language-ruby"><code class="language-ruby">def unwrap_language(lang)
+  if lang.respond_to?(:backend)
+    # Verify backend compatibility FIRST
+    # Exception: :auto backend is permissive (accepts any language)
+    current_backend = backend
+
+    if lang.backend != current_backend &amp;&amp; current_backend != :auto
+      # Try to reload for correct backend
+      reloaded = try_reload_language_for_backend(lang, current_backend)
+      if reloaded
+        lang = reloaded
+      else
+        # Can&#39;t reload - raise clear error instead of segfault
+        raise TreeHaver::Error,
+          &quot;Language backend mismatch: language is for #{lang.backend}, &quot; \
+            &quot;parser is #{current_backend}. Cannot reload language for correct backend.&quot;
+      end
+    end
+  end
+
+  # ... unwrapping logic ...
+end
+</code></pre>
+
+<p><strong>Special Case: :auto Backend</strong></p>
+
+<p>When parser backend is <code>:auto</code> (auto-detect), it accepts languages from any backend. This is useful for:</p>
+<ul>
+  <li>Testing (where backend is mocked)</li>
+  <li>Auto-detection scenarios</li>
+  <li>Maximum flexibility</li>
+</ul>
+
+<p><strong>Benefits:</strong></p>
+<ul>
+  <li>✅ Catches mismatch before native code</li>
+  <li>✅ Attempts automatic reload</li>
+  <li>✅ Clear error message instead of segfault</li>
+  <li>✅ Prevents invalid pointers from reaching FFI</li>
+</ul>
+
+<h3 id="layer-2-pointer-validation-ffi-backend">Layer 2: Pointer Validation (FFI Backend)</h3>
+
+<p>Verify pointer is valid before calling native code:</p>
+
+<pre class="code language-ruby"><code class="language-ruby">def language=(lang)
+  # Type check
+  unless lang.is_a?(Language)
+    raise TreeHaver::NotAvailable,
+      &quot;FFI backend expected FFI::Language wrapper, got #{lang.class}&quot;
+  end
+
+  # Pointer validation
+  ptr = lang.to_ptr
+  if ptr.nil? || ptr.null?
+    raise TreeHaver::NotAvailable,
+      &quot;FFI Language has invalid pointer (nil or NULL). &quot; \
+        &quot;Language may have been improperly loaded or library was unloaded.&quot;
+  end
+
+  # Safe to call native code
+  ok = Native.ts_parser_set_language(@parser, ptr)
+  raise TreeHaver::NotAvailable, &quot;Failed to set language&quot; unless ok
+
+  lang
+end
+</code></pre>
+
+<p><strong>Benefits:</strong></p>
+<ul>
+  <li>✅ Validates pointer before native call</li>
+  <li>✅ Clear error for NULL pointers</li>
+  <li>✅ Helpful diagnostic message</li>
+  <li>✅ Prevents segfault</li>
+</ul>
+
+<h2 id="how-it-works">How It Works</h2>
+
+<h3 id="scenario-1-correct-backend">Scenario 1: Correct Backend</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">TreeHaver.backend = :ffi
+parser = TreeHaver::Parser.new
+lang = TreeHaver::Language.from_library(path)  # Creates FFI::Language
+
+parser.language = lang
+# ✅ lang.backend (:ffi) == parser.backend (:ffi)
+# ✅ Passes through unwrapping
+# ✅ FFI backend receives FFI::Language with valid pointer
+# ✅ Success!
+</code></pre>
+
+<h3 id="scenario-2-backend-mismatch-with-successful-reload">Scenario 2: Backend Mismatch with Successful Reload</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">TreeHaver.backend = :ffi
+lang = TreeHaver::Language.from_library(path)  # Creates FFI::Language
+
+TreeHaver.backend = :mri  # Switch backend
+parser = TreeHaver::Parser.new  # MRI parser
+
+parser.language = lang
+# ⚠️  lang.backend (:ffi) != parser.backend (:mri)
+# 🔄 try_reload_language_for_backend(lang, :mri)
+# ✅ Reload successful - gets MRI::Language from cache
+# ✅ MRI backend receives MRI::Language
+# ✅ Success!
+</code></pre>
+
+<h3 id="scenario-3-backend-mismatch-reload-fails">Scenario 3: Backend Mismatch, Reload Fails</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">TreeHaver.backend = :ffi
+lang = TreeHaver::Language.from_library(path)  # Creates FFI::Language
+
+TreeHaver.backend = :mri  # Switch backend
+parser = TreeHaver::Parser.new  # MRI parser
+
+parser.language = lang
+# ⚠️  lang.backend (:ffi) != parser.backend (:mri)
+# 🔄 try_reload_language_for_backend(lang, :mri)
+# ❌ Reload failed (not in cache, can&#39;t load)
+# 🛑 Raises clear error:
+#    &quot;Language backend mismatch: language is for ffi, parser is mri.
+#     Cannot reload language for correct backend.&quot;
+# ✅ No segfault - clear error message instead!
+</code></pre>
+
+<h3 id="scenario-4-invalid-pointer">Scenario 4: Invalid Pointer</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">lang = create_invalid_ffi_language  # Somehow has null pointer
+
+parser = TreeHaver::Parser.new(backend: :ffi)
+parser.language = lang
+# ✅ Backend matches (ffi == ffi)
+# ✅ Passes unwrapping
+# ⚠️  FFI backend receives language
+# ⚠️  ptr = lang.to_ptr → NULL pointer
+# 🛑 Raises clear error:
+#    &quot;FFI Language has invalid pointer (nil or NULL)&quot;
+# ✅ No segfault - validation caught it!
+</code></pre>
+
+<h3 id="scenario-5-auto-backend-testing">Scenario 5: Auto Backend (Testing)</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># Common in tests where backend is auto-detected or mocked
+parser = TreeHaver::Parser.new  # backend = :auto
+test_lang = TestLanguage.new(backend: :test)  # Test language
+
+parser.language = test_lang
+# ✅ Parser backend is :auto (permissive)
+# ✅ :auto accepts any language backend
+# ✅ Skips reload attempt
+# ✅ Passes through to unwrapping
+# ✅ Success - test works!
+</code></pre>
+
+<p>The <code>:auto</code> backend is permissive because:</p>
+<ul>
+  <li>It will resolve to a specific backend at runtime</li>
+  <li>Tests often use mock backends</li>
+  <li>Maximum flexibility for auto-detection</li>
+</ul>
+
+<h2 id="error-messages">Error Messages</h2>
+
+<h3 id="before-segfault">Before (Segfault)</h3>
+<pre class="code ruby"><code class="ruby">[BUG] Segmentation fault at 0x0000000000000040
+ruby 3.4.7 (2025-10-08 revision 7a5688e2a2) +PRISM [x86_64-linux]
+</code></pre>
+<p><strong>Not helpful!</strong> No indication of what went wrong.</p>
+
+<h3 id="after-clear-errors">After (Clear Errors)</h3>
+
+<p><strong>Backend Mismatch:</strong></p>
+<pre class="code ruby"><code class="ruby">TreeHaver::Error: Language backend mismatch: language is for ffi, parser is mri.
+Cannot reload language for correct backend.
+Create a new language with TreeHaver::Language.from_library when backend is mri.
+</code></pre>
+
+<p><strong>Invalid Pointer:</strong></p>
+<pre class="code ruby"><code class="ruby">TreeHaver::NotAvailable: FFI Language has invalid pointer (nil or NULL).
+Language may have been improperly loaded or the library was unloaded.
+</code></pre>
+
+<p><strong>Wrong Type:</strong></p>
+<pre class="code ruby"><code class="ruby">TreeHaver::NotAvailable: FFI backend expected FFI::Language wrapper, got MRI::Language.
+This usually means TreeHaver::Parser#unwrap_language passed the wrong type.
+Check that language caching respects backend boundaries.
+</code></pre>
+
+<h2 id="testing">Testing</h2>
+
+<p>The multi_backend_spec should now either:</p>
+<ol>
+  <li>
+<strong>Pass</strong> - if reload works correctly</li>
+  <li>
+<strong>Fail with clear error</strong> - instead of segfault</li>
+</ol>
+
+<p>Either way, <strong>no more segfaults</strong>!</p>
+
+<h2 id="key-principles">Key Principles</h2>
+
+<ol>
+  <li>
+<strong>Fail Fast</strong>: Check compatibility early, before native code</li>
+  <li>
+<strong>Clear Errors</strong>: Explain what went wrong and how to fix it</li>
+  <li>
+<strong>Defense in Depth</strong>: Multiple validation layers</li>
+  <li>
+<strong>Graceful Degradation</strong>: Try to recover (reload) before failing</li>
+</ol>
+
+<h2 id="summary">Summary</h2>
+
+<p>Two layers of protection prevent segfaults:</p>
+
+<p><strong>Layer 1 (unwrap_language):</strong></p>
+<ul>
+  <li>✅ Checks backend compatibility first</li>
+  <li>✅ Attempts automatic reload</li>
+  <li>✅ Raises clear error if mismatch can’t be resolved</li>
+</ul>
+
+<p><strong>Layer 2 (FFI backend):</strong></p>
+<ul>
+  <li>✅ Validates pointer is non-null</li>
+  <li>✅ Validates correct type</li>
+  <li>✅ Raises clear error before native call</li>
+</ul>
+
+<p><strong>Result:</strong></p>
+<ul>
+  <li>❌ No more segfaults</li>
+  <li>✅ Clear, actionable error messages</li>
+  <li>✅ Automatic recovery when possible</li>
+  <li>✅ Safer native code interaction</li>
+</ul>
+</div></div>
+
+      <div id="footer">
+  Generated on Thu Dec 18 12:37:22 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-3.4.7).
+</div>
+
+    </div>
+  </body>
+</html>

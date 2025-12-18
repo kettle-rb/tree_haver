@@ -60,12 +60,12 @@ TreeHaver is a cross-Ruby adapter for the [tree-sitter](https://tree-sitter.gith
 
 If you've used [Faraday](https://github.com/lostisland/faraday), [multi_json](https://github.com/intridea/multi_json), or [multi_xml](https://github.com/sferik/multi_xml), you'll feel right at home with TreeHaver. These gems share a common philosophy:
 
-| Gem            | Unified API for     | Backend Examples                                                           |
-|----------------|---------------------|----------------------------------------------------------------------------|
-| **Faraday**    | HTTP requests       | Net::HTTP, Typhoeus, Patron, Excon                                         |
-| **multi_json** | JSON parsing        | Oj, Yajl, JSON gem                                                         |
-| **multi_xml**  | XML parsing         | Nokogiri, LibXML, Ox                                                 |
-| **TreeHaver**  | Code parsing        | MRI, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus (&) |
+| Gem            | Unified API for     | Backend Examples                                                         |
+|----------------|---------------------|--------------------------------------------------------------------------|
+| **Faraday**    | HTTP requests       | Net::HTTP, Typhoeus, Patron, Excon                                       |
+| **multi_json** | JSON parsing        | Oj, Yajl, JSON gem                                                       |
+| **multi_xml**  | XML parsing         | Nokogiri, LibXML, Ox                                                     |
+| **TreeHaver**  | Code parsing        | MRI, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus (& Co.) |
 
 **Write once, run anywhere.**
 

@@ -149,7 +149,7 @@
     <tr>
       <td><strong>TreeHaver</strong></td>
       <td>Code parsing</td>
-      <td>MRI, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus (&amp;)</td>
+      <td>MRI, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus (&amp; Co.)</td>
     </tr>
   </tbody>
 </table>
@@ -860,19 +860,19 @@ by following the instructions below.</p>
 <p><strong>Backend Requirements:</strong></p>
 
 <pre class="code language-ruby"><code class="language-ruby"># Tree-sitter backends
-gem &#39;ruby_tree_sitter&#39;, &#39;~&gt; 2.0&#39;  # MRI backend
-gem &#39;tree_stump&#39;                   # Rust backend
-gem &#39;ffi&#39;, &#39;&gt;= 1.15&#39;, &#39;&lt; 2.0&#39;     # FFI backend
+gem &quot;ruby_tree_sitter&quot;, &quot;~&gt; 2.0&quot;  # MRI backend
+gem &quot;tree_stump&quot;                   # Rust backend
+gem &quot;ffi&quot;, &quot;&gt;= 1.15&quot;, &quot;&lt; 2.0&quot;     # FFI backend
 # Java backend: no gem required (uses JRuby&#39;s built-in JNI)
 
 # Language-specific backends
-gem &#39;prism&#39;, &#39;~&gt; 1.0&#39;              # Ruby parsing (stdlib in Ruby 3.4+)
+gem &quot;prism&quot;, &quot;~&gt; 1.0&quot;              # Ruby parsing (stdlib in Ruby 3.4+)
 # Psych: no gem required (Ruby stdlib)
-gem &#39;commonmarker&#39;, &#39;&gt;= 0.23&#39;      # Markdown parsing (comrak)
-gem &#39;markly&#39;, &#39;~&gt; 0.11&#39;            # GFM parsing (cmark-gfm)
+gem &quot;commonmarker&quot;, &quot;&gt;= 0.23&quot;      # Markdown parsing (comrak)
+gem &quot;markly&quot;, &quot;~&gt; 0.11&quot;            # GFM parsing (cmark-gfm)
 
 # Pure Ruby fallback
-gem &#39;citrus&#39;, &#39;~&gt; 3.0&#39;             # Citrus backend
+gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;             # Citrus backend
 # Plus grammar gems: toml-rb, dhall, finitio, etc.
 </code></pre>
 
@@ -1342,11 +1342,11 @@ end
 
 <p><strong>TreeHaver Exception Hierarchy:</strong></p>
 
-<pre class="code language-ruby"><code class="language-ruby">Exception
-└── TreeHaver::Error              # Base error class
-    ├── TreeHaver::NotAvailable   # Backend/grammar not available
-    └── TreeHaver::BackendConflict # Backend incompatibility detected
-</code></pre>
+<pre class="code ruby"><code class="ruby"><span class='const'>Exception</span>
+<span class='id identifier rubyid_└──'>└──</span> <span class='const'><span class='object_link'><a href="TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Error.html" title="TreeHaver::Error (class)">Error</a></span></span>              <span class='comment'># Base error class
+</span>    <span class='id identifier rubyid_├──'>├──</span> <span class='const'><span class='object_link'><a href="TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span>   <span class='comment'># Backend/grammar not available
+</span>    <span class='id identifier rubyid_└──'>└──</span> <span class='const'><span class='object_link'><a href="TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/BackendConflict.html" title="TreeHaver::BackendConflict (class)">BackendConflict</a></span></span> <span class='comment'># Backend incompatibility detected
+</span></code></pre>
 
 <p><strong>Compatibility Mode Behavior:</strong></p>
 
@@ -1377,7 +1377,7 @@ end
   finder.register! if finder.available?
   language = TreeHaver::Language.toml
 rescue TreeHaver::NotAvailable =&gt; e
-  warn &quot;TOML grammar not available: #{e.message}&quot;
+  warn(&quot;TOML grammar not available: #{e.message}&quot;)
   # Fallback to another backend or fail gracefully
 end
 </code></pre>
@@ -1514,9 +1514,9 @@ parser.language = TreeHaver::Backends::Commonmarker::Language.markdown
 
 source = &lt;&lt;~MARKDOWN
   # My Document
-  
+
   ## Section
-  
+
   - Item 1
   - Item 2
 MARKDOWN
@@ -1829,7 +1829,7 @@ RSpec.describe(&quot;MyParser&quot;) do
         TreeHaver.with_backend(backend_name) do
           parser = TreeHaver::Parser.new
           result = parser.parse(&quot;x = 42&quot;)
-          expect(result.root_node.type).to eq(&quot;document&quot;)
+          expect(result.root_node.type).to(eq(&quot;document&quot;))
         end
         # Backend automatically restored after block
       end
@@ -2144,7 +2144,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Thu Dec 18 11:57:45 2025 by
+  Generated on Thu Dec 18 12:37:22 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-3.4.7).
 </div>
