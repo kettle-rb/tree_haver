@@ -110,7 +110,7 @@ module TreeHaver
 
           # Compare by path first, then symbol
           cmp = (@path || "") <=> (other.path || "")
-          return cmp unless cmp.zero?
+          return cmp if cmp.nonzero?
 
           (@symbol || "") <=> (other.symbol || "")
         end

@@ -246,7 +246,7 @@ RSpec.describe TreeHaver::Node do
 
     context "when backend supports text method" do
       it "uses the backend's text method", :toml_grammar do
-        expect(root_node.inner_node).to receive(:text).and_return("test")
+        allow(root_node.inner_node).to receive(:text).and_return("test")
         expect(root_node.text).to eq("test")
       end
     end

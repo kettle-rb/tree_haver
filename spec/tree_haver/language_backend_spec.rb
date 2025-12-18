@@ -16,8 +16,10 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
 
     before do
       # Allow path validation to pass
-      allow(TreeHaver::PathValidator).to receive(:safe_library_path?).and_return(true)
-      allow(TreeHaver::PathValidator).to receive(:safe_symbol_name?).and_return(true)
+      allow(TreeHaver::PathValidator).to receive_messages(
+        safe_library_path?: true,
+        safe_symbol_name?: true,
+      )
     end
 
     context "with no backend parameter" do
@@ -102,8 +104,10 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
     let(:mock_symbol) { "tree_sitter_test" }
 
     before do
-      allow(TreeHaver::PathValidator).to receive(:safe_library_path?).and_return(true)
-      allow(TreeHaver::PathValidator).to receive(:safe_symbol_name?).and_return(true)
+      allow(TreeHaver::PathValidator).to receive_messages(
+        safe_library_path?: true,
+        safe_symbol_name?: true,
+      )
     end
 
     # Tests use Rust + MRI which can coexist (unlike FFI + MRI)
@@ -225,8 +229,10 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
     let(:mock_symbol) { "tree_sitter_test" }
 
     before do
-      allow(TreeHaver::PathValidator).to receive(:safe_library_path?).and_return(true)
-      allow(TreeHaver::PathValidator).to receive(:safe_symbol_name?).and_return(true)
+      allow(TreeHaver::PathValidator).to receive_messages(
+        safe_library_path?: true,
+        safe_symbol_name?: true,
+      )
     end
 
     # Use Rust + Citrus which can coexist (unlike FFI + MRI)
@@ -310,8 +316,10 @@ RSpec.describe "TreeHaver::Language with backend parameter and caching" do
     let(:mock_symbol) { "tree_sitter_test" }
 
     before do
-      allow(TreeHaver::PathValidator).to receive(:safe_library_path?).and_return(true)
-      allow(TreeHaver::PathValidator).to receive(:safe_symbol_name?).and_return(true)
+      allow(TreeHaver::PathValidator).to receive_messages(
+        safe_library_path?: true,
+        safe_symbol_name?: true,
+      )
     end
 
     it "works without backend parameter (existing behavior)" do

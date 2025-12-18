@@ -234,7 +234,10 @@ module TreeHaver
     # @return [Boolean]
     # @example Disable protection for testing
     #   TreeHaver.backend_protect = false
-    attr_writer :backend_protect
+    def backend_protect=(value)
+      @backend_protect_mutex ||= Mutex.new
+      @backend_protect_mutex.synchronize { @backend_protect = value }
+    end
 
     # Check if backend conflict protection is enabled
     #
@@ -1065,7 +1068,7 @@ module TreeHaver
       inner_lang = unwrap_language(lang)
       @impl.language = inner_lang
       # Return the original (possibly wrapped) language for consistency
-      lang
+      lang # rubocop:disable Lint/Void (intentional return value)
     end
 
     private

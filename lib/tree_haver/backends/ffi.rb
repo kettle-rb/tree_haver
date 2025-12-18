@@ -24,17 +24,19 @@ module TreeHaver
       #
       # This method lazily checks for FFI gem availability to avoid
       # polluting the environment at load time.
-      #
-      # @return [Boolean] true if FFI gem can be loaded
-      # @api private
-      def self.ffi_gem_available?
-        return @ffi_gem_available if defined?(@ffi_gem_available)
+      class << self
+        # Check if the FFI gem can be loaded
+        # @return [Boolean] true if FFI gem can be loaded
+        # @api private
+        def ffi_gem_available?
+          return @ffi_gem_available if defined?(@ffi_gem_available)
 
-        @ffi_gem_available = begin
-          require "ffi"
-          true
-        rescue LoadError
-          false
+          @ffi_gem_available = begin
+            require "ffi"
+            true
+          rescue LoadError
+            false
+          end
         end
       end
 
@@ -283,7 +285,7 @@ module TreeHaver
 
           # Compare by path first, then symbol
           cmp = (@path || "") <=> (other.path || "")
-          return cmp unless cmp.zero?
+          return cmp if cmp.nonzero?
 
           (@symbol || "") <=> (other.symbol || "")
         end
@@ -499,7 +501,7 @@ module TreeHaver
           ok = Native.ts_parser_set_language(@parser, ptr)
           raise TreeHaver::NotAvailable, "Failed to set language on parser" unless ok
 
-          lang
+          lang # rubocop:disable Lint/Void (intentional return value)
         end
 
         # Parse source code into a syntax tree

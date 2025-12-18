@@ -27,7 +27,7 @@ RSpec.describe "TreeHaver::Tree edge cases", :toml_grammar do
       mock_inner = double("mock_tree")
       allow(mock_inner).to receive(:root_node).and_return(double("node", type: "test"))
       allow(mock_inner).to receive(:walk) do |&block|
-        block.call("walked") if block
+        block&.call("walked")
         "walk_result"
       end
 

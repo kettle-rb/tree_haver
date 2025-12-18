@@ -240,7 +240,7 @@ def test_backend_with_grammar(backend_sym, grammar, custom_sources)
       begin
         require "citrus"
         require "toml-rb"
-      rescue LoadError, Gem::LoadError => e
+      rescue LoadError => e
         return {status: :skip, message: "Failed to load toml-rb: #{e.message}"}
       end
 

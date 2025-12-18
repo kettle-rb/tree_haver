@@ -131,17 +131,14 @@ RSpec.describe TreeHaver::Backends::Java do
     it "raises NotAvailable from facade when Java backend cannot be used" do
       stub_env("TREE_HAVER_BACKEND" => "java")
       TreeHaver.reset_backend!(to: :java)
-      if backend.available?
-        expect {
-          TreeHaver::Language.from_path("/nonexistent/path/to/libtree-sitter-toml.so")
-        }.to raise_error(TreeHaver::NotAvailable)
-      else
+      unless backend.available?
         expect(TreeHaver.backend).to eq(:java)
-        expect(TreeHaver.backend_module).to eq(TreeHaver::Backends::Java)
-        expect {
-          TreeHaver::Language.from_path("/nonexistent/path/to/libtree-sitter-toml.so")
-        }.to raise_error(TreeHaver::NotAvailable)
+        expect(TreeHaver.backend_module).to eq(described_class)
       end
+
+      expect {
+        TreeHaver::Language.from_path("/nonexistent/path/to/libtree-sitter-toml.so")
+      }.to raise_error(TreeHaver::NotAvailable)
     end
   end
 

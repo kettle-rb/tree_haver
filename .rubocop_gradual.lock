@@ -1,70 +1,21 @@
 {
-  "bin/backend-matrix:4241886561": [
-    [243, 7, 117, "Lint/ShadowedException: Do not shadow rescued Exceptions.", 674591231]
-  ],
-  "lib/tree_haver.rb:594464984": [
-    [237, 5, 28, "ThreadSafety/ClassAndModuleAttributes: Avoid mutating class and module attributes.", 1973484748],
-    [1068, 7, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
-  ],
-  "lib/tree_haver/backends/ffi.rb:344054470": [
-    [30, 7, 231, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 4278263153],
-    [286, 11, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974],
-    [502, 11, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
-  ],
-  "lib/tree_haver/backends/java.rb:1697176321": [
-    [268, 11, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
-  ],
-  "lib/tree_haver/backends/mri.rb:1201400393": [
-    [113, 11, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
-  ],
-  "lib/tree_haver/backends/rust.rb:1781628214": [
-    [178, 11, 4, "Lint/Void: Variable `lang` used in void context.", 2087664833]
-  ],
-  "lib/tree_haver/node.rb:1991178476": [
-    [504, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974],
-    [507, 7, 27, "Style/InvertibleUnlessCondition: Prefer `if cmp.nonzero?` over `unless cmp.zero?`.", 2077608974]
-  ],
   "spec/integration/backend_edge_cases_spec.rb:3125406541": [
     [235, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
     [240, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
     [245, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
     [250, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492]
   ],
-  "spec/integration/tree_edge_cases_spec.rb:1271779987": [
-    [30, 9, 29, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 3686909303]
-  ],
-  "spec/tree_haver/backends/ffi_spec.rb:1603525871": [
-    [150, 15, 17, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 1977790452]
-  ],
-  "spec/tree_haver/backends/java_spec.rb:2906563366": [
-    [135, 9, 145, "Style/IdenticalConditionalBranches: Move `expect {\n          TreeHaver::Language.from_path(\"/nonexistent/path/to/libtree-sitter-toml.so\")\n        }.to raise_error(TreeHaver::NotAvailable)` out of the conditional.", 1628826806],
-    [140, 48, 25, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Backends::Java`.", 3890130208],
-    [141, 9, 145, "Style/IdenticalConditionalBranches: Move `expect {\n          TreeHaver::Language.from_path(\"/nonexistent/path/to/libtree-sitter-toml.so\")\n        }.to raise_error(TreeHaver::NotAvailable)` out of the conditional.", 1628826806]
-  ],
-  "spec/tree_haver/backends/mri_spec.rb:2684736764": [
-    [202, 11, 6, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 3194201475],
-    [210, 11, 6, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 3178067109]
-  ],
-  "spec/tree_haver/language_backend_spec.rb:1078657439": [
-    [5, 16, 56, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2912587316],
-    [19, 7, 80, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [20].", 776591838],
-    [20, 7, 79, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [19].", 4141954253],
-    [105, 7, 80, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [106].", 776591838],
-    [106, 7, 79, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [105].", 4141954253],
-    [228, 7, 80, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [229].", 776591838],
-    [229, 7, 79, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [228].", 4141954253],
-    [313, 7, 80, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [314].", 776591838],
-    [314, 7, 79, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [313].", 4141954253]
+  "spec/tree_haver/language_backend_spec.rb:3839571391": [
+    [5, 16, 56, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2912587316]
   ],
   "spec/tree_haver/language_spec.rb:2820796119": [
     [90, 14, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
     [101, 14, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369],
     [112, 14, 19, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Language`.", 4175521369]
   ],
-  "spec/tree_haver/node_spec.rb:2196908309": [
+  "spec/tree_haver/node_spec.rb:24234771": [
     [205, 47, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
     [232, 33, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],
-    [249, 9, 28, "RSpec/StubbedMock: Prefer `allow` over `expect` when configuring a response.", 3667764013],
     [283, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
     [311, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
     [357, 31, 15, "RSpec/DescribedClass: Use `described_class` instead of `TreeHaver::Node`.", 1834687435],

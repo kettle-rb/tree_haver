@@ -147,7 +147,7 @@ RSpec.describe TreeHaver::Backends::FFI, :ffi do
         end
       end
 
-      context "symbol guessing", :ffi do
+      context "with symbol guessing", :ffi do
         it "guesses symbol from libtree-sitter-<lang> filename" do
           bogus_path = "/tmp/libtree-sitter-yaml.so"
           expect {

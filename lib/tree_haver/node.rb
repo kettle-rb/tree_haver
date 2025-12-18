@@ -501,10 +501,10 @@ module TreeHaver
 
       # Compare by position first (start_byte, then end_byte)
       cmp = start_byte <=> other.start_byte
-      return cmp unless cmp.zero?
+      return cmp if cmp.nonzero?
 
       cmp = end_byte <=> other.end_byte
-      return cmp unless cmp.zero?
+      return cmp if cmp.nonzero?
 
       # For nodes at the same position with same span, compare by type
       type <=> other.type

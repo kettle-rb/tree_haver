@@ -199,7 +199,7 @@ RSpec.describe TreeHaver::Backends::MRI do
     end
   end
 
-  context "Tree" do
+  context "with Tree" do
     it "doesn't define a separate Tree class (passes through to TreeSitter::Tree)" do
       # MRI backend doesn't define Tree/Node - it passes through to ruby_tree_sitter
       # The public API returns TreeHaver::Tree which wraps ::TreeSitter::Tree
@@ -207,7 +207,7 @@ RSpec.describe TreeHaver::Backends::MRI do
     end
   end
 
-  context "Node" do
+  context "with Node" do
     it "doesn't define a separate Node class (passes through to TreeSitter::Node)" do
       # MRI backend doesn't define Tree/Node - it passes through to ruby_tree_sitter
       # The public API returns TreeHaver::Node which wraps ::TreeSitter::Node
