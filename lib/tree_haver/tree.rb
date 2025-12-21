@@ -156,7 +156,7 @@ module TreeHaver
       raise unless e.name == :edit || e.message.include?("edit")
       raise TreeHaver::NotAvailable,
         "Incremental parsing not supported by current backend. " \
-          "Use MRI (ruby_tree_sitter), Rust (tree_stump), or Java (java-tree-sitter) backend."
+          "Use MRI (ruby_tree_sitter), Rust (tree_stump), or Java (java-tree-sitter / jtreesitter) backend."
     end
 
     private

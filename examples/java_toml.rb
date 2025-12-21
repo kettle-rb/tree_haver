@@ -4,7 +4,10 @@
 # Example: Java Backend with TOML
 #
 # Forces the Java backend (JRuby only).
-# Uses java-tree-sitter JAR for native Java bindings.
+# Uses java-tree-sitter (jtreesitter) JAR for native Java bindings.
+# @see https://github.com/tree-sitter/java-tree-sitter source
+# @see https://tree-sitter.github.io/java-tree-sitter/ java-tree-sitter documentation
+# @see https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter Maven Central
 
 # Check Ruby implementation
 unless RUBY_ENGINE == "jruby"

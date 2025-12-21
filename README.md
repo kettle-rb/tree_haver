@@ -94,7 +94,7 @@ tree = parser.parse(source_code)
     - **Rust Backend**: Uses [`tree_stump`](https://github.com/anthropics/tree_stump) gem (Rust with precompiled binaries)
       - **Note**: Currently requires [pboling's fork](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13](https://github.com/joker1007/tree_stump/pull/13) are merged
     - **FFI Backend**: Pure Ruby FFI bindings to `libtree-sitter` (ideal for JRuby, TruffleRuby)
-    - **Java Backend**: Native Java integration for JRuby with java-tree-sitter grammar JARs
+    - **Java Backend**: Native Java integration for JRuby with [`java-tree-sitter`](https://github.com/tree-sitter/java-tree-sitter) / [`jtreesitter`](https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter) grammar JARs
   - **Language-Specific Backends** (native parser integration):
     - **Prism Backend**: Ruby's official parser ([Prism](https://github.com/ruby/prism), stdlib in Ruby 3.4+)
     - **Psych Backend**: Ruby's YAML parser ([Psych](https://github.com/ruby/psych), stdlib)
@@ -175,7 +175,7 @@ gem "citrus", "~> 3.0"
 
 #### Java Backend (JRuby only)
 
-No additional dependencies required beyond grammar JARs built for java-tree-sitter.
+No additional dependencies required beyond grammar JARs built for java-tree-sitter / jtreesitter.
 
 ### Why TreeHaver?
 
@@ -186,6 +186,58 @@ tree-sitter is a powerful parser generator that creates incremental parsers for 
 - Managing different backends for different Ruby implementations is cumbersome
 
 TreeHaver solves these problems by providing a unified API that automatically selects the appropriate backend for your Ruby implementation, allowing you to write code once and run it anywhere.
+
+### The `*-merge` Gem Family
+
+The `*-merge` gem family provides intelligent, AST-based merging for various file formats. At the foundation is [tree_haver][tree_haver], which provides a unified cross-Ruby parsing API that works seamlessly across MRI, JRuby, and TruffleRuby.
+
+| Gem | Format | Parser Backend(s) | Description |
+|-----|--------|-------------------|-------------|
+| [tree_haver][tree_haver] | Multi | MRI C, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus | **Foundation**: Cross-Ruby adapter for parsing libraries (like Faraday for HTTP) |
+| [ast-merge][ast-merge] | Text | internal | **Infrastructure**: Shared base classes and merge logic for all `*-merge` gems |
+| [prism-merge][prism-merge] | Ruby | [Prism][prism] | Smart merge for Ruby source files |
+| [psych-merge][psych-merge] | YAML | [Psych][psych] | Smart merge for YAML files |
+| [json-merge][json-merge] | JSON | [tree-sitter-json][ts-json] (via tree_haver) | Smart merge for JSON files |
+| [jsonc-merge][jsonc-merge] | JSONC | [tree-sitter-json][ts-json] (via tree_haver) | ⚠️ Proof of concept; Smart merge for JSON with Comments |
+| [bash-merge][bash-merge] | Bash | [tree-sitter-bash][ts-bash] (via tree_haver) | Smart merge for Bash scripts |
+| [rbs-merge][rbs-merge] | RBS | [RBS][rbs] | Smart merge for Ruby type signatures |
+| [dotenv-merge][dotenv-merge] | Dotenv | internal | Smart merge for `.env` files |
+| [toml-merge][toml-merge] | TOML | [Citrus + toml-rb][toml-rb] (default, via tree_haver), [tree-sitter-toml][ts-toml] (via tree_haver) | Smart merge for TOML files |
+| [markdown-merge][markdown-merge] | Markdown | [Commonmarker][commonmarker] / [Markly][markly] (via tree_haver) | **Foundation**: Shared base for Markdown mergers with inner code block merging |
+| [markly-merge][markly-merge] | Markdown | [Markly][markly] (via tree_haver) | Smart merge for Markdown (CommonMark via cmark-gfm C) |
+| [commonmarker-merge][commonmarker-merge] | Markdown | [Commonmarker][commonmarker] (via tree_haver) | Smart merge for Markdown (CommonMark via comrak Rust) |
+
+**Example implementations** for the gem templating use case:
+
+| Gem | Purpose | Description |
+|-----|---------|-------------|
+| [kettle-dev][kettle-dev] | Gem Development | Gem templating tool using `*-merge` gems |
+| [kettle-jem][kettle-jem] | Gem Templating | Gem template library with smart merge support |
+
+[tree_haver]: https://github.com/kettle-rb/tree_haver
+[ast-merge]: https://github.com/kettle-rb/ast-merge
+[prism-merge]: https://github.com/kettle-rb/prism-merge
+[psych-merge]: https://github.com/kettle-rb/psych-merge
+[json-merge]: https://github.com/kettle-rb/json-merge
+[jsonc-merge]: https://github.com/kettle-rb/jsonc-merge
+[bash-merge]: https://github.com/kettle-rb/bash-merge
+[rbs-merge]: https://github.com/kettle-rb/rbs-merge
+[dotenv-merge]: https://github.com/kettle-rb/dotenv-merge
+[toml-merge]: https://github.com/kettle-rb/toml-merge
+[markdown-merge]: https://github.com/kettle-rb/markdown-merge
+[markly-merge]: https://github.com/kettle-rb/markly-merge
+[commonmarker-merge]: https://github.com/kettle-rb/commonmarker-merge
+[kettle-dev]: https://github.com/kettle-rb/kettle-dev
+[kettle-jem]: https://github.com/kettle-rb/kettle-jem
+[prism]: https://github.com/ruby/prism
+[psych]: https://github.com/ruby/psych
+[ts-json]: https://github.com/tree-sitter/tree-sitter-json
+[ts-bash]: https://github.com/tree-sitter/tree-sitter-bash
+[ts-toml]: https://github.com/tree-sitter-grammars/tree-sitter-toml
+[rbs]: https://github.com/ruby/rbs
+[toml-rb]: https://github.com/emancu/toml-rb
+[markly]: https://github.com/ioquatix/markly
+[commonmarker]: https://github.com/gjtorikian/commonmarker
 
 ### Comparison with Other Ruby AST / Parser Bindings
 
@@ -210,9 +262,9 @@ TreeHaver solves these problems by providing a unified API that automatically se
 [citrus]: https://github.com/mjackson/citrus
 [tree_haver]: https://github.com/kettle-rb/tree_haver
 
-**Note:** Java backend works with grammar JARs built specifically for java-tree-sitter, or grammar .so files that statically link tree-sitter. This is why FFI is recommended for JRuby & TruffleRuby.
+**Note:** Java backend works with grammar JARs built specifically for `java-tree-sitter` / `jtreesitter`, or grammar .so files that statically link tree-sitter. This is why FFI is recommended for JRuby & TruffleRuby.
 
-**Note:** TreeHaver can use `ruby_tree_sitter` (MRI) or `tree_stump` (MRI, JRuby?) as backends, or `jruby-tree-sitter` (JRuby), giving you TreeHaver's unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.
+**Note:** TreeHaver can use `ruby_tree_sitter` (MRI) or `tree_stump` (MRI, JRuby?) as backends, or `java-tree-sitter` ([docs](https://tree-sitter.github.io/java-tree-sitter/), [maven](https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter), [source](https://github.com/tree-sitter/java-tree-sitter), JRuby), or FFI on any backend, giving you TreeHaver's unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.
 
 **Note:** `tree_stump` currently requires [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until upstream PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), and [#13](https://github.com/joker1007/tree_stump/pull/13) are merged.
 
@@ -659,6 +711,8 @@ For the Java backend on JRuby:
 ```bash
 export TREE_SITTER_JAVA_JARS_DIR=/path/to/java-tree-sitter/jars
 ```
+
+For more see [docs](https://tree-sitter.github.io/java-tree-sitter/), [maven](https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter), and [source](https://github.com/tree-sitter/java-tree-sitter).
 
 ### Language Registration
 
@@ -1151,7 +1205,7 @@ tree.edit(
 new_tree = parser.parse_string(tree, "x = 42")
 ```
 
-**Note:** Incremental parsing requires the MRI (`ruby_tree_sitter`), Rust (`tree_stump`), or Java (`java-tree-sitter`) backend. The FFI and Citrus backends do not currently support incremental parsing. You can check support with:
+**Note:** Incremental parsing requires the MRI (`ruby_tree_sitter`), Rust (`tree_stump`), or Java (`java-tree-sitter` / `jtreesitter`) backend. The FFI and Citrus backends do not currently support incremental parsing. You can check support with:
 
 **Note:** `tree_stump` requires [pboling's fork (tree_haver branch)](https://github.com/pboling/tree_stump/tree/tree_haver) until PRs [#5](https://github.com/joker1007/tree_stump/pull/5), [#7](https://github.com/joker1007/tree_stump/pull/7), [#11](https://github.com/joker1007/tree_stump/pull/11), [#13](https://github.com/joker1007/tree_stump/pull/13) are merged.
 
@@ -1257,7 +1311,7 @@ The FFI backend uses Ruby's FFI gem which relies on the system's dynamic linker,
 
 The Java backend will work with:
 
-- Grammar JARs built specifically for java-tree-sitter (self-contained)
+- Grammar JARs built specifically for java-tree-sitter / jtreesitter (self-contained, [docs](https://tree-sitter.github.io/java-tree-sitter/), [maven](https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter), [source](https://github.com/tree-sitter/java-tree-sitter))
 - Grammar `.so` files that statically link tree-sitter
 
 **Option 3: Citrus Backend (pure Ruby, portable)**

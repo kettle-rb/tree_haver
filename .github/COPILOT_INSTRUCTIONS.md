@@ -187,13 +187,14 @@ This runs tests with coverage instrumentation and generates detailed coverage re
 
 **How `run_in_terminal` works**:
 - The tool sends commands to a **single persistent Copilot terminal**
+- Use `isBackground=false` for `run_in_terminal`. Sometimes it works, but if it fails/hangs, use the file redirection method, and then read back with `read_file` tool.
 - Commands run in sequence in the same terminal session
 - Environment variables and working directory persist between calls
 - The first command in a session either does not run at all, or runs before the shell initialization (direnv, motd, etc.) so it should always be a noop, like `true`.
 
 **When things go wrong**:
 - If output shows only shell banner/motd without command results, the command most likely worked, but the tool has lost the ability to see terminal output. This happens FREQUENTLY.
-- EVERY TIME you do not see output, STOP and confirm output status with the user.
+- EVERY TIME you do not see output, STOP and confirm output status with the user, or switch immediately to file redirection, and read the file back with `read_file` tool.
 - Solution: Ask the user to share the output they see.
 
 **Best practices**:

@@ -25,7 +25,8 @@ module TreeHaver
     #    jruby -e "require 'tree_haver'; puts TreeHaver::Backends::Java.available?"
     #
     # @note Only available on JRuby
-    # @see https://tree-sitter.github.io/java-tree-sitter/ java-tree-sitter documentation
+    # @see https://github.com/tree-sitter/java-tree-sitter source
+    # @see https://tree-sitter.github.io/java-tree-sitter java-tree-sitter documentation
     # @see https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter Maven Central
     module Java
       # The Java package for java-tree-sitter

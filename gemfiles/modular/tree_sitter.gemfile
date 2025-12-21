@@ -2,8 +2,8 @@
 #       e.g., `apt install libtree-sitter-toml-dev` or built from source
 #
 # TreeHaver provides a unified interface to tree-sitter
-# that works across MRI, JRuby, and TruffleRuby. It uses ruby_tree_sitter, or tree_stump,
-# on MRI and FFI on other platforms.
+# that works across MRI, JRuby, and TruffleRuby. It uses ruby_tree_sitter, tree_stump,
+# or FFI on MRI and FFI, or jruby_tree_sitter on other platforms.
 #
 # These platform-specific gems are the backends that TreeHaver uses:
 
@@ -17,7 +17,7 @@ platform :mri do
   gem "ruby_tree_sitter", require: false # DO NOT LOAD, because conflicts with FFI
   # Rust Backend
   gem "tree_stump",
-    # path: "../../vendor/tree_stump"
-    github: "pboling/tree_stump",
-    branch: "tree_haver"
+      # path: "../../vendor/tree_stump"
+      github: "pboling/tree_stump",
+      branch: "tree_haver"
 end

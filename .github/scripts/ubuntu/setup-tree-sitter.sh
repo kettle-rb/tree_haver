@@ -2,29 +2,67 @@
 set -e
 
 # Setup script for tree-sitter dependencies (Ubuntu/Debian)
-# Works for both GitHub Actions (with --sudo flag) and devcontainer (without --sudo flag)
+# Works for both GitHub Actions and devcontainer environments
+#
+# Dual-Environment Design:
+# - GitHub Actions: Runs as non-root user, auto-detects need for sudo
+# - Devcontainer: Can run as root (apt-install feature) or non-root (postCreateCommand)
+# - Auto-detection: Checks if running as root (id -u = 0), uses sudo if non-root
+#
+# This script installs ALL tree-sitter grammars for integration testing
+#
 # Options:
-#   --sudo: Use sudo for package installation commands
+#   --sudo: Force use of sudo (optional, auto-detected by default)
 #   --cli:  Install tree-sitter-cli via npm (optional)
 #   --build: Build and install the tree-sitter C runtime from source when distro packages are missing (optional)
+#   --workspace PATH: Workspace root path for informational/debugging purposes only (defaults to /workspaces/tree_haver)
 
 SUDO=""
 INSTALL_CLI=false
 BUILD_FROM_SOURCE=false
+WORKSPACE_ROOT="/workspaces/tree_haver"
 
-for arg in "$@"; do
-  case $arg in
+# Parse arguments properly using while loop
+while [[ $# -gt 0 ]]; do
+  case $1 in
     --sudo)
       SUDO="sudo"
+      shift
       ;;
     --cli)
       INSTALL_CLI=true
+      shift
       ;;
     --build)
       BUILD_FROM_SOURCE=true
+      shift
+      ;;
+    --workspace)
+      WORKSPACE_ROOT="$2"
+      shift 2
+      ;;
+    --workspace=*)
+      WORKSPACE_ROOT="${1#*=}"
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      shift
       ;;
   esac
 done
+
+# Auto-detect if we need sudo (running as non-root)
+if [ -z "$SUDO" ] && [ "$(id -u)" -ne 0 ]; then
+  SUDO="sudo"
+fi
+
+echo "Configuration:"
+echo "  Workspace root: $WORKSPACE_ROOT (informational only)"
+echo "  Using sudo: $([ -n "$SUDO" ] && echo "yes" || echo "no")"
+echo "  Install CLI: $INSTALL_CLI"
+echo "  Build from source: $BUILD_FROM_SOURCE"
+echo ""
 
 have_cmd() { command -v "$1" >/dev/null 2>&1; }
 
@@ -112,22 +150,63 @@ else
   echo "Skipping tree-sitter-cli installation (use --cli flag to install)"
 fi
 
-echo "Building and installing tree-sitter-toml..."
-cd /tmp
-wget -q https://github.com/tree-sitter-grammars/tree-sitter-toml/archive/refs/heads/master.zip
-unzip -q master.zip
-cd tree-sitter-toml-master
+# Install all tree-sitter grammars for integration testing
+GRAMMARS=("toml" "json" "jsonc" "bash")
 
-# Compile both parser.c and scanner.c
-gcc -fPIC -I./src -c src/parser.c -o parser.o
-gcc -fPIC -I./src -c src/scanner.c -o scanner.o
+TMPDIR=$(mktemp -d)
+trap "rm -rf $TMPDIR" EXIT
 
-# Link both object files into the shared library
-gcc -shared -o libtree-sitter-toml.so parser.o scanner.o
+for grammar in "${GRAMMARS[@]}"; do
+  echo "Building and installing tree-sitter-${grammar}..."
+  cd "$TMPDIR"
 
-# Install to system
-$SUDO cp libtree-sitter-toml.so /usr/local/lib/
-$SUDO ldconfig
+  if ! wget -q "https://github.com/tree-sitter-grammars/tree-sitter-${grammar}/archive/refs/heads/master.zip" -O "${grammar}.zip"; then
+    echo "ERROR: Failed to download tree-sitter-${grammar}" >&2
+    exit 1
+  fi
+
+  if ! unzip -q "${grammar}.zip"; then
+    echo "ERROR: Failed to unzip tree-sitter-${grammar}" >&2
+    exit 1
+  fi
+
+  cd "tree-sitter-${grammar}-master"
+
+  # Compile parser.c
+  if ! gcc -fPIC -I./src -c src/parser.c -o parser.o; then
+    echo "ERROR: Failed to compile parser.c for ${grammar}" >&2
+    exit 1
+  fi
+
+  # Check if scanner exists (not all grammars have scanners)
+  if [ -f src/scanner.c ]; then
+    if ! gcc -fPIC -I./src -c src/scanner.c -o scanner.o; then
+      echo "ERROR: Failed to compile scanner.c for ${grammar}" >&2
+      exit 1
+    fi
+    OBJECTS="parser.o scanner.o"
+  else
+    OBJECTS="parser.o"
+  fi
+
+  # Link object files into shared library
+  if ! gcc -shared -o "libtree-sitter-${grammar}.so" $OBJECTS; then
+    echo "ERROR: Failed to link libtree-sitter-${grammar}.so" >&2
+    exit 1
+  fi
+
+  # Install to system
+  if ! $SUDO cp "libtree-sitter-${grammar}.so" /usr/local/lib/; then
+    echo "ERROR: Failed to copy libtree-sitter-${grammar}.so to /usr/local/lib/" >&2
+    exit 1
+  fi
+
+  echo "  ✓ Installed tree-sitter-${grammar}"
+done
+
+if ! $SUDO ldconfig; then
+  echo "WARNING: ldconfig failed, libraries may not be immediately available" >&2
+fi
 
 echo ""
 echo "tree-sitter setup complete!"
@@ -147,4 +226,8 @@ else
   echo "  WARNING: Could not find libtree-sitter runtime library!"
 fi
 
-echo "  TREE_SITTER_TOML_PATH=/usr/local/lib/libtree-sitter-toml.so"
+echo ""
+echo "Grammar libraries:"
+for grammar in "${GRAMMARS[@]}"; do
+  echo "  TREE_SITTER_${grammar^^}_PATH=/usr/local/lib/libtree-sitter-${grammar}.so"
+done

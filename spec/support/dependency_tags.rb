@@ -90,7 +90,7 @@ module TreeHaverDependencies
       defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby"
     end
 
-    # Check if Java backend is available (requires JRuby + java-tree-sitter)
+    # Check if Java backend is available (requires JRuby + java-tree-sitter / jtreesitter)
     def java_backend_available?
       return @java_backend_available if defined?(@java_backend_available)
       @java_backend_available = jruby? && TreeHaver::Backends::Java.available?
