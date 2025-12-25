@@ -3,7 +3,10 @@
 
 # Example: Rust Backend with Bash
 # Forces Rust backend for Bash parsing.
+# Includes row number validation to verify line tracking works correctly.
 #
+# KNOWN ISSUE: Rust backend has version compatibility issues with bash grammar.
+# Use the FFI backend (ffi_bash.rb) if you encounter parsing errors.
 # NOTE: May have version compatibility issues (see rust_json.rb for details)
 
 require "bundler/inline"
@@ -21,9 +24,18 @@ puts "TreeHaver Rust Backend - Bash Parsing"
 puts "=" * 70
 puts
 
-bash_source = '#!/bin/bash\necho "Rust backend"\nexit 0'
+# Multiline source for row number testing
+bash_source = <<~BASH
+  #!/bin/bash
+  MY_VAR="hello"
+  echo "Rust backend"
+  exit 0
+BASH
 
-puts "Bash Source:\n#{bash_source}"
+puts "Bash Source:"
+puts "-" * 40
+puts bash_source
+puts "-" * 40
 puts
 
 finder = TreeHaver::GrammarFinder.new(:bash)
@@ -40,9 +52,44 @@ begin
 
   root = tree.root_node
   puts "✓ Parsed: #{root.type} with #{root.child_count} children"
-  puts "✓ Rust backend - very fast with precompiled binaries"
-rescue
-  puts "✗ Version compatibility error"
+
+  # Row number validation
+  puts
+  puts "=== Row Number Validation ==="
+  row_errors = []
+
+  i = 0
+  root.each do |child|
+    start_row = child.start_point.row
+    end_row = child.end_point.row
+    start_col = child.start_point.column
+    end_col = child.end_point.column
+
+    puts "Node #{i}: #{child.type}"
+    puts "  start_point: row=#{start_row}, col=#{start_col}"
+    puts "  end_point: row=#{end_row}, col=#{end_col}"
+    puts "  text: #{child.to_s.inspect[0..50]}"
+
+    # Validate row numbers are reasonable
+    if i > 0 && start_row == 0 && child.type.to_s != "comment"
+      row_errors << "Node #{i} (#{child.type}) has start_row=0, expected row #{i}"
+    end
+
+    i += 1
+  end
+
+  puts
+  if row_errors.empty?
+    puts "✓ Row numbers look correct!"
+    puts
+    puts "✓ Rust backend - very fast with precompiled binaries"
+  else
+    puts "✗ Row number issues detected:"
+    row_errors.each { |err| puts "  - #{err}" }
+    exit 1
+  end
+rescue => e
+  puts "✗ Version compatibility error: #{e.message}"
   puts "The Rust backend statically links tree-sitter at compile time."
   puts "See rust_json.rb for detailed explanation and solutions."
   exit(1)

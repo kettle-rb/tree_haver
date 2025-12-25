@@ -1,8 +1,36 @@
+# frozen_string_literal: true
+
 # To retain during kettle-dev templating:
 #     kettle-dev:freeze
 #     # ... your code
 #     kettle-dev:unfreeze
-# Ruby parsing for advanced templating
+#
 
-gem "prism", "~> 1.6"
-gem "unparser", "~> 0.8", ">= 0.8.1"
+# AST parsing for advanced templating
+if ENV.fetch("KETTLE_RB_DEV", "false").casecmp?("true")
+  # Inner-merge dependencies for CodeBlockMerger
+  # These are loaded on-demand when merging fenced code blocks
+  gem "bash-merge", path: "../../../bash-merge"                 # dotenv code blocks
+  gem "commonmarker-merge", path: "../../../commonmarker-merge" # commonmarker markdown merging
+  gem "dotenv-merge", path: "../../../dotenv-merge"             # dotenv code blocks
+  gem "json-merge", path: "../../../json-merge"                 # JSON code blocks
+  gem "jsonc-merge", path: "../../../jsonc-merge"               # JSONC code blocks
+  gem "markdown-merge", path: "../../../markdown-merge"         # generic markdown tools
+  gem "markly-merge", path: "../../../markly-merge"             # markly markdown merging
+  gem "prism-merge", path: "../../../prism-merge"               # Ruby code blocks
+  gem "psych-merge", path: "../../../psych-merge"               # YAML code blocks
+  gem "rbs-merge", path: "../../../rbs-merge"                   # RBS code blocks
+  gem "toml-merge", path: "../../../toml-merge"                 # TOML code blocks
+else
+  gem "bash-merge"          # dotenv code blocks
+  gem "commonmarker-merge"  # commonmarker markdown merging
+  gem "dotenv-merge"        # dotenv code blocks
+  gem "json-merge"          # JSON code blocks
+  gem "jsonc-merge"         # JSONC code blocks
+  gem "markdown-merge"      # generic markdown tools
+  gem "markly-merge"        # markly markdown merging
+  gem "prism-merge"         # Ruby code blocks
+  gem "psych-merge"         # YAML code blocks
+  gem "rbs-merge"           # RBS code blocks
+  gem "toml-merge"          # TOML code blocks
+end

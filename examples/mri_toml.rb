@@ -72,17 +72,48 @@ root = tree.root_node
 puts "✓ Parsed: #{root.type} with #{root.child_count} children"
 puts
 
-# Show structure
-puts "Top-level nodes:"
-root.children.each do |child|
-  puts "  • #{child.type}: #{child.text[0..40].gsub("\n", "\\n")}..."
-end
-puts
+# Row number validation
+puts "=== Row Number Validation ==="
+row_errors = []
 
-puts "=" * 70
-puts "MRI Backend:"
-puts "  - Uses ruby_tree_sitter gem (C extension)"
-puts "  - Fastest performance (native)"
-puts "  - MRI only (C extension)"
+puts "Top-level nodes with positions:"
+i = 0
+root.each do |child|
+  start_row = child.start_point.row
+  end_row = child.end_point.row
+  start_col = child.start_point.column
+  end_col = child.end_point.column
+
+  puts "  Node #{i}: #{child.type}"
+  puts "    rows: #{start_row}-#{end_row}, cols: #{start_col}-#{end_col}"
+  puts "    text: #{child.to_s[0..40].gsub("\n", "\\n")}..."
+
+  # The [features] table should start on row 4 (0-indexed), not row 0
+  if child.type.to_s == "table" && child.to_s.include?("[features]")
+    expected_row = 4 # 0-indexed: blank line at 3, [features] at 4
+    if start_row != expected_row && start_row == 0
+      row_errors << "[features] table has start_row=#{start_row}, expected ~#{expected_row}"
+    end
+  end
+
+  i += 1
+end
+
+puts
+if row_errors.empty?
+  puts "✓ Row numbers look correct!"
+  puts
+  puts "=" * 70
+  puts "MRI Backend:"
+  puts "  - Uses ruby_tree_sitter gem (C extension)"
+  puts "  - Fastest performance (native)"
+  puts "  - MRI only (C extension)"
+  puts "  - Requires tree-sitter development headers"
+  puts "=" * 70
+else
+  puts "✗ Row number issues detected:"
+  row_errors.each { |err| puts "  - #{err}" }
+  exit 1
+end
 puts "  - Requires tree-sitter development headers"
 puts "=" * 70

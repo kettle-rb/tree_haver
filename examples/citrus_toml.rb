@@ -115,6 +115,43 @@ puts "-" * 70
 show_tree(root)
 puts
 
+# Row number validation
+puts "=== Row Number Validation ==="
+row_errors = []
+
+puts "Checking structural nodes for position info:"
+i = 0
+root.each do |child|
+  next unless child.structural?
+
+  if child.respond_to?(:start_point)
+    start_row = child.start_point.row
+    end_row = child.end_point.row
+    puts "  Node #{i}: #{child.type} - rows #{start_row}-#{end_row}"
+
+    # For multiline TOML, tables should have different start rows
+    if child.type.to_s == "table" && child.to_s.include?("[server]")
+      if start_row == 0
+        row_errors << "[server] table has start_row=0, expected row > 0"
+      end
+    end
+  else
+    puts "  Node #{i}: #{child.type} - position info not available (Citrus nodes)"
+  end
+
+  i += 1
+end
+
+puts
+if row_errors.empty?
+  puts "✓ Row numbers look correct (or not applicable for Citrus backend)"
+else
+  puts "✗ Row number issues detected:"
+  row_errors.each { |err| puts "  - #{err}" }
+  exit 1
+end
+puts
+
 # Find structural nodes (filtering out whitespace)
 structural_nodes = []
 root.children.each do |child|

@@ -178,6 +178,7 @@ module TreeHaver
       # Wraps Commonmarker::Node to provide TreeHaver::Node-compatible interface.
       class Node
         include Comparable
+        include Enumerable
 
         attr_reader :inner_node, :source
 

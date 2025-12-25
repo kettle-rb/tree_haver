@@ -589,8 +589,3 @@ Add new examples following these patterns:
 - **Changelog**: `../CHANGELOG.md`
 - **Architecture**: See backend files in `../lib/tree_haver/backends/`
 - **Tests**: `../spec/`
-
----
-
-**Status: ✅ All 18 examples created and tested - 100% pass rate!**
-

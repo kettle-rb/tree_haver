@@ -620,7 +620,7 @@ RSpec.describe TreeHaver::Node do
           rescue ArgumentError
             # Some methods may still fail due to other reasons, but not NoMethodError
           end
-        }.not_to raise_error(NoMethodError)
+        }.not_to raise_error
       end
     end
 

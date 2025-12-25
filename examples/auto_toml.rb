@@ -121,10 +121,36 @@ puts "✓ Parsed TOML successfully"
 puts "  root node type: #{tree.root_node.type}"
 puts
 
-# Show some structure
-puts "Top-level nodes:"
-tree.root_node.children.each do |child|
-  puts "  • #{child.type}: #{child.text[0..50].gsub("\n", "\\n")}..."
+# Row number validation
+puts "=== Row Number Validation ==="
+row_errors = []
+
+puts "Top-level nodes with positions:"
+i = 0
+tree.root_node.each do |child|
+  start_row = child.start_point.row
+  end_row = child.end_point.row
+
+  puts "  Node #{i}: #{child.type} (rows #{start_row}-#{end_row})"
+  puts "    text: #{child.to_s[0..40].gsub("\n", "\\n")}..."
+
+  # The [config] table should NOT be on row 0
+  if child.type.to_s == "table" && child.to_s.include?("[config]")
+    if start_row == 0
+      row_errors << "[config] table has start_row=0, expected row ~9"
+    end
+  end
+
+  i += 1
+end
+
+puts
+if row_errors.empty?
+  puts "✓ Row numbers look correct!"
+else
+  puts "✗ Row number issues detected:"
+  row_errors.each { |err| puts "  - #{err}" }
+  exit 1
 end
 puts
 

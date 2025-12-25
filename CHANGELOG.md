@@ -20,6 +20,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- **`TreeHaver.parser_for`**: New high-level factory method for creating configured parsers
+  - Handles all language loading complexity in one call
+  - Auto-discovers tree-sitter grammar via `GrammarFinder`
+  - Falls back to Citrus grammar if tree-sitter unavailable
+  - Accepts `library_path` for explicit grammar location
+  - Accepts `citrus_config` for Citrus fallback configuration
+  - Raises `NotAvailable` with helpful message if no backend works
+  - Example: `parser = TreeHaver.parser_for(:toml)`
+  - Raises `NotAvailable` if the specified path doesn't exist (Principle of Least Surprise)
+  - Does not back to auto-discovery when an explicit path is provided
+  - Re-raises with context-rich error message if loading from explicit path fails
+  - Auto-discovery still works normally when no `library_path` is provided
+
 ### Changed
 
 ### Deprecated

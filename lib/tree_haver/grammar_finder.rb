@@ -135,12 +135,14 @@ module TreeHaver
     # 3. Common system installation paths
     #
     # @note Paths from ENV are validated using {PathValidator.safe_library_path?}
-    #   to prevent path traversal and other attacks. Invalid ENV paths are ignored.
+    #   to prevent path traversal and other attacks. Invalid ENV paths cause
+    #   an error to be raised (Principle of Least Surprise - explicit paths must work).
     #
     # @note Setting the ENV variable to an empty string explicitly disables
     #   this grammar. This allows fallback to alternative backends (e.g., Citrus).
     #
     # @return [String, nil] the path to the library, or nil if not found
+    # @raise [TreeHaver::NotAvailable] if ENV variable is set to an invalid path
     # @see #find_library_path_safe For stricter validation (trusted directories only)
     def find_library_path
       # Check environment variable first (highest priority)
@@ -158,7 +160,17 @@ module TreeHaver
 
         # Store why env path was rejected for better error messages
         @env_rejection_reason = validate_env_path(env_path)
-        return env_path if @env_rejection_reason.nil?
+
+        # Principle of Least Surprise: If user explicitly sets an ENV variable
+        # to a path, that path MUST work. Don't silently fall back to auto-discovery.
+        if @env_rejection_reason
+          raise TreeHaver::NotAvailable,
+            "#{env_var_name} is set to #{env_path.inspect} but #{@env_rejection_reason}. " \
+              "Either fix the path, unset the variable to use auto-discovery, " \
+              "or set it to empty string to explicitly disable this grammar."
+        end
+
+        return env_path
       end
 
       # Search all paths (these are constructed from trusted base dirs)

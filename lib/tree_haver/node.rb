@@ -1,40 +1,6 @@
 # frozen_string_literal: true
 
 module TreeHaver
-  # Point class that works as both a Hash and an object with row/column accessors
-  #
-  # This provides compatibility with code expecting either:
-  # - Hash access: point[:row], point[:column]
-  # - Method access: point.row, point.column
-  class Point
-    attr_reader :row, :column
-
-    def initialize(row, column)
-      @row = row
-      @column = column
-    end
-
-    # Hash-like access for compatibility
-    def [](key)
-      case key
-      when :row, "row" then @row
-      when :column, "column" then @column
-      end
-    end
-
-    def to_h
-      {row: @row, column: @column}
-    end
-
-    def to_s
-      "(#{@row}, #{@column})"
-    end
-
-    def inspect
-      "#<TreeHaver::Point row=#{@row} column=#{@column}>"
-    end
-  end
-
   # Unified Node wrapper providing a consistent API across all backends
   #
   # This class wraps backend-specific node objects (TreeSitter::Node, TreeStump::Node, etc.)
@@ -95,6 +61,7 @@ module TreeHaver
   # @note This is the key to tree_haver's "write once, run anywhere" promise
   class Node
     include Comparable
+    include Enumerable
 
     # The wrapped backend-specific node object
     #

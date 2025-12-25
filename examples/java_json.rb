@@ -5,6 +5,7 @@
 #
 # Forces the Java backend (JRuby native integration).
 # Uses JNI to call tree-sitter - optimal for JRuby.
+# Includes row number validation to verify line tracking works correctly.
 
 require "bundler/inline"
 
@@ -34,9 +35,19 @@ puts "TreeHaver Java Backend - JSON Parsing (JRuby)"
 puts "=" * 70
 puts
 
-json_source = '{"backend": "Java", "engine": "JRuby", "integration": "JNI"}'
+# Multiline source for row number testing
+json_source = <<~JSON
+  {
+    "backend": "Java",
+    "engine": "JRuby",
+    "line": 4
+  }
+JSON
 
-puts "JSON Source: #{json_source}"
+puts "JSON Source:"
+puts "-" * 40
+puts json_source
+puts "-" * 40
 puts
 
 # Register JSON
@@ -67,17 +78,51 @@ root = tree.root_node
 puts "✓ Parsed: #{root.type} with #{root.child_count} children"
 puts
 
-# Show structure
-root.children.each_with_index do |child, i|
-  puts "Child #{i}: #{child.type}"
-end
-puts
+# Row number validation
+puts "=== Row Number Validation ==="
+row_errors = []
 
-puts "=" * 70
-puts "Java Backend:"
+def validate_node_rows(node, depth, row_errors)
+  indent = "  " * depth
+  start_row = node.start_point.row
+  end_row = node.end_point.row
+  start_col = node.start_point.column
+  end_col = node.end_point.column
+
+  puts "#{indent}#{node.type}: rows #{start_row}-#{end_row}, cols #{start_col}-#{end_col}"
+
+  # For multiline JSON, the root object should span multiple rows
+  if node.type.to_s == "object" && depth == 1
+    if end_row == start_row && node.to_s.include?("\n")
+      row_errors << "Object spans multiple lines but end_row == start_row (#{end_row})"
+    end
+  end
+
+  node.each { |child| validate_node_rows(child, depth + 1, row_errors) }
+end
+
+validate_node_rows(root, 0, row_errors)
+
+puts
+if row_errors.empty?
+  puts "✓ Row numbers look correct!"
+  puts
+  puts "=" * 70
+  puts "Java Backend:"
+  puts "  - Native JRuby integration"
+  puts "  - Uses JNI to call tree-sitter"
+  puts "  - Optimal performance on JRuby"
+  puts "  - Takes advantage of JVM optimizations"
+  puts "=" * 70
+else
+  puts "✗ Row number issues detected:"
+  row_errors.each { |err| puts "  - #{err}" }
+  exit 1
+end
 puts "  - Native JRuby integration"
 puts "  - Uses JNI to call tree-sitter"
 puts "  - Optimal performance on JRuby"
 puts "  - Takes advantage of JVM optimizations"
+puts "=" * 70
 puts "  - Best choice for JRuby applications"
 puts "=" * 70

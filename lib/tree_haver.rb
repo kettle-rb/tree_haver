@@ -212,6 +212,9 @@ module TreeHaver
   # @see CitrusGrammarFinder
   autoload :CitrusGrammarFinder, File.join(__dir__, "tree_haver", "citrus_grammar_finder")
 
+  # Point class for position information (row, column)
+  autoload :Point, File.join(__dir__, "tree_haver", "point")
+
   # Unified Node wrapper providing consistent API across backends
   autoload :Node, File.join(__dir__, "tree_haver", "node")
 
@@ -724,6 +727,113 @@ module TreeHaver
     # @return [Hash, nil] registration hash with keys :path and :symbol, or nil if not registered
     def registered_language(name)
       LanguageRegistry.registered(name)
+    end
+
+    # Create a parser configured for a specific language
+    #
+    # This is the recommended high-level API for creating a parser. It handles:
+    # 1. Checking if the language is already registered
+    # 2. Auto-discovering tree-sitter grammar via GrammarFinder
+    # 3. Falling back to Citrus grammar if tree-sitter is unavailable
+    # 4. Creating and configuring the parser
+    #
+    # @param language_name [Symbol, String] the language to parse (e.g., :toml, :json, :bash)
+    # @param library_path [String, nil] optional explicit path to tree-sitter grammar library
+    # @param symbol [String, nil] optional tree-sitter symbol name (defaults to "tree_sitter_<name>")
+    # @param citrus_config [Hash, nil] optional Citrus fallback configuration
+    # @option citrus_config [String] :gem_name gem name for the Citrus grammar
+    # @option citrus_config [String] :grammar_const fully qualified constant name for grammar module
+    # @return [TreeHaver::Parser] configured parser with language set
+    # @raise [TreeHaver::NotAvailable] if no parser backend is available for the language
+    #
+    # @example Basic usage (auto-discovers grammar)
+    #   parser = TreeHaver.parser_for(:toml)
+    #   tree = parser.parse("[package]\nname = \"my-app\"")
+    #
+    # @example With explicit library path
+    #   parser = TreeHaver.parser_for(:toml, library_path: "/custom/path/libtree-sitter-toml.so")
+    #
+    # @example With Citrus fallback configuration
+    #   parser = TreeHaver.parser_for(:toml,
+    #     citrus_config: { gem_name: "toml-rb", grammar_const: "TomlRB::Document" }
+    #   )
+    def parser_for(language_name, library_path: nil, symbol: nil, citrus_config: nil)
+      name = language_name.to_sym
+      symbol ||= "tree_sitter_#{name}"
+
+      # Step 1: Try to get the language (may already be registered)
+      language = begin
+        # Check if already registered and loadable
+        if registered_language(name)
+          Language.public_send(name, path: library_path, symbol: symbol)
+        else
+          nil
+        end
+      rescue NotAvailable, ArgumentError, LoadError
+        nil
+      end
+
+      # Step 2: If not registered, try GrammarFinder for tree-sitter
+      unless language
+        # Principle of Least Surprise: If user provides an explicit path,
+        # it MUST exist. Don't silently fall back to auto-discovery.
+        if library_path && !library_path.empty?
+          unless File.exist?(library_path)
+            raise NotAvailable,
+              "Specified parser path does not exist: #{library_path}"
+          end
+          begin
+            register_language(name, path: library_path, symbol: symbol)
+            language = Language.public_send(name)
+          rescue NotAvailable, ArgumentError, LoadError => e
+            # Re-raise with more context since user explicitly provided this path
+            raise NotAvailable,
+              "Failed to load parser from specified path #{library_path}: #{e.message}"
+          end
+        else
+          # Auto-discover via GrammarFinder (no explicit path provided)
+          begin
+            finder = GrammarFinder.new(name)
+            if finder.available?
+              finder.register!
+              language = Language.public_send(name)
+            end
+          rescue NotAvailable, ArgumentError, LoadError
+            language = nil
+          end
+        end
+      end
+
+      # Step 3: Try Citrus fallback if tree-sitter failed
+      unless language
+        citrus_config ||= {}
+        begin
+          citrus_finder = CitrusGrammarFinder.new(
+            language: name,
+            gem_name: citrus_config[:gem_name],
+            grammar_const: citrus_config[:grammar_const],
+          )
+          if citrus_finder.available?
+            citrus_finder.register!
+            language = Language.public_send(name)
+          end
+        rescue NotAvailable, ArgumentError, LoadError, NameError
+          language = nil
+        end
+      end
+
+      # Step 4: Raise if nothing worked
+      unless language
+        raise NotAvailable,
+          "No parser available for #{name}. " \
+            "Install tree-sitter-#{name} or the appropriate Ruby gem. " \
+            "Set TREE_SITTER_#{name.to_s.upcase}_PATH for custom grammar location."
+      end
+
+      # Step 5: Create and configure parser
+      parser = Parser.new
+      parser.language = language
+      parser
     end
   end
 

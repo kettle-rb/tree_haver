@@ -231,6 +231,7 @@ module TreeHaver
       # - Alias: YAML anchor reference
       class Node
         include Comparable
+        include Enumerable
 
         # @return [::Psych::Nodes::Node] The underlying Psych node
         attr_reader :inner_node

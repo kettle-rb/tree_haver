@@ -52,6 +52,7 @@ gemfile do
 
   # Load tree_haver from local path
   gem "tree_haver", path: File.expand_path("..", __dir__)
+  gem "ast-merge", path: File.expand_path("../../", __dir__)
 
   platform :mri do
     # MRI Backend

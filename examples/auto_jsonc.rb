@@ -72,6 +72,39 @@ tree = parser.parse(jsonc_source)
 puts "✓ Parsed JSONC successfully"
 puts
 
+# Row number validation
+puts "=== Row Number Validation ==="
+row_errors = []
+
+def validate_jsonc_rows(node, depth, row_errors)
+  indent = "  " * depth
+  start_row = node.start_point.row
+  end_row = node.end_point.row
+
+  puts "#{indent}#{node.type}: rows #{start_row}-#{end_row}"
+
+  # For multiline JSONC, the root object should span multiple rows
+  if node.type.to_s == "object" && depth == 1
+    if end_row == start_row && node.to_s.include?("\n")
+      row_errors << "Object spans multiple lines but end_row == start_row (#{end_row})"
+    end
+  end
+
+  node.each { |child| validate_jsonc_rows(child, depth + 1, row_errors) } if depth < 2
+end
+
+validate_jsonc_rows(tree.root_node, 0, row_errors)
+
+puts
+if row_errors.empty?
+  puts "✓ Row numbers look correct!"
+else
+  puts "✗ Row number issues detected:"
+  row_errors.each { |err| puts "  - #{err}" }
+  exit 1
+end
+puts
+
 # Find comments
 def find_comments(node, results = [])
   results << node if node.type == "comment"

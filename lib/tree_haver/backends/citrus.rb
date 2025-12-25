@@ -249,6 +249,9 @@ module TreeHaver
       #
       # @api private
       class Node
+        include Comparable
+        include Enumerable
+
         attr_reader :match, :source
 
         def initialize(match, source)

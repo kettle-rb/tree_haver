@@ -82,6 +82,39 @@ puts "  Type: #{root.type}"
 puts "  Children: #{root.child_count}"
 puts
 
+# Row number validation
+puts "=== Row Number Validation ==="
+row_errors = []
+
+def validate_rows(node, depth, row_errors)
+  indent = "  " * depth
+  start_row = node.start_point.row
+  end_row = node.end_point.row
+
+  puts "#{indent}#{node.type}: rows #{start_row}-#{end_row}"
+
+  # For multiline JSON, the root object should span multiple rows
+  if node.type.to_s == "object" && depth == 1
+    if end_row == start_row && node.to_s.include?("\n")
+      row_errors << "Object spans multiple lines but end_row == start_row (#{end_row})"
+    end
+  end
+
+  node.each { |child| validate_rows(child, depth + 1, row_errors) } if depth < 2
+end
+
+validate_rows(root, 0, row_errors)
+
+puts
+if row_errors.empty?
+  puts "✓ Row numbers look correct!"
+else
+  puts "✗ Row number issues detected:"
+  row_errors.each { |err| puts "  - #{err}" }
+  exit 1
+end
+puts
+
 # Show tree structure
 def show_tree(node, indent = 0, max_depth = 3)
   return if indent > max_depth

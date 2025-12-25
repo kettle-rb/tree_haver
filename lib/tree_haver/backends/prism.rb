@@ -319,6 +319,8 @@ module TreeHaver
       #
       # @api private
       class Node
+        include Enumerable
+
         # @return [::Prism::Node] the underlying Prism node
         attr_reader :inner_node
 

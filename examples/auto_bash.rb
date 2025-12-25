@@ -78,6 +78,35 @@ root = tree.root_node
 puts "Root: #{root.type} with #{root.child_count} children"
 puts
 
+# Row number validation
+puts "=== Row Number Validation ==="
+row_errors = []
+
+i = 0
+root.each do |child|
+  start_row = child.start_point.row
+  end_row = child.end_point.row
+
+  puts "Node #{i}: #{child.type} (rows #{start_row}-#{end_row})"
+
+  # For multiline script, nodes should NOT all be on row 0
+  if i > 2 && start_row == 0 && child.type.to_s != "comment"
+    row_errors << "Node #{i} (#{child.type}) has start_row=0, expected different row"
+  end
+
+  i += 1
+end
+
+puts
+if row_errors.empty?
+  puts "✓ Row numbers look correct!"
+else
+  puts "✗ Row number issues detected:"
+  row_errors.each { |err| puts "  - #{err}" }
+  exit 1
+end
+puts
+
 # Find functions
 def find_functions(node, results = [])
   results << node if node.type == "function_definition"

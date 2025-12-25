@@ -941,6 +941,43 @@ See `lib/tree_haver/compat.rb` for compatibility layer documentation.
 
 ### Quick Start
 
+The simplest way to parse code is with `TreeHaver.parser_for`, which handles all the complexity of language loading, grammar discovery, and backend selection:
+
+```ruby
+require "tree_haver"
+
+# Parse TOML - auto-discovers grammar and falls back to Citrus if needed
+parser = TreeHaver.parser_for(:toml)
+tree = parser.parse("[package]\nname = \"my-app\"")
+
+# Parse JSON
+parser = TreeHaver.parser_for(:json)
+tree = parser.parse('{"key": "value"}')
+
+# Parse Bash
+parser = TreeHaver.parser_for(:bash)
+tree = parser.parse("#!/bin/bash\necho hello")
+
+# With explicit library path
+parser = TreeHaver.parser_for(:toml, library_path: "/custom/path/libtree-sitter-toml.so")
+
+# With Citrus fallback configuration
+parser = TreeHaver.parser_for(:toml,
+  citrus_config: { gem_name: "toml-rb", grammar_const: "TomlRB::Document" }
+)
+```
+
+`TreeHaver.parser_for` handles:
+1. Checking if the language is already registered
+2. Auto-discovering tree-sitter grammar via `GrammarFinder`
+3. Falling back to Citrus grammar if tree-sitter is unavailable
+4. Creating and configuring the parser
+5. Raising `NotAvailable` with a helpful message if nothing works
+
+### Manual Parser Setup
+
+For more control, you can create parsers manually:
+
 TreeHaver works with any language through its 10 backends. Here are examples for different parsing needs:
 
 #### Parsing with Tree-sitter (Universal Languages)

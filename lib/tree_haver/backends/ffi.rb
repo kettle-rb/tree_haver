@@ -63,8 +63,24 @@ module TreeHaver
 
             extend(::FFI::Library)
 
+            define_ts_point_struct!
             define_ts_node_struct!
             @ffi_extended = true
+          end
+
+          # Define the TSPoint struct lazily
+          # @api private
+          def define_ts_point_struct!
+            return if const_defined?(:TSPoint, false)
+
+            # FFI struct representation of TSPoint
+            # Mirrors the C struct layout: struct { uint32_t row; uint32_t column; }
+            ts_point_class = Class.new(::FFI::Struct) do
+              layout :row, :uint32,
+                :column, :uint32
+            end
+            const_set(:TSPoint, ts_point_class)
+            typedef(ts_point_class.by_value, :ts_point)
           end
 
           # Define the TSNode struct lazily
@@ -168,8 +184,8 @@ module TreeHaver
             attach_function(:ts_node_child, [:ts_node, :uint32], :ts_node)
             attach_function(:ts_node_start_byte, [:ts_node], :uint32)
             attach_function(:ts_node_end_byte, [:ts_node], :uint32)
-            attach_function(:ts_node_start_point, [:ts_node], :pointer)
-            attach_function(:ts_node_end_point, [:ts_node], :pointer)
+            attach_function(:ts_node_start_point, [:ts_node], :ts_point)
+            attach_function(:ts_node_end_point, [:ts_node], :ts_point)
             attach_function(:ts_node_is_null, [:ts_node], :bool)
             attach_function(:ts_node_is_named, [:ts_node], :bool)
           end
@@ -574,6 +590,8 @@ module TreeHaver
       # Wraps a TSNode by-value struct. TSNode is passed by value in the
       # tree-sitter C API, so we store the struct value directly.
       class Node
+        include Enumerable
+
         # @api private
         # @param ts_node_value [Native::TSNode] the TSNode struct (by value)
         def initialize(ts_node_value)
@@ -621,20 +639,20 @@ module TreeHaver
 
         # Get start point
         #
-        # @return [Object] with row and column
+        # @return [TreeHaver::Point] with row and column
         def start_point
-          # FFI backend would need to implement ts_node_start_point
-          # For now, return a simple struct
-          Struct.new(:row, :column).new(0, Native.ts_node_start_byte(@val))
+          point = Native.ts_node_start_point(@val)
+          # TSPoint is returned by value as an FFI::Struct with :row and :column fields
+          TreeHaver::Point.new(point[:row], point[:column])
         end
 
         # Get end point
         #
-        # @return [Object] with row and column
+        # @return [TreeHaver::Point] with row and column
         def end_point
-          # FFI backend would need to implement ts_node_end_point
-          # For now, return a simple struct
-          Struct.new(:row, :column).new(0, Native.ts_node_end_byte(@val))
+          point = Native.ts_node_end_point(@val)
+          # TSPoint is returned by value as an FFI::Struct with :row and :column fields
+          TreeHaver::Point.new(point[:row], point[:column])
         end
 
         # Check if node has error
@@ -660,6 +678,27 @@ module TreeHaver
             i += 1
           end
           nil
+        end
+
+        # Compare nodes for ordering (used by Comparable module)
+        #
+        # Nodes are ordered by their position in the source:
+        # 1. First by start_byte (earlier nodes come first)
+        # 2. Then by end_byte for tie-breaking (shorter spans come first)
+        # 3. Then by type for deterministic ordering
+        #
+        # @param other [Node] node to compare with
+        # @return [Integer, nil] -1, 0, 1, or nil if not comparable
+        def <=>(other)
+          return unless other.is_a?(Node)
+
+          cmp = start_byte <=> other.start_byte
+          return cmp if cmp.nonzero?
+
+          cmp = end_byte <=> other.end_byte
+          return cmp if cmp.nonzero?
+
+          type <=> other.type
         end
       end
     end

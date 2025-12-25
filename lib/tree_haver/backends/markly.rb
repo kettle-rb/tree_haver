@@ -200,6 +200,7 @@ module TreeHaver
       # - :html instead of :html_block
       class Node
         include Comparable
+        include Enumerable
 
         # Type normalization map (Markly → canonical)
         TYPE_MAP = {

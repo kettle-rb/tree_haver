@@ -16,8 +16,7 @@ require_relative "spec_matrix_helper"
 # - FFI dynamically links libtree-sitter.so
 # - When MRI loads a grammar first, FFI gets incompatible pointers
 # - Rust (tree_stump) may have similar issues
-# - Citrus backend uses toml-rb gem which internally requires tree_sitter (MRI)
-#   Loading citrus will therefore block FFI from working!
+# - Citrus backend uses toml-rb gem which is pure ruby and unrelated to tree-sitter
 #
 # IMPORTANT: For accurate results, run with --order defined (not random):
 #   bin/rspec spec_matrix/ --order defined
@@ -27,7 +26,7 @@ require_relative "spec_matrix_helper"
 RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
   # Define backends to test - only tree-sitter backends that share .so files
   # Citrus is excluded because it's pure Ruby (no .so conflicts) and
-  # the only available Citrus TOML grammar (toml-rb) loads tree_sitter internally
+  # the only available Citrus TOML grammar (toml-rb)
   BACKENDS = [:mri, :ffi, :rust].freeze
 
   # Check if backend's required gems are INSTALLED without loading them

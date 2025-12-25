@@ -101,6 +101,34 @@ When `replace_string_in_file` fails with "Could not find matching text":
 
 ## API Conventions
 
+### Forward Compatibility with **options
+
+**CRITICAL DESIGN PRINCIPLE**: All constructors and public API methods that accept keyword arguments MUST include `**options` (or similar catch-all) as the final parameter to capture unknown options.
+
+✅ **CORRECT**:
+```ruby
+def initialize(source, freeze_token: DEFAULT, signature_generator: nil, **options)
+  @source = source
+  @freeze_token = freeze_token
+  @signature_generator = signature_generator
+  # **options captures future parameters for forward compatibility
+end
+```
+
+❌ **WRONG**:
+```ruby
+def initialize(source, freeze_token: DEFAULT, signature_generator: nil)
+  # This breaks when new parameters are added to the base class
+end
+```
+
+**Why**: When `SmartMergerBase` adds new standard options (like `node_typing`, `regions`, etc.), all `FileAnalysis` classes automatically support them without code changes. Without `**options`, every FileAnalysis would need updating whenever a new option is added.
+
+**Applies to**:
+- `FileAnalysis#initialize` in all gems
+- `SmartMerger#initialize` in all gems  
+- Any method that accepts a variable set of options
+
 ### SmartMergerBase API
 - `merge` - Returns a **String** (the merged content)
 - `merge_result` - Returns a **MergeResult** object
@@ -124,9 +152,15 @@ When `replace_string_in_file` fails with "Could not find matching text":
 
 ## Loading Vendor Gems in Scripts
 
-**IMPORTANT**: When writing standalone Ruby scripts to test vendor gems, you must use `bundler/setup` to properly load the gems.
+**IMPORTANT**: The approach depends on whether you're using the project's Gemfile or need standalone execution.
 
-✅ **CORRECT** - Use bundler/setup:
+### For Scripts Using Project Gemfile (bundler/setup)
+
+✅ **Use bundler/setup when**:
+- The script runs within the project context
+- The Gemfile already specifies all needed gems with `path:` options
+- You want to use the exact versions locked in Gemfile.lock
+
 ```ruby
 #!/usr/bin/env ruby
 # frozen_string_literal: true
@@ -137,21 +171,99 @@ require "prism/merge"
 # Now you can use Prism::Merge classes
 ```
 
+### For Standalone Scripts with Local Paths (bundler/inline)
+
+✅ **Use bundler/inline when**:
+- Creating standalone scripts in `bin/` that need specific gem paths
+- Testing with fixture gems or specific local paths
+- The script needs to specify its own dependencies independent of the project Gemfile
+- You need to load gems from vendor directories not in the main Gemfile
+
+```ruby
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+  gem "ast-merge", path: File.expand_path("..", __dir__)
+  gem "tree_haver", path: File.expand_path("../vendor/tree_haver", __dir__)
+  gem "markdown-merge", path: File.expand_path("../vendor/markdown-merge", __dir__)
+end
+
+# Now gems are loaded and ready to use
+require "markdown/merge"
+```
+
+**Why bundler/inline for standalone scripts:**
+1. The gemfile block creates an inline Gemfile with specified paths
+2. Bundler resolves dependencies and configures load paths
+3. Scripts become self-contained and portable
+4. No need to modify the project's main Gemfile
+
+**Common pitfall with bundler/inline:**
+- If a gem in your inline gemfile has unresolved dependencies, bundler will try to fetch them
+- Solution: Only include gems you actually need, or ensure all transitive dependencies are available
+
 ❌ **BROKEN** - These do NOT work:
 ```ruby
 # This doesn't load the gem properly:
 require_relative "lib/prism/merge"
 
 # This doesn't set up the load path:
-require "prism/merge"  # without bundler/setup first
+require "prism/merge"  # without bundler/setup or bundler/inline first
 ```
 
-The pattern `require "bundler/setup"` followed by `require "gem/name"` works because:
-1. `bundler/setup` configures the load path based on the Gemfile
-2. The vendor gems are specified in the Gemfile with `path:` option
-3. This allows standard `require` to find the gems
-
 ## Testing
+
+### kettle-test RSpec Helpers
+
+**IMPORTANT**: All spec files load `require "kettle/test/rspec"` which provides extensive RSpec helpers and configuration from the kettle-test gem. DO NOT recreate these helpers - they already exist.
+
+**Environment Variable Helpers** (from `rspec-stubbed_env` gem):
+- `stub_env(hash)` - Temporarily set environment variables in a block
+- `hide_env(*keys)` - Temporarily hide environment variables
+
+**Example usage**:
+They are not used with blocks, but can be used like this:
+```ruby
+before do
+   stub_env("MY_ENV_VAR" => "Bla Blah Blu")
+end
+it "should see MY_ENV_VAR" do
+   # code that reads ENV["MY_ENV_VAR"]
+end
+
+# hide_env("HOME", "USER")
+# is used the same way, but hides the variable so it acts as it if isn't set at all.
+```
+
+**Other Helpers** (loaded by kettle-test):
+- `block_is_expected` - Enhanced block expectations (from `rspec-block_is_expected`)
+- `capture` - Capture output during tests (from `silent_stream`)
+- Timecop integration for time manipulation
+
+**Where these come from**:
+- External gems loaded by `kettle/test/external.rb` in the kettle-test gem
+- `rspec/stubbed_env` - Provides `stub_env` and `hide_env`
+- `rspec/block_is_expected` - Enhanced block expectations
+- `silent_stream` - Output suppression
+- `timecop/rspec` - Time travel for tests
+
+**Other Helpers** (loaded by kettle-test):
+- `block_is_expected` - Enhanced block expectations (from `rspec-block_is_expected`)
+- `capture` - Capture output during tests (from `silent_stream`)
+- Timecop integration for time manipulation
+
+**Where these come from**:
+- External gems loaded by `kettle/test/external.rb` in the kettle-test gem
+- `rspec/stubbed_env` - Provides `stub_env` and `hide_env`
+- `rspec/block_is_expected` - Enhanced block expectations
+- `silent_stream` - Output suppression
+- `timecop/rspec` - Time travel for tests
+
+### Running Tests
 
 Run tests from the appropriate directory:
 ```bash
@@ -195,6 +307,7 @@ This runs tests with coverage instrumentation and generates detailed coverage re
 **When things go wrong**:
 - If output shows only shell banner/motd without command results, the command most likely worked, but the tool has lost the ability to see terminal output. This happens FREQUENTLY.
 - EVERY TIME you do not see output, STOP and confirm output status with the user, or switch immediately to file redirection, and read the file back with `read_file` tool.
+- **ALWAYS use project's `tmp/` directory for temporary files** - NEVER use `/tmp` or other system directories
 - Solution: Ask the user to share the output they see.
 
 **Best practices**:

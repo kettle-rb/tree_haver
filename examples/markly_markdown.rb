@@ -139,6 +139,39 @@ puts "-" * 70
 show_tree(root)
 puts
 
+# Row number validation
+puts "=== Row Number Validation ==="
+row_errors = []
+
+puts "Checking nodes for position info:"
+i = 0
+root.each do |child|
+  start_row = child.start_point.row
+  end_row = child.end_point.row
+  start_col = child.start_point.column
+  end_col = child.end_point.column
+
+  puts "  Node #{i}: #{child.type} - rows #{start_row}-#{end_row}, cols #{start_col}-#{end_col}"
+
+  # Tables should NOT be on row 0 (they appear after headings)
+  if child.type.to_s == "table" && start_row == 0
+    row_errors << "Table has start_row=0, expected > 0"
+  end
+
+  i += 1
+  break if i > 8  # Check more nodes due to structure
+end
+
+puts
+if row_errors.empty?
+  puts "✓ Row numbers look correct!"
+else
+  puts "✗ Row number issues detected:"
+  row_errors.each { |err| puts "  - #{err}" }
+  exit 1
+end
+puts
+
 # Find all headings
 puts "Headings with Position Info:"
 puts "-" * 70

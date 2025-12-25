@@ -11,6 +11,8 @@
 gem "ffi", require: false # DO NOT LOAD, because conflicts with MRI
 gem "toml-rb"
 gem "citrus"
+gem "prism", "~> 1.6"
+gem "unparser", "~> 0.8", ">= 0.8.1"
 
 # Set KETTLE_RB_DEV=true for local development
 if ENV.fetch("KETTLE_RB_DEV", "false").casecmp?("true")
