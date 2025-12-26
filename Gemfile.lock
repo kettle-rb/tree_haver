@@ -18,100 +18,6 @@ GIT
       yard
 
 PATH
-  remote: ../..
-  specs:
-    ast-merge (1.1.0)
-      tree_haver (~> 3.1, >= 3.1.0)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../bash-merge
-  specs:
-    bash-merge (1.0.0)
-      ast-merge (~> 1.0)
-      tree_haver (~> 3.0)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../commonmarker-merge
-  specs:
-    commonmarker-merge (1.0.0)
-      commonmarker (~> 2.0)
-      markdown-merge (~> 1.0)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../dotenv-merge
-  specs:
-    dotenv-merge (1.0.0)
-      ast-merge (~> 1.0)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../json-merge
-  specs:
-    json-merge (1.0.0)
-      ast-merge (~> 1.0)
-      tree_haver (~> 3.0)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../jsonc-merge
-  specs:
-    jsonc-merge (1.0.0)
-      ast-merge (~> 1.0)
-      tree_haver (~> 3.0)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../markdown-merge
-  specs:
-    markdown-merge (1.0.0)
-      ast-merge (~> 1.0)
-      tree_haver (~> 3.0)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../markly-merge
-  specs:
-    markly-merge (1.0.0)
-      markdown-merge (~> 1.0)
-      markly (~> 0.15)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../prism-merge
-  specs:
-    prism-merge (2.0.0)
-      ast-merge (~> 1.0)
-      prism (~> 1.6)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../psych-merge
-  specs:
-    psych-merge (1.0.0)
-      ast-merge (~> 1.0)
-      psych (~> 5.0)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../rbs-merge
-  specs:
-    rbs-merge (1.0.0)
-      ast-merge (~> 1.0)
-      rbs (>= 1.6)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
-  remote: ../toml-merge
-  specs:
-    toml-merge (1.0.0)
-      ast-merge (~> 1.1)
-      tree_haver (~> 3.1, >= 3.1.0)
-      version_gem (~> 1.1, >= 1.1.9)
-
-PATH
   remote: .
   specs:
     tree_haver (3.1.0)
@@ -135,7 +41,6 @@ GEM
       bundler (>= 1.2.0)
       thor (~> 1.0)
     citrus (3.0.2)
-    commonmarker (2.6.0-x86_64-linux)
     concurrent-ruby (1.3.6)
     csv (3.3.5)
     date (3.5.1)
@@ -216,7 +121,6 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
-    markly (0.15.1)
     matrix (0.4.3)
     memo_wise (1.13.0)
     mutex_m (0.3.0)
@@ -443,34 +347,23 @@ PLATFORMS
 DEPENDENCIES
   addressable (>= 2.8, < 3)
   appraisal2 (~> 3.0)
-  ast-merge!
-  bash-merge!
   benchmark (~> 0.4, >= 0.4.1)
   bundler-audit (~> 0.9.3)
   citrus
-  commonmarker-merge!
   debug (>= 1.1)
-  dotenv-merge!
   erb (~> 5.0)
   ffi
   gem_bench (~> 2.0, >= 2.0.5)
   gitmoji-regex (~> 1.0, >= 1.0.3)
   irb (~> 1.15, >= 1.15.2)
-  json-merge!
-  jsonc-merge!
   kettle-dev (~> 1.2)
   kettle-soup-cover (~> 1.0, >= 1.0.10)
   kettle-test (~> 1.0, >= 1.0.6)
   kramdown (~> 2.5, >= 2.5.1)
   kramdown-parser-gfm (~> 1.1)
-  markdown-merge!
-  markly-merge!
   mutex_m (~> 0.2)
   prism (~> 1.6)
-  prism-merge!
-  psych-merge!
   rake (~> 13.0)
-  rbs-merge!
   rdoc (~> 6.11)
   reek (~> 6.5)
   require_bench (~> 1.0, >= 1.0.4)
@@ -485,7 +378,6 @@ DEPENDENCIES
   stone_checksums (~> 1.0, >= 1.0.3)
   stringio (>= 3.0)
   table_tennis (~> 0.0.7)
-  toml-merge!
   toml-rb
   tree_haver!
   tree_stump!
@@ -502,15 +394,11 @@ CHECKSUMS
   ansi (1.5.0) sha256=5408253274e33d9d27d4a98c46d2998266fd51cba58a7eb9d08f50e57ed23592
   appraisal2 (3.0.0) sha256=f1b4e742cf8ebef5e9fbb76c416a8c16edfe0727964a5a17b44adfc37b701aed
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
-  ast-merge (1.1.0)
   backports (3.25.3) sha256=94298d32dc3c40ca15633b54e282780b49e2db0c045f602ea1907e4f63a17235
-  bash-merge (1.0.0)
   benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
   bigdecimal (3.3.1) sha256=eaa01e228be54c4f9f53bf3cc34fe3d5e845c31963e7fcc5bedb05a4e7d52218
   bundler-audit (0.9.3) sha256=81c8766c71e47d0d28a0f98c7eed028539f21a6ea3cd8f685eb6f42333c9b4e9
   citrus (3.0.2) sha256=4ec2412fc389ad186735f4baee1460f7900a8e130ffe3f216b30d4f9c684f650
-  commonmarker (2.6.0-x86_64-linux) sha256=cddae70929aea45c6a8aa72bfc02d15029611b0e88fee965d0151bc9453fd8bb
-  commonmarker-merge (1.0.0)
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   csv (3.3.5) sha256=6e5134ac3383ef728b7f02725d9872934f523cb40b961479f69cf3afa6c8e73f
   date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
@@ -519,7 +407,6 @@ CHECKSUMS
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
   diffy (3.4.4) sha256=79384ab5ca82d0e115b2771f0961e27c164c456074bd2ec46b637ebf7b6e47e3
   docile (1.4.1) sha256=96159be799bfa73cdb721b840e9802126e4e03dfc26863db73647204c727f21e
-  dotenv-merge (1.0.0)
   dry-configurable (1.3.0) sha256=882d862858567fc1210d2549d4c090f34370fc1bb7c5c1933de3fe792e18afa8
   dry-core (1.1.0) sha256=0903821a9707649a7da545a2cd88e20f3a663ab1c5288abd7f914fa7751ab195
   dry-inflector (1.2.0) sha256=22f5d0b50fd57074ae57e2ca17e3b300e57564c218269dcf82ff3e42d3f38f2e
@@ -534,8 +421,6 @@ CHECKSUMS
   io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
   irb (1.16.0) sha256=2abe56c9ac947cdcb2f150572904ba798c1e93c890c256f8429981a7675b0806
   json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
-  json-merge (1.0.0)
-  jsonc-merge (1.0.0)
   kettle-dev (1.2.5)
   kettle-soup-cover (1.0.10) sha256=2674fe2d87cbe2961847396f4f8d1e5c0165ae9999ffa8e94e8491215e0b8c3d
   kettle-test (1.0.7) sha256=16fcb8b1bc12366f443d0ec9d125c1865249865c7afff7ef856e602436d4cdc7
@@ -544,9 +429,6 @@ CHECKSUMS
   language_server-protocol (3.17.0.5) sha256=fd1e39a51a28bf3eec959379985a72e296e9f9acfce46f6a79d31ca8760803cc
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
-  markdown-merge (1.0.0)
-  markly (0.15.1) sha256=d8aeb4e0b26e1c2c45f579b2ed8aa21b20856a8295dc6695121b9f492eee1433
-  markly-merge (1.0.0)
   matrix (0.4.3) sha256=a0d5ab7ddcc1973ff690ab361b67f359acbb16958d1dc072b8b956a286564c5b
   memo_wise (1.13.0) sha256=30220c38c4cef410849bc73553c58664dc2c91c6379e4a1df22aea02358b716b
   mutex_m (0.3.0) sha256=cfcb04ac16b69c4813777022fdceda24e9f798e48092a2b817eb4c0a782b0751
@@ -561,15 +443,12 @@ CHECKSUMS
   prawn (2.5.0) sha256=f4e20e3b4f30bf5b9ae37dad15eb421831594553aa930b2391b0fa0a99c43cb6
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
   prism (1.7.0) sha256=10062f734bf7985c8424c44fac382ac04a58124ea3d220ec3ba9fe4f2da65103
-  prism-merge (2.0.0)
   psych (5.3.1) sha256=eb7a57cef10c9d70173ff74e739d843ac3b2c019a003de48447b2963d81b1974
-  psych-merge (1.0.0)
   public_suffix (7.0.0) sha256=f7090b5beb0e56f9f10d79eed4d5fbe551b3b425da65877e075dad47a6a1b095
   racc (1.8.1) sha256=4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f
   rainbow (3.1.1) sha256=039491aa3a89f42efa1d6dec2fc4e62ede96eb6acd95e52f1ad581182b79bc6a
   rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
   rbs (3.10.0) sha256=e75b5f1313c71c9ee0fcea68bf97d3e5fe8ec7a641d4b5cd18bbc28c94ddf298
-  rbs-merge (1.0.0)
   rdoc (6.17.0) sha256=0f50d4e568fc98195f9bb155a9e8dff6c7feabfb515fb22ef6df1d12ad5a02b7
   reek (6.5.0) sha256=d26d3a492773b2bbc228888067a21afe33ac07954a17dbd64cdeae42c4c69be1
   regexp_parser (2.11.3) sha256=ca13f381a173b7a93450e53459075c9b76a10433caadcb2f1180f2c741fc55a4
@@ -622,7 +501,6 @@ CHECKSUMS
   thor (1.4.0) sha256=8763e822ccb0f1d7bee88cde131b19a65606657b847cc7b7b4b82e772bcd8a3d
   timecop (0.9.10) sha256=12ba45ce57cdcf6b1043cb6cdffa6381fd89ce10d369c28a7f6f04dc1b0cd8eb
   timecop-rspec (1.0.3) sha256=005f14841bb606dcaefb060e321b5388e2e59537742bee8b3a9a9a40e598fab9
-  toml-merge (1.0.0)
   toml-rb (4.1.0) sha256=14456ec4549e4703881bf04b83a56f3264ef99884880092d83c98a2058d95846
   tree_haver (3.1.0)
   tree_stump (0.1.0)
@@ -642,4 +520,4 @@ CHECKSUMS
   zlib (3.2.2) sha256=908e61263f99c1371b5422581e2d6663bd37c6b04ae13b5f8cb10b0d09379f40
 
 BUNDLED WITH
-  4.0.1
+  4.0.3
