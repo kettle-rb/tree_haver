@@ -21,6 +21,8 @@ SUDO=""
 INSTALL_CLI=false
 BUILD_FROM_SOURCE=false
 WORKSPACE_ROOT="/workspaces/tree_haver"
+SELECTED_GRAMMARS=()
+LIST_GRAMMARS=false
 
 # Parse arguments properly using while loop
 while [[ $# -gt 0 ]]; do
@@ -45,12 +47,41 @@ while [[ $# -gt 0 ]]; do
       WORKSPACE_ROOT="${1#*=}"
       shift
       ;;
+    --grammars)
+      IFS=',' read -ra SELECTED_GRAMMARS <<< "$2"
+      shift 2
+      ;;
+    --grammars=*)
+      IFS=',' read -ra SELECTED_GRAMMARS <<< "${1#*=}"
+      shift
+      ;;
+    --list-grammars)
+      LIST_GRAMMARS=true
+      shift
+      ;;
     *)
       echo "Unknown option: $1" >&2
       shift
       ;;
   esac
 done
+
+# Handle --list-grammars early (before other setup)
+if [ "$LIST_GRAMMARS" = true ]; then
+  echo "Available grammars:"
+  echo "  json   - https://github.com/tree-sitter/tree-sitter-json (core)"
+  echo "  bash   - https://github.com/tree-sitter/tree-sitter-bash (core)"
+  echo "  toml   - https://github.com/tree-sitter-grammars/tree-sitter-toml (community)"
+  echo "  jsonc  - https://gitlab.com/WhyNotHugo/tree-sitter-jsonc (one-off)"
+  echo ""
+  echo "Usage: $0 [options]"
+  echo "  --grammars=json,bash   Install only specified grammars (comma-separated)"
+  echo "  --list-grammars        Show available grammars and exit"
+  echo "  --sudo                 Force use of sudo"
+  echo "  --cli                  Install tree-sitter-cli via npm"
+  echo "  --build                Build tree-sitter runtime from source"
+  exit 0
+fi
 
 # Auto-detect if we need sudo (running as non-root)
 if [ -z "$SUDO" ] && [ "$(id -u)" -ne 0 ]; then
@@ -150,8 +181,38 @@ else
   echo "Skipping tree-sitter-cli installation (use --cli flag to install)"
 fi
 
-# Install all tree-sitter grammars for integration testing
-GRAMMARS=("toml" "json" "jsonc" "bash")
+# Grammar URL mapping - maps grammar names to their repository URLs and default branches
+# Format: GRAMMAR_URLS[name]="url|branch"
+# Supported sources:
+#   - tree-sitter (core): https://github.com/tree-sitter/tree-sitter-*
+#   - tree-sitter-grammars (community): https://github.com/tree-sitter-grammars/tree-sitter-*
+#   - one-off repositories (e.g., GitLab)
+declare -A GRAMMAR_URLS
+GRAMMAR_URLS["json"]="https://github.com/tree-sitter/tree-sitter-json|master"
+GRAMMAR_URLS["bash"]="https://github.com/tree-sitter/tree-sitter-bash|master"
+GRAMMAR_URLS["toml"]="https://github.com/tree-sitter-grammars/tree-sitter-toml|master"
+GRAMMAR_URLS["jsonc"]="https://gitlab.com/WhyNotHugo/tree-sitter-jsonc/-/archive/main/tree-sitter-jsonc-main.zip|main|direct"
+
+# Default grammars to install (can be overridden via --grammars)
+DEFAULT_GRAMMARS=("toml" "json" "jsonc" "bash")
+
+# Check if user specified grammars via --grammars flag
+if [ ${#SELECTED_GRAMMARS[@]} -eq 0 ]; then
+  GRAMMARS=("${DEFAULT_GRAMMARS[@]}")
+else
+  GRAMMARS=("${SELECTED_GRAMMARS[@]}")
+fi
+
+echo "Grammars to install: ${GRAMMARS[*]}"
+echo ""
+
+# Validate all requested grammars exist in mapping
+for grammar in "${GRAMMARS[@]}"; do
+  if [ -z "${GRAMMAR_URLS[$grammar]}" ]; then
+    echo "ERROR: Unknown grammar '${grammar}'. Available grammars: ${!GRAMMAR_URLS[*]}" >&2
+    exit 1
+  fi
+done
 
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT
@@ -160,9 +221,28 @@ for grammar in "${GRAMMARS[@]}"; do
   echo "Building and installing tree-sitter-${grammar}..."
   cd "$TMPDIR"
 
-  if ! wget -q "https://github.com/tree-sitter-grammars/tree-sitter-${grammar}/archive/refs/heads/master.zip" -O "${grammar}.zip"; then
-    echo "ERROR: Failed to download tree-sitter-${grammar}" >&2
-    exit 1
+  # Parse the URL mapping
+  IFS='|' read -r REPO_URL BRANCH URL_TYPE <<< "${GRAMMAR_URLS[$grammar]}"
+
+  # Download the grammar
+  if [ "$URL_TYPE" = "direct" ]; then
+    # Direct URL (e.g., GitLab archive URLs)
+    if ! wget -q "$REPO_URL" -O "${grammar}.zip"; then
+      echo "ERROR: Failed to download tree-sitter-${grammar} from ${REPO_URL}" >&2
+      exit 1
+    fi
+  else
+    # GitHub-style archive URL - try specified branch, then fallback to alternative
+    if ! wget -q "${REPO_URL}/archive/refs/heads/${BRANCH}.zip" -O "${grammar}.zip"; then
+      # Try alternative branch (main vs master)
+      ALT_BRANCH=$([ "$BRANCH" = "master" ] && echo "main" || echo "master")
+      echo "  ${BRANCH} branch not found, trying ${ALT_BRANCH} branch..."
+      if ! wget -q "${REPO_URL}/archive/refs/heads/${ALT_BRANCH}.zip" -O "${grammar}.zip"; then
+        echo "ERROR: Failed to download tree-sitter-${grammar} from ${REPO_URL} (tried ${BRANCH} and ${ALT_BRANCH})" >&2
+        exit 1
+      fi
+      BRANCH="$ALT_BRANCH"
+    fi
   fi
 
   if ! unzip -q "${grammar}.zip"; then
@@ -170,7 +250,7 @@ for grammar in "${GRAMMARS[@]}"; do
     exit 1
   fi
 
-  cd "tree-sitter-${grammar}-master"
+  cd "tree-sitter-${grammar}-${BRANCH}"
 
   # Compile parser.c
   if ! gcc -fPIC -I./src -c src/parser.c -o parser.o; then

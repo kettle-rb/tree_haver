@@ -64,7 +64,7 @@ jobs:
 
       - name: Install tree-sitter dependencies (Ubuntu)
         if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}
-        run: .github/scripts/ubuntu/setup-tree-sitter.sh --sudo
+        run: .github/scripts/ubuntu/setup-tree-sitter.sh --sudo --grammars=toml
 
       - name: Setup Ruby & RubyGems
         if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}
