@@ -12,7 +12,7 @@ module TreeHaver
     # suitable for editor/IDE use cases where performance is critical.
     #
     # @note This backend works on MRI Ruby. JRuby/TruffleRuby support is unknown.
-    # @see https://github.com/anthropics/tree_stump tree_stump
+    # @see https://github.com/joker1007/tree_stump tree_stump
     module Rust
       @load_attempted = false
       @loaded = false

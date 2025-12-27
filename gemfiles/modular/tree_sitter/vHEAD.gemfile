@@ -8,6 +8,6 @@ platform :mri do
   gem "ruby_tree_sitter", github: "Faveod/ruby-tree-sitter"
   # Rust Backend
   gem "tree_stump",
-    github: "pboling/tree_stump",
-    branch: "tree_haver"
+    github: "joker1007/tree_stump",
+    branch: "main"
 end

@@ -27,6 +27,6 @@ platform :mri do
   # Rust Backend
   gem "tree_stump",
     # path: "../../vendor/tree_stump"
-    github: "pboling/tree_stump",
-    branch: "tree_haver"
+    github: "joker1007/tree_stump",
+    branch: "main"
 end
