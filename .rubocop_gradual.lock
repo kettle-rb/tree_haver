@@ -14,26 +14,31 @@
   "spec/tree_haver/language_backend_spec.rb:3839571391": [
     [5, 16, 56, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2912587316]
   ],
-  "spec/tree_haver/node_spec.rb:2905857490": [
+  "spec/tree_haver/node_spec.rb:424816327": [
     [283, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
     [311, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
     [668, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [671].", 3484858249],
     [671, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [668].", 3767344958],
     [881, 7, 65, "RSpec/IndexedLet: This `let` statement uses `1` in its name. Please give it a meaningful name.", 4132605332],
     [882, 7, 65, "RSpec/IndexedLet: This `let` statement uses `2` in its name. Please give it a meaningful name.", 3915049431],
-    [883, 7, 65, "RSpec/IndexedLet: This `let` statement uses `3` in its name. Please give it a meaningful name.", 4085774230]
+    [883, 7, 65, "RSpec/IndexedLet: This `let` statement uses `3` in its name. Please give it a meaningful name.", 4085774230],
+    [988, 7, 78, "RSpec/IndexedLet: This `let` statement uses `1` in its name. Please give it a meaningful name.", 1739429520],
+    [989, 7, 81, "RSpec/IndexedLet: This `let` statement uses `2` in its name. Please give it a meaningful name.", 605652160],
+    [990, 7, 69, "RSpec/IndexedLet: This `let` statement uses `3` in its name. Please give it a meaningful name.", 3383291138],
+    [1057, 7, 78, "RSpec/IndexedLet: This `let` statement uses `1` in its name. Please give it a meaningful name.", 1739429520],
+    [1058, 7, 81, "RSpec/IndexedLet: This `let` statement uses `2` in its name. Please give it a meaningful name.", 605652160]
   ],
   "spec/tree_haver/parser_backend_spec.rb:3758225329": [
     [5, 16, 42, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2414562915],
     [33, 16, 35, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 3814166864],
     [101, 13, 23, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 822755606]
   ],
-  "spec/tree_haver/thread_local_backend_spec.rb:3411812519": [
+  "spec/tree_haver/thread_local_backend_spec.rb:1766453850": [
     [5, 16, 32, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2927084111],
     [51, 5, 212, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 64.", 2676278710],
     [64, 5, 211, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 51.", 3617715094],
-    [317, 5, 221, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 357.", 1897117069],
-    [357, 5, 290, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 317.", 3379897254]
+    [317, 5, 221, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 358.", 1897117069],
+    [358, 5, 290, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 317.", 3379897254]
   ],
   "spec/tree_haver/tree_spec.rb:1117877502": [
     [93, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],

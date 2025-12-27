@@ -915,4 +915,253 @@ RSpec.describe TreeHaver::Node do
       end
     end
   end
+
+  describe "#structural?" do
+    context "when backend has its own structural? method" do
+      let(:citrus_style_node) do
+        double(
+          "CitrusNode",
+          type: "element",
+          child_count: 0,
+          structural?: true,
+        )
+      end
+
+      it "delegates to inner_node structural?" do
+        node = described_class.new(citrus_style_node)
+        expect(node.structural?).to be true
+      end
+    end
+
+    context "when backend lacks structural? method" do
+      let(:tree_sitter_node) do
+        double(
+          "TreeSitterNode",
+          type: "element",
+          child_count: 0,
+          named?: true,
+        )
+      end
+
+      it "falls back to named?" do
+        allow(tree_sitter_node).to receive(:respond_to?).and_return(false)
+        allow(tree_sitter_node).to receive(:respond_to?).with(:structural?).and_return(false)
+        allow(tree_sitter_node).to receive(:respond_to?).with(:named?).and_return(true)
+        node = described_class.new(tree_sitter_node)
+        expect(node.structural?).to be true
+      end
+    end
+  end
+
+  describe "#named_child with fallback" do
+    context "when backend supports named_child natively" do
+      let(:native_child) { double("NativeChild", type: "named_child", child_count: 0) }
+      let(:native_node) do
+        double(
+          "NativeNode",
+          type: "parent",
+          child_count: 2,
+        )
+      end
+
+      it "uses native named_child" do
+        allow(native_node).to receive(:respond_to?).with(:named_child).and_return(true)
+        allow(native_node).to receive(:named_child).with(0).and_return(native_child)
+
+        node = described_class.new(native_node)
+        result = node.named_child(0)
+        expect(result).to be_a(described_class)
+        expect(result.type).to eq("named_child")
+      end
+
+      it "returns nil when native named_child returns nil" do
+        allow(native_node).to receive(:respond_to?).with(:named_child).and_return(true)
+        allow(native_node).to receive(:named_child).with(99).and_return(nil)
+
+        node = described_class.new(native_node)
+        result = node.named_child(99)
+        expect(result).to be_nil
+      end
+    end
+
+    context "when backend lacks named_child" do
+      let(:child1) { double("Child1", type: "named", child_count: 0, named?: true) }
+      let(:child2) { double("Child2", type: "unnamed", child_count: 0, named?: false) }
+      let(:child3) { double("Child3", type: "also_named", child_count: 0) }
+      let(:fallback_node) do
+        double(
+          "FallbackNode",
+          type: "parent",
+          child_count: 3,
+        )
+      end
+
+      before do
+        allow(fallback_node).to receive(:respond_to?).with(:named_child).and_return(false)
+        allow(fallback_node).to receive(:child).with(0).and_return(child1)
+        allow(fallback_node).to receive(:child).with(1).and_return(child2)
+        allow(fallback_node).to receive(:child).with(2).and_return(child3)
+
+        # Allow respond_to? for type check (used in Node#type)
+        [child1, child2, child3].each do |child|
+          allow(child).to receive(:respond_to?).and_return(false)
+          allow(child).to receive(:respond_to?).with(:type).and_return(true)
+        end
+
+        allow(child1).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(child2).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(child3).to receive(:respond_to?).with(:named?).and_return(false)
+        allow(child3).to receive(:respond_to?).with(:is_named?).and_return(false)
+      end
+
+      it "falls back to manual iteration" do
+        node = described_class.new(fallback_node)
+        result = node.named_child(0)
+        expect(result.type).to eq("named")
+      end
+
+      it "skips unnamed children" do
+        node = described_class.new(fallback_node)
+        result = node.named_child(1)
+        # Second named child is child3 (assumes named when no method available)
+        expect(result.type).to eq("also_named")
+      end
+
+      it "returns nil when index out of bounds" do
+        node = described_class.new(fallback_node)
+        result = node.named_child(99)
+        expect(result).to be_nil
+      end
+    end
+  end
+
+  describe "#named_child_count with fallback" do
+    context "when backend supports named_child_count natively" do
+      let(:native_node) do
+        double(
+          "NativeNode",
+          type: "parent",
+          child_count: 5,
+          named_child_count: 3,
+        )
+      end
+
+      it "uses native named_child_count" do
+        allow(native_node).to receive(:respond_to?).with(:named_child_count).and_return(true)
+        node = described_class.new(native_node)
+        expect(node.named_child_count).to eq(3)
+      end
+    end
+
+    context "when backend lacks named_child_count" do
+      let(:child1) { double("Child1", type: "named", child_count: 0, named?: true) }
+      let(:child2) { double("Child2", type: "unnamed", child_count: 0, named?: false) }
+      let(:fallback_node) do
+        double(
+          "FallbackNode",
+          type: "parent",
+          child_count: 2,
+        )
+      end
+
+      before do
+        allow(fallback_node).to receive(:respond_to?).with(:named_child_count).and_return(false)
+        allow(fallback_node).to receive(:child).with(0).and_return(child1)
+        allow(fallback_node).to receive(:child).with(1).and_return(child2)
+
+        allow(child1).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(child2).to receive(:respond_to?).with(:named?).and_return(true)
+      end
+
+      it "counts named children manually" do
+        node = described_class.new(fallback_node)
+        expect(node.named_child_count).to eq(1)
+      end
+    end
+  end
+
+  describe "#start_point and #end_point with Hash returns" do
+    context "when backend returns Hash for points" do
+      let(:hash_point_node) do
+        double(
+          "HashPointNode",
+          type: "test",
+          child_count: 0,
+          start_byte: 0,
+          end_byte: 10,
+          start_point: {row: 0, column: 5},
+          end_point: {row: 2, column: 10},
+        )
+      end
+
+      it "converts start_point Hash to Point" do
+        allow(hash_point_node).to receive(:respond_to?).with(:start_point).and_return(true)
+        node = described_class.new(hash_point_node)
+        point = node.start_point
+        expect(point).to be_a(TreeHaver::Point)
+        expect(point.row).to eq(0)
+        expect(point.column).to eq(5)
+      end
+
+      it "converts end_point Hash to Point" do
+        allow(hash_point_node).to receive(:respond_to?).with(:end_point).and_return(true)
+        node = described_class.new(hash_point_node)
+        point = node.end_point
+        expect(point).to be_a(TreeHaver::Point)
+        expect(point.row).to eq(2)
+        expect(point.column).to eq(10)
+      end
+    end
+
+    context "when backend uses start_position/end_position" do
+      let(:position_node) do
+        double(
+          "PositionNode",
+          type: "test",
+          child_count: 0,
+          start_byte: 0,
+          end_byte: 10,
+          start_position: {row: 1, column: 3},
+          end_position: {row: 4, column: 7},
+        )
+      end
+
+      it "falls back to start_position for start_point" do
+        allow(position_node).to receive(:respond_to?).with(:start_point).and_return(false)
+        allow(position_node).to receive(:respond_to?).with(:start_position).and_return(true)
+        node = described_class.new(position_node)
+        point = node.start_point
+        expect(point).to be_a(TreeHaver::Point)
+        expect(point.row).to eq(1)
+        expect(point.column).to eq(3)
+      end
+
+      it "falls back to end_position for end_point" do
+        allow(position_node).to receive(:respond_to?).with(:end_point).and_return(false)
+        allow(position_node).to receive(:respond_to?).with(:end_position).and_return(true)
+        node = described_class.new(position_node)
+        point = node.end_point
+        expect(point).to be_a(TreeHaver::Point)
+        expect(point.row).to eq(4)
+        expect(point.column).to eq(7)
+      end
+    end
+  end
+
+  describe "#prev_sibling when sibling is nil" do
+    let(:node_with_nil_sibling) do
+      double(
+        "NodeWithNilSibling",
+        type: "test",
+        child_count: 0,
+      )
+    end
+
+    it "returns nil when prev_sibling returns nil" do
+      allow(node_with_nil_sibling).to receive(:respond_to?).with(:prev_sibling).and_return(true)
+      allow(node_with_nil_sibling).to receive(:prev_sibling).and_return(nil)
+      node = described_class.new(node_with_nil_sibling)
+      expect(node.prev_sibling).to be_nil
+    end
+  end
 end

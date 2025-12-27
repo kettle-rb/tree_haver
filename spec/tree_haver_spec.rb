@@ -44,6 +44,36 @@ RSpec.describe TreeHaver do
       expect(described_class.backend).to eq(:java)
     end
 
+    it "reads :citrus from ENV" do
+      described_class.instance_variable_set(:@backend, nil)
+      stub_env("TREE_HAVER_BACKEND" => "citrus")
+      expect(described_class.backend).to eq(:citrus)
+    end
+
+    it "reads :prism from ENV" do
+      described_class.instance_variable_set(:@backend, nil)
+      stub_env("TREE_HAVER_BACKEND" => "prism")
+      expect(described_class.backend).to eq(:prism)
+    end
+
+    it "reads :psych from ENV" do
+      described_class.instance_variable_set(:@backend, nil)
+      stub_env("TREE_HAVER_BACKEND" => "psych")
+      expect(described_class.backend).to eq(:psych)
+    end
+
+    it "reads :commonmarker from ENV" do
+      described_class.instance_variable_set(:@backend, nil)
+      stub_env("TREE_HAVER_BACKEND" => "commonmarker")
+      expect(described_class.backend).to eq(:commonmarker)
+    end
+
+    it "reads :markly from ENV" do
+      described_class.instance_variable_set(:@backend, nil)
+      stub_env("TREE_HAVER_BACKEND" => "markly")
+      expect(described_class.backend).to eq(:markly)
+    end
+
     it "defaults to :auto for unknown ENV value" do
       described_class.instance_variable_set(:@backend, nil)
       stub_env("TREE_HAVER_BACKEND" => "unknown")
@@ -110,6 +140,26 @@ RSpec.describe TreeHaver do
       it "returns Java backend when backend is :java" do
         described_class.backend = :java
         expect(described_class.backend_module).to eq(described_class::Backends::Java)
+      end
+
+      it "returns Prism backend when backend is :prism" do
+        described_class.backend = :prism
+        expect(described_class.backend_module).to eq(described_class::Backends::Prism)
+      end
+
+      it "returns Psych backend when backend is :psych" do
+        described_class.backend = :psych
+        expect(described_class.backend_module).to eq(described_class::Backends::Psych)
+      end
+
+      it "returns Commonmarker backend when backend is :commonmarker" do
+        described_class.backend = :commonmarker
+        expect(described_class.backend_module).to eq(described_class::Backends::Commonmarker)
+      end
+
+      it "returns Markly backend when backend is :markly" do
+        described_class.backend = :markly
+        expect(described_class.backend_module).to eq(described_class::Backends::Markly)
       end
     end
 
@@ -317,6 +367,165 @@ RSpec.describe TreeHaver do
       it "falls back to Citrus when auto-detecting" do
         result = described_class.resolve_backend_module(:auto)
         expect(result).to eq(described_class::Backends::Citrus)
+      end
+    end
+
+    context "with explicit backend selection" do
+      it "returns Prism backend for :prism" do
+        result = described_class.resolve_backend_module(:prism)
+        expect(result).to eq(described_class::Backends::Prism)
+      end
+
+      it "returns Psych backend for :psych" do
+        result = described_class.resolve_backend_module(:psych)
+        expect(result).to eq(described_class::Backends::Psych)
+      end
+
+      it "returns Commonmarker backend for :commonmarker" do
+        result = described_class.resolve_backend_module(:commonmarker)
+        expect(result).to eq(described_class::Backends::Commonmarker)
+      end
+
+      it "returns Markly backend for :markly" do
+        result = described_class.resolve_backend_module(:markly)
+        expect(result).to eq(described_class::Backends::Markly)
+      end
+
+      it "returns nil for unknown backend" do
+        result = described_class.resolve_backend_module(:nonexistent)
+        expect(result).to be_nil
+      end
+    end
+  end
+
+  describe "::backend_protect" do
+    after do
+      # Reset to default
+      described_class.instance_variable_set(:@backend_protect, nil)
+    end
+
+    describe "::backend_protect=" do
+      it "sets the protection flag" do
+        described_class.backend_protect = false
+        expect(described_class.backend_protect?).to be false
+      end
+
+      it "sets the protection flag to true" do
+        described_class.backend_protect = true
+        expect(described_class.backend_protect?).to be true
+      end
+    end
+
+    describe "::backend_protect?" do
+      it "defaults to true when not set" do
+        described_class.instance_variable_set(:@backend_protect, nil)
+        described_class.remove_instance_variable(:@backend_protect) if described_class.instance_variable_defined?(:@backend_protect)
+        expect(described_class.backend_protect?).to be true
+      end
+
+      it "returns the set value" do
+        described_class.backend_protect = false
+        expect(described_class.backend_protect?).to be false
+      end
+    end
+
+    describe "::backend_protect alias" do
+      it "is an alias for backend_protect?" do
+        described_class.backend_protect = false
+        expect(described_class.backend_protect).to be false
+      end
+    end
+  end
+
+  describe "::backends_used" do
+    after do
+      described_class.instance_variable_set(:@backends_used, nil)
+    end
+
+    it "returns a Set" do
+      expect(described_class.backends_used).to be_a(Set)
+    end
+
+    it "starts empty" do
+      described_class.instance_variable_set(:@backends_used, nil)
+      expect(described_class.backends_used).to be_empty
+    end
+  end
+
+  describe "::record_backend_usage" do
+    after do
+      described_class.instance_variable_set(:@backends_used, nil)
+    end
+
+    it "adds the backend to backends_used" do
+      described_class.instance_variable_set(:@backends_used, nil)
+      described_class.record_backend_usage(:ffi)
+      expect(described_class.backends_used).to include(:ffi)
+    end
+  end
+
+  describe "::conflicting_backends_for" do
+    it "returns empty array when no conflicts" do
+      described_class.instance_variable_set(:@backends_used, Set.new)
+      expect(described_class.conflicting_backends_for(:ffi)).to eq([])
+    end
+  end
+
+  describe "::check_backend_conflict!" do
+    after do
+      described_class.instance_variable_set(:@backend_protect, nil)
+      described_class.instance_variable_set(:@backends_used, nil)
+    end
+
+    context "when protection is disabled" do
+      before do
+        described_class.backend_protect = false
+      end
+
+      it "does not raise even with conflicts" do
+        described_class.instance_variable_set(:@backends_used, Set.new([:ffi]))
+        expect { described_class.check_backend_conflict!(:mri) }.not_to raise_error
+      end
+    end
+
+    context "when protection is enabled" do
+      before do
+        described_class.backend_protect = true
+      end
+
+      it "does not raise when no conflicts" do
+        described_class.instance_variable_set(:@backends_used, Set.new)
+        expect { described_class.check_backend_conflict!(:ffi) }.not_to raise_error
+      end
+    end
+  end
+
+  describe "::parser_for" do
+    after do
+      described_class.reset_backend!(to: :auto)
+    end
+
+    context "when library_path is provided but does not exist" do
+      it "raises NotAvailable" do
+        expect {
+          described_class.parser_for(:nonexistent_lang, library_path: "/nonexistent/path.so")
+        }.to raise_error(described_class::NotAvailable, /does not exist/)
+      end
+    end
+
+    context "when no parser is available" do
+      before do
+        # rubocop:disable RSpec/AnyInstance
+        # Stub GrammarFinder to not find anything
+        allow_any_instance_of(described_class::GrammarFinder).to receive(:available?).and_return(false)
+        allow_any_instance_of(described_class::CitrusGrammarFinder).to receive(:available?).and_return(false)
+        # rubocop:enable RSpec/AnyInstance
+      end
+
+      it "raises NotAvailable" do
+        expect {
+          described_class.parser_for(:totally_unknown_language_xyz)
+        }.to raise_error(described_class::NotAvailable, /No parser available/)
       end
     end
   end

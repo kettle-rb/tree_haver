@@ -41,6 +41,7 @@ GEM
       bundler (>= 1.2.0)
       thor (~> 1.0)
     citrus (3.0.2)
+    commonmarker (2.6.0-x86_64-linux)
     concurrent-ruby (1.3.6)
     csv (3.3.5)
     date (3.5.1)
@@ -121,6 +122,7 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
+    markly (0.15.1)
     matrix (0.4.3)
     memo_wise (1.13.0)
     mutex_m (0.3.0)
@@ -350,6 +352,7 @@ DEPENDENCIES
   benchmark (~> 0.4, >= 0.4.1)
   bundler-audit (~> 0.9.3)
   citrus
+  commonmarker
   debug (>= 1.1)
   erb (~> 5.0)
   ffi
@@ -361,6 +364,7 @@ DEPENDENCIES
   kettle-test (~> 1.0, >= 1.0.6)
   kramdown (~> 2.5, >= 2.5.1)
   kramdown-parser-gfm (~> 1.1)
+  markly
   mutex_m (~> 0.2)
   prism (~> 1.6)
   rake (~> 13.0)
@@ -399,6 +403,7 @@ CHECKSUMS
   bigdecimal (3.3.1) sha256=eaa01e228be54c4f9f53bf3cc34fe3d5e845c31963e7fcc5bedb05a4e7d52218
   bundler-audit (0.9.3) sha256=81c8766c71e47d0d28a0f98c7eed028539f21a6ea3cd8f685eb6f42333c9b4e9
   citrus (3.0.2) sha256=4ec2412fc389ad186735f4baee1460f7900a8e130ffe3f216b30d4f9c684f650
+  commonmarker (2.6.0-x86_64-linux) sha256=cddae70929aea45c6a8aa72bfc02d15029611b0e88fee965d0151bc9453fd8bb
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   csv (3.3.5) sha256=6e5134ac3383ef728b7f02725d9872934f523cb40b961479f69cf3afa6c8e73f
   date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
@@ -429,6 +434,7 @@ CHECKSUMS
   language_server-protocol (3.17.0.5) sha256=fd1e39a51a28bf3eec959379985a72e296e9f9acfce46f6a79d31ca8760803cc
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
+  markly (0.15.1) sha256=d8aeb4e0b26e1c2c45f579b2ed8aa21b20856a8295dc6695121b9f492eee1433
   matrix (0.4.3) sha256=a0d5ab7ddcc1973ff690ab361b67f359acbb16958d1dc072b8b956a286564c5b
   memo_wise (1.13.0) sha256=30220c38c4cef410849bc73553c58664dc2c91c6379e4a1df22aea02358b716b
   mutex_m (0.3.0) sha256=cfcb04ac16b69c4813777022fdceda24e9f798e48092a2b817eb4c0a782b0751

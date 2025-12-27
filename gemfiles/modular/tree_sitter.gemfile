@@ -13,6 +13,7 @@ gem "toml-rb"
 gem "citrus"
 gem "prism", "~> 1.6"
 gem "unparser", "~> 0.8", ">= 0.8.1"
+gem "commonmarker"
 
 # Set KETTLE_RB_DEV=true for local development
 if ENV.fetch("KETTLE_RB_DEV", "false").casecmp?("true")
@@ -22,6 +23,7 @@ end
 platform :mri do
   # MRI Backend
   gem "ruby_tree_sitter", require: false # DO NOT LOAD, because conflicts with FFI
+  gem "markly"
   # Rust Backend
   gem "tree_stump",
     # path: "../../vendor/tree_stump"
