@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: tree_haver
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "tree_haver";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: tree_haver</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="type-definitions-for-treehaver">Type definitions for TreeHaver</h1>
+<p>#</p>
+<h1 id="treehaver-is-a-cross-ruby-adapter-for-code-parsing-with-10-backends">TreeHaver is a cross-Ruby adapter for code parsing with 10 backends:</h1>
+<h1 id="--tree-sitter-mri-rust-ffi-java">- Tree-sitter: MRI, Rust, FFI, Java</h1>
+<h1 id="--native-parsers-prism-ruby-psych-yaml-commonmarker-markdown-markly-gfm">- Native parsers: Prism (Ruby), Psych (YAML), Commonmarker (Markdown), Markly (GFM)</h1>
+<h1 id="--pure-ruby-citrus">- Pure Ruby: Citrus</h1>
+
+<p>module TreeHaver<br>
+  VERSION: String</p>
+
+<p># Base error class<br>
+  class Error &lt; StandardError<br>
+  end</p>
+
+<p># Raised when a backend or feature is not available<br>
+  class NotAvailable &lt; Error<br>
+  end</p>
+
+<p># Module namespace for backend implementations<br>
+  module Backends<br>
+  end</p>
+
+<p># Get the current backend selection<br>
+  def self.backend: () -&gt; Symbol</p>
+
+<p># Set the backend to use<br>
+  def self.backend=: (Symbol | String | nil name) -&gt; (Symbol | nil)</p>
+
+<p># Reset backend selection memoization<br>
+  def self.reset_backend!: (?to: Symbol | String | nil) -&gt; void</p>
+
+<p># Determine the concrete backend module to use<br>
+  def self.backend_module: () -&gt; Module?</p>
+
+<p># Get capabilities of the current backend<br>
+  def self.capabilities: () -&gt; Hash[Symbol, untyped]</p>
+
+<p># Register a language helper by name<br>
+  def self.register_language: (Symbol | String name, path: String, ?symbol: String?) -&gt; void</p>
+
+<p># Unregister a previously registered language helper<br>
+  def self.unregister_language: (Symbol | String name) -&gt; void</p>
+
+<p># Clear all registered languages<br>
+  def self.clear_languages!: () -&gt; void</p>
+
+<p># Fetch a registered language entry<br>
+  def self.registered_language: (Symbol | String name) -&gt; Hash[Symbol, String?]?</p>
+
+<p># Represents a tree-sitter language grammar<br>
+  class Language<br>
+    # Load a language grammar from a shared library<br>
+    def self.from_library: (String path, ?symbol: String?, ?name: String?) -&gt; Language</p>
+
+<pre class="code ruby"><code class="ruby"># Alias for from_library
+def self.from_path: (String path, ?symbol: String?, ?name: String?) -&gt; Language
+
+def self.method_missing: (Symbol method_name, *untyped args, **untyped kwargs) ?{ () -&gt; untyped } -&gt; Language
+
+def self.respond_to_missing?: (Symbol method_name, ?bool include_private) -&gt; bool   end
+</code></pre>
+
+<p># Represents a tree-sitter parser instance<br>
+  class Parser<br>
+    # Create a new parser instance<br>
+    def initialize: () -&gt; void</p>
+
+<pre class="code ruby"><code class="ruby"># Set the language grammar for this parser
+def language=: (Language lang) -&gt; Language
+
+# Parse source code into a syntax tree
+def parse: (String source) -&gt; Tree
+
+# Parse with optional incremental parsing support
+def parse_string: (Tree? old_tree, String source) -&gt; Tree
+
+private
+
+@impl: untyped   end
+</code></pre>
+
+<p># Represents a parsed syntax tree<br>
+  class Tree<br>
+    attr_reader inner_tree: untyped<br>
+    attr_reader source: String?</p>
+
+<pre class="code ruby"><code class="ruby"># Get the root node of the syntax tree
+def root_node: () -&gt; Node?
+
+# Edit the tree for incremental parsing
+def edit: (
+  start_byte: Integer,
+  old_end_byte: Integer,
+  new_end_byte: Integer,
+  start_point: Hash[Symbol, Integer],
+  old_end_point: Hash[Symbol, Integer],
+  new_end_point: Hash[Symbol, Integer]
+) -&gt; void
+
+# Check if the current backend supports incremental parsing
+def supports_editing?: () -&gt; bool
+
+# String representation
+def inspect: () -&gt; String
+
+# Check if tree responds to a method (includes delegation to inner_tree)
+def respond_to_missing?: (Symbol method_name, ?bool include_private) -&gt; bool
+
+# Delegate unknown methods to the underlying backend-specific tree
+def method_missing: (Symbol method_name, *untyped args, **untyped kwargs) ?{ () -&gt; untyped } -&gt; untyped
+
+private
+
+def initialize: (untyped inner_tree, ?source: String?) -&gt; void   end
+</code></pre>
+
+<p># Represents a node in the syntax tree<br>
+  class Node<br>
+    attr_reader inner_node: untyped<br>
+    attr_reader source: String?</p>
+
+<pre class="code ruby"><code class="ruby"># Get the type name of this node
+def type: () -&gt; String
+
+# Get the text content of this node
+def text: () -&gt; String?
+
+# Get the start byte offset
+def start_byte: () -&gt; Integer
+
+# Get the end byte offset
+def end_byte: () -&gt; Integer
+
+# Get the start point (row, column)
+def start_point: () -&gt; Point
+
+# Get the end point (row, column)
+def end_point: () -&gt; Point
+
+# Position API - consistent across all backends
+# Get 1-based line number where node starts
+def start_line: () -&gt; Integer
+
+# Get 1-based line number where node ends
+def end_line: () -&gt; Integer
+
+# Get complete position information as hash
+# Returns {start_line:, end_line:, start_column:, end_column:}
+def source_position: () -&gt; Hash[Symbol, Integer]
+
+# Get first child node (convenience method)
+def first_child: () -&gt; Node?
+
+# Get the number of child nodes
+def child_count: () -&gt; Integer
+
+# Get a child node by index
+def child: (Integer index) -&gt; Node?
+
+# Get all children as an array
+def children: () -&gt; Array[Node]
+
+# Iterate over child nodes
+def each: () { (Node child) -&gt; void } -&gt; nil
+        | () -&gt; Enumerator[Node, nil]
+
+# Get a named child by field name
+def child_by_field_name: (String | Symbol field_name) -&gt; Node?
+
+# Get the parent node
+def parent: () -&gt; Node?
+
+# Get the next sibling node
+def next_sibling: () -&gt; Node?
+
+# Get the previous sibling node
+def prev_sibling: () -&gt; Node?
+
+# Check if node responds to a method (includes delegation to inner_node)
+def respond_to_missing?: (Symbol method_name, ?bool include_private) -&gt; bool
+
+# Delegate unknown methods to the underlying backend-specific node
+def method_missing: (Symbol method_name, *untyped args, **untyped kwargs) ?{ () -&gt; untyped } -&gt; untyped
+
+private
+
+def initialize: (untyped inner_node, ?source: String?) -&gt; void   end
+</code></pre>
+
+<p># Position in source code that works as both object and hash<br>
+  class Point<br>
+    attr_reader row: Integer<br>
+    attr_reader column: Integer</p>
+
+<pre class="code ruby"><code class="ruby">def initialize: (row: Integer, column: Integer) -&gt; void
+
+# Hash-style access
+def []: (Symbol key) -&gt; Integer?
+
+# Convert to hash
+def to_h: () -&gt; Hash[Symbol, Integer]
+
+# String representation
+def inspect: () -&gt; String   end
+</code></pre>
+
+<p># Thread-safe language registrations and cache<br>
+  module LanguageRegistry<br>
+    # Register a language helper by name<br>
+    def self.register: (Symbol | String name, path: String, ?symbol: String?) -&gt; void</p>
+
+<pre class="code ruby"><code class="ruby"># Unregister a previously registered language helper
+def self.unregister: (Symbol | String name) -&gt; void
+
+# Fetch a registration entry
+def self.registered: (Symbol | String name) -&gt; Hash[Symbol, String?]?
+
+# Clear all registrations
+def self.clear_registrations!: () -&gt; void
+
+# Fetch a cached language by key or compute and store it
+def self.fetch: [T] (Array[untyped] key) { () -&gt; T } -&gt; T
+
+# Clear the language cache
+def self.clear_cache!: () -&gt; void
+
+# Clear everything (registrations and cache)
+def self.clear_all!: () -&gt; void   end
+</code></pre>
+
+<p>module Version<br>
+    VERSION: String<br>
+  end<br>
+end</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Fri Dec 26 22:30:12 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-4.0.0).
+</div>
+
+    </div>
+  </body>
+</html>

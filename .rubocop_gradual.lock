@@ -1,10 +1,4 @@
 {
-  "README.md:469923543": [
-    [966, 1, 5, "Layout/ArgumentAlignment: Use one level of indentation for arguments following the first line of a multi-line method call.", 122759269],
-    [966, 1, 5, "Layout/FirstArgumentIndentation: Indent the first argument one step more than the start of the previous line.", 122759269],
-    [967, 74, 1, "Style/TrailingCommaInArguments: Avoid comma after the last parameter of a method call, unless each item is on its own line.", 177545],
-    [967, 75, 1, "Layout/MultilineMethodCallBraceLayout: Closing method call brace must be on the line after the last argument when opening brace is on a separate line from the first argument.", 177548]
-  ],
   "spec/integration/backend_edge_cases_spec.rb:3125406541": [
     [235, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
     [240, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],

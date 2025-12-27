@@ -963,8 +963,9 @@ parser = TreeHaver.parser_for(:toml, library_path: "/custom/path/libtree-sitter-
 
 # With Citrus fallback configuration
 parser = TreeHaver.parser_for(
-:toml,
-  citrus_config: {gem_name: "toml-rb", grammar_const: "TomlRB::Document"},)
+  :toml,
+  citrus_config: {gem_name: "toml-rb", grammar_const: "TomlRB::Document"},
+)
 ```
 
 `TreeHaver.parser_for` handles:

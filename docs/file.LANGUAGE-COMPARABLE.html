@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: LANGUAGE-COMPARABLE
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "LANGUAGE-COMPARABLE";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: LANGUAGE-COMPARABLE</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="language-comparable-implementation">Language Comparable Implementation</h1>
+
+<h2 id="overview">Overview</h2>
+
+<p>All Language wrapper classes now include Ruby’s <code>Comparable</code> module and implement equality comparison based on their relevant attributes. This allows language objects to be directly compared using standard Ruby comparison operators (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>).</p>
+
+<h2 id="benefits">Benefits</h2>
+
+<h3 id="-semantic-comparison">✅ Semantic Comparison</h3>
+<p>Instead of comparing backend symbols:</p>
+<pre class="code language-ruby"><code class="language-ruby"># Old way - only checks backend type
+if lang_backend != current_backend
+  # Could be same language, different backend!
+end
+</code></pre>
+
+<p>Now we compare semantic language equality:</p>
+<pre class="code language-ruby"><code class="language-ruby"># New way - checks if languages represent the same grammar/config
+if lang == @impl.language
+  # Different objects, but represent the same language
+  # (same backend, path, symbol, etc.)
+end
+</code></pre>
+
+<h3 id="-type-safety">✅ Type Safety</h3>
+<p>Languages from different backends are never equal:</p>
+<pre class="code language-ruby"><code class="language-ruby">mri_lang = MRI::Language.from_library(path)
+ffi_lang = FFI::Language.from_library(path)
+
+mri_lang == ffi_lang  # =&gt; false (different backends)
+</code></pre>
+
+<h3 id="-proper-hashset-support">✅ Proper Hash/Set Support</h3>
+<p>Languages can be used as hash keys or in sets:</p>
+<pre class="code language-ruby"><code class="language-ruby">language_set = Set.new
+language_set &lt;&lt; lang1
+language_set &lt;&lt; lang2  # Only added if different from lang1
+
+language_cache = {}
+language_cache[lang] = parser  # Language as hash key
+</code></pre>
+
+<h3 id="-sortable">✅ Sortable</h3>
+<p>Languages can be sorted:</p>
+<pre class="code language-ruby"><code class="language-ruby">languages.sort  # Sorts by backend, then path, then symbol/name
+</code></pre>
+
+<h2 id="implementation-details">Implementation Details</h2>
+
+<h3 id="equality-attributes">Equality Attributes</h3>
+
+<p>Each backend compares based on its unique identifying attributes:</p>
+
+<h4 id="mri-language">MRI Language</h4>
+<ul>
+  <li>
+<strong>Backend</strong>: <code>:mri</code>
+</li>
+  <li>
+<strong>Path</strong>: File path to <code>.so</code> library</li>
+  <li>
+<strong>Symbol</strong>: C symbol name (e.g., <code>"tree_sitter_toml"</code>)</li>
+</ul>
+
+<pre class="code language-ruby"><code class="language-ruby">def &lt;=&gt;(other)
+  return nil unless other.is_a?(Language)
+  return nil unless other.backend == @backend
+  
+  cmp = (@path || &quot;&quot;) &lt;=&gt; (other.path || &quot;&quot;)
+  return cmp unless cmp.zero?
+  
+  (@symbol || &quot;&quot;) &lt;=&gt; (other.symbol || &quot;&quot;)
+end
+</code></pre>
+
+<h4 id="rust-language">Rust Language</h4>
+<ul>
+  <li>
+<strong>Backend</strong>: <code>:rust</code>
+</li>
+  <li>
+<strong>Name</strong>: Registered language name (e.g., <code>"toml"</code>)</li>
+</ul>
+
+<pre class="code language-ruby"><code class="language-ruby">def &lt;=&gt;(other)
+  return nil unless other.is_a?(Language)
+  return nil unless other.backend == @backend
+  
+  @name &lt;=&gt; other.name
+end
+</code></pre>
+
+<h4 id="ffi-language">FFI Language</h4>
+<ul>
+  <li>
+<strong>Backend</strong>: <code>:ffi</code>
+</li>
+  <li>
+<strong>Path</strong>: File path to <code>.so</code> library</li>
+  <li>
+<strong>Symbol</strong>: C symbol name</li>
+</ul>
+
+<pre class="code language-ruby"><code class="language-ruby">def &lt;=&gt;(other)
+  return nil unless other.is_a?(Language)
+  return nil unless other.backend == @backend
+  
+  cmp = (@path || &quot;&quot;) &lt;=&gt; (other.path || &quot;&quot;)
+  return cmp unless cmp.zero?
+  
+  (@symbol || &quot;&quot;) &lt;=&gt; (other.symbol || &quot;&quot;)
+end
+</code></pre>
+
+<h4 id="java-language">Java Language</h4>
+<ul>
+  <li>
+<strong>Backend</strong>: <code>:java</code>
+</li>
+  <li>
+<strong>Path</strong>: File path to library</li>
+  <li>
+<strong>Symbol</strong>: C symbol name</li>
+</ul>
+
+<pre class="code language-ruby"><code class="language-ruby">def &lt;=&gt;(other)
+  return nil unless other.is_a?(Language)
+  return nil unless other.backend == @backend
+  
+  cmp = (@path || &quot;&quot;) &lt;=&gt; (other.path || &quot;&quot;)
+  return cmp unless cmp.zero?
+  
+  (@symbol || &quot;&quot;) &lt;=&gt; (other.symbol || &quot;&quot;)
+end
+</code></pre>
+
+<h4 id="citrus-language">Citrus Language</h4>
+<ul>
+  <li>
+<strong>Backend</strong>: <code>:citrus</code>
+</li>
+  <li>
+<strong>Grammar Module</strong>: The Ruby module (e.g., <code>TomlRB::Document</code>)</li>
+</ul>
+
+<pre class="code language-ruby"><code class="language-ruby">def &lt;=&gt;(other)
+  return nil unless other.is_a?(Language)
+  return nil unless other.backend == @backend
+  
+  @grammar_module.name &lt;=&gt; other.grammar_module.name
+end
+</code></pre>
+
+<h2 id="usage-in-unwrap_language">Usage in unwrap_language</h2>
+
+<p>The unwrap_language method now uses language equality to detect mismatches:</p>
+
+<pre class="code language-ruby"><code class="language-ruby">def unwrap_language(lang)
+  if lang.respond_to?(:backend)
+    # Get the current parser&#39;s language (if set)
+    current_lang = @impl.respond_to?(:language) ? @impl.language : nil
+    
+    # Compare the actual language objects using Comparable
+    if current_lang &amp;&amp; lang != current_lang
+      # Languages don&#39;t match!
+      # Try to reload if backends differ
+      if lang.backend != backend
+        reloaded = try_reload_language_for_backend(lang, backend)
+        lang = reloaded if reloaded
+      end
+    end
+  end
+  
+  # ...unwrapping logic...
+end
+</code></pre>
+
+<h2 id="examples">Examples</h2>
+
+<h3 id="basic-equality">Basic Equality</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">lang1 = MRI::Language.from_library(&quot;/usr/lib/libtree-sitter-toml.so&quot;, symbol: &quot;tree_sitter_toml&quot;)
+lang2 = MRI::Language.from_library(&quot;/usr/lib/libtree-sitter-toml.so&quot;, symbol: &quot;tree_sitter_toml&quot;)
+lang3 = MRI::Language.from_library(&quot;/usr/lib/libtree-sitter-json.so&quot;, symbol: &quot;tree_sitter_json&quot;)
+
+lang1 == lang2  # =&gt; true (same backend, path, and symbol)
+lang1 == lang3  # =&gt; false (different path and symbol)
+</code></pre>
+
+<h3 id="cross-backend-comparison">Cross-Backend Comparison</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">mri_toml = MRI::Language.from_library(path, symbol: &quot;tree_sitter_toml&quot;)
+ffi_toml = FFI::Language.from_library(path, symbol: &quot;tree_sitter_toml&quot;)
+rust_toml = Rust::Language.from_library(path, name: &quot;toml&quot;)
+
+mri_toml == ffi_toml   # =&gt; false (different backends)
+mri_toml == rust_toml  # =&gt; false (different backends)
+ffi_toml == rust_toml  # =&gt; false (different backends)
+</code></pre>
+
+<h3 id="using-as-hash-keys">Using as Hash Keys</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">parser_map = {}
+
+parser_map[mri_lang] = mri_parser
+parser_map[ffi_lang] = ffi_parser
+
+parser_map[mri_lang]  # =&gt; mri_parser
+parser_map[ffi_lang]  # =&gt; ffi_parser
+</code></pre>
+
+<h3 id="detecting-language-mismatch">Detecting Language Mismatch</h3>
+
+<pre class="code language-ruby"><code class="language-ruby">parser = TreeHaver::Parser.new
+parser.language = lang1
+
+# Later, try to set different language
+if lang2 != lang1
+  puts &quot;Setting different language: #{lang1.inspect} -&gt; #{lang2.inspect}&quot;
+end
+parser.language = lang2
+</code></pre>
+
+<h2 id="why-this-design">Why This Design?</h2>
+
+<h3 id="1-semantic-identity-not-just-type">1. <strong>Semantic Identity, Not Just Type</strong>
+</h3>
+<p>Comparing backends alone isn’t enough - we need to know if it’s the <strong>same language configuration</strong>, not just the same type of backend. Two different object instances are equal if they have the same backend and identifying attributes (path, symbol, name, etc.).</p>
+
+<h3 id="2-cache-friendly">2. <strong>Cache-Friendly</strong>
+</h3>
+<p>Languages can be used as hash keys, enabling efficient caching:</p>
+<pre class="code language-ruby"><code class="language-ruby">@language_cache[lang] ||= expensive_operation(lang)
+</code></pre>
+
+<h3 id="3-principle-of-least-surprise">3. <strong>Principle of Least Surprise</strong>
+</h3>
+<p>Ruby developers expect <code>==</code> to compare value equality (semantic identity):</p>
+<pre class="code language-ruby"><code class="language-ruby">lang1 == lang2  # Natural Ruby idiom - true if same attributes
+</code></pre>
+
+<p>This follows Ruby’s convention for value objects - two instances with the same attributes are considered equal, even if they’re different objects in memory.</p>
+
+<h3 id="4-sortable-and-orderable">4. <strong>Sortable and Orderable</strong>
+</h3>
+<p>Languages can be sorted for display or debugging:</p>
+<pre class="code language-ruby"><code class="language-ruby">languages.sort_by(&amp;:backend).each do |lang|
+  puts &quot;#{lang.backend}: #{lang.path}&quot;
+end
+</code></pre>
+
+<h2 id="hash-and-eql-methods">Hash and eql? Methods</h2>
+
+<p>All Language classes implement:</p>
+
+<pre class="code language-ruby"><code class="language-ruby">def hash
+  [@backend, @path, @symbol, ...].hash  # Relevant attributes
+end
+
+alias_method :eql?, :==
+</code></pre>
+
+<p>This ensures languages work correctly in:</p>
+<ul>
+  <li>Hash keys</li>
+  <li>Set membership</li>
+  <li>Array uniqueness (<code>uniq</code>)</li>
+</ul>
+
+<h2 id="testing-equality">Testing Equality</h2>
+
+<pre class="code language-ruby"><code class="language-ruby"># Same language, same backend
+lang1 = MRI::Language.from_library(path, symbol: &quot;tree_sitter_toml&quot;)
+lang2 = MRI::Language.from_library(path, symbol: &quot;tree_sitter_toml&quot;)
+assert lang1 == lang2
+assert lang1.eql?(lang2)
+assert_equal lang1.hash, lang2.hash
+
+# Different language or backend
+lang3 = FFI::Language.from_library(path, symbol: &quot;tree_sitter_toml&quot;)
+assert lang1 != lang3
+refute lang1.eql?(lang3)
+</code></pre>
+
+<h2 id="summary">Summary</h2>
+
+<p>The Comparable implementation provides:</p>
+<ul>
+  <li>✅ <strong>Semantic equality comparison</strong> - compares attributes, not object identity</li>
+  <li>✅ <strong>Proper hash/set support</strong> - based on attribute values</li>
+  <li>✅ <strong>Sortable languages</strong> - ordered by backend and attributes</li>
+  <li>✅ <strong>Type-safe cross-backend comparison</strong> - different backends are never equal</li>
+  <li>✅ <strong>Intuitive Ruby idioms</strong> - follows Ruby’s value object pattern</li>
+  <li>✅ <strong>Efficient caching support</strong> - same configuration hashes to same value</li>
+</ul>
+
+<p>This is a fundamental improvement that makes language objects behave as proper Ruby <strong>value objects</strong> with well-defined equality semantics based on their attributes, not their object identity in memory. Two different Language instances are considered equal if they represent the same grammar configuration (same backend, path, symbol, etc.).</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Fri Dec 26 22:30:11 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-4.0.0).
+</div>
+
+    </div>
+  </body>
+</html>

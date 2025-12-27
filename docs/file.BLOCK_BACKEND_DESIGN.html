@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: BLOCK_BACKEND_DESIGN
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "BLOCK_BACKEND_DESIGN";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: BLOCK_BACKEND_DESIGN</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="block-based-backend-design-analysis">Block-Based Backend Design Analysis</h1>
+
+<h2 id="current-architecture">Current Architecture</h2>
+
+<h3 id="overview">Overview</h3>
+<p>TreeHaver currently uses a <strong>global, memoized backend selection</strong> pattern:</p>
+
+<pre class="code language-ruby"><code class="language-ruby"># Current architecture
+TreeHaver.backend = :ffi           # Global state
+TreeHaver.backend_module           # Returns the module based on global state
+parser = TreeHaver::Parser.new     # Uses global backend_module
+</code></pre>
+
+<p><strong>Key Components:</strong></p>
+<ol>
+  <li>
+<strong>Global Backend Selection</strong> (<code>TreeHaver.backend</code>)
+    <ul>
+      <li>Class instance variable <code>@backend</code>
+</li>
+      <li>Cached globally across all threads</li>
+      <li>Can be set via <code>ENV["TREE_HAVER_BACKEND"]</code> or <code>TreeHaver.backend=</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<strong>Backend Module Resolution</strong> (<code>TreeHaver.backend_module</code>)
+    <ul>
+      <li>Returns the appropriate backend module (MRI, Rust, FFI, Java, Citrus)</li>
+      <li>Auto-selection logic based on Ruby engine when backend is <code>:auto</code>
+</li>
+      <li>No thread-local or context-aware resolution</li>
+    </ul>
+  </li>
+  <li>
+<strong>Language Registry</strong> (<code>TreeHaver::LanguageRegistry</code>)
+    <ul>
+      <li>Thread-safe Mutex-protected registry and cache</li>
+      <li>Stores language registrations per backend type (<code>:tree_sitter</code>, <code>:citrus</code>)</li>
+      <li>Language cache keyed by <code>[path, symbol, name, ENV["TREE_SITTER_LANG_SYMBOL"]]</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<strong>Parser and Language Creation</strong>
+    <ul>
+      <li>
+<code>TreeHaver::Parser.new</code> → calls <code>TreeHaver.backend_module</code> → creates backend-specific parser</li>
+      <li>
+<code>TreeHaver::Language.from_library</code> → calls <code>TreeHaver.backend_module</code> → creates backend-specific language</li>
+      <li>No context or thread-local awareness</li>
+    </ul>
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="required-architectural-changes">Required Architectural Changes</h2>
+
+<h3 id="1-thread-local-backend-context">1. Thread-Local Backend Context</h3>
+
+<p><strong>Problem:</strong> Current global <code>@backend</code> is shared across all threads.</p>
+
+<p><strong>Solution:</strong> Implement thread-local backend context storage.</p>
+
+<pre class="code language-ruby"><code class="language-ruby">module TreeHaver
+  class &lt;&lt; self
+    # Thread-local backend context storage
+    def current_backend_context
+      Thread.current[:tree_haver_backend_context] ||= {
+        backend: nil,  # nil = use global default
+        depth: 0,       # Track nested blocks
+      }
+    end
+
+    # Get effective backend (thread-local or global)
+    def effective_backend
+      ctx = current_backend_context
+      ctx[:backend] || backend  # Fall back to global @backend
+    end
+
+    # Block-based backend selection
+    def with_backend(name)
+      ctx = current_backend_context
+      old_backend = ctx[:backend]
+      old_depth = ctx[:depth]
+
+      ctx[:backend] = name.to_sym
+      ctx[:depth] += 1
+
+      yield
+    ensure
+      ctx[:backend] = old_backend
+      ctx[:depth] = old_depth
+    end
+  end
+end
+</code></pre>
+
+<h3 id="2-update-backend-module-resolution">2. Update Backend Module Resolution</h3>
+
+<p><strong>Change:</strong> <code>backend_module</code> must check thread-local context first.</p>
+
+<pre class="code language-ruby"><code class="language-ruby">def backend_module
+  # Use effective_backend instead of backend
+  case effective_backend
+  when :mri
+    Backends::MRI
+  # ... rest of cases
+  else
+    # Auto-select logic
+    # ...
+  end
+end
+</code></pre>
+
+<h3 id="3-language-cache-considerations">3. Language Cache Considerations</h3>
+
+<p><strong>Problem:</strong> Language cache is currently keyed without backend information.</p>
+
+<p><strong>Current cache key:</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">key = [path, symbol, name, ENV[&quot;TREE_SITTER_LANG_SYMBOL&quot;]]
+</code></pre>
+
+<p><strong>Two Options:</strong></p>
+
+<h4 id="option-a-backend-specific-cache-keys-recommended">Option A: Backend-Specific Cache Keys (Recommended)</h4>
+<p>Include effective backend in cache key:</p>
+<pre class="code language-ruby"><code class="language-ruby">key = [effective_backend, path, symbol, name, ENV[&quot;TREE_SITTER_LANG_SYMBOL&quot;]]
+</code></pre>
+
+<p><strong>Pros:</strong></p>
+<ul>
+  <li>Different backends can load same grammar differently</li>
+  <li>No cache pollution between backends</li>
+  <li>Safer for concurrent use</li>
+</ul>
+
+<p><strong>Cons:</strong></p>
+<ul>
+  <li>More memory if same grammar loaded with multiple backends</li>
+  <li>But this is the expected behavior!</li>
+</ul>
+
+<h4 id="option-b-shared-cache-with-backend-type-check">Option B: Shared Cache with Backend Type Check</h4>
+<p>Keep current keys but verify loaded language is compatible with current backend.</p>
+
+<p><strong>Pros:</strong></p>
+<ul>
+  <li>Less memory usage</li>
+</ul>
+
+<p><strong>Cons:</strong></p>
+<ul>
+  <li>Complex validation logic</li>
+  <li>Risk of backend mismatch errors</li>
+  <li>Not truly isolated</li>
+</ul>
+
+<p><strong>Recommendation:</strong> Use Option A.</p>
+
+<h3 id="4-nested-block-handling">4. Nested Block Handling</h3>
+
+<p><strong>Decision:</strong> How should nested blocks behave?</p>
+
+<pre class="code language-ruby"><code class="language-ruby">TreeHaver.with_backend(:ffi) do
+  TreeHaver.with_backend(:mri) do
+    # What backend is active here?
+  end
+end
+</code></pre>
+
+<p><strong>Recommendation:</strong> Inner block wins (override semantics).</p>
+<ul>
+  <li>Most intuitive for users</li>
+  <li>Matches Ruby’s scope shadowing</li>
+  <li>Tracked with <code>depth</code> counter for proper unwinding</li>
+</ul>
+
+<hr>
+
+<h2 id="proposed-api">Proposed API</h2>
+
+<h3 id="api-option-1-block-based-your-proposal">API Option 1: Block-Based (Your Proposal)</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># Explicit backend selection per thread
+thread1 = Thread.new do
+  TreeHaver.with_backend(:ffi) do
+    parser = TreeHaver::Parser.new
+    tree = parser.parse(source)
+    # Process tree...
+  end
+end
+
+thread2 = Thread.new do
+  TreeHaver.with_backend(:citrus) do
+    parser = TreeHaver::Parser.new
+    tree = parser.parse(source)
+    # Process tree...
+  end
+end
+</code></pre>
+
+<p><strong>Pros:</strong></p>
+<ul>
+  <li>Explicit scope boundaries</li>
+  <li>Clear when backend applies</li>
+  <li>Thread-safe by design</li>
+  <li>Backward compatible (global <code>TreeHaver.backend=</code> still works)</li>
+</ul>
+
+<p><strong>Cons:</strong></p>
+<ul>
+  <li>Requires wrapping code in blocks</li>
+  <li>Extra indentation</li>
+  <li>Could forget to use block in threaded code</li>
+</ul>
+
+<h3 id="api-option-2-parser-level-backend-selection">API Option 2: Parser-Level Backend Selection</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># Specify backend at parser creation
+thread1 = Thread.new do
+  parser = TreeHaver::Parser.new(backend: :ffi)
+  tree = parser.parse(source)
+  # Process tree...
+end
+
+thread2 = Thread.new do
+  parser = TreeHaver::Parser.new(backend: :citrus)
+  tree = parser.parse(source)
+  # Process tree...
+end
+</code></pre>
+
+<p><strong>Implementation:</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">class Parser
+  def initialize(backend: nil)
+    # If backend specified, use it; otherwise use global/thread-local
+    mod = if backend
+      TreeHaver.resolve_backend_module(backend)
+    else
+      TreeHaver.backend_module
+    end
+
+    raise NotAvailable, &quot;No TreeHaver backend is available&quot; unless mod
+    @impl = mod::Parser.new
+  end
+end
+</code></pre>
+
+<p><strong>Pros:</strong></p>
+<ul>
+  <li>No block nesting needed</li>
+  <li>Backend tied to parser instance (explicit)</li>
+  <li>More object-oriented</li>
+  <li>Each parser independent</li>
+</ul>
+
+<p><strong>Cons:</strong></p>
+<ul>
+  <li>Backend selection doesn’t affect Language loading</li>
+  <li>Need to also specify backend when loading languages</li>
+  <li>Could be confusing which backend is used for what</li>
+</ul>
+
+<h3 id="api-option-3-hybrid-approach-recommended">API Option 3: Hybrid Approach (RECOMMENDED)</h3>
+
+<p>Combine both: <strong>parser-level option + block-based context</strong>.</p>
+
+<pre class="code language-ruby"><code class="language-ruby"># Block-based for sections of code
+TreeHaver.with_backend(:ffi) do
+  parser = TreeHaver::Parser.new  # Uses :ffi from context
+  language = TreeHaver::Language.from_library(path)  # Uses :ffi from context
+end
+
+# Parser-level for explicit control
+parser = TreeHaver::Parser.new(backend: :mri)  # Override: uses :mri regardless of context
+
+# Thread-local context without block (for full thread scope)
+Thread.new do
+  TreeHaver.thread_backend = :citrus  # Set for entire thread
+  parser = TreeHaver::Parser.new
+  # ... uses :citrus
+end
+</code></pre>
+
+<p><strong>Implementation Strategy:</strong></p>
+
+<ol>
+  <li>
+<strong>Backend Resolution Priority:</strong>
+    <ul>
+      <li>Explicit parameter (<code>backend: :ffi</code>) → highest priority</li>
+      <li>Block context (<code>with_backend</code>) → medium priority</li>
+      <li>Thread-local (<code>thread_backend=</code>) → low priority</li>
+      <li>Global (<code>backend=</code>) → lowest priority</li>
+    </ul>
+  </li>
+  <li>
+<strong>Helper Method:</strong><br>
+```ruby<br>
+def resolve_effective_backend(explicit_backend = nil)<br>
+  return explicit_backend.to_sym if explicit_backend</li>
+</ol>
+
+<p>ctx = current_backend_context<br>
+  return ctx[:backend] if ctx[:backend]</p>
+
+<p>backend  # Global fallback<br>
+end</p>
+<pre class="code ruby"><code class="ruby">
+**Pros:**
+- Maximum flexibility
+- Explicit always wins (principle of least surprise)
+- Supports both short blocks and long-running threads
+- Backward compatible
+
+**Cons:**
+- Most complex to implement
+- Three levels of configuration to document
+- Users need to understand precedence
+
+---
+
+## Alternative API Suggestions
+
+### Option 4: Backend Instance Pattern
+
+Treat backends as first-class objects:
+
+```ruby
+# Create backend instances
+ffi_backend = TreeHaver::Backend.new(:ffi)
+citrus_backend = TreeHaver::Backend.new(:citrus)
+
+thread1 = Thread.new do
+  parser = ffi_backend.create_parser
+  tree = parser.parse(source)
+end
+
+thread2 = Thread.new do
+  parser = citrus_backend.create_parser
+  tree = parser.parse(source)
+end
+</code></pre>
+
+<p><strong>Pros:</strong></p>
+<ul>
+  <li>Very explicit, no hidden state</li>
+  <li>Easy to pass backends around</li>
+  <li>Natural for dependency injection</li>
+  <li>Each backend can have its own configuration</li>
+</ul>
+
+<p><strong>Cons:</strong></p>
+<ul>
+  <li>Major API break (not backward compatible)</li>
+  <li>More verbose</li>
+  <li>Exposes internal architecture more</li>
+</ul>
+
+<h3 id="option-5-factory-pattern-with-configuration">Option 5: Factory Pattern with Configuration</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># Configure each parser with a backend
+thread1 = Thread.new do
+  config = TreeHaver::Config.new(backend: :ffi)
+  parser = TreeHaver::Parser.create(config)
+  tree = parser.parse(source)
+end
+</code></pre>
+
+<p><strong>Pros:</strong></p>
+<ul>
+  <li>Configuration object pattern (common in Ruby)</li>
+  <li>Can extend with more options easily</li>
+  <li>Clear ownership</li>
+</ul>
+
+<p><strong>Cons:</strong></p>
+<ul>
+  <li>More boilerplate</li>
+  <li>Doesn’t match current simple API style</li>
+</ul>
+
+<hr>
+
+<h2 id="recommended-approach">Recommended Approach</h2>
+
+<h3 id="hybrid-approach-option-3-with-these-specifics">
+<strong>Hybrid Approach (Option 3)</strong> with These Specifics:</h3>
+
+<ol>
+  <li>
+<strong>Implement <code>TreeHaver.with_backend</code> block API</strong>
+    <ul>
+      <li>Primary API for most users</li>
+      <li>Thread-safe by default</li>
+      <li>Clean scope boundaries</li>
+    </ul>
+  </li>
+  <li>
+<strong>Add optional <code>backend:</code> parameter to <code>Parser.new</code> and <code>Language.from_library</code></strong>
+    <ul>
+      <li>For cases where explicit control is needed</li>
+      <li>Overrides any context/global settings</li>
+    </ul>
+  </li>
+  <li>
+<strong>Keep global <code>TreeHaver.backend=</code> for backward compatibility</strong>
+    <ul>
+      <li>Default behavior unchanged</li>
+      <li>Users can migrate incrementally</li>
+    </ul>
+  </li>
+  <li>
+<strong>Use backend-aware language cache keys</strong>
+    <ul>
+      <li>Include <code>effective_backend</code> in cache key</li>
+      <li>Prevents cache collision between backends</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="example-usage">Example Usage:</h3>
+
+<pre class="code language-ruby"><code class="language-ruby"># Simple case: block-based
+thread1 = Thread.new do
+  TreeHaver.with_backend(:ffi) do
+    parser = TreeHaver::Parser.new
+    language = TreeHaver::Language.from_library(path)
+    parser.language = language
+    tree = parser.parse(source)
+  end
+end
+
+# Explicit override case
+thread2 = Thread.new do
+  TreeHaver.with_backend(:citrus) do
+    # Force use of MRI backend even though context says citrus
+    parser = TreeHaver::Parser.new(backend: :mri)
+    # This will raise an error if MRI backend isn&#39;t available
+  end
+end
+
+# Backward compatible case (no threads, global backend)
+TreeHaver.backend = :ffi
+parser = TreeHaver::Parser.new
+tree = parser.parse(source)  # Uses :ffi backend
+</code></pre>
+
+<hr>
+
+<h2 id="implementation-checklist">Implementation Checklist</h2>
+
+<h3 id="phase-1-thread-local-context">Phase 1: Thread-Local Context</h3>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add <code>current_backend_context</code> method (thread-local storage)</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add <code>effective_backend</code> method (context → global fallback)</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add <code>with_backend</code> block method</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update <code>backend_module</code> to use <code>effective_backend</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add tests for thread isolation</li>
+</ul>
+
+<h3 id="phase-2-backend-aware-caching">Phase 2: Backend-Aware Caching</h3>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update <code>LanguageRegistry.fetch</code> cache key to include backend</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add tests for cache isolation between backends</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Document cache behavior</li>
+</ul>
+
+<h3 id="phase-3-explicit-backend-parameters">Phase 3: Explicit Backend Parameters</h3>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add <code>backend:</code> parameter to <code>Parser.new</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add <code>backend:</code> parameter to <code>Language.from_library</code>
+</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Implement <code>resolve_effective_backend</code> helper</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add tests for explicit backend override</li>
+</ul>
+
+<h3 id="phase-4-documentation">Phase 4: Documentation</h3>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Update README with threading examples</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Document backend selection precedence</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add migration guide from global backend</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Add performance notes about cache behavior</li>
+</ul>
+
+<h3 id="phase-5-testing">Phase 5: Testing</h3>
+<ul class="task-list">
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Test concurrent thread safety</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Test nested <code>with_backend</code> blocks</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Test explicit backend parameters</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Test cache isolation</li>
+  <li class="task-list-item">
+<input type="checkbox" class="task-list-item-checkbox" disabled>Test backward compatibility</li>
+</ul>
+
+<hr>
+
+<h2 id="performance-considerations">Performance Considerations</h2>
+
+<h3 id="thread-local-storage">Thread-Local Storage</h3>
+<ul>
+  <li>
+<strong>Overhead:</strong> Minimal - Ruby’s <code>Thread.current[]</code> is a hash lookup</li>
+  <li>
+<strong>Memory:</strong> Each thread gets a small context hash (~2 keys)</li>
+  <li>
+<strong>Impact:</strong> Negligible for typical use</li>
+</ul>
+
+<h3 id="language-cache">Language Cache</h3>
+<ul>
+  <li>
+<strong>Backend-aware keys:</strong> More memory if same grammar loaded with multiple backends</li>
+  <li>
+<strong>Example:</strong> TOML grammar loaded with both FFI and MRI = 2 cache entries</li>
+  <li>
+<strong>Mitigation:</strong> This is expected behavior; users explicitly chose multiple backends</li>
+  <li>
+<strong>Reality:</strong> Most users will use one backend per process</li>
+</ul>
+
+<h3 id="block-overhead">Block Overhead</h3>
+<ul>
+  <li>
+<strong><code>with_backend</code> block:</strong> Try/ensure overhead is minimal</li>
+  <li>
+<strong>Context management:</strong> Simple hash updates</li>
+  <li>
+<strong>Impact:</strong> Unmeasurable in typical parsing workloads</li>
+</ul>
+
+<hr>
+
+<h2 id="security-considerations">Security Considerations</h2>
+
+<p>No new security concerns introduced:</p>
+<ul>
+  <li>Thread-local storage is isolated by Ruby VM</li>
+  <li>No global state pollution between threads</li>
+  <li>Existing <code>PathValidator</code> still applies</li>
+  <li>Backend selection doesn’t expose new attack vectors</li>
+</ul>
+
+<hr>
+
+<h2 id="migration-path">Migration Path</h2>
+
+<h3 id="for-existing-users">For Existing Users</h3>
+
+<p><strong>No breaking changes if:</strong></p>
+<ul>
+  <li>Using global <code>TreeHaver.backend=</code> (still works)</li>
+  <li>Single-threaded applications (behavior unchanged)</li>
+  <li>Not using threads with different backends</li>
+</ul>
+
+<p><strong>Opt-in migration for:</strong></p>
+<ul>
+  <li>Multi-threaded applications</li>
+  <li>Users who want explicit backend per-thread</li>
+  <li>Testing/benchmarking multiple backends</li>
+</ul>
+
+<h3 id="example-migration">Example Migration</h3>
+
+<p><strong>Before:</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">TreeHaver.backend = :ffi
+parser = TreeHaver::Parser.new
+</code></pre>
+
+<p><strong>After (optional):</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">TreeHaver.with_backend(:ffi) do
+  parser = TreeHaver::Parser.new
+end
+</code></pre>
+
+<p>Both work identically in single-threaded code!</p>
+
+<hr>
+
+<h2 id="open-questions">Open Questions</h2>
+
+<ol>
+  <li>
+<strong>Should <code>with_backend</code> accept multiple backends for fallback?</strong>
+    <pre class="code language-ruby"><code class="language-ruby">TreeHaver.with_backend(:mri, :ffi, :citrus) do
+  # Try MRI first, fall back to FFI, then Citrus
+end
+</code></pre>
+  </li>
+  <li>
+<strong>Should we expose the backend context object?</strong>
+    <pre class="code language-ruby"><code class="language-ruby">ctx = TreeHaver.current_backend_context
+ctx.backend  # Read-only access
+</code></pre>
+  </li>
+  <li>
+<strong>Should we add <code>without_backend</code> for testing?</strong>
+    <pre class="code language-ruby"><code class="language-ruby">TreeHaver.without_backend do
+  # Force NotAvailable error for testing
+end
+</code></pre>
+  </li>
+  <li>
+<strong>Should we add backend introspection?</strong>
+    <pre class="code language-ruby"><code class="language-ruby">parser = TreeHaver::Parser.new
+parser.backend  # =&gt; :ffi
+</code></pre>
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The <strong>Hybrid Approach (Option 3)</strong> provides:</p>
+
+<p>✅ <strong>Thread-safety</strong> - Different threads can use different backends<br>
+✅ <strong>Backward compatibility</strong> - Existing code works unchanged<br>
+✅ <strong>Flexibility</strong> - Block-based OR explicit parameter-based<br>
+✅ <strong>Clear precedence</strong> - Explicit &gt; Context &gt; Global<br>
+✅ <strong>Future-proof</strong> - Easy to extend with more configuration</p>
+
+<p>The implementation is straightforward and adds minimal overhead while enabling powerful multi-backend, multi-threaded use cases.</p>
+
+<p><strong>Next Steps:</strong></p>
+<ol>
+  <li>Review this design document</li>
+  <li>Get feedback on API preferences</li>
+  <li>Implement Phase 1 (thread-local context)</li>
+  <li>Add tests</li>
+  <li>Iterate based on real-world usage</li>
+</ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Fri Dec 26 22:30:11 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-4.0.0).
+</div>
+
+    </div>
+  </body>
+</html>
