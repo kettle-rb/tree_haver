@@ -124,5 +124,70 @@ RSpec.describe TreeHaver::Parser, :toml_grammar do
         expect(tree).to be_a(TreeHaver::Tree)
       end
     end
+
+    context "with old_tree parameter" do
+      let(:old_tree_impl) { double("OldTreeImpl") }
+      let(:new_tree_impl) { double("NewTreeImpl", root_node: double(type: "root", child_count: 0)) }
+      let(:impl) { double("ParserImpl", parse_string: new_tree_impl, "language=": nil) }
+
+      let(:fake_backend_module) do
+        mod = Module.new
+        impl_inst = impl
+        parser_class = Class.new do
+          define_method(:initialize) do
+            @impl = impl_inst
+          end
+          attr_reader :impl
+          define_method(:language=) { |lang| @impl.language = lang }
+          define_method(:parse_string) { |old, src| @impl.parse_string(old, src) }
+        end
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).and_return(fake_backend_module)
+      end
+
+      it "extracts impl from Tree wrapper when old_tree has #inner_tree" do
+        parser = described_class.new
+
+        old_tree_wrapper = double("TreeWrapper")
+        allow(old_tree_wrapper).to receive(:respond_to?).and_return(false)
+        allow(old_tree_wrapper).to receive_messages(respond_to?: true, inner_tree: old_tree_impl)
+        allow(old_tree_wrapper).to receive(:respond_to?).with(:inner_tree).and_return(true)
+
+        allow(impl).to receive(:parse_string).with(old_tree_impl, "new source").and_return(new_tree_impl)
+
+        result = parser.parse_string(old_tree_wrapper, "new source")
+        expect(result).to be_a(TreeHaver::Tree)
+      end
+
+      it "extracts impl from legacy wrapper when old_tree has @impl" do
+        parser = described_class.new
+
+        old_tree_wrapper = double("TreeWrapper")
+        allow(old_tree_wrapper).to receive(:respond_to?).and_return(true)
+        allow(old_tree_wrapper).to receive(:respond_to?).with(:inner_tree).and_return(false)
+        allow(old_tree_wrapper).to receive(:instance_variable_get).with(:@inner_tree).and_return(nil)
+        allow(old_tree_wrapper).to receive(:instance_variable_get).with(:@impl).and_return(old_tree_impl)
+
+        allow(impl).to receive(:parse_string).with(old_tree_impl, "new source").and_return(new_tree_impl)
+
+        result = parser.parse_string(old_tree_wrapper, "new source")
+        expect(result).to be_a(TreeHaver::Tree)
+      end
+
+      it "uses old_tree directly when it's not a wrapper" do
+        parser = described_class.new
+
+        allow(old_tree_impl).to receive(:respond_to?).and_return(false)
+
+        allow(impl).to receive(:parse_string).with(old_tree_impl, "new source").and_return(new_tree_impl)
+
+        result = parser.parse_string(old_tree_impl, "new source")
+        expect(result).to be_a(TreeHaver::Tree)
+      end
+    end
   end
 end

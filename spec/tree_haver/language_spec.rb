@@ -118,9 +118,163 @@ RSpec.describe TreeHaver::Language do
     end
   end
 
-  describe ".from_path alias" do
+  describe "::from_path alias" do
     it "is an alias for from_library" do
       expect(described_class.method(:from_path)).to eq(described_class.method(:from_library))
+    end
+  end
+
+  describe "::load" do
+    it "calls from_library with derived symbol" do
+      expect(described_class).to receive(:from_library).with(
+        "/path/to/lib.so",
+        symbol: "tree_sitter_toml",
+        name: "toml",
+        validate: true,
+      )
+      described_class.load("toml", "/path/to/lib.so")
+    end
+
+    it "passes validate option" do
+      expect(described_class).to receive(:from_library).with(
+        "/path/to/lib.so",
+        symbol: "tree_sitter_json",
+        name: "json",
+        validate: false,
+      )
+      described_class.load("json", "/path/to/lib.so", validate: false)
+    end
+  end
+
+  describe "::from_library" do
+    context "with path validation" do
+      it "raises ArgumentError for unsafe path" do
+        expect {
+          described_class.from_library("../../../etc/passwd.so")
+        }.to raise_error(ArgumentError, /Unsafe library path/)
+      end
+
+      it "raises ArgumentError for unsafe symbol" do
+        expect {
+          described_class.from_library("/usr/lib/libtest.so", symbol: "evil; rm -rf /")
+        }.to raise_error(ArgumentError, /Unsafe symbol name/)
+      end
+
+      it "skips validation when validate: false" do
+        allow(TreeHaver).to receive(:backend_module).and_return(nil)
+        # Should not raise ArgumentError for path, but will raise NotAvailable
+        expect {
+          described_class.from_library("../bad/path.so", validate: false)
+        }.to raise_error(TreeHaver::NotAvailable, /No TreeHaver backend/)
+      end
+    end
+
+    context "when no backend available" do
+      before do
+        allow(TreeHaver).to receive(:backend_module).and_return(nil)
+      end
+
+      it "raises NotAvailable" do
+        expect {
+          described_class.from_library("/usr/lib/libtest.so")
+        }.to raise_error(TreeHaver::NotAvailable, /No TreeHaver backend/)
+      end
+    end
+
+    context "when backend available" do
+      let(:fake_backend_module) do
+        mod = Module.new
+        lang_class = Class.new do
+          define_singleton_method(:from_library) { |*_args, **_kwargs| "loaded_language" }
+        end
+        mod.const_set(:Language, lang_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:backend_module).and_return(fake_backend_module)
+        TreeHaver::LanguageRegistry.clear_cache!
+      end
+
+      it "delegates to backend Language.from_library" do
+        result = described_class.from_library("/usr/lib/libtest.so", symbol: "test_sym")
+        expect(result).to eq("loaded_language")
+      end
+
+      it "caches the result" do
+        call_count = 0
+        allow(fake_backend_module::Language).to receive(:from_library).and_wrap_original do |method, *args, **kwargs|
+          call_count += 1
+          method.call(*args, **kwargs)
+        end
+
+        described_class.from_library("/usr/lib/libtest.so", symbol: "test_sym")
+        described_class.from_library("/usr/lib/libtest.so", symbol: "test_sym")
+        expect(call_count).to eq(1)
+      end
+    end
+
+    context "when backend only has from_path (legacy)" do
+      let(:legacy_backend_module) do
+        mod = Module.new
+        lang_class = Class.new do
+          # Only from_path, not from_library
+          define_singleton_method(:from_path) { |_path| "loaded_via_from_path" }
+        end
+        mod.const_set(:Language, lang_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:backend_module).and_return(legacy_backend_module)
+        TreeHaver::LanguageRegistry.clear_cache!
+      end
+
+      it "falls back to from_path when from_library not available" do
+        result = described_class.from_library("/usr/lib/libtest.so", symbol: "test_sym")
+        expect(result).to eq("loaded_via_from_path")
+      end
+    end
+  end
+
+  describe "method_missing edge cases" do
+    context "with Citrus backend" do
+      before do
+        TreeHaver.backend = :citrus
+      end
+
+      after do
+        TreeHaver.backend = :auto
+      end
+
+      it "raises NoMethodError when no registration found" do
+        expect {
+          described_class.unregistered_lang_citrus_test
+        }.to raise_error(NoMethodError)
+      end
+    end
+
+    context "with Citrus-only registration and tree-sitter backend" do
+      before do
+        TreeHaver.backend = :mri
+        # Register only for Citrus, not tree-sitter - use unique name
+        TreeHaver::LanguageRegistry.register(
+          :test_lang_citrus_only,
+          :citrus,
+          grammar_module: double("Grammar", parse: true),
+        )
+      end
+
+      after do
+        TreeHaver.backend = :auto
+      end
+
+      it "falls back to Citrus when tree-sitter registration not available" do
+        # With our new fallback behavior, when only Citrus is registered
+        # and tree-sitter backend is active, we fall back to Citrus
+        language = described_class.test_lang_citrus_only
+        expect(language).to be_a(TreeHaver::Backends::Citrus::Language)
+      end
     end
   end
 end

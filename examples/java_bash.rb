@@ -89,4 +89,3 @@ else
   row_errors.each { |err| puts "  - #{err}" }
   exit 1
 end
-

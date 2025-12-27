@@ -766,8 +766,6 @@ module TreeHaver
         # Check if already registered and loadable
         if registered_language(name)
           Language.public_send(name, path: library_path, symbol: symbol)
-        else
-          nil
         end
       rescue NotAvailable, ArgumentError, LoadError
         nil

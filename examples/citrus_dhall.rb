@@ -140,7 +140,7 @@ begin
   else
     puts "✗ Row number issues detected:"
     row_errors.each { |err| puts "  - #{err}" }
-    exit 1
+    exit(1)
   end
   puts
 

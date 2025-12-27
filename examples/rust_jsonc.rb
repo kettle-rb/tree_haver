@@ -55,7 +55,11 @@ puts
 
 begin
   parser = TreeHaver::Parser.new
-  parser.language = TreeHaver::Language.jsonc rescue TreeHaver::Language.json
+  parser.language = begin
+    TreeHaver::Language.jsonc
+  rescue
+    TreeHaver::Language.json
+  end
   tree = parser.parse(jsonc_source)
 
   root = tree.root_node
@@ -93,7 +97,7 @@ begin
   else
     puts "✗ Row number issues detected:"
     row_errors.each { |err| puts "  - #{err}" }
-    exit 1
+    exit(1)
   end
 rescue => e
   puts "✗ Version compatibility error: #{e.message}"

@@ -76,8 +76,10 @@ module TreeHaver
             # FFI struct representation of TSPoint
             # Mirrors the C struct layout: struct { uint32_t row; uint32_t column; }
             ts_point_class = Class.new(::FFI::Struct) do
-              layout :row, :uint32,
-                :column, :uint32
+              layout :row,
+                :uint32,
+                :column,
+                :uint32
             end
             const_set(:TSPoint, ts_point_class)
             typedef(ts_point_class.by_value, :ts_point)

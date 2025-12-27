@@ -24,7 +24,7 @@ platform :mri do
   gem "ruby_tree_sitter", require: false # DO NOT LOAD, because conflicts with FFI
   # Rust Backend
   gem "tree_stump",
-      # path: "../../vendor/tree_stump"
-      github: "pboling/tree_stump",
-      branch: "tree_haver"
+    # path: "../../vendor/tree_stump"
+    github: "pboling/tree_stump",
+    branch: "tree_haver"
 end

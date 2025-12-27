@@ -57,7 +57,11 @@ puts "Backend: #{TreeHaver.backend_module}"
 puts
 
 parser = TreeHaver::Parser.new
-parser.language = TreeHaver::Language.jsonc rescue TreeHaver::Language.json
+parser.language = begin
+  TreeHaver::Language.jsonc
+rescue
+  TreeHaver::Language.json
+end
 tree = parser.parse(jsonc_source)
 
 root = tree.root_node
@@ -97,4 +101,3 @@ else
   row_errors.each { |err| puts "  - #{err}" }
   exit 1
 end
-
