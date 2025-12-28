@@ -108,7 +108,7 @@ GEM
       reline (>= 0.4.2)
     json (2.18.0)
     kettle-dev (1.2.4)
-    kettle-soup-cover (1.0.10)
+    kettle-soup-cover (1.1.0)
       simplecov (~> 0.22)
       simplecov-cobertura (~> 3.0)
       simplecov-console (~> 0.9, >= 0.9.3)
@@ -116,7 +116,7 @@ GEM
       simplecov-lcov (~> 0.8)
       simplecov-rcov (~> 0.3, >= 0.3.7)
       simplecov_json_formatter (~> 0.1, >= 0.1.4)
-      version_gem (~> 1.1, >= 1.1.8)
+      version_gem (~> 1.1, >= 1.1.9)
     kettle-test (1.0.7)
       appraisal2 (~> 3.0)
       backports (~> 3.0)
@@ -138,22 +138,18 @@ GEM
     markly (0.15.1)
     matrix (0.4.3)
     memo_wise (1.13.0)
-    mini_portile2 (2.8.9)
     mutex_m (0.3.0)
-    nokogiri (1.18.10)
-      mini_portile2 (~> 2.8.2)
+    nokogiri (1.19.0-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.18.10-aarch64-linux-gnu)
+    nokogiri (1.19.0-aarch64-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.18.10-aarch64-linux-musl)
+    nokogiri (1.19.0-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.18.10-arm64-darwin)
+    nokogiri (1.19.0-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.18.10-x86_64-darwin)
+    nokogiri (1.19.0-x86_64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.18.10-x86_64-linux-gnu)
-      racc (~> 1.4)
-    nokogiri (1.18.10-x86_64-linux-musl)
+    nokogiri (1.19.0-x86_64-linux-musl)
       racc (~> 1.4)
     oppen (1.0.0)
     ostruct (0.6.3)
@@ -420,7 +416,7 @@ DEPENDENCIES
   gitmoji-regex (~> 1.0, >= 1.0.3)
   irb (~> 1.15, >= 1.15.2)
   kettle-dev (~> 1.2)
-  kettle-soup-cover (~> 1.0, >= 1.0.10)
+  kettle-soup-cover (~> 1.1, ~> 1.0, >= 1.1.0, >= 1.0.10)
   kettle-test (~> 1.0, >= 1.0.6)
   kramdown (~> 2.5, >= 2.5.1)
   kramdown-parser-gfm (~> 1.1)
@@ -499,7 +495,7 @@ CHECKSUMS
   irb (1.16.0) sha256=2abe56c9ac947cdcb2f150572904ba798c1e93c890c256f8429981a7675b0806
   json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
   kettle-dev (1.2.4) sha256=71373c67fe7eb0a9656e70dfd10cf226a15083b6d1be18dafcb5360f21ee98b6
-  kettle-soup-cover (1.0.10) sha256=2674fe2d87cbe2961847396f4f8d1e5c0165ae9999ffa8e94e8491215e0b8c3d
+  kettle-soup-cover (1.1.0) sha256=aba4e3b02ce5b2c0cac3f6a96659f0b1d901faeb8023f2762f2c20f80eb180bf
   kettle-test (1.0.7) sha256=16fcb8b1bc12366f443d0ec9d125c1865249865c7afff7ef856e602436d4cdc7
   kramdown (2.5.1) sha256=87bbb6abd9d3cebe4fc1f33e367c392b4500e6f8fa19dd61c0972cf4afe7368c
   kramdown-parser-gfm (1.1.0) sha256=fb39745516427d2988543bf01fc4cf0ab1149476382393e0e9c48592f6581729
@@ -509,15 +505,13 @@ CHECKSUMS
   markly (0.15.1) sha256=d8aeb4e0b26e1c2c45f579b2ed8aa21b20856a8295dc6695121b9f492eee1433
   matrix (0.4.3) sha256=a0d5ab7ddcc1973ff690ab361b67f359acbb16958d1dc072b8b956a286564c5b
   memo_wise (1.13.0) sha256=30220c38c4cef410849bc73553c58664dc2c91c6379e4a1df22aea02358b716b
-  mini_portile2 (2.8.9) sha256=0cd7c7f824e010c072e33f68bc02d85a00aeb6fce05bb4819c03dfd3c140c289
   mutex_m (0.3.0) sha256=cfcb04ac16b69c4813777022fdceda24e9f798e48092a2b817eb4c0a782b0751
-  nokogiri (1.18.10) sha256=d5cc0731008aa3b3a87b361203ea3d19b2069628cb55e46ac7d84a0445e69cc1
-  nokogiri (1.18.10-aarch64-linux-gnu) sha256=7fb87235d729c74a2be635376d82b1d459230cc17c50300f8e4fcaabc6195344
-  nokogiri (1.18.10-aarch64-linux-musl) sha256=7e74e58314297cc8a8f1b533f7212d1999dbe2639a9ee6d97b483ea2acc18944
-  nokogiri (1.18.10-arm64-darwin) sha256=c2b0de30770f50b92c9323fa34a4e1cf5a0af322afcacd239cd66ee1c1b22c85
-  nokogiri (1.18.10-x86_64-darwin) sha256=536e74bed6db2b5076769cab5e5f5af0cd1dccbbd75f1b3e1fa69d1f5c2d79e2
-  nokogiri (1.18.10-x86_64-linux-gnu) sha256=ff5ba26ba2dbce5c04b9ea200777fd225061d7a3930548806f31db907e500f72
-  nokogiri (1.18.10-x86_64-linux-musl) sha256=0651fccf8c2ebbc2475c8b1dfd7ccac3a0a6d09f8a41b72db8c21808cb483385
+  nokogiri (1.19.0-aarch64-linux-gnu) sha256=11a97ecc3c0e7e5edcf395720b10860ef493b768f6aa80c539573530bc933767
+  nokogiri (1.19.0-aarch64-linux-musl) sha256=eb70507f5e01bc23dad9b8dbec2b36ad0e61d227b42d292835020ff754fb7ba9
+  nokogiri (1.19.0-arm64-darwin) sha256=0811dfd936d5f6dd3f6d32ef790568bf29b2b7bead9ba68866847b33c9cf5810
+  nokogiri (1.19.0-x86_64-darwin) sha256=1dad56220b603a8edb9750cd95798bffa2b8dd9dd9aa47f664009ee5b43e3067
+  nokogiri (1.19.0-x86_64-linux-gnu) sha256=f482b95c713d60031d48c44ce14562f8d2ce31e3a9e8dd0ccb131e9e5a68b58c
+  nokogiri (1.19.0-x86_64-linux-musl) sha256=1c4ca6b381622420073ce6043443af1d321e8ed93cc18b08e2666e5bd02ffae4
   oppen (1.0.0) sha256=379bf0b35c5e87c5f4139927721fd6c9f561e344a73ce3f658726a609034ddee
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   paint (2.3.0) sha256=327d623e4038619d5bd99ae5db07973859cd78400c7f0329eea283cef8e83be5
