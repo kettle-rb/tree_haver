@@ -88,6 +88,7 @@ begin
   # Set unique command name at execution time for SimpleCov merging
   desc("Set SimpleCov command name for FFI specs")
   task(:set_ffi_command_name) do
+    ENV["MAX_ROWS"] = "0"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "FFI Specs"
   end
   Rake::Task[:ffi_specs].enhance([:set_ffi_command_name])
@@ -99,6 +100,7 @@ begin
   end
   desc("Set SimpleCov command name for backend matrix specs")
   task(:set_matrix_command_name) do
+    ENV["MAX_ROWS"] = "0"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "Backend Matrix Specs"
   end
   Rake::Task[:backend_matrix_specs].enhance([:set_matrix_command_name])
@@ -111,6 +113,7 @@ begin
   end
   desc("Set SimpleCov command name for remaining specs")
   task(:set_remaining_command_name) do
+    ENV["MAX_ROWS"] = "0"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "Remaining Specs"
   end
   Rake::Task[:remaining_specs].enhance([:set_remaining_command_name])
@@ -122,6 +125,7 @@ begin
   end
   desc("Set SimpleCov command name for all specs")
   task(:set_all_command_name) do
+    ENV["MAX_ROWS"] = "3"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "All Specs"
   end
   Rake::Task[:all_specs].enhance([:set_all_command_name])
