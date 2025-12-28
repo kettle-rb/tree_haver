@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [3.1.1] - 2025-12-28
+
+- TAG: [v3.1.1][3.1.1t]
+- COVERAGE: 87.44% -- 2152/2461 lines in 22 files
+- BRANCH COVERAGE: 66.67% -- 710/1065 branches in 22 files
+- 90.02% documented
+
+### Added
+
 - **`TreeHaver::RSpec::DependencyTags`**: Shared RSpec dependency detection for the entire gem family
   - New `lib/tree_haver/rspec.rb` entry point - other gems can simply `require "tree_haver/rspec"`
   - Detects all TreeHaver backends: FFI, MRI, Rust, Java, Prism, Psych, Commonmarker, Markly, Citrus
@@ -55,10 +74,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - **Canonical sibling method name**: All backends now use `prev_sibling` as the canonical method name (not `previous_sibling`)
   - Matches the universal `TreeHaver::Node` API
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - **Backend conflict detection**: Fixed bug where MRI backend usage wasn't being recorded during availability checks
@@ -68,8 +83,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - **GrammarFinder#not_found_message**: Improved error message when grammar file exists but no tree-sitter runtime is available
   - Now suggests adding `ruby_tree_sitter`, `ffi`, or `tree_stump` gem to Gemfile
   - Clearer guidance for users who have grammar files but are missing the Ruby tree-sitter bindings
-
-### Security
 
 ## [3.1.0] - 2025-12-18
 
@@ -406,7 +419,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.1.1...HEAD
+[3.1.1]: https://github.com/kettle-rb/tree_haver/compare/v3.1.0...v3.1.1
+[3.1.1t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.1.1
 [3.1.0]: https://github.com/kettle-rb/tree_haver/compare/v3.0.0...v3.1.0
 [3.1.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.1.0
 [3.0.0]: https://github.com/kettle-rb/tree_haver/compare/v2.0.0...v3.0.0
