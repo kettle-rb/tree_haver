@@ -88,6 +88,7 @@ begin
   # Set unique command name at execution time for SimpleCov merging
   desc("Set SimpleCov command name for FFI specs")
   task(:set_ffi_command_name) do
+    ENV["K_SOUP_COV_MIN_HARD"] = "false"
     ENV["MAX_ROWS"] = "0"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "FFI Specs"
   end
@@ -100,6 +101,7 @@ begin
   end
   desc("Set SimpleCov command name for backend matrix specs")
   task(:set_matrix_command_name) do
+    ENV["K_SOUP_COV_MIN_HARD"] = "false"
     ENV["MAX_ROWS"] = "0"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "Backend Matrix Specs"
   end
@@ -113,6 +115,7 @@ begin
   end
   desc("Set SimpleCov command name for remaining specs")
   task(:set_remaining_command_name) do
+    ENV["K_SOUP_COV_MIN_HARD"] = "false"
     ENV["MAX_ROWS"] = "0"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "Remaining Specs"
   end
