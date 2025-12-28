@@ -331,12 +331,15 @@ module TreeHaver
 
       # Check if env var is set but rejected
       env_value = ENV[env_var_name]
-      msg += if env_value && @env_rejection_reason
-        " #{env_var_name} is set to #{env_value.inspect} but #{@env_rejection_reason}."
+      if env_value && @env_rejection_reason
+        msg += " #{env_var_name} is set to #{env_value.inspect} but #{@env_rejection_reason}."
+      elsif env_value && File.exist?(env_value) && !self.class.tree_sitter_runtime_usable?
+        msg += " #{env_var_name} is set and file exists, but no tree-sitter runtime is available. " \
+               "Add ruby_tree_sitter, ffi, or tree_stump gem to your Gemfile."
       elsif env_value
-        " #{env_var_name} is set but was not used (file may have been removed)."
+        msg += " #{env_var_name} is set but was not used (file may have been removed)."
       else
-        " Searched: #{search_paths.join(", ")}."
+        msg += " Searched: #{search_paths.join(", ")}."
       end
 
       msg + " Install tree-sitter-#{@language_name} or set #{env_var_name} to a valid path."

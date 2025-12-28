@@ -41,6 +41,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **GrammarFinder#not_found_message**: Improved error message when grammar file exists but no tree-sitter runtime is available
+  - Now suggests adding `ruby_tree_sitter`, `ffi`, or `tree_stump` gem to Gemfile
+  - Clearer guidance for users who have grammar files but are missing the Ruby tree-sitter bindings
+
 ### Security
 
 ## [3.1.0] - 2025-12-18
