@@ -108,7 +108,7 @@ GEM
       reline (>= 0.4.2)
     json (2.18.0)
     kettle-dev (1.2.4)
-    kettle-soup-cover (1.1.0)
+    kettle-soup-cover (1.1.1)
       simplecov (~> 0.22)
       simplecov-cobertura (~> 3.0)
       simplecov-console (~> 0.9, >= 0.9.3)
@@ -416,7 +416,7 @@ DEPENDENCIES
   gitmoji-regex (~> 1.0, >= 1.0.3)
   irb (~> 1.15, >= 1.15.2)
   kettle-dev (~> 1.2)
-  kettle-soup-cover (~> 1.1, ~> 1.0, >= 1.1.0, >= 1.0.10)
+  kettle-soup-cover (~> 1.1, ~> 1.0, >= 1.1.1, >= 1.0.10)
   kettle-test (~> 1.0, >= 1.0.6)
   kramdown (~> 2.5, >= 2.5.1)
   kramdown-parser-gfm (~> 1.1)
@@ -495,7 +495,7 @@ CHECKSUMS
   irb (1.16.0) sha256=2abe56c9ac947cdcb2f150572904ba798c1e93c890c256f8429981a7675b0806
   json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
   kettle-dev (1.2.4) sha256=71373c67fe7eb0a9656e70dfd10cf226a15083b6d1be18dafcb5360f21ee98b6
-  kettle-soup-cover (1.1.0) sha256=aba4e3b02ce5b2c0cac3f6a96659f0b1d901faeb8023f2762f2c20f80eb180bf
+  kettle-soup-cover (1.1.1) sha256=2303885a9d8485d8d43cb250bcf73570f6b6fb997526beeaef3ef54e3501d445
   kettle-test (1.0.7) sha256=16fcb8b1bc12366f443d0ec9d125c1865249865c7afff7ef856e602436d4cdc7
   kramdown (2.5.1) sha256=87bbb6abd9d3cebe4fc1f33e367c392b4500e6f8fa19dd61c0972cf4afe7368c
   kramdown-parser-gfm (1.1.0) sha256=fb39745516427d2988543bf01fc4cf0ab1149476382393e0e9c48592f6581729

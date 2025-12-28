@@ -11,20 +11,26 @@ module TreeHaver
   # switching, benchmarking, and fallback scenarios.
   #
   # Registration structure:
+  # ```ruby
   # @registrations = {
   #   toml: {
   #     tree_sitter: { path: "/path/to/lib.so", symbol: "tree_sitter_toml" },
   #     citrus: { grammar_module: TomlRB::Document, gem_name: "toml-rb" }
   #   }
   # }
+  # ```
   #
   # @example Register tree-sitter grammar
+  # ```ruby
   #   TreeHaver::LanguageRegistry.register(:toml, :tree_sitter,
   #     path: "/path/to/lib.so", symbol: "tree_sitter_toml")
+  # ```
   #
   # @example Register Citrus grammar
+  # ```ruby
   #   TreeHaver::LanguageRegistry.register(:toml, :citrus,
   #     grammar_module: TomlRB::Document, gem_name: "toml-rb")
+  # ```
   #
   # @api private
   module LanguageRegistry
