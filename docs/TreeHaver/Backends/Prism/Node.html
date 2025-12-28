@@ -556,7 +556,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#next_sibling-instance_method" title="#next_sibling (instance method)">#<strong>next_sibling</strong>  &#x21d2; nil </a>
+      <a href="#next_sibling-instance_method" title="#next_sibling (instance method)">#<strong>next_sibling</strong>  &#x21d2; void </a>
     
 
     
@@ -579,7 +579,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#parent-instance_method" title="#parent (instance method)">#<strong>parent</strong>  &#x21d2; nil </a>
+      <a href="#parent-instance_method" title="#parent (instance method)">#<strong>parent</strong>  &#x21d2; void </a>
     
 
     
@@ -602,7 +602,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#prev_sibling-instance_method" title="#prev_sibling (instance method)">#<strong>prev_sibling</strong>  &#x21d2; nil </a>
+      <a href="#prev_sibling-instance_method" title="#prev_sibling (instance method)">#<strong>prev_sibling</strong>  &#x21d2; void </a>
     
 
     
@@ -1007,16 +1007,16 @@ like <code>receiver</code>, <code>message</code>, <code>arguments</code>, etc.</
       <pre class="lines">
 
 
+614
 615
 616
 617
 618
 619
-620
-621</pre>
+620</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 615</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 614</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_method_missing'>method_missing</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='op'>&amp;.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
@@ -1940,12 +1940,12 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
+583
 584
-585
-586</pre>
+585</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 584</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 583</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#&lt;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'> type=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type'>type</span><span class='embexpr_end'>}</span><span class='tstring_content'> bytes=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='embexpr_end'>}</span><span class='tstring_content'>..</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_end_byte'>end_byte</span><span class='embexpr_end'>}</span><span class='tstring_content'>&gt;</span><span class='tstring_end'>&quot;</span></span>
@@ -2077,7 +2077,7 @@ This method tries to call that accessor.</p>
       <div class="method_details ">
   <h3 class="signature " id="next_sibling-instance_method">
   
-    #<strong>next_sibling</strong>  &#x21d2; <tt>nil</tt> 
+    #<strong>next_sibling</strong>  &#x21d2; <tt>void</tt> 
   
 
   
@@ -2089,29 +2089,26 @@ This method tries to call that accessor.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-
-  <div class="note notetag">
-    <strong>Note:</strong>
-    <div class='inline'><p>Prism nodes don’t have sibling references.</p>
-</div>
-  </div>
-
-<p>Get next sibling</p>
+<p class="note returns_void">This method returns an undefined value.</p><p>Get next sibling</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
+<p class="tag_title">Raises:</p>
+<ul class="raise">
   
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>NotImplementedError</tt>)</span>
       
       
+      
+        &mdash;
+        <div class='inline'><p>Prism nodes don’t have sibling references</p>
+</div>
       
     </li>
   
@@ -2123,15 +2120,15 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
+568
 569
-570
-571</pre>
+570</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 569</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 568</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
-  <span class='kw'>nil</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Prism backend does not support sibling navigation</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2141,7 +2138,7 @@ This method tries to call that accessor.</p>
       <div class="method_details ">
   <h3 class="signature " id="parent-instance_method">
   
-    #<strong>parent</strong>  &#x21d2; <tt>nil</tt> 
+    #<strong>parent</strong>  &#x21d2; <tt>void</tt> 
   
 
   
@@ -2153,30 +2150,26 @@ This method tries to call that accessor.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-
-  <div class="note notetag">
-    <strong>Note:</strong>
-    <div class='inline'><p>Prism nodes don’t have built-in parent references.<br />
-This always returns nil. Use tree traversal instead.</p>
-</div>
-  </div>
-
-<p>Get the parent node</p>
+<p class="note returns_void">This method returns an undefined value.</p><p>Get the parent node</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
+<p class="tag_title">Raises:</p>
+<ul class="raise">
   
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>NotImplementedError</tt>)</span>
       
       
+      
+        &mdash;
+        <div class='inline'><p>Prism nodes don’t have parent references</p>
+</div>
       
     </li>
   
@@ -2188,16 +2181,16 @@ This always returns nil. Use tree traversal instead.</p>
       <pre class="lines">
 
 
+560
 561
-562
-563</pre>
+562</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 561</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 560</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
-  <span class='kw'>nil</span>  <span class='comment'># Prism doesn&#39;t track parent references
-</span><span class='kw'>end</span></pre>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Prism backend does not support parent navigation</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -2206,7 +2199,7 @@ This always returns nil. Use tree traversal instead.</p>
       <div class="method_details ">
   <h3 class="signature " id="prev_sibling-instance_method">
   
-    #<strong>prev_sibling</strong>  &#x21d2; <tt>nil</tt> 
+    #<strong>prev_sibling</strong>  &#x21d2; <tt>void</tt> 
   
 
   
@@ -2218,29 +2211,26 @@ This always returns nil. Use tree traversal instead.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-
-  <div class="note notetag">
-    <strong>Note:</strong>
-    <div class='inline'><p>Prism nodes don’t have sibling references.</p>
-</div>
-  </div>
-
-<p>Get previous sibling</p>
+<p class="note returns_void">This method returns an undefined value.</p><p>Get previous sibling</p>
 
 
   </div>
 </div>
 <div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
+<p class="tag_title">Raises:</p>
+<ul class="raise">
   
     <li>
       
       
-        <span class='type'>(<tt>nil</tt>)</span>
+        <span class='type'>(<tt>NotImplementedError</tt>)</span>
       
       
+      
+        &mdash;
+        <div class='inline'><p>Prism nodes don’t have sibling references</p>
+</div>
       
     </li>
   
@@ -2252,15 +2242,15 @@ This always returns nil. Use tree traversal instead.</p>
       <pre class="lines">
 
 
+576
 577
-578
-579</pre>
+578</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 577</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 576</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
-  <span class='kw'>nil</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Prism backend does not support sibling navigation</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2345,13 +2335,13 @@ This always returns nil. Use tree traversal instead.</p>
       <pre class="lines">
 
 
+599
 600
 601
-602
-603</pre>
+602</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 600</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 599</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_respond_to_missing?'>respond_to_missing?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -2809,12 +2799,12 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
+590
 591
-592
-593</pre>
+592</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 591</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 590</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='id identifier rubyid_text'>text</span>
@@ -2907,7 +2897,7 @@ Example: CallNode → “call_node”, ProgramNode → “program_node”</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Dec 26 22:30:13 2025 by
+  Generated on Sat Dec 27 23:59:56 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

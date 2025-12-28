@@ -322,9 +322,6 @@ RSpec.describe "Thread-local backend selection" do
     end
 
     it "returns correct module for each backend type (respecting conflicts)" do
-      mri_loaded = defined?(TreeSitter::Parser)
-      mri_recorded = TreeHaver.backends_used.include?(:mri)
-
       {
         mri: TreeHaver::Backends::MRI,
         rust: TreeHaver::Backends::Rust,
@@ -332,8 +329,10 @@ RSpec.describe "Thread-local backend selection" do
         java: TreeHaver::Backends::Java,
         citrus: TreeHaver::Backends::Citrus,
       }.each do |name, expected_module|
-        # Skip FFI test if MRI is loaded AND recorded AND protection is enabled
-        if name == :ffi && mri_loaded && mri_recorded && TreeHaver.backend_protect?
+        # Check FFI conflict: MRI loaded (native lib present) AND recorded in backends_used AND protection enabled
+        # Note: mri_recorded must be checked here, not at test start, because it may have been
+        # recorded during dependency detection (TreeHaver::RSpec::DependencyTags.mri_backend_available?)
+        if name == :ffi && defined?(TreeSitter::Parser) && TreeHaver.backends_used.include?(:mri) && TreeHaver.backend_protect?
           expect {
             TreeHaver.resolve_backend_module(name)
           }.to raise_error(TreeHaver::BackendConflict)

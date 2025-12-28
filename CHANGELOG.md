@@ -20,6 +20,18 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- **`TreeHaver::RSpec::DependencyTags`**: Shared RSpec dependency detection for the entire gem family
+  - New `lib/tree_haver/rspec.rb` entry point - other gems can simply `require "tree_haver/rspec"`
+  - Detects all TreeHaver backends: FFI, MRI, Rust, Java, Prism, Psych, Commonmarker, Markly, Citrus
+  - Ruby engine detection: `jruby?`, `truffleruby?`, `mri?`
+  - Language grammar detection: `tree_sitter_bash_available?`, `tree_sitter_toml_available?`, `tree_sitter_json_available?`, `tree_sitter_jsonc_available?`
+  - Inner-merge dependency detection: `toml_merge_available?`, `json_merge_available?`, `prism_merge_available?`, `psych_merge_available?`
+  - Composite checks: `any_toml_backend_available?`, `any_markdown_backend_available?`
+  - Records MRI backend usage when checking availability (critical for FFI conflict detection)
+  - Configures RSpec exclusion filters for all dependency tags automatically
+  - Supports debug output via `TREE_HAVER_DEBUG=1` environment variable
+  - Comprehensive documentation with usage examples
+
 - **`TreeHaver.parser_for`**: New high-level factory method for creating configured parsers
   - Handles all language loading complexity in one call
   - Auto-discovers tree-sitter grammar via `GrammarFinder`
@@ -35,11 +47,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- **Backend sibling navigation**: Backends that don't support sibling/parent navigation now raise `NotImplementedError` instead of returning `nil`
+  - This distinguishes "not implemented" from "no sibling exists"
+  - Affected backends: Prism, Psych
+  - Affected methods: `next_sibling`, `prev_sibling`, `parent`
+
+- **Canonical sibling method name**: All backends now use `prev_sibling` as the canonical method name (not `previous_sibling`)
+  - Matches the universal `TreeHaver::Node` API
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- **Backend conflict detection**: Fixed bug where MRI backend usage wasn't being recorded during availability checks
+  - `mri_backend_available?` now calls `TreeHaver.record_backend_usage(:mri)` after successfully loading ruby_tree_sitter
+  - This ensures FFI conflict detection works correctly even when MRI is loaded indirectly
 
 - **GrammarFinder#not_found_message**: Improved error message when grammar file exists but no tree-sitter runtime is available
   - Now suggests adding `ruby_tree_sitter`, `ffi`, or `tree_stump` gem to Gemfile

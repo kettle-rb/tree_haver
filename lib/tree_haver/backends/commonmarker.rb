@@ -429,7 +429,7 @@ module TreeHaver
 
         # Get the previous sibling
         # @return [Node, nil]
-        def previous_sibling
+        def prev_sibling
           sibling = begin
             @inner_node.previous_sibling
           rescue

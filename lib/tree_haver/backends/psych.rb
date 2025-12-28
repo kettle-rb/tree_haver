@@ -447,6 +447,30 @@ module TreeHaver
           "#<TreeHaver::Backends::Psych::Node type=#{type} children=#{child_count}>"
         end
 
+        # Get the next sibling
+        #
+        # @raise [NotImplementedError] Psych nodes don't have sibling references
+        # @return [void]
+        def next_sibling
+          raise NotImplementedError, "Psych backend does not support sibling navigation"
+        end
+
+        # Get the previous sibling
+        #
+        # @raise [NotImplementedError] Psych nodes don't have sibling references
+        # @return [void]
+        def prev_sibling
+          raise NotImplementedError, "Psych backend does not support sibling navigation"
+        end
+
+        # Get the parent node
+        #
+        # @raise [NotImplementedError] Psych nodes don't have parent references
+        # @return [void]
+        def parent
+          raise NotImplementedError, "Psych backend does not support parent navigation"
+        end
+
         # Psych-specific: Get the anchor name for Alias/anchored nodes
         #
         # @return [String, nil] Anchor name

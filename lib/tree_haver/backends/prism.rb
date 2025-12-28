@@ -555,27 +555,26 @@ module TreeHaver
 
         # Get the parent node
         #
-        # @note Prism nodes don't have built-in parent references.
-        #       This always returns nil. Use tree traversal instead.
-        # @return [nil]
+        # @raise [NotImplementedError] Prism nodes don't have parent references
+        # @return [void]
         def parent
-          nil  # Prism doesn't track parent references
+          raise NotImplementedError, "Prism backend does not support parent navigation"
         end
 
         # Get next sibling
         #
-        # @note Prism nodes don't have sibling references.
-        # @return [nil]
+        # @raise [NotImplementedError] Prism nodes don't have sibling references
+        # @return [void]
         def next_sibling
-          nil
+          raise NotImplementedError, "Prism backend does not support sibling navigation"
         end
 
         # Get previous sibling
         #
-        # @note Prism nodes don't have sibling references.
-        # @return [nil]
+        # @raise [NotImplementedError] Prism nodes don't have sibling references
+        # @return [void]
         def prev_sibling
-          nil
+          raise NotImplementedError, "Prism backend does not support sibling navigation"
         end
 
         # String representation for debugging

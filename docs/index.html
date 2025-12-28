@@ -388,7 +388,7 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <td><a href="https://github.com/kettle-rb/jsonc-merge">jsonc-merge</a></td>
       <td>JSONC</td>
       <td>
-<a href="https://github.com/tree-sitter/tree-sitter-json">tree-sitter-json</a> (via tree_haver)</td>
+<a href="https://gitlab.com/WhyNotHugo/tree-sitter-jsonc">tree-sitter-jsonc</a> (via tree_haver)</td>
       <td>⚠️ Proof of concept; Smart merge for JSON with Comments</td>
     </tr>
     <tr>
@@ -2111,6 +2111,147 @@ TOML
 package_name = extract_package_name(toml)
 </code></pre>
 
+<h3 id="-rspec-integration">🧪 RSpec Integration</h3>
+
+<p>TreeHaver provides shared RSpec helpers for conditional test execution based on dependency availability. This is useful for testing code that uses optional backends.</p>
+
+<pre class="code language-ruby"><code class="language-ruby"># In your spec_helper.rb
+require &quot;tree_haver/rspec&quot;
+</code></pre>
+
+<p>This automatically configures RSpec with exclusion filters for all TreeHaver dependencies. Use tags to conditionally run tests:</p>
+
+<pre class="code language-ruby"><code class="language-ruby"># Runs only when FFI backend is available
+it &quot;parses with FFI&quot;, :ffi do
+  # ...
+end
+
+# Runs only when ruby_tree_sitter gem is available
+it &quot;uses MRI backend&quot;, :mri_backend do
+  # ...
+end
+
+# Runs only when tree-sitter-toml grammar works
+it &quot;parses TOML&quot;, :tree_sitter_toml do
+  # ...
+end
+
+# Runs only when any markdown backend is available
+it &quot;parses markdown&quot;, :markdown_backend do
+  # ...
+end
+</code></pre>
+
+<p><strong>Available Tags:</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tag</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>:ffi</code></td>
+      <td>FFI backend available (dynamic check)</td>
+    </tr>
+    <tr>
+      <td><code>:mri_backend</code></td>
+      <td>ruby_tree_sitter gem available</td>
+    </tr>
+    <tr>
+      <td><code>:rust_backend</code></td>
+      <td>tree_stump gem available</td>
+    </tr>
+    <tr>
+      <td><code>:java_backend</code></td>
+      <td>Java backend available (JRuby)</td>
+    </tr>
+    <tr>
+      <td><code>:prism_backend</code></td>
+      <td>Prism gem available</td>
+    </tr>
+    <tr>
+      <td><code>:psych_backend</code></td>
+      <td>Psych available (stdlib)</td>
+    </tr>
+    <tr>
+      <td><code>:commonmarker</code></td>
+      <td>commonmarker gem available</td>
+    </tr>
+    <tr>
+      <td><code>:markly</code></td>
+      <td>markly gem available</td>
+    </tr>
+    <tr>
+      <td><code>:citrus_toml</code></td>
+      <td>toml-rb with Citrus grammar available</td>
+    </tr>
+    <tr>
+      <td><code>:jruby</code></td>
+      <td>Running on JRuby</td>
+    </tr>
+    <tr>
+      <td><code>:truffleruby</code></td>
+      <td>Running on TruffleRuby</td>
+    </tr>
+    <tr>
+      <td><code>:mri</code></td>
+      <td>Running on MRI (CRuby)</td>
+    </tr>
+    <tr>
+      <td><code>:tree_sitter_bash</code></td>
+      <td>Bash grammar available and working</td>
+    </tr>
+    <tr>
+      <td><code>:tree_sitter_toml</code></td>
+      <td>TOML grammar available and working</td>
+    </tr>
+    <tr>
+      <td><code>:tree_sitter_json</code></td>
+      <td>JSON grammar available and working</td>
+    </tr>
+    <tr>
+      <td><code>:tree_sitter_jsonc</code></td>
+      <td>JSONC grammar available and working</td>
+    </tr>
+    <tr>
+      <td><code>:toml_backend</code></td>
+      <td>Any TOML backend available</td>
+    </tr>
+    <tr>
+      <td><code>:markdown_backend</code></td>
+      <td>Any markdown backend available</td>
+    </tr>
+    <tr>
+      <td><code>:toml_merge</code></td>
+      <td>toml-merge gem functional</td>
+    </tr>
+    <tr>
+      <td><code>:json_merge</code></td>
+      <td>json-merge gem functional</td>
+    </tr>
+    <tr>
+      <td><code>:prism_merge</code></td>
+      <td>prism-merge gem functional</td>
+    </tr>
+    <tr>
+      <td><code>:psych_merge</code></td>
+      <td>psych-merge gem functional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>All tags have negated versions (e.g., <code>:not_mri_backend</code>, <code>:not_jruby</code>) for testing fallback behavior.</p>
+
+<p><strong>Debug Output:</strong></p>
+
+<p>Set <code>TREE_HAVER_DEBUG=1</code> to print a dependency summary at the start of your test suite:</p>
+
+<pre class="code language-bash"><code class="language-bash">TREE_HAVER_DEBUG=1 bundle exec rspec
+</code></pre>
+
 <h2 id="-floss-funding">🦷 FLOSS Funding</h2>
 
 <p>While kettle-rb tools are free software and will always be, the project would benefit immensely from some funding.<br>
@@ -2311,7 +2452,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Fri Dec 26 22:30:11 2025 by
+  Generated on Sat Dec 27 23:59:54 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

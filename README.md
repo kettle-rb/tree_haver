@@ -1528,6 +1528,76 @@ TOML
 package_name = extract_package_name(toml)
 ```
 
+### 🧪 RSpec Integration
+
+TreeHaver provides shared RSpec helpers for conditional test execution based on dependency availability. This is useful for testing code that uses optional backends.
+
+```ruby
+# In your spec_helper.rb
+require "tree_haver/rspec"
+```
+
+This automatically configures RSpec with exclusion filters for all TreeHaver dependencies. Use tags to conditionally run tests:
+
+```ruby
+# Runs only when FFI backend is available
+it "parses with FFI", :ffi do
+  # ...
+end
+
+# Runs only when ruby_tree_sitter gem is available
+it "uses MRI backend", :mri_backend do
+  # ...
+end
+
+# Runs only when tree-sitter-toml grammar works
+it "parses TOML", :tree_sitter_toml do
+  # ...
+end
+
+# Runs only when any markdown backend is available
+it "parses markdown", :markdown_backend do
+  # ...
+end
+```
+
+**Available Tags:**
+
+| Tag | Description |
+|-----|-------------|
+| `:ffi` | FFI backend available (dynamic check) |
+| `:mri_backend` | ruby_tree_sitter gem available |
+| `:rust_backend` | tree_stump gem available |
+| `:java_backend` | Java backend available (JRuby) |
+| `:prism_backend` | Prism gem available |
+| `:psych_backend` | Psych available (stdlib) |
+| `:commonmarker` | commonmarker gem available |
+| `:markly` | markly gem available |
+| `:citrus_toml` | toml-rb with Citrus grammar available |
+| `:jruby` | Running on JRuby |
+| `:truffleruby` | Running on TruffleRuby |
+| `:mri` | Running on MRI (CRuby) |
+| `:tree_sitter_bash` | Bash grammar available and working |
+| `:tree_sitter_toml` | TOML grammar available and working |
+| `:tree_sitter_json` | JSON grammar available and working |
+| `:tree_sitter_jsonc` | JSONC grammar available and working |
+| `:toml_backend` | Any TOML backend available |
+| `:markdown_backend` | Any markdown backend available |
+| `:toml_merge` | toml-merge gem functional |
+| `:json_merge` | json-merge gem functional |
+| `:prism_merge` | prism-merge gem functional |
+| `:psych_merge` | psych-merge gem functional |
+
+All tags have negated versions (e.g., `:not_mri_backend`, `:not_jruby`) for testing fallback behavior.
+
+**Debug Output:**
+
+Set `TREE_HAVER_DEBUG=1` to print a dependency summary at the start of your test suite:
+
+```bash
+TREE_HAVER_DEBUG=1 bundle exec rspec
+```
+
 ## 🦷 FLOSS Funding
 
 While kettle-rb tools are free software and will always be, the project would benefit immensely from some funding.

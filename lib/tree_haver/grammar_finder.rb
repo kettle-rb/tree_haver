@@ -150,6 +150,13 @@ module TreeHaver
       if ENV.key?(env_var_name)
         env_path = ENV[env_var_name]
 
+        # :nocov: defensive - ENV.key? true with nil value is rare edge case
+        if env_path.nil?
+          @env_rejection_reason = "explicitly disabled (set to nil)"
+          return
+        end
+        # :nocov:
+
         # Empty string means "explicitly skip this grammar"
         # This allows users to disable tree-sitter for specific languages
         # and fall back to alternative backends like Citrus
@@ -331,15 +338,15 @@ module TreeHaver
 
       # Check if env var is set but rejected
       env_value = ENV[env_var_name]
-      if env_value && @env_rejection_reason
-        msg += " #{env_var_name} is set to #{env_value.inspect} but #{@env_rejection_reason}."
+      msg += if env_value && @env_rejection_reason
+        " #{env_var_name} is set to #{env_value.inspect} but #{@env_rejection_reason}."
       elsif env_value && File.exist?(env_value) && !self.class.tree_sitter_runtime_usable?
-        msg += " #{env_var_name} is set and file exists, but no tree-sitter runtime is available. " \
-               "Add ruby_tree_sitter, ffi, or tree_stump gem to your Gemfile."
+        " #{env_var_name} is set and file exists, but no tree-sitter runtime is available. " \
+          "Add ruby_tree_sitter, ffi, or tree_stump gem to your Gemfile."
       elsif env_value
-        msg += " #{env_var_name} is set but was not used (file may have been removed)."
+        " #{env_var_name} is set but was not used (file may have been removed)."
       else
-        msg += " Searched: #{search_paths.join(", ")}."
+        " Searched: #{search_paths.join(", ")}."
       end
 
       msg + " Install tree-sitter-#{@language_name} or set #{env_var_name} to a valid path."

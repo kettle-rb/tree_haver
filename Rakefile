@@ -71,6 +71,11 @@ end
 # Run FFI specs first (before the collision of MRI+FFI backends pollutes the environment),
 # then run remaining specs. This ensures FFI tests get a clean environment
 # while still validating that BackendConflict protection works.
+#
+# For coverage aggregation with SimpleCov merging:
+# - Each task uses a unique K_SOUP_COV_COMMAND_NAME so SimpleCov tracks them separately
+# - K_SOUP_COV_USE_MERGING=true must be set in .envrc for results to merge
+# - K_SOUP_COV_MERGE_TIMEOUT should be set long enough for all tasks to complete
 begin
   require "rspec/core/rake_task"
 
@@ -80,12 +85,23 @@ begin
     t.pattern = "./spec/**/*_spec.rb"
     t.rspec_opts = "--tag ffi"
   end
+  # Set unique command name at execution time for SimpleCov merging
+  desc("Set SimpleCov command name for FFI specs")
+  task(:set_ffi_command_name) do
+    ENV["K_SOUP_COV_COMMAND_NAME"] = "FFI Specs"
+  end
+  Rake::Task[:ffi_specs].enhance([:set_ffi_command_name])
 
   # Matrix checks will run in between FFI and MRI
   desc("Run Backend Matrix Specs")
   RSpec::Core::RakeTask.new(:backend_matrix_specs) do |t|
     t.pattern = "./spec_matrix/**/*_spec.rb"
   end
+  desc("Set SimpleCov command name for backend matrix specs")
+  task(:set_matrix_command_name) do
+    ENV["K_SOUP_COV_COMMAND_NAME"] = "Backend Matrix Specs"
+  end
+  Rake::Task[:backend_matrix_specs].enhance([:set_matrix_command_name])
 
   # All other specs run after FFI specs
   desc("Run non-FFI specs (after FFI specs have run)")
@@ -93,8 +109,26 @@ begin
     t.pattern = "./spec/**/*_spec.rb"
     t.rspec_opts = "--tag ~ffi"
   end
+  desc("Set SimpleCov command name for remaining specs")
+  task(:set_remaining_command_name) do
+    ENV["K_SOUP_COV_COMMAND_NAME"] = "Remaining Specs"
+  end
+  Rake::Task[:remaining_specs].enhance([:set_remaining_command_name])
+
+  # Final task to run all specs (for spec task, runs in single process for final coverage merge)
+  desc("Run all specs in one process (no FFI isolation)")
+  RSpec::Core::RakeTask.new(:all_specs) do |t|
+    t.pattern = "spec/**{,/*/**}/*_spec.rb"
+  end
+  desc("Set SimpleCov command name for all specs")
+  task(:set_all_command_name) do
+    ENV["K_SOUP_COV_COMMAND_NAME"] = "All Specs"
+  end
+  Rake::Task[:all_specs].enhance([:set_all_command_name])
 
   # Override the default spec task to run in sequence
+  # NOTE: We do NOT include :all_specs here because ffi_specs + remaining_specs already
+  # cover all specs. Including all_specs would cause duplicated test runs.
   Rake::Task[:spec].clear if Rake::Task.task_defined?(:spec)
   desc("Run specs with FFI tests first, then backend matrix, then remaining tests")
   task(spec: [:ffi_specs, :backend_matrix_specs, :remaining_specs]) # rubocop:disable Rake/DuplicateTask:

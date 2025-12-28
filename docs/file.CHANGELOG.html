@@ -74,6 +74,26 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <ul>
   <li>
+<strong><code>TreeHaver::RSpec::DependencyTags</code></strong>: Shared RSpec dependency detection for the entire gem family
+    <ul>
+      <li>New <code>lib/tree_haver/rspec.rb</code> entry point - other gems can simply <code>require "tree_haver/rspec"</code>
+</li>
+      <li>Detects all TreeHaver backends: FFI, MRI, Rust, Java, Prism, Psych, Commonmarker, Markly, Citrus</li>
+      <li>Ruby engine detection: <code>jruby?</code>, <code>truffleruby?</code>, <code>mri?</code>
+</li>
+      <li>Language grammar detection: <code>tree_sitter_bash_available?</code>, <code>tree_sitter_toml_available?</code>, <code>tree_sitter_json_available?</code>, <code>tree_sitter_jsonc_available?</code>
+</li>
+      <li>Inner-merge dependency detection: <code>toml_merge_available?</code>, <code>json_merge_available?</code>, <code>prism_merge_available?</code>, <code>psych_merge_available?</code>
+</li>
+      <li>Composite checks: <code>any_toml_backend_available?</code>, <code>any_markdown_backend_available?</code>
+</li>
+      <li>Records MRI backend usage when checking availability (critical for FFI conflict detection)</li>
+      <li>Configures RSpec exclusion filters for all dependency tags automatically</li>
+      <li>Supports debug output via <code>TREE_HAVER_DEBUG=1</code> environment variable</li>
+      <li>Comprehensive documentation with usage examples</li>
+    </ul>
+  </li>
+  <li>
 <strong><code>TreeHaver.parser_for</code></strong>: New high-level factory method for creating configured parsers
     <ul>
       <li>Handles all language loading complexity in one call</li>
@@ -95,11 +115,47 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="changed">Changed</h3>
 
+<ul>
+  <li>
+<strong>Backend sibling navigation</strong>: Backends that don’t support sibling/parent navigation now raise <code>NotImplementedError</code> instead of returning <code>nil</code>
+    <ul>
+      <li>This distinguishes “not implemented” from “no sibling exists”</li>
+      <li>Affected backends: Prism, Psych</li>
+      <li>Affected methods: <code>next_sibling</code>, <code>prev_sibling</code>, <code>parent</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<strong>Canonical sibling method name</strong>: All backends now use <code>prev_sibling</code> as the canonical method name (not <code>previous_sibling</code>)
+    <ul>
+      <li>Matches the universal <code>TreeHaver::Node</code> API</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>
+<strong>Backend conflict detection</strong>: Fixed bug where MRI backend usage wasn’t being recorded during availability checks
+    <ul>
+      <li>
+<code>mri_backend_available?</code> now calls <code>TreeHaver.record_backend_usage(:mri)</code> after successfully loading ruby_tree_sitter</li>
+      <li>This ensures FFI conflict detection works correctly even when MRI is loaded indirectly</li>
+    </ul>
+  </li>
+  <li>
+<strong>GrammarFinder#not_found_message</strong>: Improved error message when grammar file exists but no tree-sitter runtime is available
+    <ul>
+      <li>Now suggests adding <code>ruby_tree_sitter</code>, <code>ffi</code>, or <code>tree_stump</code> gem to Gemfile</li>
+      <li>Clearer guidance for users who have grammar files but are missing the Ruby tree-sitter bindings</li>
+    </ul>
+  </li>
+</ul>
 
 <h3 id="security">Security</h3>
 
@@ -701,7 +757,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Fri Dec 26 22:30:11 2025 by
+  Generated on Sat Dec 27 23:59:55 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
