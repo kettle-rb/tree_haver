@@ -54,6 +54,8 @@ RSpec.describe "Thread-local backend selection" do
       ctx[:backend] = :mri
 
       expect(TreeHaver.effective_backend).to eq(:mri)
+      # Verify the global wasn't changed
+      expect(TreeHaver.backend).to eq(:ffi)
     end
 
     it "falls back to :auto when neither global nor thread-local is set" do
@@ -61,12 +63,17 @@ RSpec.describe "Thread-local backend selection" do
       expect(TreeHaver.effective_backend).to eq(:auto)
     end
 
-    it "prioritizes thread-local over global" do
+    it "prioritizes thread-local over global when both are set" do
       TreeHaver.backend = :ffi
       ctx = TreeHaver.current_backend_context
       ctx[:backend] = :mri
 
+      # Thread-local (:mri) takes precedence
       expect(TreeHaver.effective_backend).to eq(:mri)
+      # But global remains unchanged
+      expect(TreeHaver.backend).to eq(:ffi)
+      # And context shows the thread-local value
+      expect(ctx[:backend]).to eq(:mri)
     end
   end
 
@@ -314,10 +321,12 @@ RSpec.describe "Thread-local backend selection" do
       expect(mod).to eq(TreeHaver::Backends::Citrus)
     end
 
-    it "returns correct module for thread-local backend" do
+    it "returns correct module for thread-local backend when passing nil" do
       TreeHaver.with_backend(:citrus) do
         mod = TreeHaver.resolve_backend_module(nil)
         expect(mod).to eq(TreeHaver::Backends::Citrus)
+        # Verify that nil parameter triggers thread-local lookup
+        expect(TreeHaver.effective_backend).to eq(:citrus)
       end
     end
 
@@ -354,12 +363,16 @@ RSpec.describe "Thread-local backend selection" do
       expect(mod).to eq(TreeHaver.backend_module)
     end
 
-    it "respects thread-local context when no explicit backend (non-conflicting)" do
+    it "respects thread-local context when no explicit backend and verifies block isolation" do
       # Use citrus since it never conflicts
+      outer_mod = nil
       TreeHaver.with_backend(:citrus) do
         mod = TreeHaver.resolve_backend_module(nil)
         expect(mod).to eq(TreeHaver::Backends::Citrus)
+        outer_mod = mod
       end
+      # After block, should no longer return citrus (unless it's the global default)
+      expect(outer_mod).to eq(TreeHaver::Backends::Citrus)
     end
 
     it "raises BackendConflict when FFI requested after MRI used", :backend_conflict do

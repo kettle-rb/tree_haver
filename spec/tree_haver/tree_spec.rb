@@ -88,9 +88,9 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
   end
 
   describe "#supports_editing?" do
-    it "returns true when backend supports edit" do
+    it "returns a boolean indicating edit support" do
       result = tree.supports_editing?
-      expect([true, false]).to include(result)
+      expect(result).to be(true).or be(false)
     end
 
     context "when backend doesn't support edit" do
@@ -110,11 +110,25 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
       expect(result).to include("source_length=")
     end
 
+    it "includes source length when source is present" do
+      result = tree.inspect
+      expect(result).to include("TreeHaver::Tree")
+      expect(result).to include("source_length")
+      expect(result).to include(source.bytesize.to_s)
+    end
+
     context "when source is nil" do
       let(:tree_no_source) { described_class.new(tree.inner_tree, source: nil) }
 
       it "shows unknown length" do
         result = tree_no_source.inspect
+        expect(result).to include("source_length=unknown")
+      end
+
+      it "shows 'unknown' in inspect output" do
+        tree_without_source = described_class.new(tree.inner_tree, source: nil)
+        result = tree_without_source.inspect
+        expect(result).to include("TreeHaver::Tree")
         expect(result).to include("source_length=unknown")
       end
     end
@@ -128,6 +142,21 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
 
     it "returns false for non-existent methods" do
       expect(tree.respond_to?(:totally_fake_method_xyz)).to be false
+    end
+
+    it "returns true for methods supported by inner_tree" do
+      allow(tree.inner_tree).to receive(:respond_to?).with(:backend_specific_method, false).and_return(true)
+      expect(tree.respond_to?(:backend_specific_method)).to be true
+    end
+
+    it "returns false for unsupported methods" do
+      allow(tree.inner_tree).to receive(:respond_to?).with(:unsupported_method, false).and_return(false)
+      expect(tree.respond_to?(:unsupported_method)).to be false
+    end
+
+    it "includes private methods when asked" do
+      allow(tree.inner_tree).to receive(:respond_to?).with(:private_method, true).and_return(true)
+      expect(tree.respond_to?(:private_method, true)).to be true
     end
   end
 
@@ -177,39 +206,6 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
       tree.method_with_block { |val| result = val }
 
       expect(result).to eq("yielded value")
-    end
-  end
-
-  describe "#respond_to_missing?" do
-    it "returns true for methods supported by inner_tree" do
-      allow(tree.inner_tree).to receive(:respond_to?).with(:backend_specific_method, false).and_return(true)
-      expect(tree.respond_to?(:backend_specific_method)).to be true
-    end
-
-    it "returns false for unsupported methods" do
-      allow(tree.inner_tree).to receive(:respond_to?).with(:unsupported_method, false).and_return(false)
-      expect(tree.respond_to?(:unsupported_method)).to be false
-    end
-
-    it "includes private methods when asked" do
-      allow(tree.inner_tree).to receive(:respond_to?).with(:private_method, true).and_return(true)
-      expect(tree.respond_to?(:private_method, true)).to be true
-    end
-  end
-
-  describe "#inspect" do
-    it "includes source length when source is present" do
-      result = tree.inspect
-      expect(result).to include("TreeHaver::Tree")
-      expect(result).to include("source_length")
-      expect(result).to include(source.bytesize.to_s)
-    end
-
-    it "shows 'unknown' when source is nil" do
-      tree_without_source = described_class.new(tree.inner_tree, source: nil)
-      result = tree_without_source.inspect
-      expect(result).to include("TreeHaver::Tree")
-      expect(result).to include("source_length=unknown")
     end
   end
 end

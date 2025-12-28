@@ -30,7 +30,8 @@ RSpec.describe "TreeHaver::Parser with backend parameter" do
         parser = TreeHaver::Parser.new
         # parser.backend returns the actual resolved backend, not :auto
         # It should be one of the available backends
-        expect([:mri, :rust, :ffi, :java, :citrus]).to include(parser.backend)
+        valid_backends = [:mri, :rust, :ffi, :java, :citrus]
+        expect(valid_backends).to include(parser.backend)
       end
     end
 
@@ -98,7 +99,7 @@ RSpec.describe "TreeHaver::Parser with backend parameter" do
       end
     end
 
-    context "backend introspection" do
+    context "with backend introspection" do
       it "returns thread-local backend when no explicit backend set", :mri_backend do
         TreeHaver.with_backend(:mri) do
           parser = TreeHaver::Parser.new

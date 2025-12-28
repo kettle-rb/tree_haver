@@ -1,58 +1,14 @@
 {
-  "spec/integration/backend_edge_cases_spec.rb:3125406541": [
-    [235, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
-    [240, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
-    [245, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
-    [250, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492]
-  ],
   "spec/tree_haver/language_backend_spec.rb:3839571391": [
     [5, 16, 56, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2912587316]
   ],
-  "spec/tree_haver/node_spec.rb:424816327": [
-    [283, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
-    [311, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
-    [668, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [671].", 3484858249],
-    [671, 11, 63, "RSpec/ReceiveMessages: Use `receive_messages` instead of multiple stubs on lines [668].", 3767344958],
-    [881, 7, 65, "RSpec/IndexedLet: This `let` statement uses `1` in its name. Please give it a meaningful name.", 4132605332],
-    [882, 7, 65, "RSpec/IndexedLet: This `let` statement uses `2` in its name. Please give it a meaningful name.", 3915049431],
-    [883, 7, 65, "RSpec/IndexedLet: This `let` statement uses `3` in its name. Please give it a meaningful name.", 4085774230],
-    [988, 7, 78, "RSpec/IndexedLet: This `let` statement uses `1` in its name. Please give it a meaningful name.", 1739429520],
-    [989, 7, 81, "RSpec/IndexedLet: This `let` statement uses `2` in its name. Please give it a meaningful name.", 605652160],
-    [990, 7, 69, "RSpec/IndexedLet: This `let` statement uses `3` in its name. Please give it a meaningful name.", 3383291138],
-    [1057, 7, 78, "RSpec/IndexedLet: This `let` statement uses `1` in its name. Please give it a meaningful name.", 1739429520],
-    [1058, 7, 81, "RSpec/IndexedLet: This `let` statement uses `2` in its name. Please give it a meaningful name.", 605652160]
+  "spec/tree_haver/parser_backend_spec.rb:3347827844": [
+    [5, 16, 42, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2414562915]
   ],
-  "spec/tree_haver/parser_backend_spec.rb:3758225329": [
-    [5, 16, 42, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2414562915],
-    [33, 16, 35, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 3814166864],
-    [101, 13, 23, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 822755606]
+  "spec/tree_haver/thread_local_backend_spec.rb:1157921565": [
+    [5, 16, 32, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2927084111]
   ],
-  "spec/tree_haver/thread_local_backend_spec.rb:685537569": [
-    [5, 16, 32, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 2927084111],
-    [51, 5, 212, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 64.", 2676278710],
-    [64, 5, 211, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 51.", 3617715094],
-    [317, 5, 221, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 357.", 1897117069],
-    [357, 5, 290, "RSpec/RepeatedExample: Don't repeat examples within an example group. Repeated on line(s) 317.", 3379897254]
-  ],
-  "spec/tree_haver/tree_spec.rb:1117877502": [
-    [93, 14, 13, "RSpec/ExpectActual: Provide the actual value you are testing to `expect(...)`.", 414119492],
-    [106, 3, 480, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [200]", 890255837],
-    [123, 3, 323, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [183]", 2578611428],
-    [183, 3, 735, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [123]", 40123026],
-    [200, 3, 561, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [106]", 785340960]
-  ],
-  "spec_matrix/backend_compatibility_matrix_spec.rb:4087412712": [
-    [26, 16, 30, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3871666292],
-    [30, 3, 37, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 1678232489],
-    [34, 3, 135, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 656725830],
-    [41, 3, 54, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 779749304],
-    [42, 3, 41, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 1965425945],
-    [43, 3, 49, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 2984228143],
-    [44, 3, 47, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 3577695641],
-    [131, 15, 20, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 2894417152],
-    [161, 17, 39, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 3406914204],
-    [199, 17, 59, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 2370425067],
-    [272, 5, 49, "RSpec/LeakyConstantDeclaration: Stub constant instead of declaring explicitly.", 2560971490],
-    [278, 17, 38, "RSpec/ContextWording: Context description should match /^when\\b/, /^with\\b/, or /^without\\b/.", 767453439]
+  "spec_matrix/backend_compatibility_matrix_spec.rb:3471642472": [
+    [26, 16, 30, "RSpec/DescribeClass: The first argument to describe should be the class or module being tested.", 3871666292]
   ]
 }

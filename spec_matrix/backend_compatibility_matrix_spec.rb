@@ -27,21 +27,25 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
   # Define backends to test - only tree-sitter backends that share .so files
   # Citrus is excluded because it's pure Ruby (no .so conflicts) and
   # the only available Citrus TOML grammar (toml-rb)
-  BACKENDS = [:mri, :ffi, :rust].freeze
+  BACKENDS = [:mri, :ffi, :rust].freeze # rubocop:disable RSpec/LeakyConstantDeclaration
 
   # Check if backend's required gems are INSTALLED without loading them
   # Uses Gem::Specification to avoid side effects from require
-  def self.gem_installed?(gem_name)
-    Gem::Specification.find_by_name(gem_name)
-    true
-  rescue Gem::MissingSpecError
-    false
+  class << self
+    def gem_installed?(gem_name)
+      Gem::Specification.find_by_name(gem_name)
+      true
+    rescue Gem::MissingSpecError
+      false
+    end
   end
 
+  # rubocop:disable RSpec/LeakyConstantDeclaration
   MRI_GEM_INSTALLED = gem_installed?("ruby_tree_sitter")
   FFI_GEM_INSTALLED = gem_installed?("ffi")
   RUST_GEM_INSTALLED = gem_installed?("tree_stump")
   CITRUS_GEM_INSTALLED = gem_installed?("citrus")
+  # rubocop:enable RSpec/LeakyConstantDeclaration
 
   # Check if backend's gem is installed (does NOT load the gem)
   def backend_gem_available?(backend)
@@ -128,7 +132,7 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
 
   describe "Single backend operations" do
     BACKENDS.each do |backend|
-      context "#{backend} backend" do
+      context "with #{backend} backend" do
         it "can load language" do
           skip skip_reason_for(backend) unless backend_usable?(backend)
 
@@ -158,7 +162,7 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
       BACKENDS.each do |second_backend|
         next if first_backend == second_backend
 
-        context "#{first_backend} -> #{second_backend}" do
+        context "when transitioning #{first_backend} -> #{second_backend}" do
           it "can parse with #{first_backend} then #{second_backend}" do
             skip skip_reason_for(first_backend) unless backend_usable?(first_backend)
             skip skip_reason_for(second_backend) unless backend_usable?(second_backend)
@@ -196,7 +200,7 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
       BACKENDS.each do |second_backend|
         next if first_backend == second_backend
 
-        context "#{first_backend} -> #{second_backend} -> #{first_backend}" do
+        context "when cycling #{first_backend} -> #{second_backend} -> #{first_backend}" do
           it "can return to #{first_backend} after using #{second_backend}" do
             skip skip_reason_for(first_backend) unless backend_usable?(first_backend)
             skip skip_reason_for(second_backend) unless backend_usable?(second_backend)
@@ -269,13 +273,13 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
 
   describe "Shared .so file detection" do
     # These backends share tree-sitter .so grammar files
-    TREE_SITTER_BACKENDS = [:mri, :ffi, :rust].freeze
+    TREE_SITTER_BACKENDS = [:mri, :ffi, :rust].freeze # rubocop:disable RSpec/LeakyConstantDeclaration
 
     TREE_SITTER_BACKENDS.each do |first|
       TREE_SITTER_BACKENDS.each do |second|
         next if first == second
 
-        context "#{first} and #{second} (.so sharing)" do
+        context "when testing #{first} and #{second} (.so sharing)" do
           it "documents whether #{second} works after #{first} loads grammar" do
             skip skip_reason_for(first) unless backend_usable?(first)
             skip skip_reason_for(second) unless backend_usable?(second)

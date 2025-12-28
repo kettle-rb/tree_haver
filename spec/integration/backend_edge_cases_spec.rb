@@ -232,22 +232,22 @@ RSpec.describe "Backend-specific behaviors" do
   describe "Backend availability checks" do
     it "checks Java backend availability" do
       available = TreeHaver::Backends::Java.available?
-      expect([true, false]).to include(available)
+      expect(available).to be(true).or be(false)
     end
 
     it "checks MRI backend availability" do
       available = TreeHaver::Backends::MRI.available?
-      expect([true, false]).to include(available)
+      expect(available).to be(true).or be(false)
     end
 
     it "checks Rust backend availability" do
       available = TreeHaver::Backends::Rust.available?
-      expect([true, false]).to include(available)
+      expect(available).to be(true).or be(false)
     end
 
     it "checks FFI backend availability" do
       available = TreeHaver::Backends::FFI.available?
-      expect([true, false]).to include(available)
+      expect(available).to be(true).or be(false)
     end
 
     it "checks Citrus backend availability" do

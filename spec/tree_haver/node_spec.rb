@@ -280,7 +280,7 @@ RSpec.describe TreeHaver::Node do
 
   describe "#has_error?" do
     it "returns a boolean", :toml_grammar do
-      expect([true, false]).to include(root_node.has_error?)
+      expect(root_node.has_error?).to be(true).or be(false)
     end
   end
 
@@ -308,7 +308,7 @@ RSpec.describe TreeHaver::Node do
 
   describe "#named?" do
     it "returns a boolean", :toml_grammar do
-      expect([true, false]).to include(root_node.named?)
+      expect(root_node.named?).to be(true).or be(false)
     end
 
     context "when backend uses is_named?" do
@@ -666,9 +666,9 @@ RSpec.describe TreeHaver::Node do
           )
           # Stub respond_to? with default true, then override specific cases
           allow(kind_only_node).to receive(:respond_to?).and_return(true)
+          allow(kind_only_node).to receive_messages(kind: "some_kind")
           allow(kind_only_node).to receive(:respond_to?).with(:type).and_return(false)
           allow(kind_only_node).to receive(:respond_to?).with(:kind, anything).and_return(true)
-          allow(kind_only_node).to receive(:kind).and_return("some_kind")
 
           node_with_kind = described_class.new(kind_only_node)
           expect(node_with_kind.type).to eq("some_kind")
@@ -878,14 +878,14 @@ RSpec.describe TreeHaver::Node do
         )
       end
 
-      let(:child1) { double("Child1", type: "child1", child_count: 0) }
-      let(:child2) { double("Child2", type: "child2", child_count: 0) }
-      let(:child3) { double("Child3", type: "child3", child_count: 0) }
+      let(:first_child) { double("Child1", type: "child1", child_count: 0) }
+      let(:middle_child) { double("Child2", type: "child2", child_count: 0) }
+      let(:last_child) { double("Child3", type: "child3", child_count: 0) }
 
       before do
-        allow(parent_node).to receive(:child).with(0).and_return(child1)
-        allow(parent_node).to receive(:child).with(1).and_return(child2)
-        allow(parent_node).to receive(:child).with(2).and_return(child3)
+        allow(parent_node).to receive(:child).with(0).and_return(first_child)
+        allow(parent_node).to receive(:child).with(1).and_return(middle_child)
+        allow(parent_node).to receive(:child).with(2).and_return(last_child)
       end
 
       it "handles child returning nil" do
@@ -899,13 +899,13 @@ RSpec.describe TreeHaver::Node do
 
       it "filters named_children correctly" do
         # Stub respond_to? to return true for all common methods
-        [child1, child2, child3].each do |child|
+        [first_child, middle_child, last_child].each do |child|
           allow(child).to receive(:respond_to?).and_return(true)
         end
 
-        allow(child1).to receive(:named?).and_return(true)
-        allow(child2).to receive(:named?).and_return(false)
-        allow(child3).to receive(:named?).and_return(true)
+        allow(first_child).to receive(:named?).and_return(true)
+        allow(middle_child).to receive(:named?).and_return(false)
+        allow(last_child).to receive(:named?).and_return(true)
 
         node = described_class.new(parent_node)
         named = node.named_children
@@ -985,9 +985,9 @@ RSpec.describe TreeHaver::Node do
     end
 
     context "when backend lacks named_child" do
-      let(:child1) { double("Child1", type: "named", child_count: 0, named?: true) }
-      let(:child2) { double("Child2", type: "unnamed", child_count: 0, named?: false) }
-      let(:child3) { double("Child3", type: "also_named", child_count: 0) }
+      let(:named_child) { double("Child1", type: "named", child_count: 0, named?: true) }
+      let(:unnamed_child) { double("Child2", type: "unnamed", child_count: 0, named?: false) }
+      let(:another_named_child) { double("Child3", type: "also_named", child_count: 0) }
       let(:fallback_node) do
         double(
           "FallbackNode",
@@ -998,20 +998,20 @@ RSpec.describe TreeHaver::Node do
 
       before do
         allow(fallback_node).to receive(:respond_to?).with(:named_child).and_return(false)
-        allow(fallback_node).to receive(:child).with(0).and_return(child1)
-        allow(fallback_node).to receive(:child).with(1).and_return(child2)
-        allow(fallback_node).to receive(:child).with(2).and_return(child3)
+        allow(fallback_node).to receive(:child).with(0).and_return(named_child)
+        allow(fallback_node).to receive(:child).with(1).and_return(unnamed_child)
+        allow(fallback_node).to receive(:child).with(2).and_return(another_named_child)
 
         # Allow respond_to? for type check (used in Node#type)
-        [child1, child2, child3].each do |child|
+        [named_child, unnamed_child, another_named_child].each do |child|
           allow(child).to receive(:respond_to?).and_return(false)
           allow(child).to receive(:respond_to?).with(:type).and_return(true)
         end
 
-        allow(child1).to receive(:respond_to?).with(:named?).and_return(true)
-        allow(child2).to receive(:respond_to?).with(:named?).and_return(true)
-        allow(child3).to receive(:respond_to?).with(:named?).and_return(false)
-        allow(child3).to receive(:respond_to?).with(:is_named?).and_return(false)
+        allow(named_child).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(unnamed_child).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(another_named_child).to receive(:respond_to?).with(:named?).and_return(false)
+        allow(another_named_child).to receive(:respond_to?).with(:is_named?).and_return(false)
       end
 
       it "falls back to manual iteration" do
@@ -1054,8 +1054,8 @@ RSpec.describe TreeHaver::Node do
     end
 
     context "when backend lacks named_child_count" do
-      let(:child1) { double("Child1", type: "named", child_count: 0, named?: true) }
-      let(:child2) { double("Child2", type: "unnamed", child_count: 0, named?: false) }
+      let(:named_count_child) { double("Child1", type: "named", child_count: 0, named?: true) }
+      let(:unnamed_count_child) { double("Child2", type: "unnamed", child_count: 0, named?: false) }
       let(:fallback_node) do
         double(
           "FallbackNode",
@@ -1066,11 +1066,11 @@ RSpec.describe TreeHaver::Node do
 
       before do
         allow(fallback_node).to receive(:respond_to?).with(:named_child_count).and_return(false)
-        allow(fallback_node).to receive(:child).with(0).and_return(child1)
-        allow(fallback_node).to receive(:child).with(1).and_return(child2)
+        allow(fallback_node).to receive(:child).with(0).and_return(named_count_child)
+        allow(fallback_node).to receive(:child).with(1).and_return(unnamed_count_child)
 
-        allow(child1).to receive(:respond_to?).with(:named?).and_return(true)
-        allow(child2).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(named_count_child).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(unnamed_count_child).to receive(:respond_to?).with(:named?).and_return(true)
       end
 
       it "counts named children manually" do
