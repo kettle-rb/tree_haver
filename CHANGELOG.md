@@ -20,16 +20,6 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
-- Enhanced `TreeHaver::RSpec::DependencyTags` debugging
-  - `env_summary` method returns relevant environment variables for diagnosis
-  - `grammar_works?` now logs detailed trace when `TREE_HAVER_DEBUG=1`
-  - `before(:suite)` prints both env vars and dependency status when debugging
-  - Helps diagnose differences between local and CI environments
-- Many new specs for:
-  - TreeHaver::GrammarFinder
-  - TreeHaver::Node
-  - TreeHaver::Tree
-
 ### Changed
 
 ### Deprecated
@@ -39,6 +29,25 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Fixed
 
 ### Security
+
+## [3.1.2] - 2025-12-29
+
+- TAG: [v3.1.2][3.1.2t]
+- COVERAGE: 87.40% -- 2171/2484 lines in 22 files
+- BRANCH COVERAGE: 67.04% -- 726/1083 branches in 22 files
+- 90.03% documented
+
+### Added
+
+- Enhanced `TreeHaver::RSpec::DependencyTags` debugging
+  - `env_summary` method returns relevant environment variables for diagnosis
+  - `grammar_works?` now logs detailed trace when `TREE_HAVER_DEBUG=1`
+  - `before(:suite)` prints both env vars and dependency status when debugging
+  - Helps diagnose differences between local and CI environments
+- Many new specs for:
+  - TreeHaver::GrammarFinder
+  - TreeHaver::Node
+  - TreeHaver::Tree
 
 ## [3.1.1] - 2025-12-28
 
@@ -429,7 +438,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.1.1...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.1.2...HEAD
+[3.1.2]: https://github.com/kettle-rb/tree_haver/compare/v3.1.1...v3.1.2
+[3.1.2t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.1.2
 [3.1.1]: https://github.com/kettle-rb/tree_haver/compare/v3.1.0...v3.1.1
 [3.1.1t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.1.1
 [3.1.0]: https://github.com/kettle-rb/tree_haver/compare/v3.0.0...v3.1.0
