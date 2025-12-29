@@ -28,6 +28,10 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- Rakefile now properly overrides `test` task after `require "kettle/dev"`
+  - Works around a bug in kettle-dev where test task runs minitest loader in CI
+  - Ensures `rake test` runs RSpec specs instead of empty minitest suite
+
 ### Security
 
 ## [3.1.2] - 2025-12-29

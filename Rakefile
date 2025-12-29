@@ -139,9 +139,20 @@ begin
   Rake::Task[:spec].clear if Rake::Task.task_defined?(:spec)
   desc("Run specs with FFI tests first, then backend matrix, then remaining tests")
   task(spec: [:ffi_specs, :backend_matrix_specs, :remaining_specs]) # rubocop:disable Rake/DuplicateTask:
+
+  # Override the test task to run spec (not minitest)
+  # This works around a bug in kettle-dev where test task runs minitest loader in CI
+  Rake::Task[:test].clear if Rake::Task.task_defined?(:test)
+  desc("Run tests (alias for spec)")
+  task(test: :spec)
 rescue LoadError
   desc("(stub) spec is unavailable")
   task(:spec) do # rubocop:disable Rake/DuplicateTask:
+    warn("NOTE: rspec isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
+  end
+
+  desc("(stub) test is unavailable")
+  task(:test) do
     warn("NOTE: rspec isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
   end
 end
