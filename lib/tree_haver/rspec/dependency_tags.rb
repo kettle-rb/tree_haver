@@ -530,6 +530,21 @@ module TreeHaver
           }
         end
 
+        # Get environment variable summary for debugging
+        #
+        # @return [Hash{String => String}] relevant environment variables
+        def env_summary
+          {
+            "TREE_SITTER_BASH_PATH" => ENV["TREE_SITTER_BASH_PATH"],
+            "TREE_SITTER_TOML_PATH" => ENV["TREE_SITTER_TOML_PATH"],
+            "TREE_SITTER_JSON_PATH" => ENV["TREE_SITTER_JSON_PATH"],
+            "TREE_SITTER_JSONC_PATH" => ENV["TREE_SITTER_JSONC_PATH"],
+            "TREE_SITTER_RUNTIME_LIB" => ENV["TREE_SITTER_RUNTIME_LIB"],
+            "TREE_HAVER_BACKEND" => ENV["TREE_HAVER_BACKEND"],
+            "TREE_HAVER_DEBUG" => ENV["TREE_HAVER_DEBUG"],
+          }
+        end
+
         # Reset all memoized availability checks
         #
         # Useful in tests that need to re-check availability after mocking.
@@ -550,10 +565,37 @@ module TreeHaver
         # @param test_source [String] sample source code to parse
         # @return [Boolean] true if parsing works without errors
         def grammar_works?(language, test_source)
+          debug = ENV["TREE_HAVER_DEBUG"]
+          env_var = "TREE_SITTER_#{language.to_s.upcase}_PATH"
+          env_value = ENV[env_var]
+
+          if debug
+            puts "  [grammar_works? #{language}] ENV[#{env_var}] = #{env_value.inspect}"
+            puts "  [grammar_works? #{language}] Attempting TreeHaver.parser_for(#{language.inspect})..."
+          end
+
           parser = TreeHaver.parser_for(language)
+          if debug
+            puts "  [grammar_works? #{language}] Parser created: #{parser.class}"
+            puts "  [grammar_works? #{language}] Parser backend: #{parser.respond_to?(:backend) ? parser.backend : "unknown"}"
+          end
+
           result = parser.parse(test_source)
-          !result.nil? && result.root_node && !result.root_node.has_error?
-        rescue TreeHaver::NotAvailable, TreeHaver::Error, StandardError
+          success = !result.nil? && result.root_node && !result.root_node.has_error?
+
+          if debug
+            puts "  [grammar_works? #{language}] Parse result nil?: #{result.nil?}"
+            puts "  [grammar_works? #{language}] Root node: #{result&.root_node&.class}"
+            puts "  [grammar_works? #{language}] Has error?: #{result&.root_node&.has_error?}"
+            puts "  [grammar_works? #{language}] Success: #{success}"
+          end
+
+          success
+        rescue TreeHaver::NotAvailable, TreeHaver::Error, StandardError => e
+          if debug
+            puts "  [grammar_works? #{language}] Exception: #{e.class}: #{e.message}"
+            puts "  [grammar_works? #{language}] Returning false"
+          end
           false
         end
 
@@ -586,6 +628,11 @@ RSpec.configure do |config|
   config.before(:suite) do
     # Print dependency summary if TREE_HAVER_DEBUG is set
     if ENV["TREE_HAVER_DEBUG"]
+      puts "\n=== TreeHaver Environment Variables ==="
+      deps.env_summary.each do |var, value|
+        puts "  #{var}: #{value.inspect}"
+      end
+
       puts "\n=== TreeHaver Test Dependencies ==="
       deps.summary.each do |dep, available|
         status = case available

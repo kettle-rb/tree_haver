@@ -20,6 +20,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Enhanced `TreeHaver::RSpec::DependencyTags` debugging
+  - `env_summary` method returns relevant environment variables for diagnosis
+  - `grammar_works?` now logs detailed trace when `TREE_HAVER_DEBUG=1`
+  - `before(:suite)` prints both env vars and dependency status when debugging
+  - Helps diagnose differences between local and CI environments
+
 ### Changed
 
 ### Deprecated

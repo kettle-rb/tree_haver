@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: LANGUAGE-BACKEND-ATTRIBUTE
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "LANGUAGE-BACKEND-ATTRIBUTE";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: LANGUAGE-BACKEND-ATTRIBUTE</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="language-backend-attribute-architecture">Language Backend Attribute Architecture</h1>
+
+<h2 id="problem-solved">Problem Solved</h2>
+
+<p>Previously, unwrapping language objects required brittle class name string checks to determine which backend a language was for. This approach had several problems:</p>
+
+<ol>
+  <li>
+<strong>Fragile Detection</strong>: String comparison of class names</li>
+  <li>
+<strong>Backend Mismatch</strong>: Language could be cached for one backend but used with another</li>
+  <li>
+<strong>No Type Contract</strong>: No explicit API for backends</li>
+  <li>
+<strong>Difficult to Debug</strong>: Segfaults instead of clear errors</li>
+</ol>
+
+<h2 id="solution-backend-attribute">Solution: Backend Attribute</h2>
+
+<p>All Language wrappers now have a <code>backend</code> attribute that explicitly declares which backend they’re for:</p>
+
+<pre class="code language-ruby"><code class="language-ruby">lang = TreeHaver::Backends::MRI::Language.from_library(path)
+lang.backend  # =&gt; :mri
+</code></pre>
+
+<h2 id="implementation">Implementation</h2>
+
+<h3 id="1-all-language-wrappers-have-backend-attribute">1. All Language Wrappers Have <code>backend</code> Attribute</h3>
+
+<p>Every backend’s Language class now includes:</p>
+
+<pre class="code language-ruby"><code class="language-ruby">class Language
+  # The backend this language is for
+  # @return [Symbol]
+  attr_reader :backend
+  
+  def initialize(...)
+    @backend = :mri  # or :rust, :ffi, :java, :citrus
+  end
+end
+</code></pre>
+
+<p><strong>Backends:</strong></p>
+<ul>
+  <li>MRI: <code>:mri</code>
+</li>
+  <li>Rust: <code>:rust</code>
+</li>
+  <li>FFI: <code>:ffi</code>
+</li>
+  <li>Java: <code>:java</code>
+</li>
+  <li>Citrus: <code>:citrus</code>
+</li>
+</ul>
+
+<h3 id="2-languages-store-metadata-for-reloading">2. Languages Store Metadata for Reloading</h3>
+
+<p>Languages now store their load parameters:</p>
+
+<pre class="code language-ruby"><code class="language-ruby">class Language
+  attr_reader :backend  # Which backend
+  attr_reader :path     # Where loaded from
+  attr_reader :symbol   # Symbol name (tree-sitter only)
+  
+  def initialize(..., path: nil, symbol: nil)
+    @backend = :mri
+    @path = path
+    @symbol = symbol
+  end
+end
+</code></pre>
+
+<p>This enables automatic reloading when backend mismatch is detected.</p>
+
+<h3 id="3-smart-unwrapping-with-backend-detection">3. Smart Unwrapping with Backend Detection</h3>
+
+<p><code>TreeHaver::Parser#unwrap_language</code> now:</p>
+
+<ol>
+  <li>
+<strong>Checks backend compatibility</strong>
+    <pre class="code language-ruby"><code class="language-ruby">if lang.respond_to?(:backend)
+  current_backend = backend
+  lang_backend = lang.backend
+     
+  if lang_backend != current_backend
+    # Backend mismatch! Try to reload
+    reloaded = try_reload_language_for_backend(lang, current_backend)
+    lang = reloaded if reloaded
+  end
+end
+</code></pre>
+  </li>
+  <li>
+<strong>Uses switch statement on backend attribute</strong>
+    <pre class="code language-ruby"><code class="language-ruby">case lang.backend
+when :mri
+  return lang.to_language
+when :rust
+  return lang.name
+when :ffi
+  return lang  # Needs wrapper for to_ptr
+when :java
+  return lang.impl
+when :citrus
+  return lang.grammar_module
+end
+</code></pre>
+  </li>
+  <li><strong>Automatic Reload on Backend Mismatch</strong></li>
+</ol>
+
+<p>If a language was loaded for FFI but now MRI backend is active:</p>
+<ul>
+  <li>Detects mismatch via <code>lang.backend != current_backend</code>
+</li>
+  <li>Calls <code>try_reload_language_for_backend(lang, :mri)</code>
+</li>
+  <li>Checks cache for MRI version of same language</li>
+  <li>If found, uses it; otherwise continues with warning</li>
+</ul>
+
+<h2 id="benefits">Benefits</h2>
+
+<h3 id="-type-safety">✅ Type Safety</h3>
+<ul>
+  <li>Explicit contract: all languages know their backend</li>
+  <li>No more guessing from class names</li>
+</ul>
+
+<h3 id="-clear-error-messages">✅ Clear Error Messages</h3>
+<ul>
+  <li>“Language for backend :ffi used with backend :mri”</li>
+  <li>Instead of segfaults</li>
+</ul>
+
+<h3 id="-automatic-recovery">✅ Automatic Recovery</h3>
+<ul>
+  <li>Detects mismatches and tries to reload</li>
+  <li>Cache-aware: looks for correct backend version</li>
+</ul>
+
+<h3 id="-simpler-code">✅ Simpler Code</h3>
+<ul>
+  <li>Clean switch statement instead of complex conditionals</li>
+  <li>Easy to add new backends</li>
+</ul>
+
+<h3 id="-better-debugging">✅ Better Debugging</h3>
+<ul>
+  <li>Can inspect <code>lang.backend</code> to see what it’s for</li>
+  <li>Metadata stored for troubleshooting</li>
+</ul>
+
+<h2 id="example-backend-switching">Example: Backend Switching</h2>
+
+<pre class="code language-ruby"><code class="language-ruby"># Load with FFI backend
+TreeHaver.backend = :ffi
+lang_ffi = TreeHaver::Language.from_library(path, symbol: &quot;tree_sitter_toml&quot;)
+lang_ffi.backend  # =&gt; :ffi
+
+# Switch to MRI backend
+TreeHaver.backend = :mri
+parser = TreeHaver::Parser.new
+
+# This now auto-detects mismatch and reloads!
+parser.language = lang_ffi
+# Behind the scenes:
+# 1. Detects lang_ffi.backend (:ffi) != parser.backend (:mri)
+# 2. Tries to reload language for :mri backend
+# 3. Checks cache for MRI version
+# 4. Uses reloaded version if found
+</code></pre>
+
+<h2 id="backwards-compatibility">Backwards Compatibility</h2>
+
+<p>The unwrapping still has fallback logic for:</p>
+<ul>
+  <li>Raw backend objects without <code>backend</code> attribute</li>
+  <li>Generic <code>respond_to?</code> checks for old wrappers</li>
+  <li>Graceful degradation if reload fails</li>
+</ul>
+
+<h2 id="migration-from-class-name-checks">Migration from Class Name Checks</h2>
+
+<p><strong>Before:</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">if lang.class.name == &quot;TreeHaver::Backends::Rust::Language&quot;
+  return lang.name
+end
+</code></pre>
+
+<p><strong>After:</strong></p>
+<pre class="code language-ruby"><code class="language-ruby">case lang.backend
+when :rust
+  return lang.name
+end
+</code></pre>
+
+<p><strong>Advantages:</strong></p>
+<ul>
+  <li>More reliable (no autoload issues)</li>
+  <li>Type-safe (explicit attribute)</li>
+  <li>Faster (simple attribute access vs string comparison)</li>
+  <li>Debuggable (can inspect in debugger/console)</li>
+</ul>
+
+<h2 id="testing">Testing</h2>
+
+<p>All backend tests pass with the new architecture:</p>
+<ul>
+  <li>✅ Direct backend instantiation (unit tests)</li>
+  <li>✅ TreeHaver::Parser usage (integration tests)</li>
+  <li>✅ Backend switching (multi-backend tests)</li>
+  <li>✅ Cache behavior (language registry tests)</li>
+</ul>
+
+<h2 id="future-enhancements">Future Enhancements</h2>
+
+<p>With this foundation, we can add:</p>
+
+<ol>
+  <li>
+<strong>Language Compatibility Checks</strong>
+    <pre class="code language-ruby"><code class="language-ruby">def compatible_with?(backend)
+  self.backend == backend
+end
+</code></pre>
+  </li>
+  <li>
+<strong>Automatic Conversion</strong>
+    <pre class="code language-ruby"><code class="language-ruby">def reload_for(backend)
+  Language.from_library(@path, symbol: @symbol, backend: backend)
+end
+</code></pre>
+  </li>
+  <li>
+<strong>Multi-Backend Languages</strong>
+    <pre class="code language-ruby"><code class="language-ruby">class MultiBackendLanguage
+  attr_reader :backends  # [:mri, :ffi, :rust]
+end
+</code></pre>
+  </li>
+</ol>
+
+<h2 id="summary">Summary</h2>
+
+<p>The <code>backend</code> attribute transforms language objects from “objects we have to guess about” to “objects that explicitly declare their capabilities and requirements.” This is a fundamental improvement in the architecture that makes TreeHaver more robust, debuggable, and maintainable.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Sun Dec 28 19:56:20 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-4.0.0).
+</div>
+
+    </div>
+  </body>
+</html>

@@ -72,6 +72,21 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>Enhanced <code>TreeHaver::RSpec::DependencyTags</code> debugging
+    <ul>
+      <li>
+<code>env_summary</code> method returns relevant environment variables for diagnosis</li>
+      <li>
+<code>grammar_works?</code> now logs detailed trace when <code>TREE_HAVER_DEBUG=1</code>
+</li>
+      <li>
+<code>before(:suite)</code> prints both env vars and dependency status when debugging</li>
+      <li>Helps diagnose differences between local and CI environments</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="changed">Changed</h3>
 
 <h3 id="deprecated">Deprecated</h3>
@@ -774,7 +789,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Dec 28 15:25:19 2025 by
+  Generated on Sun Dec 28 19:56:20 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
