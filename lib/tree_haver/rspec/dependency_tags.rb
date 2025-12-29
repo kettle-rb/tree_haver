@@ -235,6 +235,10 @@ module TreeHaver
           true
         rescue TreeHaver::BackendConflict, TreeHaver::NotAvailable, LoadError
           false
+        rescue StandardError
+          # TruffleRuby raises Polyglot::ForeignException (a StandardError subclass)
+          # when FFI encounters unsupported types like STRUCT_BY_VALUE
+          false
         end
 
         # Check if ruby_tree_sitter gem is available (MRI backend)
@@ -288,6 +292,10 @@ module TreeHaver
             TreeHaver::Backends::FFI::Native.try_load!
             true
           rescue TreeHaver::NotAvailable, LoadError
+            false
+          rescue StandardError
+            # TruffleRuby raises Polyglot::ForeignException when FFI
+            # encounters unsupported types like STRUCT_BY_VALUE
             false
           end
         end

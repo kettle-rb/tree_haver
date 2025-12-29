@@ -31,6 +31,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - Rakefile now properly overrides `test` task after `require "kettle/dev"`
   - Works around a bug in kettle-dev where test task runs minitest loader in CI
   - Ensures `rake test` runs RSpec specs instead of empty minitest suite
+- `TreeHaver::RSpec::DependencyTags` now catches TruffleRuby FFI exceptions
+  - TruffleRuby's FFI raises `Polyglot::ForeignException` for unsupported types like `STRUCT_BY_VALUE`
+  - `ffi_available?` and `libtree_sitter_available?` now return `false` instead of crashing
+  - Fixes spec loading errors on TruffleRuby
 
 ### Security
 
