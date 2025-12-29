@@ -147,12 +147,12 @@ begin
   task(test: :spec)
 rescue LoadError
   desc("(stub) spec is unavailable")
-  task(:spec) do # rubocop:disable Rake/DuplicateTask:
+  task(:spec) do # rubocop:disable Rake/DuplicateTask
     warn("NOTE: rspec isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
   end
 
   desc("(stub) test is unavailable")
-  task(:test) do
+  task(:test) do # rubocop:disable Rake/DuplicateTask
     warn("NOTE: rspec isn't installed, or is disabled for #{RUBY_VERSION} in the current environment")
   end
 end
