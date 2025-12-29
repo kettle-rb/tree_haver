@@ -378,7 +378,8 @@ module TreeHaver
               end
 
               dl = ::FFI::DynamicLibrary.open(path, flags)
-            rescue LoadError => e
+            rescue LoadError, RuntimeError => e
+              # TruffleRuby raises RuntimeError instead of LoadError when a shared library cannot be opened
               raise TreeHaver::NotAvailable, "Could not open language library at #{path}: #{e.message}"
             end
 

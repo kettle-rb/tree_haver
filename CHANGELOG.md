@@ -35,6 +35,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - TruffleRuby's FFI raises `Polyglot::ForeignException` for unsupported types like `STRUCT_BY_VALUE`
   - `ffi_available?` and `libtree_sitter_available?` now return `false` instead of crashing
   - Fixes spec loading errors on TruffleRuby
+- `TreeHaver::Backends::FFI::Language.from_library` now catches `RuntimeError` from TruffleRuby
+  - TruffleRuby raises `RuntimeError` instead of `LoadError` when a shared library cannot be opened
+  - Now properly converts to `TreeHaver::NotAvailable` with descriptive message
 
 ### Security
 
