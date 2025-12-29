@@ -421,4 +421,132 @@ RSpec.describe TreeHaver::GrammarFinder do
       expect(result).to include("does not exist")
     end
   end
+
+  describe ".tree_sitter_runtime_usable?" do
+    context "when no backend module is available" do
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).with(nil).and_return(nil)
+      end
+
+      it "returns false" do
+        described_class.reset_runtime_check!
+        expect(described_class.tree_sitter_runtime_usable?).to be false
+      end
+    end
+
+    context "when backend is not a tree-sitter backend" do
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).with(nil).and_return(TreeHaver::Backends::Citrus)
+      end
+
+      it "returns false" do
+        described_class.reset_runtime_check!
+        expect(described_class.tree_sitter_runtime_usable?).to be false
+      end
+    end
+
+    context "when tree-sitter backend parser creation fails with FFI error" do
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).with(nil).and_return(TreeHaver::Backends::FFI)
+        allow(TreeHaver::Backends::FFI::Parser).to receive(:new).and_raise(FFI::NotFoundError.new("test"))
+      end
+
+      it "returns false" do
+        described_class.reset_runtime_check!
+        expect(described_class.tree_sitter_runtime_usable?).to be false
+      end
+    end
+
+    context "when tree-sitter backend parser creation fails with LoadError" do
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).with(nil).and_return(TreeHaver::Backends::MRI)
+        allow(TreeHaver::Backends::MRI::Parser).to receive(:new).and_raise(LoadError.new("test"))
+      end
+
+      it "returns false" do
+        described_class.reset_runtime_check!
+        expect(described_class.tree_sitter_runtime_usable?).to be false
+      end
+    end
+
+    it "caches the result" do
+      described_class.reset_runtime_check!
+      # First call
+      result1 = described_class.tree_sitter_runtime_usable?
+      # Second call should return cached value without re-evaluating
+      expect(TreeHaver).not_to receive(:resolve_backend_module)
+      result2 = described_class.tree_sitter_runtime_usable?
+      expect(result1).to eq(result2)
+    end
+  end
+
+  describe "#not_found_message" do
+    let(:finder) { described_class.new(:test_lang) }
+
+    context "when env var file exists but runtime unavailable" do
+      before do
+        stub_env("TREE_SITTER_TEST_LANG_PATH" => "/valid/path.so")
+        allow(File).to receive(:exist?).and_return(false) # default
+        allow(File).to receive(:exist?).with("/valid/path.so").and_return(true)
+        allow(TreeHaver::PathValidator).to receive(:safe_library_path?).and_return(true)
+        allow(described_class).to receive(:tree_sitter_runtime_usable?).and_return(false)
+      end
+
+      it "mentions runtime availability in message" do
+        # Find should succeed
+        finder.find_library_path
+
+        msg = finder.not_found_message
+        expect(msg).to include("tree-sitter runtime")
+      end
+    end
+
+    context "when nothing is found and no env var set" do
+      before do
+        hide_env("TREE_SITTER_TEST_LANG_PATH")
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it "lists searched paths" do
+        finder.find_library_path
+        msg = finder.not_found_message
+        expect(msg).to include("Searched:")
+      end
+    end
+
+    context "when env var was set but file was removed after search" do
+      before do
+        # Simulate env var set to path that exists during validation but message says "was not used"
+        stub_env("TREE_SITTER_TEST_LANG_PATH" => "/some/path.so")
+        # First call during validation: file exists
+        # Subsequent calls: file doesn't exist (simulating file removal)
+        allow(File).to receive(:exist?).and_return(false) # default
+        allow(File).to receive(:exist?).with("/some/path.so").and_return(true)
+        allow(TreeHaver::PathValidator).to receive(:safe_library_path?).and_return(true)
+      end
+
+      it "generates message mentioning env var was set" do
+        finder.find_library_path
+        msg = finder.not_found_message
+        expect(msg).to include("TREE_SITTER_TEST_LANG_PATH")
+      end
+    end
+  end
+
+  describe "#search_info" do
+    it "returns diagnostic hash with all expected keys" do
+      info = finder.search_info
+      expect(info).to be_a(Hash)
+      expect(info).to include(:language, :env_var, :symbol, :library_filename, :search_paths, :available)
+    end
+
+    it "includes env_value in search_info when env var is set and valid" do
+      stub_env("TREE_SITTER_TOML_PATH" => "/valid/path.so")
+      allow(File).to receive(:exist?).and_return(false)
+      allow(File).to receive(:exist?).with("/valid/path.so").and_return(true)
+      allow(TreeHaver::PathValidator).to receive(:safe_library_path?).and_return(true)
+      info = finder.search_info
+      expect(info[:env_value]).to eq("/valid/path.so")
+    end
+  end
 end

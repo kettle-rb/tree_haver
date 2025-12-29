@@ -529,4 +529,118 @@ RSpec.describe TreeHaver do
       end
     end
   end
+
+  describe "::Language" do
+    describe ".method_missing for language loading" do
+      context "when tree-sitter path exists but Citrus fallback is available" do
+        before do
+          # Register both tree-sitter and Citrus for same language
+          mock_grammar = Module.new do
+            def self.parse(source)
+              # Mock parse
+            end
+          end
+          described_class.register_language(
+            :dual_backend_test,
+            path: "/nonexistent/fake.so",
+            symbol: "tree_sitter_test",
+            grammar_module: mock_grammar,
+          )
+        end
+
+        after do
+          described_class::LanguageRegistry.clear_cache!
+        end
+
+        it "falls back to Citrus when tree-sitter loading fails", :citrus_backend do
+          described_class.backend = :citrus
+          lang = described_class::Language.dual_backend_test
+          expect(lang).to be_a(described_class::Backends::Citrus::Language)
+        end
+      end
+
+      context "when no grammar is registered" do
+        it "raises NoMethodError" do
+          expect {
+            described_class::Language.totally_nonexistent_language_xyz
+          }.to raise_error(NoMethodError)
+        end
+      end
+    end
+
+    describe ".respond_to_missing?" do
+      it "returns true for registered languages" do
+        described_class.register_language(:respond_test, path: "/fake.so")
+        expect(described_class::Language.respond_to?(:respond_test)).to be true
+      end
+
+      it "returns false for unregistered languages" do
+        expect(described_class::Language.respond_to?(:totally_fake_unregistered)).to be false
+      end
+    end
+  end
+
+  describe "::Parser" do
+    describe "#backend detection" do
+      context "when explicit backend is set" do
+        it "returns the explicit backend", :citrus_backend do
+          parser = described_class::Parser.new(backend: :citrus)
+          expect(parser.backend).to eq(:citrus)
+        end
+      end
+
+      context "when backend is auto and implementation class name is checked" do
+        it "detects Citrus backend from class name", :citrus_backend do
+          described_class.backend = :citrus
+          parser = described_class::Parser.new
+          expect(parser.backend).to eq(:citrus)
+        end
+      end
+    end
+
+    describe "#initialize with backend fallback" do
+      context "when tree-sitter backend fails and Citrus is available" do
+        before do
+          # Force tree-sitter backends to fail
+          allow(described_class::Backends::MRI).to receive(:available?).and_return(false)
+          allow(described_class::Backends::Rust).to receive(:available?).and_return(false)
+          allow(described_class::Backends::FFI).to receive(:available?).and_return(false)
+          allow(described_class::Backends::Java).to receive(:available?).and_return(false)
+          allow(described_class::Backends::Citrus).to receive(:available?).and_return(true)
+        end
+
+        it "falls back to Citrus parser" do
+          parser = described_class::Parser.new
+          expect(parser.backend).to eq(:citrus)
+        end
+      end
+
+      context "when explicit backend is requested but not available" do
+        before do
+          allow(described_class::Backends::FFI).to receive(:available?).and_return(false)
+        end
+
+        it "raises NotAvailable for explicit backend" do
+          expect {
+            described_class::Parser.new(backend: :ffi)
+          }.to raise_error(described_class::NotAvailable, /not available/)
+        end
+      end
+    end
+
+    describe "#language= with Citrus language", :citrus_backend do
+      it "switches to Citrus parser when given Citrus language" do
+        # Start with a Citrus parser
+        parser = described_class::Parser.new(backend: :citrus)
+
+        # Create a Citrus language
+        require "toml-rb"
+        citrus_lang = described_class::Backends::Citrus::Language.new(TomlRB::Document)
+
+        # Set the Citrus language
+        parser.language = citrus_lang
+        expect(parser.backend).to eq(:citrus)
+      end
+    end
+  end
 end

@@ -1164,4 +1164,241 @@ RSpec.describe TreeHaver::Node do
       expect(node.prev_sibling).to be_nil
     end
   end
+
+  describe "#named_child fallback with is_named? method" do
+    context "when child uses is_named? instead of named?" do
+      let(:named_child) { double("NamedChild", type: "named", child_count: 0) }
+      let(:parent_node) do
+        double("ParentNode", type: "parent", child_count: 1)
+      end
+
+      before do
+        allow(parent_node).to receive(:respond_to?).with(:named_child).and_return(false)
+        allow(parent_node).to receive(:child).with(0).and_return(named_child)
+
+        # Child uses is_named? instead of named?
+        allow(named_child).to receive(:respond_to?).and_return(true) # default
+        allow(named_child).to receive(:respond_to?).with(:named?).and_return(false)
+        allow(named_child).to receive(:respond_to?).with(:is_named?).and_return(true)
+        allow(named_child).to receive(:is_named?).and_return(true)
+      end
+
+      it "uses is_named? fallback in named_child iteration" do
+        node = described_class.new(parent_node, source: source)
+        result = node.named_child(0)
+        expect(result.type).to eq("named")
+      end
+    end
+
+    context "when child has neither named? nor is_named?" do
+      let(:unknown_child) { double("UnknownChild", type: "unknown", child_count: 0) }
+      let(:parent_node) do
+        double("ParentNode", type: "parent", child_count: 1)
+      end
+
+      before do
+        allow(parent_node).to receive(:respond_to?).with(:named_child).and_return(false)
+        allow(parent_node).to receive(:child).with(0).and_return(unknown_child)
+
+        # Child has neither method - stub defaults first
+        allow(unknown_child).to receive(:respond_to?).and_return(true) # default
+        allow(unknown_child).to receive(:respond_to?).with(:named?).and_return(false)
+        allow(unknown_child).to receive(:respond_to?).with(:is_named?).and_return(false)
+      end
+
+      it "assumes child is named (default true)" do
+        node = described_class.new(parent_node, source: source)
+        result = node.named_child(0)
+        expect(result.type).to eq("unknown")
+      end
+    end
+  end
+
+  describe "#named_child_count fallback with is_named? method" do
+    context "when children use is_named? instead of named?" do
+      let(:named_child) { double("NamedChild", type: "named", child_count: 0) }
+      let(:unnamed_child) { double("UnnamedChild", type: "unnamed", child_count: 0) }
+      let(:parent_node) do
+        double("ParentNode", type: "parent", child_count: 2)
+      end
+
+      before do
+        allow(parent_node).to receive(:respond_to?).with(:named_child_count).and_return(false)
+        allow(parent_node).to receive(:child).with(0).and_return(named_child)
+        allow(parent_node).to receive(:child).with(1).and_return(unnamed_child)
+
+        # Children use is_named?
+        allow(named_child).to receive(:respond_to?).with(:named?).and_return(false)
+        allow(named_child).to receive(:respond_to?).with(:is_named?).and_return(true)
+        allow(named_child).to receive(:is_named?).and_return(true)
+
+        allow(unnamed_child).to receive(:respond_to?).with(:named?).and_return(false)
+        allow(unnamed_child).to receive(:respond_to?).with(:is_named?).and_return(true)
+        allow(unnamed_child).to receive(:is_named?).and_return(false)
+      end
+
+      it "uses is_named? fallback in count" do
+        node = described_class.new(parent_node, source: source)
+        expect(node.named_child_count).to eq(1)
+      end
+    end
+
+    context "when children have neither named? nor is_named?" do
+      let(:unknown_child1) { double("Unknown1", type: "u1", child_count: 0) }
+      let(:unknown_child2) { double("Unknown2", type: "u2", child_count: 0) }
+      let(:parent_node) do
+        double("ParentNode", type: "parent", child_count: 2)
+      end
+
+      before do
+        allow(parent_node).to receive(:respond_to?).with(:named_child_count).and_return(false)
+        allow(parent_node).to receive(:child).with(0).and_return(unknown_child1)
+        allow(parent_node).to receive(:child).with(1).and_return(unknown_child2)
+
+        [unknown_child1, unknown_child2].each do |child|
+          allow(child).to receive(:respond_to?).with(:named?).and_return(false)
+          allow(child).to receive(:respond_to?).with(:is_named?).and_return(false)
+        end
+      end
+
+      it "counts all children as named (default true)" do
+        node = described_class.new(parent_node, source: source)
+        expect(node.named_child_count).to eq(2)
+      end
+    end
+
+    context "when child returns nil during iteration" do
+      let(:valid_child) { double("ValidChild", type: "valid", child_count: 0) }
+      let(:parent_node) do
+        double("ParentNode", type: "parent", child_count: 2)
+      end
+
+      before do
+        allow(parent_node).to receive(:respond_to?).with(:named_child_count).and_return(false)
+        allow(parent_node).to receive(:child).with(0).and_return(valid_child)
+        allow(parent_node).to receive(:child).with(1).and_return(nil)
+
+        allow(valid_child).to receive(:respond_to?).with(:named?).and_return(true)
+        allow(valid_child).to receive(:named?).and_return(true)
+      end
+
+      it "skips nil children" do
+        node = described_class.new(parent_node, source: source)
+        expect(node.named_child_count).to eq(1)
+      end
+    end
+  end
+
+  describe "#<=> comparison operator edge cases" do
+    let(:mock_node1) do
+      double("Node1", type: "a", start_byte: 0, end_byte: 10, child_count: 0)
+    end
+
+    context "when comparing with non-Node object" do
+      it "returns nil for string" do
+        node = described_class.new(mock_node1, source: source)
+        expect(node <=> "not a node").to be_nil
+      end
+
+      it "returns nil for integer" do
+        node = described_class.new(mock_node1, source: source)
+        expect(node <=> 42).to be_nil
+      end
+
+      it "returns nil for nil" do
+        node = described_class.new(mock_node1, source: source)
+        expect(node <=> nil).to be_nil
+      end
+    end
+
+    context "when start_bytes differ" do
+      let(:mock_node2) do
+        double("Node2", type: "b", start_byte: 5, end_byte: 15, child_count: 0)
+      end
+
+      it "compares by start_byte first" do
+        node1 = described_class.new(mock_node1, source: source)
+        node2 = described_class.new(mock_node2, source: source)
+
+        expect(node1 <=> node2).to eq(-1)
+        expect(node2 <=> node1).to eq(1)
+      end
+    end
+
+    context "when start_bytes are equal but end_bytes differ" do
+      let(:mock_shorter) do
+        double("Shorter", type: "short", start_byte: 0, end_byte: 5, child_count: 0)
+      end
+      let(:mock_longer) do
+        double("Longer", type: "long", start_byte: 0, end_byte: 10, child_count: 0)
+      end
+
+      it "compares by end_byte second" do
+        shorter = described_class.new(mock_shorter, source: source)
+        longer = described_class.new(mock_longer, source: source)
+
+        expect(shorter <=> longer).to eq(-1)
+        expect(longer <=> shorter).to eq(1)
+      end
+    end
+
+    context "when start_byte and end_byte are equal" do
+      let(:mock_type_a) do
+        double("TypeA", type: "aaa", start_byte: 0, end_byte: 10, child_count: 0)
+      end
+      let(:mock_type_z) do
+        double("TypeZ", type: "zzz", start_byte: 0, end_byte: 10, child_count: 0)
+      end
+
+      it "compares by type for deterministic ordering" do
+        node_a = described_class.new(mock_type_a, source: source)
+        node_z = described_class.new(mock_type_z, source: source)
+
+        expect(node_a <=> node_z).to eq(-1)
+        expect(node_z <=> node_a).to eq(1)
+      end
+
+      it "returns 0 for nodes with same position and type" do
+        mock_same = double("Same", type: "same", start_byte: 5, end_byte: 10, child_count: 0)
+        mock_identical = double("Identical", type: "same", start_byte: 5, end_byte: 10, child_count: 0)
+
+        node1 = described_class.new(mock_same, source: source)
+        node2 = described_class.new(mock_identical, source: source)
+
+        expect(node1 <=> node2).to eq(0)
+      end
+    end
+  end
+
+  describe "#== equality edge cases" do
+    let(:mock_node) do
+      double("Node", type: "test", start_byte: 0, end_byte: 10, child_count: 0)
+    end
+
+    it "returns false when compared with string" do
+      node = described_class.new(mock_node, source: source)
+      expect(node == "string").to be false
+    end
+
+    it "returns false when compared with integer" do
+      node = described_class.new(mock_node, source: source)
+      expect(node == 42).to be false
+    end
+
+    it "returns false when compared with nil" do
+      node = described_class.new(mock_node, source: source)
+      expect(node == nil).to be false # rubocop:disable Style/NilComparison
+    end
+  end
+
+  describe "#hash delegation" do
+    let(:mock_node) do
+      double("Node", type: "test", start_byte: 0, end_byte: 10, child_count: 0, hash: 12345)
+    end
+
+    it "delegates to inner_node hash" do
+      node = described_class.new(mock_node, source: source)
+      expect(node.hash).to eq(12345)
+    end
+  end
 end

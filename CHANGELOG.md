@@ -25,6 +25,10 @@ Please file a bug if you notice a violation of semantic versioning.
   - `grammar_works?` now logs detailed trace when `TREE_HAVER_DEBUG=1`
   - `before(:suite)` prints both env vars and dependency status when debugging
   - Helps diagnose differences between local and CI environments
+- Many new specs for:
+  - TreeHaver::GrammarFinder
+  - TreeHaver::Node
+  - TreeHaver::Tree
 
 ### Changed
 

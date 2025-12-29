@@ -208,4 +208,22 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
       expect(result).to eq("yielded value")
     end
   end
+
+  describe "#respond_to_missing?" do
+    let(:mock_inner_tree) do
+      double("InnerTree", root_node: double("Node"))
+    end
+
+    it "returns true for methods on inner_tree" do
+      allow(mock_inner_tree).to receive(:respond_to?).with(:custom_method, false).and_return(true)
+      tree_wrapper = described_class.new(mock_inner_tree, source: "test")
+      expect(tree_wrapper.respond_to?(:custom_method)).to be true
+    end
+
+    it "returns false for methods not on inner_tree" do
+      allow(mock_inner_tree).to receive(:respond_to?).with(:nonexistent_xyz, false).and_return(false)
+      tree_wrapper = described_class.new(mock_inner_tree, source: "test")
+      expect(tree_wrapper.respond_to?(:nonexistent_xyz)).to be false
+    end
+  end
 end
