@@ -620,10 +620,12 @@ RSpec.describe TreeHaver do
           allow(described_class::Backends::FFI).to receive(:available?).and_return(false)
         end
 
-        it "raises NotAvailable for explicit backend" do
+        it "raises NotAvailable or BackendConflict for explicit backend" do
+          # FFI can fail with NotAvailable (gem not available) or BackendConflict
+          # (MRI already loaded, blocking FFI). Both indicate the backend is unusable.
           expect {
             described_class::Parser.new(backend: :ffi)
-          }.to raise_error(described_class::NotAvailable, /not available/)
+          }.to raise_error(described_class::Error, /not available|blocked by/)
         end
       end
     end

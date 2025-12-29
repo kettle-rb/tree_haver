@@ -18,10 +18,20 @@ module TreeHaver
       #
       # Attempts to require ruby_tree_sitter on first call and caches the result.
       #
+      # @note When this method returns true, the FFI backend becomes permanently
+      #   unavailable for the remainder of the process. This is because loading
+      #   ruby_tree_sitter defines `::TreeSitter::Parser`, which the FFI backend
+      #   checks to detect conflicts. The MRI backend statically links tree-sitter,
+      #   while FFI dynamically links libtree-sitter.so - when both are loaded,
+      #   FFI will segfault when trying to set a language on a parser due to
+      #   incompatible pointer types from different tree-sitter builds.
+      #
       # @return [Boolean] true if ruby_tree_sitter is available
+      # @see TreeHaver::Backends::FFI.available? FFI availability check
       # @example
       #   if TreeHaver::Backends::MRI.available?
       #     puts "MRI backend is ready"
+      #     # Note: FFI backend is now blocked for this process
       #   end
       class << self
         def available?

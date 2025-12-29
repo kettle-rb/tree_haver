@@ -17,7 +17,7 @@
     [137, 3, 1019, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [212]", 2865123722],
     [212, 3, 739, "RSpec/RepeatedExampleGroupDescription: Repeated describe block description on line(s) [137]", 3802422288]
   ],
-  "spec/tree_haver_spec.rb:2548532033": [
+  "spec/tree_haver_spec.rb:3721367859": [
     [539, 13, 65, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 1978624421]
   ]
 }

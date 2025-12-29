@@ -58,12 +58,14 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
     end
   end
 
-  # Check if a backend is blocked at runtime using TreeHaver's live tracking
-  # This uses the same mechanism as backend_protect
+  # Check if a backend is blocked at runtime
+  # Uses the same logic as the backend's available? method to prevent false positives
   def backend_blocked?(backend)
     return false unless backend == :ffi
-    # FFI is blocked by MRI - check if MRI has been used
-    TreeHaver.backends_used.include?(:mri)
+    # FFI is blocked when MRI has been loaded (defines ::TreeSitter::Parser)
+    # This matches the logic in Backends::FFI.available? to avoid mismatches
+    # between "usable" check and actual availability
+    defined?(TreeSitter::Parser)
   end
 
   # Get skip reason for a backend
