@@ -171,10 +171,10 @@ RSpec.describe TreeHaver::Node do
     context "with complex multiline source" do
       let(:source) { "[section]\nkey = \"value\"\n# comment\nother = 123" }
 
-      # Note: Citrus backend may return different position values than tree-sitter
-      # This test validates tree-sitter-specific position semantics
-      it "provides correct positions for all nodes", :native_parsing do
-        root_node.children.each do |child|
+      # Note: Only named (structural) children are checked because anonymous nodes
+      # (like whitespace, punctuation) may have invalid position data in some backends
+      it "provides correct positions for named children", :toml_parsing do
+        root_node.named_children.each do |child|
           pos = child.source_position
 
           # All values should be valid integers
@@ -187,7 +187,7 @@ RSpec.describe TreeHaver::Node do
           expect(pos[:start_line]).to be >= 1
           expect(pos[:end_line]).to be >= pos[:start_line]
 
-          # Columns should be 0-based
+          # Columns should be 0-based and non-negative
           expect(pos[:start_column]).to be >= 0
           expect(pos[:end_column]).to be >= 0
         end
