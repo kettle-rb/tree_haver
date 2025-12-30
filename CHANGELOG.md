@@ -20,7 +20,22 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- Backend Platform Compatibility section to README
+  - Complete compatibility matrix showing which backends work on MRI, JRuby, TruffleRuby
+  - Detailed explanations for TruffleRuby and JRuby limitations
+
 ### Changed
+
+- README now accurately documents TruffleRuby backend support
+  - FFI backend doesn't work on TruffleRuby due to `STRUCT_BY_VALUE` limitation in TruffleRuby's FFI
+  - Rust backend (tree_stump) doesn't work due to magnus/rb-sys incompatibility with TruffleRuby's C API
+  - TruffleRuby users should use Prism, Psych, Commonmarker, Markly, or Citrus backends
+- Documented confirmed tree-sitter backend limitations:
+  - **TruffleRuby**: No tree-sitter backend works (FFI, MRI, Rust all fail)
+  - **JRuby**: Only Java and FFI backends work; Rust/MRI don't
+- Updated Rust Backend section with platform compatibility notes
+- Updated FFI Backend section with TruffleRuby limitation details
+- Use kettle-rb/ts-grammar-setup GHA in CI workflows
 
 ### Deprecated
 
@@ -38,6 +53,10 @@ Please file a bug if you notice a violation of semantic versioning.
 - `TreeHaver::Backends::FFI::Language.from_library` now catches `RuntimeError` from TruffleRuby
   - TruffleRuby raises `RuntimeError` instead of `LoadError` when a shared library cannot be opened
   - Now properly converts to `TreeHaver::NotAvailable` with descriptive message
+- `TreeHaver::Backends::FFI::Native.try_load!` now only sets `@loaded = true` after all `attach_function` calls succeed
+  - Previously, `loaded?` returned `true` even when `attach_function` failed (e.g., on TruffleRuby)
+  - Now `loaded?` correctly returns `false` when FFI functions couldn't be attached
+  - Ensures FFI tests are properly skipped on TruffleRuby
 
 ### Security
 

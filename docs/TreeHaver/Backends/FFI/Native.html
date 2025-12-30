@@ -317,12 +317,6 @@ This prevents polluting the Ruby environment at require time.</p>
       <pre class="lines">
 
 
-90
-91
-92
-93
-94
-95
 96
 97
 98
@@ -332,10 +326,16 @@ This prevents polluting the Ruby environment at require time.</p>
 102
 103
 104
-105</pre>
+105
+106
+107
+108
+109
+110
+111</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 90</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 96</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_define_ts_node_struct!'>define_ts_node_struct!</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_const_defined?'>const_defined?</span><span class='lparen'>(</span><span class='symbol'>:TSNode</span><span class='comma'>,</span> <span class='kw'>false</span><span class='rparen'>)</span>
@@ -387,12 +387,6 @@ This prevents polluting the Ruby environment at require time.</p>
       <pre class="lines">
 
 
-73
-74
-75
-76
-77
-78
 79
 80
 81
@@ -400,10 +394,16 @@ This prevents polluting the Ruby environment at require time.</p>
 83
 84
 85
-86</pre>
+86
+87
+88
+89
+90
+91
+92</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 73</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 79</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_define_ts_point_struct!'>define_ts_point_struct!</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_const_defined?'>const_defined?</span><span class='lparen'>(</span><span class='symbol'>:TSPoint</span><span class='comma'>,</span> <span class='kw'>false</span><span class='rparen'>)</span>
@@ -470,22 +470,22 @@ This prevents polluting the Ruby environment at require time.</p>
       <pre class="lines">
 
 
-57
-58
-59
-60
-61
-62
 63
 64
 65
 66
 67
 68
-69</pre>
+69
+70
+71
+72
+73
+74
+75</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 57</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 63</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ensure_ffi_extended!'>ensure_ffi_extended!</span>
   <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='ivar'>@ffi_extended</span>
@@ -561,19 +561,19 @@ If TREE_SITTER_RUNTIME_LIB is set, it is tried first.</p>
       <pre class="lines">
 
 
-121
-122
-123
-124
-125
-126
 127
 128
 129
-130</pre>
+130
+131
+132
+133
+134
+135
+136</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 121</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 127</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_lib_candidates'>lib_candidates</span>
   <span class='lbracket'>[</span>
@@ -632,12 +632,12 @@ If TREE_SITTER_RUNTIME_LIB is set, it is tried first.</p>
       <pre class="lines">
 
 
-195
-196
-197</pre>
+207
+208
+209</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 195</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 207</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_loaded?'>loaded?</span>
   <span class='op'>!</span><span class='op'>!</span><span class='ivar'>@loaded</span>
@@ -696,12 +696,6 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
       <pre class="lines">
 
 
-139
-140
-141
-142
-143
-144
 145
 146
 147
@@ -750,10 +744,22 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 190
 191
 192
-193</pre>
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 139</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 145</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_try_load!'>try_load!</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='ivar'>@loaded</span>
@@ -770,15 +776,16 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 
   <span class='id identifier rubyid_last_error'>last_error</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='id identifier rubyid_candidates'>candidates</span> <span class='op'>=</span> <span class='id identifier rubyid_lib_candidates'>lib_candidates</span>
+  <span class='id identifier rubyid_lib_loaded'>lib_loaded</span> <span class='op'>=</span> <span class='kw'>false</span>
   <span class='id identifier rubyid_candidates'>candidates</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
     <span class='id identifier rubyid_ffi_lib'>ffi_lib</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
-    <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>true</span>
+    <span class='id identifier rubyid_lib_loaded'>lib_loaded</span> <span class='op'>=</span> <span class='kw'>true</span>
     <span class='kw'>break</span>
   <span class='kw'>rescue</span> <span class='op'>::</span><span class='const'>FFI</span><span class='op'>::</span><span class='const'>NotFoundError</span><span class='comma'>,</span> <span class='const'>LoadError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
     <span class='id identifier rubyid_last_error'>last_error</span> <span class='op'>=</span> <span class='id identifier rubyid_e'>e</span>
   <span class='kw'>end</span>
 
-  <span class='kw'>unless</span> <span class='ivar'>@loaded</span>
+  <span class='kw'>unless</span> <span class='id identifier rubyid_lib_loaded'>lib_loaded</span>
     <span class='comment'># :nocov:
 </span>    <span class='id identifier rubyid_tried'>tried</span> <span class='op'>=</span> <span class='id identifier rubyid_candidates'>candidates</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>, </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
     <span class='id identifier rubyid_env_hint'>env_hint</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_RUNTIME_LIB</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'> TREE_SITTER_RUNTIME_LIB=</span><span class='embexpr_beg'>#{</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_RUNTIME_LIB</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='tstring_end'>&quot;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
@@ -792,6 +799,8 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 </span>  <span class='kw'>end</span>
 
   <span class='comment'># Attach functions after lib is selected
+</span>  <span class='comment'># Note: TruffleRuby&#39;s FFI doesn&#39;t support STRUCT_BY_VALUE return types,
+</span>  <span class='comment'># so these attach_function calls will fail on TruffleRuby.
 </span>  <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_parser_new</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:pointer</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_parser_delete</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:pointer</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:void</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_parser_set_language</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:pointer</span><span class='comma'>,</span> <span class='symbol'>:pointer</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:bool</span><span class='rparen'>)</span>
@@ -809,6 +818,9 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
   <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_node_end_point</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:ts_node</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:ts_point</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_node_is_null</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:ts_node</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:bool</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_node_is_named</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:ts_node</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:bool</span><span class='rparen'>)</span>
+
+  <span class='comment'># Only mark as fully loaded after all attach_function calls succeed
+</span>  <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>true</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -861,13 +873,13 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
       <pre class="lines">
 
 
-109
-110
-111
-112</pre>
+115
+116
+117
+118</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 109</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 115</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ts_node_class'>ts_node_class</span>
   <span class='id identifier rubyid_ensure_ffi_extended!'>ensure_ffi_extended!</span>
@@ -883,7 +895,7 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Dec 29 15:21:11 2025 by
+  Generated on Mon Dec 29 18:42:25 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

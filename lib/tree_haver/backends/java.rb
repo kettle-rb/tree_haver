@@ -13,6 +13,12 @@ module TreeHaver
     # - The Query API for pattern matching
     # - Tree editing for incremental re-parsing
     #
+    # == Platform Compatibility
+    #
+    # - MRI Ruby: ✗ Not available (no JVM)
+    # - JRuby: ✓ Full support (native Java integration)
+    # - TruffleRuby: ✗ Not available (java-tree-sitter requires JRuby's Java interop)
+    #
     # == Installation
     #
     # 1. Download the JAR from Maven Central:
@@ -24,7 +30,6 @@ module TreeHaver
     # 3. Use JRuby to run your code:
     #    jruby -e "require 'tree_haver'; puts TreeHaver::Backends::Java.available?"
     #
-    # @note Only available on JRuby
     # @see https://github.com/tree-sitter/java-tree-sitter source
     # @see https://tree-sitter.github.io/java-tree-sitter java-tree-sitter documentation
     # @see https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter Maven Central

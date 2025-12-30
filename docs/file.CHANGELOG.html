@@ -72,7 +72,37 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>Backend Platform Compatibility section to README
+    <ul>
+      <li>Complete compatibility matrix showing which backends work on MRI, JRuby, TruffleRuby</li>
+      <li>Detailed explanations for TruffleRuby and JRuby limitations</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="changed">Changed</h3>
+
+<ul>
+  <li>README now accurately documents TruffleRuby backend support
+    <ul>
+      <li>FFI backend doesn’t work on TruffleRuby due to <code>STRUCT_BY_VALUE</code> limitation in TruffleRuby’s FFI</li>
+      <li>Rust backend (tree_stump) doesn’t work due to magnus/rb-sys incompatibility with TruffleRuby’s C API</li>
+      <li>TruffleRuby users should use Prism, Psych, Commonmarker, Markly, or Citrus backends</li>
+    </ul>
+  </li>
+  <li>Documented confirmed tree-sitter backend limitations:
+    <ul>
+      <li>
+<strong>TruffleRuby</strong>: No tree-sitter backend works (FFI, MRI, Rust all fail)</li>
+      <li>
+<strong>JRuby</strong>: Only Java and FFI backends work; Rust/MRI don’t</li>
+    </ul>
+  </li>
+  <li>Updated Rust Backend section with platform compatibility notes</li>
+  <li>Updated FFI Backend section with TruffleRuby limitation details</li>
+  <li>Use kettle-rb/ts-grammar-setup GHA in CI workflows</li>
+</ul>
 
 <h3 id="deprecated">Deprecated</h3>
 
@@ -102,6 +132,14 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     <ul>
       <li>TruffleRuby raises <code>RuntimeError</code> instead of <code>LoadError</code> when a shared library cannot be opened</li>
       <li>Now properly converts to <code>TreeHaver::NotAvailable</code> with descriptive message</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Backends::FFI::Native.try_load!</code> now only sets <code>@loaded = true</code> after all <code>attach_function</code> calls succeed
+    <ul>
+      <li>Previously, <code>loaded?</code> returned <code>true</code> even when <code>attach_function</code> failed (e.g., on TruffleRuby)</li>
+      <li>Now <code>loaded?</code> correctly returns <code>false</code> when FFI functions couldn’t be attached</li>
+      <li>Ensures FFI tests are properly skipped on TruffleRuby</li>
     </ul>
   </li>
 </ul>
@@ -835,7 +873,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Dec 29 15:21:11 2025 by
+  Generated on Mon Dec 29 18:42:24 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -8,7 +8,12 @@ module TreeHaver
     # for MRI Ruby. It provides the most feature-complete tree-sitter integration
     # on MRI, including support for the Query API.
     #
-    # @note This backend only works on MRI Ruby, not JRuby or TruffleRuby
+    # == Platform Compatibility
+    #
+    # - MRI Ruby: ✓ Full support (fastest tree-sitter backend on MRI)
+    # - JRuby: ✗ Cannot load native C extensions (runs on JVM)
+    # - TruffleRuby: ✗ C extension not compatible with TruffleRuby
+    #
     # @see https://github.com/Faveod/ruby-tree-sitter ruby_tree_sitter
     module MRI
       @load_attempted = false

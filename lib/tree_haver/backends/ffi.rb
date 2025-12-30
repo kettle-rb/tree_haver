@@ -5,8 +5,7 @@ module TreeHaver
     # FFI-based backend for calling libtree-sitter directly
     #
     # This backend uses Ruby FFI (JNR-FFI on JRuby) to call the native tree-sitter
-    # C library without requiring MRI C extensions. This makes it compatible with
-    # JRuby, TruffleRuby, and other Ruby implementations that support FFI.
+    # C library without requiring MRI C extensions.
     #
     # The FFI backend currently supports:
     # - Parsing source code
@@ -15,6 +14,13 @@ module TreeHaver
     #
     # Not yet supported:
     # - Query API (tree-sitter queries/patterns)
+    #
+    # == Platform Compatibility
+    #
+    # - MRI Ruby: ✓ Full support
+    # - JRuby: ✓ Full support (uses JNR-FFI)
+    # - TruffleRuby: ✗ TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types
+    #   (used by ts_tree_root_node, ts_node_child, ts_node_start_point, etc.)
     #
     # @note Requires the `ffi` gem and libtree-sitter shared library to be installed
     # @see https://github.com/ffi/ffi Ruby FFI
@@ -151,15 +157,16 @@ module TreeHaver
 
             last_error = nil
             candidates = lib_candidates
+            lib_loaded = false
             candidates.each do |name|
               ffi_lib(name)
-              @loaded = true
+              lib_loaded = true
               break
             rescue ::FFI::NotFoundError, LoadError => e
               last_error = e
             end
 
-            unless @loaded
+            unless lib_loaded
               # :nocov:
               tried = candidates.join(", ")
               env_hint = ENV["TREE_SITTER_RUNTIME_LIB"] ? " TREE_SITTER_RUNTIME_LIB=#{ENV["TREE_SITTER_RUNTIME_LIB"]}." : ""
@@ -173,6 +180,8 @@ module TreeHaver
             end
 
             # Attach functions after lib is selected
+            # Note: TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types,
+            # so these attach_function calls will fail on TruffleRuby.
             attach_function(:ts_parser_new, [], :pointer)
             attach_function(:ts_parser_delete, [:pointer], :void)
             attach_function(:ts_parser_set_language, [:pointer, :pointer], :bool)
@@ -190,6 +199,9 @@ module TreeHaver
             attach_function(:ts_node_end_point, [:ts_node], :ts_point)
             attach_function(:ts_node_is_null, [:ts_node], :bool)
             attach_function(:ts_node_is_named, [:ts_node], :bool)
+
+            # Only mark as fully loaded after all attach_function calls succeed
+            @loaded = true
           end
 
           def loaded?

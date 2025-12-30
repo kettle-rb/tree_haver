@@ -15,10 +15,32 @@ require_relative "tree_haver/language_registry"
 # Provides a unified API for parsing source code across MRI Ruby, JRuby, and TruffleRuby
 # using tree-sitter grammars or language-specific native parsers.
 #
+# == Backends
+#
 # Supports 10 backends:
 # - Tree-sitter: MRI (C), Rust, FFI, Java
 # - Native parsers: Prism (Ruby), Psych (YAML), Commonmarker (Markdown), Markly (GFM)
 # - Pure Ruby: Citrus (portable fallback)
+#
+# == Platform Compatibility
+#
+# Not all backends work on all Ruby platforms:
+#
+#   | Backend      | MRI | JRuby | TruffleRuby |
+#   |--------------|-----|-------|-------------|
+#   | MRI (C ext)  | ✓   | ✗     | ✗           |
+#   | Rust         | ✓   | ✗     | ✗           |
+#   | FFI          | ✓   | ✓     | ✗           |
+#   | Java         | ✗   | ✓     | ✗           |
+#   | Prism        | ✓   | ✓     | ✓           |
+#   | Psych        | ✓   | ✓     | ✓           |
+#   | Citrus       | ✓   | ✓     | ✓           |
+#   | Commonmarker | ✓   | ✗     | ?           |
+#   | Markly       | ✓   | ✗     | ?           |
+#
+# - JRuby: Cannot load native C/Rust extensions; use FFI, Java, or pure Ruby backends
+# - TruffleRuby: FFI doesn't support STRUCT_BY_VALUE; magnus/rb-sys incompatible with C API;
+#   use Prism, Psych, Citrus, or potentially Commonmarker/Markly
 #
 # @example Basic usage with tree-sitter
 #   # Load a language grammar

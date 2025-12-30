@@ -85,14 +85,7 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
-  <div class="note notetag">
-    <strong>Note:</strong>
-    <div class='inline'><p>This backend works on MRI Ruby. JRuby/TruffleRuby support is unknown.</p>
-</div>
-  </div>
-
-<p>Rust backend using the tree_stump gem</p>
+    <p>Rust backend using the tree_stump gem</p>
 
 <p>This backend wraps the tree_stump gem, which provides Ruby bindings to<br />
 tree-sitter written in Rust. It offers native performance with Rust’s<br />
@@ -100,6 +93,14 @@ safety guarantees and includes precompiled binaries for common platforms.</p>
 
 <p>tree_stump supports incremental parsing and the Query API, making it<br />
 suitable for editor/IDE use cases where performance is critical.</p>
+
+<p>== Platform Compatibility</p>
+
+<ul>
+  <li>MRI Ruby: ✓ Full support</li>
+  <li>JRuby: ✗ Cannot load native extensions (runs on JVM)</li>
+  <li>TruffleRuby: ✗ magnus/rb-sys incompatible with TruffleRuby’s C API emulation</li>
+</ul>
 
 
   </div>
@@ -255,21 +256,21 @@ suitable for editor/IDE use cases where performance is critical.</p>
       <pre class="lines">
 
 
-30
-31
-32
-33
-34
 35
 36
 37
 38
 39
 40
-41</pre>
+41
+42
+43
+44
+45
+46</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 30</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 35</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_available?'>available?</span>
   <span class='kw'>return</span> <span class='ivar'>@loaded</span> <span class='kw'>if</span> <span class='ivar'>@load_attempted</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -339,18 +340,18 @@ suitable for editor/IDE use cases where performance is critical.</p>
       <pre class="lines">
 
 
-58
-59
-60
-61
-62
 63
 64
 65
-66</pre>
+66
+67
+68
+69
+70
+71</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 63</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='kw'>return</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_available?'>available?</span>
@@ -395,13 +396,13 @@ suitable for editor/IDE use cases where performance is critical.</p>
       <pre class="lines">
 
 
-47
-48
-49
-50</pre>
+52
+53
+54
+55</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 47</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 52</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
   <span class='ivar'>@load_attempted</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -417,7 +418,7 @@ suitable for editor/IDE use cases where performance is critical.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Dec 29 15:21:11 2025 by
+  Generated on Mon Dec 29 18:42:25 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

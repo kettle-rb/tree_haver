@@ -11,7 +11,12 @@ module TreeHaver
     # tree_stump supports incremental parsing and the Query API, making it
     # suitable for editor/IDE use cases where performance is critical.
     #
-    # @note This backend works on MRI Ruby. JRuby/TruffleRuby support is unknown.
+    # == Platform Compatibility
+    #
+    # - MRI Ruby: ✓ Full support
+    # - JRuby: ✗ Cannot load native extensions (runs on JVM)
+    # - TruffleRuby: ✗ magnus/rb-sys incompatible with TruffleRuby's C API emulation
+    #
     # @see https://github.com/joker1007/tree_stump tree_stump
     module Rust
       @load_attempted = false

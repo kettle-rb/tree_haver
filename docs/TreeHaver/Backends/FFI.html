@@ -95,8 +95,7 @@
 <p>FFI-based backend for calling libtree-sitter directly</p>
 
 <p>This backend uses Ruby FFI (JNR-FFI on JRuby) to call the native tree-sitter<br />
-C library without requiring MRI C extensions. This makes it compatible with<br />
-JRuby, TruffleRuby, and other Ruby implementations that support FFI.</p>
+C library without requiring MRI C extensions.</p>
 
 <p>The FFI backend currently supports:</p>
 <ul>
@@ -108,6 +107,15 @@ JRuby, TruffleRuby, and other Ruby implementations that support FFI.</p>
 <p>Not yet supported:</p>
 <ul>
   <li>Query API (tree-sitter queries/patterns)</li>
+</ul>
+
+<p>== Platform Compatibility</p>
+
+<ul>
+  <li>MRI Ruby: ✓ Full support</li>
+  <li>JRuby: ✓ Full support (uses JNR-FFI)</li>
+  <li>TruffleRuby: ✗ TruffleRuby’s FFI doesn’t support STRUCT_BY_VALUE return types<br />
+(used by ts_tree_root_node, ts_node_child, ts_node_start_point, etc.)</li>
 </ul>
 
 
@@ -314,15 +322,15 @@ Once MRI loads, using FFI will cause segfaults.</p>
       <pre class="lines">
 
 
-216
-217
-218
-219
-220
-221</pre>
+228
+229
+230
+231
+232
+233</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 216</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 228</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_available?'>available?</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI (module)">FFI</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ffi_gem_available?'><span class='object_link'><a href="#ffi_gem_available%3F-class_method" title="TreeHaver::Backends::FFI.ffi_gem_available? (method)">ffi_gem_available?</a></span></span>
@@ -386,18 +394,18 @@ Once MRI loads, using FFI will cause segfaults.</p>
       <pre class="lines">
 
 
-241
-242
-243
-244
-245
-246
-247
-248
-249</pre>
+253
+254
+255
+256
+257
+258
+259
+260
+261</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 241</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 253</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='kw'>return</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_available?'>available?</span>
@@ -459,19 +467,19 @@ Once MRI loads, using FFI will cause segfaults.</p>
       <pre class="lines">
 
 
-31
-32
-33
-34
-35
-36
 37
 38
 39
-40</pre>
+40
+41
+42
+43
+44
+45
+46</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 37</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ffi_gem_available?'>ffi_gem_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@ffi_gem_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@ffi_gem_available</span><span class='rparen'>)</span>
@@ -520,13 +528,13 @@ but this method is provided for API consistency.</p>
       <pre class="lines">
 
 
-230
-231
-232
-233</pre>
+242
+243
+244
+245</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 230</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 242</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
   <span class='comment'># FFI backend uses constant-time availability check, no state to reset
@@ -542,7 +550,7 @@ but this method is provided for API consistency.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Dec 29 15:21:11 2025 by
+  Generated on Mon Dec 29 18:42:25 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -85,18 +85,19 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
-  <div class="note notetag">
-    <strong>Note:</strong>
-    <div class='inline'><p>This backend only works on MRI Ruby, not JRuby or TruffleRuby</p>
-</div>
-  </div>
-
-<p>MRI backend using the ruby_tree_sitter gem</p>
+    <p>MRI backend using the ruby_tree_sitter gem</p>
 
 <p>This backend wraps the ruby_tree_sitter gem, which is a native C extension<br />
 for MRI Ruby. It provides the most feature-complete tree-sitter integration<br />
 on MRI, including support for the Query API.</p>
+
+<p>== Platform Compatibility</p>
+
+<ul>
+  <li>MRI Ruby: ✓ Full support (fastest tree-sitter backend on MRI)</li>
+  <li>JRuby: ✗ Cannot load native C extensions (runs on JVM)</li>
+  <li>TruffleRuby: ✗ C extension not compatible with TruffleRuby</li>
+</ul>
 
 
   </div>
@@ -252,21 +253,21 @@ on MRI, including support for the Query API.</p>
       <pre class="lines">
 
 
-37
-38
-39
-40
-41
 42
 43
 44
 45
 46
 47
-48</pre>
+48
+49
+50
+51
+52
+53</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 37</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 42</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_available?'>available?</span>
   <span class='kw'>return</span> <span class='ivar'>@loaded</span> <span class='kw'>if</span> <span class='ivar'>@load_attempted</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -336,18 +337,18 @@ on MRI, including support for the Query API.</p>
       <pre class="lines">
 
 
-65
-66
-67
-68
-69
 70
 71
 72
-73</pre>
+73
+74
+75
+76
+77
+78</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 65</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 70</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='kw'>return</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_available?'>available?</span>
@@ -392,13 +393,13 @@ on MRI, including support for the Query API.</p>
       <pre class="lines">
 
 
-54
-55
-56
-57</pre>
+59
+60
+61
+62</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 54</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 59</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
   <span class='ivar'>@load_attempted</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -414,7 +415,7 @@ on MRI, including support for the Query API.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Dec 29 15:21:11 2025 by
+  Generated on Mon Dec 29 18:42:25 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
