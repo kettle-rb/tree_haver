@@ -1,13 +1,18 @@
 # FFI Backend - works on MRI, JRuby, and TruffleRuby
-gem "ffi", github: "ffi/ffi"
-gem "toml-rb", github: "emancu/toml-rb"
-gem "citrus", github: "mjackson/citrus"
+gem "ffi", github: "ffi/ffi", branch: "master", require: false # DO NOT LOAD, because conflicts with MRI
+gem "toml-rb", github: "emancu/toml-rb", branch: "master"
+gem "citrus", github: "mjackson/citrus", branch: "master"
+gem "prism", github: "ruby/prism", branch: "main"
+gem "unparser", github: "mbj/unparser", branch: "main"
 
 platform :mri do
   # MRI Backend
-  gem "ruby_tree_sitter", github: "Faveod/ruby-tree-sitter"
+  gem "ruby_tree_sitter", github: "Faveod/ruby-tree-sitter", require: false # DO NOT LOAD, because conflicts with FFI
+  gem "markly", github: "ioquatix/markly"
+  gem "commonmarker", github: "gjtorikian/commonmarker"
   # Rust Backend
   gem "tree_stump",
+    # path: "../../vendor/tree_stump"
     github: "joker1007/tree_stump",
     branch: "main"
 end
