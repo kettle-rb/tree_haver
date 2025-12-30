@@ -88,41 +88,67 @@ RSpec.describe TreeHaver::Language do
     end
   end
 
-  # These tests mock from_library which only works with native tree-sitter backends
-  # On platforms without native backends, the Citrus backend is used instead which doesn't call from_library
-  describe "additional method_missing edge cases", :native_parsing do
-    it "derives symbol from name when registration has no symbol" do
-      TreeHaver.register_language(:nosymbol, path: "/path.so", symbol: nil)
-      # When no symbol is registered, it derives "tree_sitter_#{method_name}"
-      # and name is derived from symbol by stripping "tree_sitter_" prefix
-      expect(described_class).to receive(:from_library).with(
-        "/path.so",
-        symbol: "tree_sitter_nosymbol",
-        name: "nosymbol",
-      )
-      described_class.nosymbol
+  # These tests mock from_library which only works with native tree-sitter backends.
+  # Each backend has its own test block with the appropriate availability tag.
+  describe "additional method_missing edge cases" do
+    shared_examples "method_missing derives symbol from name" do
+      it "derives symbol from name when registration has no symbol" do
+        TreeHaver.register_language(:nosymbol, path: "/path.so", symbol: nil)
+        expect(described_class).to receive(:from_library).with(
+          "/path.so",
+          symbol: "tree_sitter_nosymbol",
+          name: "nosymbol",
+        )
+        described_class.nosymbol
+      end
     end
 
-    it "allows name override via kwargs" do
-      TreeHaver.register_language(:test, path: "/path.so")
-      # Symbol is derived as "tree_sitter_test", but name is explicitly overridden
-      expect(described_class).to receive(:from_library).with(
-        "/path.so",
-        symbol: "tree_sitter_test",
-        name: "custom_name",
-      )
-      described_class.test(name: "custom_name")
+    shared_examples "method_missing allows name override" do
+      it "allows name override via kwargs" do
+        TreeHaver.register_language(:test, path: "/path.so")
+        expect(described_class).to receive(:from_library).with(
+          "/path.so",
+          symbol: "tree_sitter_test",
+          name: "custom_name",
+        )
+        described_class.test(name: "custom_name")
+      end
     end
 
-    it "allows symbol override via kwargs when key exists" do
-      TreeHaver.register_language(:test2, path: "/path.so", symbol: "default_sym")
-      # Symbol is overridden via kwargs, name is derived from the overridden symbol
-      expect(described_class).to receive(:from_library).with(
-        "/path.so",
-        symbol: "custom_sym",
-        name: "custom_sym",  # Derived from symbol (no tree_sitter_ prefix to strip)
-      )
-      described_class.test2(symbol: "custom_sym")
+    shared_examples "method_missing allows symbol override" do
+      it "allows symbol override via kwargs when key exists" do
+        TreeHaver.register_language(:test2, path: "/path.so", symbol: "default_sym")
+        expect(described_class).to receive(:from_library).with(
+          "/path.so",
+          symbol: "custom_sym",
+          name: "custom_sym",
+        )
+        described_class.test2(symbol: "custom_sym")
+      end
+    end
+
+    context "with MRI backend", :mri_backend do
+      it_behaves_like "method_missing derives symbol from name"
+      it_behaves_like "method_missing allows name override"
+      it_behaves_like "method_missing allows symbol override"
+    end
+
+    context "with Rust backend", :rust_backend do
+      it_behaves_like "method_missing derives symbol from name"
+      it_behaves_like "method_missing allows name override"
+      it_behaves_like "method_missing allows symbol override"
+    end
+
+    context "with FFI backend", :ffi_backend do
+      it_behaves_like "method_missing derives symbol from name"
+      it_behaves_like "method_missing allows name override"
+      it_behaves_like "method_missing allows symbol override"
+    end
+
+    context "with Java backend", :java_backend do
+      it_behaves_like "method_missing derives symbol from name"
+      it_behaves_like "method_missing allows name override"
+      it_behaves_like "method_missing allows symbol override"
     end
   end
 
@@ -608,15 +634,34 @@ RSpec.describe TreeHaver::Language do
         )
       end
 
-      it "works without backend parameter (existing behavior)", :native_parsing do
-        skip "No backend available" unless TreeHaver.backend_module
+      shared_examples "from_library works without backend parameter" do |backend_sym, backend_mod|
+        before do
+          TreeHaver.backend = backend_sym
+        end
 
-        mock_language = double("Language")
-        backend_mod = TreeHaver.backend_module
-        allow(backend_mod::Language).to receive(:from_library).and_return(mock_language)
+        it "works without backend parameter (existing behavior)" do
+          mock_language = double("Language")
+          allow(backend_mod::Language).to receive(:from_library).and_return(mock_language)
 
-        language = described_class.from_library(mock_path, symbol: mock_symbol)
-        expect(language).to eq(mock_language)
+          language = described_class.from_library(mock_path, symbol: mock_symbol)
+          expect(language).to eq(mock_language)
+        end
+      end
+
+      context "with MRI backend", :mri_backend do
+        it_behaves_like "from_library works without backend parameter", :mri, TreeHaver::Backends::MRI
+      end
+
+      context "with Rust backend", :rust_backend do
+        it_behaves_like "from_library works without backend parameter", :rust, TreeHaver::Backends::Rust
+      end
+
+      context "with FFI backend", :ffi_backend do
+        it_behaves_like "from_library works without backend parameter", :ffi, TreeHaver::Backends::FFI
+      end
+
+      context "with Java backend", :java_backend do
+        it_behaves_like "from_library works without backend parameter", :java, TreeHaver::Backends::Java
       end
 
       it "respects global backend setting (existing behavior)", :mri_backend do

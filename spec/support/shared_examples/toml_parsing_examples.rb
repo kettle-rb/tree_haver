@@ -7,18 +7,14 @@
 #
 # @example Usage in specs
 #   RSpec.describe "TOML parsing" do
-#     context "with tree-sitter backend", :toml_grammar do
-#       around do |example|
-#         TreeHaver.with_backend(:mri) do
-#           example.run
-#         end
-#       end
-#
+#     # Tree-sitter backend - requires native backend and grammar
+#     context "with tree-sitter backend", :native_parsing do
 #       let(:parser) { TreeHaver.parser_for(:toml) }
 #
 #       it_behaves_like "toml parsing basics"
 #     end
 #
+#     # Citrus backend - requires citrus gem and toml-rb
 #     context "with Citrus backend", :citrus_backend, :toml_rb do
 #       around do |example|
 #         TreeHaver.with_backend(:citrus) do

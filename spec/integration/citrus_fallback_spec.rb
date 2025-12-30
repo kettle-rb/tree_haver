@@ -110,9 +110,18 @@ RSpec.describe "Citrus fallback", :citrus_backend do
       it "does not raise TypeError when citrus_config has nil gem_name" do
         # This should either succeed with tree-sitter or raise NotAvailable
         # but NOT raise TypeError about nil conversion
-        expect {
+        error = nil
+        begin
           TreeHaver.parser_for(:toml, citrus_config: {gem_name: nil, grammar_const: nil})
-        }.not_to raise_error
+        rescue Exception => e  # rubocop:disable Lint/RescueException
+          # Must rescue Exception because NotAvailable inherits from Exception, not StandardError
+          error = e
+        end
+
+        # TypeError would indicate the bug we're testing for
+        expect(error).not_to be_a(TypeError)
+        # NotAvailable is acceptable (means tree-sitter-toml not installed)
+        expect(error).to be_nil.or be_a(TreeHaver::NotAvailable)
       end
     end
   end
