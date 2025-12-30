@@ -134,6 +134,29 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#any_native_grammar_available%3F-class_method" title="any_native_grammar_available? (class method)">.<strong>any_native_grammar_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#any_toml_backend_available%3F-class_method" title="any_toml_backend_available? (class method)">.<strong>any_toml_backend_available?</strong>  &#x21d2; Boolean </a>
     
 
@@ -750,6 +773,69 @@
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="any_native_grammar_available?-class_method">
+  
+    .<strong>any_native_grammar_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+454
+455
+456
+457
+458
+459
+460
+461</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 454</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_any_native_grammar_available?'>any_native_grammar_available?</span>
+  <span class='id identifier rubyid_libtree_sitter_available?'>libtree_sitter_available?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span>
+    <span class='id identifier rubyid_tree_sitter_bash_available?'>tree_sitter_bash_available?</span> <span class='op'>||</span>
+      <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span> <span class='op'>||</span>
+      <span class='id identifier rubyid_tree_sitter_json_available?'>tree_sitter_json_available?</span> <span class='op'>||</span>
+      <span class='id identifier rubyid_tree_sitter_jsonc_available?'>tree_sitter_jsonc_available?</span>
+  <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="any_toml_backend_available?-class_method">
   
     .<strong>any_toml_backend_available?</strong>  &#x21d2; <tt>Boolean</tt> 
@@ -968,20 +1054,20 @@
       <pre class="lines">
 
 
-495
-496
-497
-498
-499
-500
-501
-502
-503
-504
-505</pre>
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 495</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 505</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_env_summary'>env_summary</span>
   <span class='lbrace'>{</span>
@@ -1707,14 +1793,14 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-513
-514
-515
-516
-517</pre>
+523
+524
+525
+526
+527</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 513</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 523</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
   <span class='id identifier rubyid_instance_variables'>instance_variables</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ivar'>ivar</span><span class='op'>|</span>
@@ -1847,15 +1933,6 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-461
-462
-463
-464
-465
-466
-467
-468
-469
 470
 471
 472
@@ -1876,10 +1953,20 @@ Note: This does NOT undo backend usage recording.</p>
 487
 488
 489
-490</pre>
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 461</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 470</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_summary'>summary</span>
   <span class='lbrace'>{</span>
@@ -1904,6 +1991,7 @@ Note: This does NOT undo backend usage recording.</p>
     <span class='label'>toml_grammar:</span> <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span><span class='comma'>,</span>
     <span class='label'>json_grammar:</span> <span class='id identifier rubyid_tree_sitter_json_available?'>tree_sitter_json_available?</span><span class='comma'>,</span>
     <span class='label'>jsonc_grammar:</span> <span class='id identifier rubyid_tree_sitter_jsonc_available?'>tree_sitter_jsonc_available?</span><span class='comma'>,</span>
+    <span class='label'>any_native_grammar:</span> <span class='id identifier rubyid_any_native_grammar_available?'>any_native_grammar_available?</span><span class='comma'>,</span>
     <span class='comment'># Language parsing capabilities (*_parsing)
 </span>    <span class='label'>toml_parsing:</span> <span class='id identifier rubyid_any_toml_backend_available?'>any_toml_backend_available?</span><span class='comma'>,</span>
     <span class='label'>markdown_parsing:</span> <span class='id identifier rubyid_any_markdown_backend_available?'>any_markdown_backend_available?</span><span class='comma'>,</span>
@@ -2352,7 +2440,7 @@ Note: This does NOT undo backend usage recording.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 30 00:53:16 2025 by
+  Generated on Tue Dec 30 01:14:35 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

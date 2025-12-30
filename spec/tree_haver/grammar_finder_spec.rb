@@ -490,7 +490,9 @@ RSpec.describe TreeHaver::GrammarFinder do
       end
     end
 
-    it "caches the result" do
+    # Note: This test uses mocking that doesn't work correctly on TruffleRuby
+    # because TruffleRuby's method dispatch may bypass the mock in some cases
+    it "caches the result", :not_truffleruby_engine do
       described_class.reset_runtime_check!
       # First call
       result1 = described_class.tree_sitter_runtime_usable?

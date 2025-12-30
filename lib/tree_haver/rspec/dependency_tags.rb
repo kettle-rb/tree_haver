@@ -451,6 +451,15 @@ module TreeHaver
           markly_available? || commonmarker_available?
         end
 
+        def any_native_grammar_available?
+          libtree_sitter_available? && (
+            tree_sitter_bash_available? ||
+              tree_sitter_toml_available? ||
+              tree_sitter_json_available? ||
+              tree_sitter_jsonc_available?
+          )
+        end
+
         # ============================================================
         # Summary and Reset
         # ============================================================
@@ -481,6 +490,7 @@ module TreeHaver
             toml_grammar: tree_sitter_toml_available?,
             json_grammar: tree_sitter_json_available?,
             jsonc_grammar: tree_sitter_jsonc_available?,
+            any_native_grammar: any_native_grammar_available?,
             # Language parsing capabilities (*_parsing)
             toml_parsing: any_toml_backend_available?,
             markdown_parsing: any_markdown_backend_available?,
@@ -649,7 +659,7 @@ RSpec.configure do |config|
 
   config.filter_run_excluding(toml_parsing: true) unless deps.any_toml_backend_available?
   config.filter_run_excluding(markdown_parsing: true) unless deps.any_markdown_backend_available?
-  config.filter_run_excluding(native_parsing: true) unless deps.libtree_sitter_available? && deps.toml_grammar_available?
+  config.filter_run_excluding(native_parsing: true) unless deps.any_native_grammar_available?
 
   # ============================================================
   # Specific Library Tags

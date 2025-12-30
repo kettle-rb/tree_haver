@@ -381,12 +381,12 @@ RSpec.describe TreeHaver do
         expect(result).to eq(described_class::Backends::Psych)
       end
 
-      it "returns Commonmarker backend for :commonmarker" do
+      it "returns Commonmarker backend for :commonmarker", :commonmarker_backend do
         result = described_class.resolve_backend_module(:commonmarker)
         expect(result).to eq(described_class::Backends::Commonmarker)
       end
 
-      it "returns Markly backend for :markly" do
+      it "returns Markly backend for :markly", :markly_backend do
         result = described_class.resolve_backend_module(:markly)
         expect(result).to eq(described_class::Backends::Markly)
       end

@@ -88,7 +88,9 @@ RSpec.describe TreeHaver::Language do
     end
   end
 
-  describe "additional method_missing edge cases" do
+  # These tests mock from_library which only works with native tree-sitter backends
+  # On platforms without native backends, the Citrus backend is used instead which doesn't call from_library
+  describe "additional method_missing edge cases", :native_parsing do
     it "derives symbol from name when registration has no symbol" do
       TreeHaver.register_language(:nosymbol, path: "/path.so", symbol: nil)
       # When no symbol is registered, it derives "tree_sitter_#{method_name}"
@@ -606,7 +608,7 @@ RSpec.describe TreeHaver::Language do
         )
       end
 
-      it "works without backend parameter (existing behavior)" do
+      it "works without backend parameter (existing behavior)", :native_parsing do
         skip "No backend available" unless TreeHaver.backend_module
 
         mock_language = double("Language")
