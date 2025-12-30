@@ -67,6 +67,14 @@ module TreeHaver
       return @available if @load_attempted
 
       @load_attempted = true
+
+      # Guard against nil require_path (can happen if gem_name was nil)
+      if @require_path.nil? || @require_path.empty?
+        warn("CitrusGrammarFinder: require_path is nil or empty for #{@language_name}")
+        @available = false
+        return false
+      end
+
       begin
         # Try to require the gem
         require @require_path
@@ -101,6 +109,14 @@ module TreeHaver
         # Always show NameError for debugging with full message and backtrace
         warn("CitrusGrammarFinder: Failed to resolve '#{@grammar_const}': #{e.class}: #{e.message}")
         warn("CitrusGrammarFinder: NameError backtrace:\n  #{e.backtrace.first(10).join("\n  ")}")
+        @available = false
+      rescue TypeError => e
+        # TruffleRuby's bundled_gems.rb can raise TypeError when File.path is called on nil
+        # This happens in bundled_gems.rb:124 warning? method when caller locations return nil
+        # See: https://github.com/oracle/truffleruby/issues/
+        warn("CitrusGrammarFinder: TypeError during load of '#{@require_path}': #{e.class}: #{e.message}")
+        warn("CitrusGrammarFinder: This may be a TruffleRuby bundled_gems.rb issue")
+        warn("CitrusGrammarFinder: TypeError backtrace:\n  #{e.backtrace.first(10).join("\n  ")}")
         @available = false
       rescue => e
         # Catch any other errors with full message and backtrace

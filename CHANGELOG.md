@@ -20,6 +20,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `TreeHaver::CITRUS_DEFAULTS` constant with default Citrus configurations for known languages
+  - Enables automatic Citrus fallback for TOML without explicit `citrus_config` parameter
+  - Currently includes configuration for `:toml` (gem: `toml-rb`, const: `TomlRB::Document`)
+- Regression test suite for Citrus fallback (`spec/integration/citrus_fallback_spec.rb`)
+  - Tests `parser_for` with all tree-sitter backends stubbed as unavailable (simulating TruffleRuby)
+  - Tests `CitrusGrammarFinder` with nil `gem_name` and `require_path`
+  - Tests explicit Citrus backend usage on MRI via `with_backend(:citrus)`
 - Backend Platform Compatibility section to README
   - Complete compatibility matrix showing which backends work on MRI, JRuby, TruffleRuby
   - Detailed explanations for TruffleRuby and JRuby limitations
@@ -32,6 +39,15 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **Citrus fallback fails on TruffleRuby when no explicit `citrus_config` provided**
+  - `parser_for(:toml)` would fail with `TypeError: no implicit conversion of nil into String`
+  - Root cause: `citrus_config` defaulted to `{}`, so `citrus_config[:gem_name]` was `nil`
+  - `CitrusGrammarFinder` was instantiated with `gem_name: nil`, causing `require nil`
+  - On TruffleRuby, this triggered a bug in `bundled_gems.rb` calling `File.path` on nil
+  - Fix: Added `CITRUS_DEFAULTS` with known Citrus configurations (TOML currently)
+  - Fix: `parser_for` now uses `CITRUS_DEFAULTS[name]` when no explicit config provided
+  - Fix: Added guard in `CitrusGrammarFinder#available?` to return false when `require_path` is nil
+  - Fix: Added `TypeError` to rescue clause for TruffleRuby-specific edge cases
 - **`from_library` no longer falls back to pure-Ruby backends**
   - Previously, calling `Language.from_library(path)` on TruffleRuby would fall back to Citrus
     backend which then raised a confusing error about not supporting shared libraries

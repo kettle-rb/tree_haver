@@ -153,6 +153,20 @@ module TreeHaver
   #   # Now you can test backend conflicts (at risk of segfaults)
   class BackendConflict < Error; end
 
+  # Default Citrus configurations for known languages
+  #
+  # These are used by {TreeHaver.parser_for} when no explicit citrus_config is provided
+  # and tree-sitter backends are not available (e.g., on TruffleRuby).
+  #
+  # @api private
+  CITRUS_DEFAULTS = {
+    toml: {
+      gem_name: "toml-rb",
+      grammar_const: "TomlRB::Document",
+      require_path: "toml-rb",
+    },
+  }.freeze
+
   # Namespace for backend implementations
   #
   # TreeHaver provides multiple backends to support different Ruby implementations:
@@ -886,19 +900,25 @@ module TreeHaver
 
       # Step 3: Try Citrus fallback if tree-sitter failed
       unless language
-        citrus_config ||= {}
-        begin
-          citrus_finder = CitrusGrammarFinder.new(
-            language: name,
-            gem_name: citrus_config[:gem_name],
-            grammar_const: citrus_config[:grammar_const],
-          )
-          if citrus_finder.available?
-            citrus_finder.register!
-            language = Language.public_send(name)
+        # Use explicit config, or fall back to built-in defaults for known languages
+        citrus_config ||= CITRUS_DEFAULTS[name] || {}
+
+        # Only attempt if we have the required configuration
+        if citrus_config[:gem_name] && citrus_config[:grammar_const]
+          begin
+            citrus_finder = CitrusGrammarFinder.new(
+              language: name,
+              gem_name: citrus_config[:gem_name],
+              grammar_const: citrus_config[:grammar_const],
+              require_path: citrus_config[:require_path],
+            )
+            if citrus_finder.available?
+              citrus_finder.register!
+              language = Language.public_send(name)
+            end
+          rescue NotAvailable, ArgumentError, LoadError, NameError, TypeError
+            language = nil
           end
-        rescue NotAvailable, ArgumentError, LoadError, NameError
-          language = nil
         end
       end
 

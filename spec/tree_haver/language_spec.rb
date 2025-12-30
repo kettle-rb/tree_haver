@@ -18,16 +18,20 @@ RSpec.describe TreeHaver::Language do
 
   describe "::method_missing dynamic helpers" do
     it "uses registered defaults when invoked without per-call overrides" do
-      TreeHaver.register_language(:toml, path: "/nonexistent/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
+      # Use unique name to avoid pollution from other tests that may register Citrus fallback for :toml
+      unique_name = :"toml_defaults_test_#{SecureRandom.hex(4)}"
+      TreeHaver.register_language(unique_name, path: "/nonexistent/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
       expect {
-        described_class.toml
+        described_class.public_send(unique_name)
       }.to raise_error(TreeHaver::NotAvailable)
     end
 
     it "allows per-call overrides when registered" do
-      TreeHaver.register_language(:toml, path: "/nonexistent/libtree-sitter-toml.so")
+      # Use unique name to avoid pollution from other tests that may register Citrus fallback for :toml
+      unique_name = :"toml_override_test_#{SecureRandom.hex(4)}"
+      TreeHaver.register_language(unique_name, path: "/nonexistent/libtree-sitter-toml.so")
       expect {
-        described_class.toml(path: "/also/missing/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
+        described_class.public_send(unique_name, path: "/also/missing/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
       }.to raise_error(TreeHaver::NotAvailable)
     end
 
@@ -71,13 +75,15 @@ RSpec.describe TreeHaver::Language do
     end
 
     it "allows per-call overrides to the registered defaults" do
-      TreeHaver.register_language(:toml, path: "/nonexistent/libtree-sitter-toml.so")
+      # Use unique name to avoid pollution from other tests that may register Citrus fallback for :toml
+      unique_name = :"toml_percall_test_#{SecureRandom.hex(4)}"
+      TreeHaver.register_language(unique_name, path: "/nonexistent/libtree-sitter-toml.so")
 
-      expect(described_class.respond_to?(:toml)).to be(true)
+      expect(described_class.respond_to?(unique_name)).to be(true)
 
       # Provide a different fake path per-call; still results in NotAvailable, but exercises override path
       expect {
-        described_class.toml(path: "/also/missing/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
+        described_class.public_send(unique_name, path: "/also/missing/libtree-sitter-toml.so", symbol: "tree_sitter_toml")
       }.to raise_error(TreeHaver::NotAvailable)
     end
   end
