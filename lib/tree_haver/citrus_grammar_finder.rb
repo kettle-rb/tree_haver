@@ -67,10 +67,11 @@ module TreeHaver
       return @available if @load_attempted
 
       @load_attempted = true
+      debug = ENV["TREE_HAVER_DEBUG"]
 
       # Guard against nil require_path (can happen if gem_name was nil)
       if @require_path.nil? || @require_path.empty?
-        warn("CitrusGrammarFinder: require_path is nil or empty for #{@language_name}")
+        warn("CitrusGrammarFinder: require_path is nil or empty for #{@language_name}") if debug
         @available = false
         return false
       end
@@ -84,45 +85,64 @@ module TreeHaver
 
         # Verify it responds to parse
         unless @grammar_module.respond_to?(:parse)
+          # :nocov: defensive - requires a gem with malformed grammar module
           # Show what methods ARE available to help diagnose the issue
-          available_methods = @grammar_module.methods(false).sort.first(20)
-          warn("CitrusGrammarFinder: #{@grammar_const} doesn't respond to :parse")
-          warn("CitrusGrammarFinder: #{@grammar_const}.class = #{@grammar_module.class}")
-          warn("CitrusGrammarFinder: #{@grammar_const} is a #{@grammar_module.is_a?(Module) ? "Module" : "non-Module"}")
-          warn("CitrusGrammarFinder: Available singleton methods (first 20): #{available_methods.inspect}")
-          if @grammar_module.respond_to?(:instance_methods)
-            instance_methods = @grammar_module.instance_methods(false).sort.first(20)
-            warn("CitrusGrammarFinder: Available instance methods (first 20): #{instance_methods.inspect}")
+          if debug
+            available_methods = @grammar_module.methods(false).sort.first(20)
+            warn("CitrusGrammarFinder: #{@grammar_const} doesn't respond to :parse")
+            warn("CitrusGrammarFinder: #{@grammar_const}.class = #{@grammar_module.class}")
+            warn("CitrusGrammarFinder: #{@grammar_const} is a #{@grammar_module.is_a?(Module) ? "Module" : "non-Module"}")
+            warn("CitrusGrammarFinder: Available singleton methods (first 20): #{available_methods.inspect}")
+            if @grammar_module.respond_to?(:instance_methods)
+              instance_methods = @grammar_module.instance_methods(false).sort.first(20)
+              warn("CitrusGrammarFinder: Available instance methods (first 20): #{instance_methods.inspect}")
+            end
           end
           @available = false
           return false
+          # :nocov:
         end
 
         @available = true
       rescue LoadError => e
-        # Always show LoadError for debugging with full message and backtrace
-        # LoadError on TruffleRuby may have different root causes than on MRI
-        warn("CitrusGrammarFinder: Failed to load '#{@require_path}': #{e.class}: #{e.message}")
-        warn("CitrusGrammarFinder: LoadError backtrace:\n  #{e.backtrace.first(10).join("\n  ")}")
+        # :nocov: defensive - requires gem to not be installed
+        # Only show LoadError details when debugging
+        if debug
+          warn("CitrusGrammarFinder: Failed to load '#{@require_path}': #{e.class}: #{e.message}")
+          warn("CitrusGrammarFinder: LoadError backtrace:\n  #{e.backtrace&.first(10)&.join("\n  ")}")
+        end
         @available = false
+        # :nocov:
       rescue NameError => e
-        # Always show NameError for debugging with full message and backtrace
-        warn("CitrusGrammarFinder: Failed to resolve '#{@grammar_const}': #{e.class}: #{e.message}")
-        warn("CitrusGrammarFinder: NameError backtrace:\n  #{e.backtrace.first(10).join("\n  ")}")
+        # :nocov: defensive - requires gem with missing constant
+        # Only show NameError details when debugging
+        if debug
+          warn("CitrusGrammarFinder: Failed to resolve '#{@grammar_const}': #{e.class}: #{e.message}")
+          warn("CitrusGrammarFinder: NameError backtrace:\n  #{e.backtrace&.first(10)&.join("\n  ")}")
+        end
         @available = false
+        # :nocov:
       rescue TypeError => e
+        # :nocov: defensive - TruffleRuby-specific edge case
         # TruffleRuby's bundled_gems.rb can raise TypeError when File.path is called on nil
         # This happens in bundled_gems.rb:124 warning? method when caller locations return nil
-        # See: https://github.com/oracle/truffleruby/issues/
+        # Always warn about TypeError as it indicates a platform-specific issue
         warn("CitrusGrammarFinder: TypeError during load of '#{@require_path}': #{e.class}: #{e.message}")
         warn("CitrusGrammarFinder: This may be a TruffleRuby bundled_gems.rb issue")
-        warn("CitrusGrammarFinder: TypeError backtrace:\n  #{e.backtrace.first(10).join("\n  ")}")
+        if debug
+          warn("CitrusGrammarFinder: TypeError backtrace:\n  #{e.backtrace&.first(10)&.join("\n  ")}")
+        end
         @available = false
+        # :nocov:
       rescue => e
-        # Catch any other errors with full message and backtrace
+        # :nocov: defensive - catch-all for unexpected errors
+        # Always warn about unexpected errors
         warn("CitrusGrammarFinder: Unexpected error: #{e.class}: #{e.message}")
-        warn("CitrusGrammarFinder: backtrace:\n  #{e.backtrace.first(10).join("\n  ")}")
+        if debug
+          warn("CitrusGrammarFinder: backtrace:\n  #{e.backtrace&.first(10)&.join("\n  ")}")
+        end
         @available = false
+        # :nocov:
       end
 
       @available

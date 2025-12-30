@@ -106,12 +106,13 @@ RSpec.describe "Citrus fallback", :citrus_backend do
 
     context "when tree-sitter is available but citrus_config with nil values is passed" do
       # This tests that we don't try to create CitrusGrammarFinder with nil values
-      it "does not attempt Citrus fallback with nil gem_name" do
-        # This should NOT raise TypeError about nil conversion
-        # It should either succeed with tree-sitter or fail gracefully
+      # which would cause TypeError from require(nil)
+      it "does not raise TypeError when citrus_config has nil gem_name" do
+        # This should either succeed with tree-sitter or raise NotAvailable
+        # but NOT raise TypeError about nil conversion
         expect {
           TreeHaver.parser_for(:toml, citrus_config: {gem_name: nil, grammar_const: nil})
-        }.not_to raise_error(TypeError)
+        }.not_to raise_error
       end
     end
   end
