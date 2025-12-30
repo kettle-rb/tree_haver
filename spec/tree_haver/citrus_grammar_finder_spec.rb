@@ -36,13 +36,13 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
       expect(f.language_name).to eq(:yaml)
     end
 
-    it "defaults require_path to gem_name with dashes to slashes" do
+    it "defaults require_path to gem_name as-is" do
       f = described_class.new(
         language: :toml,
         gem_name: "toml-rb",
         grammar_const: "TomlRB::Document",
       )
-      expect(f.require_path).to eq("toml/rb")
+      expect(f.require_path).to eq("toml-rb")
     end
 
     it "accepts custom require_path" do
@@ -61,7 +61,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
       let(:mock_grammar) { double("grammar", parse: nil) }
 
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_return(true)
+        allow(finder).to receive(:require).with("toml-rb").and_return(true)
         allow(finder).to receive(:resolve_constant).with("TomlRB::Document").and_return(mock_grammar)
       end
 
@@ -78,7 +78,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
 
     context "when gem is not available" do
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_raise(LoadError.new("cannot load toml/rb"))
+        allow(finder).to receive(:require).with("toml-rb").and_raise(LoadError.new("cannot load toml-rb"))
       end
 
       it "returns false" do
@@ -88,7 +88,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
 
     context "when constant is not found" do
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_return(true)
+        allow(finder).to receive(:require).with("toml-rb").and_return(true)
         allow(finder).to receive(:resolve_constant).with("TomlRB::Document").and_raise(NameError.new("uninitialized constant"))
       end
 
@@ -101,7 +101,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
       let(:mock_grammar) { double("grammar") }
 
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_return(true)
+        allow(finder).to receive(:require).with("toml-rb").and_return(true)
         allow(finder).to receive(:resolve_constant).with("TomlRB::Document").and_return(mock_grammar)
       end
 
@@ -112,7 +112,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
 
     context "when unexpected error occurs" do
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_raise(StandardError.new("unexpected"))
+        allow(finder).to receive(:require).with("toml-rb").and_raise(StandardError.new("unexpected"))
       end
 
       it "returns false" do
@@ -126,7 +126,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
       let(:mock_grammar) { double("grammar", parse: nil) }
 
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_return(true)
+        allow(finder).to receive(:require).with("toml-rb").and_return(true)
         allow(finder).to receive(:resolve_constant).with("TomlRB::Document").and_return(mock_grammar)
       end
 
@@ -137,7 +137,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
 
     context "when not available" do
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_raise(LoadError.new("cannot load"))
+        allow(finder).to receive(:require).with("toml-rb").and_raise(LoadError.new("cannot load"))
       end
 
       it "returns nil" do
@@ -151,7 +151,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
       let(:mock_grammar) { double("grammar", parse: nil, name: "TomlRB::Document") }
 
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_return(true)
+        allow(finder).to receive(:require).with("toml-rb").and_return(true)
         allow(finder).to receive(:resolve_constant).with("TomlRB::Document").and_return(mock_grammar)
         allow(TreeHaver).to receive(:register_language)
       end
@@ -172,7 +172,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
 
     context "when grammar is not available" do
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_raise(LoadError.new("cannot load"))
+        allow(finder).to receive(:require).with("toml-rb").and_raise(LoadError.new("cannot load"))
       end
 
       it "returns false by default" do
@@ -189,7 +189,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
 
   describe "#search_info" do
     before do
-      allow(finder).to receive(:require).with("toml/rb").and_raise(LoadError.new("cannot load"))
+      allow(finder).to receive(:require).with("toml-rb").and_raise(LoadError.new("cannot load"))
     end
 
     it "returns diagnostic hash" do
@@ -198,7 +198,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
       expect(info[:language]).to eq(:toml)
       expect(info[:gem_name]).to eq("toml-rb")
       expect(info[:grammar_const]).to eq("TomlRB::Document")
-      expect(info[:require_path]).to eq("toml/rb")
+      expect(info[:require_path]).to eq("toml-rb")
       expect(info[:available]).to be false
     end
 
@@ -206,7 +206,7 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
       let(:mock_grammar) { double("grammar", parse: nil, name: "TomlRB::Document") }
 
       before do
-        allow(finder).to receive(:require).with("toml/rb").and_return(true)
+        allow(finder).to receive(:require).with("toml-rb").and_return(true)
         allow(finder).to receive(:resolve_constant).with("TomlRB::Document").and_return(mock_grammar)
       end
 

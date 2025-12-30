@@ -46,12 +46,12 @@ module TreeHaver
     # @param language [Symbol, String] the language name (e.g., :toml, :json)
     # @param gem_name [String] the gem name (e.g., "toml-rb")
     # @param grammar_const [String] constant path to grammar (e.g., "TomlRB::Document")
-    # @param require_path [String, nil] custom require path (defaults to gem_name with dashes→slashes)
+    # @param require_path [String, nil] custom require path (defaults to gem_name as-is)
     def initialize(language:, gem_name:, grammar_const:, require_path: nil)
       @language_name = language.to_sym
       @gem_name = gem_name
       @grammar_const = grammar_const
-      @require_path = require_path || gem_name.tr("-", "/")
+      @require_path = require_path || gem_name
       @load_attempted = false
       @available = false
       @grammar_module = nil
@@ -76,24 +76,36 @@ module TreeHaver
 
         # Verify it responds to parse
         unless @grammar_module.respond_to?(:parse)
-          warn("#{@grammar_const} doesn't respond to :parse")
+          # Show what methods ARE available to help diagnose the issue
+          available_methods = @grammar_module.methods(false).sort.first(20)
+          warn("CitrusGrammarFinder: #{@grammar_const} doesn't respond to :parse")
+          warn("CitrusGrammarFinder: #{@grammar_const}.class = #{@grammar_module.class}")
+          warn("CitrusGrammarFinder: #{@grammar_const} is a #{@grammar_module.is_a?(Module) ? "Module" : "non-Module"}")
+          warn("CitrusGrammarFinder: Available singleton methods (first 20): #{available_methods.inspect}")
+          if @grammar_module.respond_to?(:instance_methods)
+            instance_methods = @grammar_module.instance_methods(false).sort.first(20)
+            warn("CitrusGrammarFinder: Available instance methods (first 20): #{instance_methods.inspect}")
+          end
           @available = false
           return false
         end
 
         @available = true
       rescue LoadError => e
-        # Always show LoadError for debugging
+        # Always show LoadError for debugging with full message and backtrace
+        # LoadError on TruffleRuby may have different root causes than on MRI
         warn("CitrusGrammarFinder: Failed to load '#{@require_path}': #{e.class}: #{e.message}")
+        warn("CitrusGrammarFinder: LoadError backtrace:\n  #{e.backtrace.first(10).join("\n  ")}")
         @available = false
       rescue NameError => e
-        # Always show NameError for debugging
+        # Always show NameError for debugging with full message and backtrace
         warn("CitrusGrammarFinder: Failed to resolve '#{@grammar_const}': #{e.class}: #{e.message}")
+        warn("CitrusGrammarFinder: NameError backtrace:\n  #{e.backtrace.first(10).join("\n  ")}")
         @available = false
       rescue => e
-        # Catch any other errors
+        # Catch any other errors with full message and backtrace
         warn("CitrusGrammarFinder: Unexpected error: #{e.class}: #{e.message}")
-        warn(e.backtrace.first(3).join("\n")) if ENV["TREE_HAVER_DEBUG"]
+        warn("CitrusGrammarFinder: backtrace:\n  #{e.backtrace.first(10).join("\n  ")}")
         @available = false
       end
 

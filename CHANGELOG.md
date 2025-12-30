@@ -437,7 +437,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - Shows when TREE_SITTER_*_PATH is set but points to nonexistent file
   - Provides helpful guidance for setting environment variables correctly
 - Fixed registry conflicts when registering multiple backend types for the same language
-- Fixed `CitrusGrammarFinder` to properly handle gems with non-standard require paths (e.g., `toml-rb.rb` vs `toml/rb.rb`)
+- Fixed `CitrusGrammarFinder` to use gem name as-is for require path (e.g., `require "toml-rb"` not `require "toml/rb"`)
 - Fixed Citrus backend infinite recursion in `Node#extract_type_from_event`
   - Added cycle detection to prevent stack overflow when traversing recursive grammar structures
 
