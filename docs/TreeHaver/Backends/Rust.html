@@ -267,7 +267,15 @@ suitable for editor/IDE use cases where performance is critical.</p>
 43
 44
 45
-46</pre>
+46
+47
+48
+49
+50
+51
+52
+53
+54</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 35</span>
@@ -275,7 +283,15 @@ suitable for editor/IDE use cases where performance is critical.</p>
 <span class='kw'>def</span> <span class='id identifier rubyid_available?'>available?</span>
   <span class='kw'>return</span> <span class='ivar'>@loaded</span> <span class='kw'>if</span> <span class='ivar'>@load_attempted</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
 </span>  <span class='ivar'>@load_attempted</span> <span class='op'>=</span> <span class='kw'>true</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
-</span>  <span class='kw'>begin</span>
+</span>
+  <span class='comment'># tree_stump uses magnus which requires MRI&#39;s C API
+</span>  <span class='comment'># It doesn&#39;t work on JRuby or TruffleRuby
+</span>  <span class='kw'>unless</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ruby</span><span class='tstring_end'>&quot;</span></span>
+    <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
+</span>    <span class='kw'>return</span> <span class='ivar'>@loaded</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>begin</span>
     <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_stump</span><span class='tstring_end'>&quot;</span></span>
 
     <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>true</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -340,18 +356,18 @@ suitable for editor/IDE use cases where performance is critical.</p>
       <pre class="lines">
 
 
-63
-64
-65
-66
-67
-68
-69
-70
-71</pre>
+71
+72
+73
+74
+75
+76
+77
+78
+79</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 63</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 71</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='kw'>return</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_available?'>available?</span>
@@ -396,13 +412,13 @@ suitable for editor/IDE use cases where performance is critical.</p>
       <pre class="lines">
 
 
-52
-53
-54
-55</pre>
+60
+61
+62
+63</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 52</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/rust.rb', line 60</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
   <span class='ivar'>@load_attempted</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -418,7 +434,7 @@ suitable for editor/IDE use cases where performance is critical.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Dec 29 18:42:25 2025 by
+  Generated on Mon Dec 29 19:21:23 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

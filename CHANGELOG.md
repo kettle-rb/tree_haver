@@ -23,9 +23,35 @@ Please file a bug if you notice a violation of semantic versioning.
 - Backend Platform Compatibility section to README
   - Complete compatibility matrix showing which backends work on MRI, JRuby, TruffleRuby
   - Detailed explanations for TruffleRuby and JRuby limitations
+- `FFI.available?` method at module level for API consistency with other backends
+
+### Fixed
+
+- FFI backend now properly reports as unavailable on TruffleRuby
+  - `ffi_gem_available?` returns `false` on TruffleRuby since tree-sitter uses STRUCT_BY_VALUE return types
+  - `FFI.available?` added at module level (was only in Native submodule)
+  - Prevents confusing runtime errors (Polyglot::ForeignException) by detecting incompatibility upfront
+  - Dependency tags now check `truffleruby?` before attempting FFI backend tests
+- MRI backend now properly reports as unavailable on JRuby and TruffleRuby
+  - `available?` returns `false` on non-MRI platforms (C extension only works on MRI)
+- Rust backend now properly reports as unavailable on JRuby and TruffleRuby
+  - `available?` returns `false` on non-MRI platforms (magnus requires MRI's C API)
+- Backend compatibility matrix spec now properly skips tests for platform-incompatible backends
+  - MRI and Rust backends skip on JRuby/TruffleRuby with clear skip messages
+  - FFI backend skips on TruffleRuby with clear skip message
 
 ### Changed
 
+- **API Consistency**: All backends now have uniform `available?` API at module level:
+  - `TreeHaver::Backends::FFI.available?` - checks ffi gem + not TruffleRuby + MRI not loaded
+  - `TreeHaver::Backends::MRI.available?` - checks MRI platform + ruby_tree_sitter gem
+  - `TreeHaver::Backends::Rust.available?` - checks MRI platform + tree_stump gem
+  - `TreeHaver::Backends::Java.available?` - checks JRuby platform + jtreesitter JAR
+  - `TreeHaver::Backends::Prism.available?` - checks prism gem (all platforms)
+  - `TreeHaver::Backends::Psych.available?` - checks psych stdlib (all platforms)
+  - `TreeHaver::Backends::Commonmarker.available?` - checks commonmarker gem (all platforms)
+  - `TreeHaver::Backends::Markly.available?` - checks markly gem (all platforms)
+  - `TreeHaver::Backends::Citrus.available?` - checks citrus gem (all platforms)
 - README now accurately documents TruffleRuby backend support
   - FFI backend doesn't work on TruffleRuby due to `STRUCT_BY_VALUE` limitation in TruffleRuby's FFI
   - Rust backend (tree_stump) doesn't work due to magnus/rb-sys incompatibility with TruffleRuby's C API

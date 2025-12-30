@@ -35,6 +35,14 @@ module TreeHaver
         def available?
           return @loaded if @load_attempted # rubocop:disable ThreadSafety/ClassInstanceVariable
           @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+
+          # tree_stump uses magnus which requires MRI's C API
+          # It doesn't work on JRuby or TruffleRuby
+          unless RUBY_ENGINE == "ruby"
+            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+            return @loaded
+          end
+
           begin
             require "tree_stump"
 

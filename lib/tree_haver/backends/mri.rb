@@ -42,6 +42,14 @@ module TreeHaver
         def available?
           return @loaded if @load_attempted # rubocop:disable ThreadSafety/ClassInstanceVariable
           @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+
+          # ruby_tree_sitter is a C extension that only works on MRI
+          # It doesn't work on JRuby or TruffleRuby
+          unless RUBY_ENGINE == "ruby"
+            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+            return @loaded
+          end
+
           begin
             require "tree_sitter" # Note: gem is ruby_tree_sitter but requires tree_sitter
 

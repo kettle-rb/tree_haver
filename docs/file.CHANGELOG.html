@@ -79,11 +79,69 @@ Please file a bug if you notice a violation of semantic versioning.</p>
       <li>Detailed explanations for TruffleRuby and JRuby limitations</li>
     </ul>
   </li>
+  <li>
+<code>FFI.available?</code> method at module level for API consistency with other backends</li>
+</ul>
+
+<h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>FFI backend now properly reports as unavailable on TruffleRuby
+    <ul>
+      <li>
+<code>ffi_gem_available?</code> returns <code>false</code> on TruffleRuby since tree-sitter uses STRUCT_BY_VALUE return types</li>
+      <li>
+<code>FFI.available?</code> added at module level (was only in Native submodule)</li>
+      <li>Prevents confusing runtime errors (Polyglot::ForeignException) by detecting incompatibility upfront</li>
+      <li>Dependency tags now check <code>truffleruby?</code> before attempting FFI backend tests</li>
+    </ul>
+  </li>
+  <li>MRI backend now properly reports as unavailable on JRuby and TruffleRuby
+    <ul>
+      <li>
+<code>available?</code> returns <code>false</code> on non-MRI platforms (C extension only works on MRI)</li>
+    </ul>
+  </li>
+  <li>Rust backend now properly reports as unavailable on JRuby and TruffleRuby
+    <ul>
+      <li>
+<code>available?</code> returns <code>false</code> on non-MRI platforms (magnus requires MRI’s C API)</li>
+    </ul>
+  </li>
+  <li>Backend compatibility matrix spec now properly skips tests for platform-incompatible backends
+    <ul>
+      <li>MRI and Rust backends skip on JRuby/TruffleRuby with clear skip messages</li>
+      <li>FFI backend skips on TruffleRuby with clear skip message</li>
+    </ul>
+  </li>
 </ul>
 
 <h3 id="changed">Changed</h3>
 
 <ul>
+  <li>
+<strong>API Consistency</strong>: All backends now have uniform <code>available?</code> API at module level:
+    <ul>
+      <li>
+<code>TreeHaver::Backends::FFI.available?</code> - checks ffi gem + not TruffleRuby + MRI not loaded</li>
+      <li>
+<code>TreeHaver::Backends::MRI.available?</code> - checks MRI platform + ruby_tree_sitter gem</li>
+      <li>
+<code>TreeHaver::Backends::Rust.available?</code> - checks MRI platform + tree_stump gem</li>
+      <li>
+<code>TreeHaver::Backends::Java.available?</code> - checks JRuby platform + jtreesitter JAR</li>
+      <li>
+<code>TreeHaver::Backends::Prism.available?</code> - checks prism gem (all platforms)</li>
+      <li>
+<code>TreeHaver::Backends::Psych.available?</code> - checks psych stdlib (all platforms)</li>
+      <li>
+<code>TreeHaver::Backends::Commonmarker.available?</code> - checks commonmarker gem (all platforms)</li>
+      <li>
+<code>TreeHaver::Backends::Markly.available?</code> - checks markly gem (all platforms)</li>
+      <li>
+<code>TreeHaver::Backends::Citrus.available?</code> - checks citrus gem (all platforms)</li>
+    </ul>
+  </li>
   <li>README now accurately documents TruffleRuby backend support
     <ul>
       <li>FFI backend doesn’t work on TruffleRuby due to <code>STRUCT_BY_VALUE</code> limitation in TruffleRuby’s FFI</li>
@@ -108,7 +166,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="removed">Removed</h3>
 
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed-1">Fixed</h3>
 
 <ul>
   <li>Rakefile now properly overrides <code>test</code> task after <code>require "kettle/dev"</code>
@@ -255,7 +313,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
 </ul>
 
-<h3 id="fixed-1">Fixed</h3>
+<h3 id="fixed-2">Fixed</h3>
 
 <ul>
   <li>
@@ -448,7 +506,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
 </ul>
 
-<h3 id="fixed-2">Fixed</h3>
+<h3 id="fixed-3">Fixed</h3>
 
 <ul>
   <li>
@@ -646,7 +704,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
 </ul>
 
-<h3 id="fixed-3">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 
 <h4 id="thread-safety-and-backend-selection">Thread-Safety and Backend Selection</h4>
 
@@ -838,7 +896,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>Disabled old pass-through stub classes in <code>tree_haver.rb</code> (wrapped in <code>if false</code> for reference)</li>
 </ul>
 
-<h3 id="fixed-4">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 
 <ul>
   <li>Fixed <code>TreeHaver::Tree#supports_editing?</code> and <code>#edit</code> to handle Delegator wrappers correctly by using <code>.method(:edit)</code> check instead of <code>respond_to?</code>
@@ -873,7 +931,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Dec 29 18:42:24 2025 by
+  Generated on Mon Dec 29 19:21:22 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

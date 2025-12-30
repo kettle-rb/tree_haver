@@ -17,6 +17,7 @@ require_relative "spec_matrix_helper"
 # - When MRI loads a grammar first, FFI gets incompatible pointers
 # - Rust (tree_stump) may have similar issues
 # - Citrus backend uses toml-rb gem which is pure ruby and unrelated to tree-sitter
+# - TruffleRuby's FFI doesn't support STRUCT_BY_VALUE (used by tree-sitter)
 #
 # IMPORTANT: For accurate results, run with --order defined (not random):
 #   bin/rspec spec_matrix/ --order defined
@@ -28,6 +29,11 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
   # Citrus is excluded because it's pure Ruby (no .so conflicts) and
   # the only available Citrus TOML grammar (toml-rb)
   BACKENDS = [:mri, :ffi, :rust].freeze # rubocop:disable RSpec/LeakyConstantDeclaration
+
+  # Detect TruffleRuby - FFI tree-sitter doesn't work due to STRUCT_BY_VALUE limitation
+  # rubocop:disable RSpec/LeakyConstantDeclaration
+  TRUFFLERUBY = RUBY_ENGINE == "truffleruby"
+  # rubocop:enable RSpec/LeakyConstantDeclaration
 
   # Check if backend's required gems are INSTALLED without loading them
   # Uses Gem::Specification to avoid side effects from require
@@ -58,19 +64,38 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
     end
   end
 
-  # Check if a backend is blocked at runtime
+  # Check if a backend is blocked at runtime due to platform incompatibility or conflicts
   # Uses the same logic as the backend's available? method to prevent false positives
   def backend_blocked?(backend)
-    return false unless backend == :ffi
-    # FFI is blocked when MRI has been loaded (defines ::TreeSitter::Parser)
-    # This matches the logic in Backends::FFI.available? to avoid mismatches
-    # between "usable" check and actual availability
-    defined?(TreeSitter::Parser)
+    case backend
+    when :ffi
+      # FFI is blocked on TruffleRuby due to STRUCT_BY_VALUE limitation
+      return true if TRUFFLERUBY
+      # FFI is blocked when MRI has been loaded (defines ::TreeSitter::Parser)
+      # This matches the logic in Backends::FFI.available? to avoid mismatches
+      defined?(TreeSitter::Parser)
+    when :mri
+      # MRI backend (ruby_tree_sitter) is a C extension, only works on MRI
+      RUBY_ENGINE != "ruby"
+    when :rust
+      # Rust backend (tree_stump) uses magnus which requires MRI's C API
+      RUBY_ENGINE != "ruby"
+    else
+      false
+    end
   end
 
   # Get skip reason for a backend
   def skip_reason_for(backend)
-    return "FFI blocked by MRI (ruby_tree_sitter already loaded)" if backend == :ffi && backend_blocked?(:ffi)
+    case backend
+    when :ffi
+      return "FFI not supported on TruffleRuby (STRUCT_BY_VALUE limitation)" if TRUFFLERUBY
+      return "FFI blocked by MRI (ruby_tree_sitter already loaded)" if backend_blocked?(:ffi)
+    when :mri
+      return "MRI backend only works on MRI Ruby (C extension)" if RUBY_ENGINE != "ruby"
+    when :rust
+      return "Rust backend only works on MRI Ruby (magnus requires MRI C API)" if RUBY_ENGINE != "ruby"
+    end
     "#{backend} gem not installed"
   end
 

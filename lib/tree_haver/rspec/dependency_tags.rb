@@ -225,6 +225,10 @@ module TreeHaver
         #
         # @return [Boolean] true if FFI backend is usable
         def ffi_available?
+          # TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types
+          # (used by ts_tree_root_node, ts_node_child, ts_node_start_point, etc.)
+          return false if truffleruby?
+
           # Try to actually use the FFI backend
           path = find_toml_grammar_path
           return false unless path && File.exist?(path)
@@ -236,13 +240,13 @@ module TreeHaver
         rescue TreeHaver::BackendConflict, TreeHaver::NotAvailable, LoadError
           false
         rescue StandardError
-          # TruffleRuby raises Polyglot::ForeignException (a StandardError subclass)
-          # when FFI encounters unsupported types like STRUCT_BY_VALUE
+          # Catch any other FFI-related errors (e.g., Polyglot::ForeignException)
           false
         end
 
         # Check if ruby_tree_sitter gem is available (MRI backend)
         #
+        # The MRI backend only works on MRI Ruby (C extension).
         # When this returns true, it also records MRI backend usage with
         # TreeHaver.record_backend_usage(:mri). This is critical for conflict
         # detection - without it, FFI would not know that MRI has been loaded.
@@ -250,6 +254,10 @@ module TreeHaver
         # @return [Boolean] true if ruby_tree_sitter gem is available
         def mri_backend_available?
           return @mri_backend_available if defined?(@mri_backend_available)
+
+          # ruby_tree_sitter is a C extension that only works on MRI
+          return @mri_backend_available = false unless mri?
+
           @mri_backend_available = begin
             require "ruby_tree_sitter"
             # Record that MRI backend is now loaded - this is critical for
@@ -263,9 +271,15 @@ module TreeHaver
 
         # Check if tree_stump gem is available (Rust backend)
         #
+        # The Rust backend only works on MRI Ruby (magnus uses MRI's C API).
+        #
         # @return [Boolean] true if tree_stump gem is available
         def rust_backend_available?
           return @rust_backend_available if defined?(@rust_backend_available)
+
+          # tree_stump uses magnus which requires MRI's C API
+          return @rust_backend_available = false unless mri?
+
           @rust_backend_available = begin
             require "tree_stump"
             true

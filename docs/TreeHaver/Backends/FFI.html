@@ -223,7 +223,7 @@ C library without requiring MRI C extensions.</p>
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Check if the FFI gem can be loaded.</p>
+    <span class="summary_desc"><div class='inline'><p>Check if the FFI gem can be loaded and is usable for tree-sitter.</p>
 </div></span>
   
 </li>
@@ -274,14 +274,12 @@ C library without requiring MRI C extensions.</p>
   <div class="discussion">
     <p>Check if the FFI backend is available</p>
 
-<p>Returns true if:</p>
-<ol>
-  <li>The <code>ffi</code> gem is present</li>
-  <li>MRI backend (ruby_tree_sitter) has NOT been loaded</li>
-</ol>
-
-<p>FFI and MRI backends conflict at the libtree-sitter level.<br />
-Once MRI loads, using FFI will cause segfaults.</p>
+<p>The FFI backend requires:</p>
+<ul>
+  <li>The ffi gem to be installed</li>
+  <li>NOT running on TruffleRuby (STRUCT_BY_VALUE limitation)</li>
+  <li>MRI backend (ruby_tree_sitter) not already loaded (symbol conflicts)</li>
+</ul>
 
 
   </div>
@@ -322,18 +320,18 @@ Once MRI loads, using FFI will cause segfaults.</p>
       <pre class="lines">
 
 
-228
-229
-230
-231
-232
-233</pre>
+45
+46
+47
+48
+49
+50</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 228</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 45</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_available?'>available?</span>
-  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI (module)">FFI</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ffi_gem_available?'><span class='object_link'><a href="#ffi_gem_available%3F-class_method" title="TreeHaver::Backends::FFI.ffi_gem_available? (method)">ffi_gem_available?</a></span></span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_ffi_gem_available?'>ffi_gem_available?</span>
 
   <span class='comment'># Check if MRI backend has been loaded (which blocks FFI)
 </span>  <span class='op'>!</span><span class='kw'>defined?</span><span class='lparen'>(</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../TreeSitter.html" title="TreeSitter (module)">TreeSitter</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../TreeSitter.html#Parser-constant" title="TreeSitter::Parser (constant)">Parser</a></span></span><span class='rparen'>)</span>
@@ -394,26 +392,28 @@ Once MRI loads, using FFI will cause segfaults.</p>
       <pre class="lines">
 
 
-253
-254
-255
-256
-257
-258
-259
-260
-261</pre>
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 253</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 87</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='kw'>return</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_available?'>available?</span>
   <span class='lbrace'>{</span>
     <span class='label'>backend:</span> <span class='symbol'>:ffi</span><span class='comma'>,</span>
     <span class='label'>parse:</span> <span class='kw'>true</span><span class='comma'>,</span>
-    <span class='label'>query:</span> <span class='kw'>false</span><span class='comma'>,</span>
-    <span class='label'>bytes_field:</span> <span class='kw'>true</span><span class='comma'>,</span>
+    <span class='label'>query:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='comment'># Query API not yet implemented in FFI backend
+</span>    <span class='label'>bytes_field:</span> <span class='kw'>true</span><span class='comma'>,</span>
+    <span class='label'>incremental:</span> <span class='kw'>false</span><span class='comma'>,</span>
   <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -436,7 +436,15 @@ Once MRI loads, using FFI will cause segfaults.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-<p>Check if the FFI gem can be loaded</p>
+
+  <div class="note notetag">
+    <strong>Note:</strong>
+    <div class='inline'><p>Returns false on TruffleRuby because TruffleRuby’s FFI doesn’t support<br />
+STRUCT_BY_VALUE return types (used by ts_tree_root_node, ts_node_child, etc.)</p>
+</div>
+  </div>
+
+<p>Check if the FFI gem can be loaded and is usable for tree-sitter</p>
 
 
   </div>
@@ -454,7 +462,7 @@ Once MRI loads, using FFI will cause segfaults.</p>
       
       
         &mdash;
-        <div class='inline'><p>true if FFI gem can be loaded</p>
+        <div class='inline'><p>true if FFI gem can be loaded and works with tree-sitter</p>
 </div>
       
     </li>
@@ -467,24 +475,32 @@ Once MRI loads, using FFI will cause segfaults.</p>
       <pre class="lines">
 
 
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46</pre>
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 37</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 58</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ffi_gem_available?'>ffi_gem_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@ffi_gem_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@ffi_gem_available</span><span class='rparen'>)</span>
 
   <span class='ivar'>@ffi_gem_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='comment'># TruffleRuby&#39;s FFI doesn&#39;t support STRUCT_BY_VALUE return types
+</span>    <span class='comment'># which tree-sitter uses extensively (ts_tree_root_node, ts_node_child, etc.)
+</span>    <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>truffleruby</span><span class='tstring_end'>&quot;</span></span>
+
     <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ffi</span><span class='tstring_end'>&quot;</span></span>
     <span class='kw'>true</span>
   <span class='kw'>rescue</span> <span class='const'>LoadError</span>
@@ -513,9 +529,6 @@ Once MRI loads, using FFI will cause segfaults.</p>
 </p>
 <p class="note returns_void">This method returns an undefined value.</p><p>Reset the load state (primarily for testing)</p>
 
-<p>Note: FFI backend doesn’t maintain load state like other backends,<br />
-but this method is provided for API consistency.</p>
-
 
   </div>
 </div>
@@ -528,17 +541,15 @@ but this method is provided for API consistency.</p>
       <pre class="lines">
 
 
-242
-243
-244
-245</pre>
+77
+78
+79</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 242</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 77</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
-  <span class='comment'># FFI backend uses constant-time availability check, no state to reset
-</span>  <span class='kw'>nil</span>
+  <span class='ivar'>@ffi_gem_available</span> <span class='op'>=</span> <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -550,7 +561,7 @@ but this method is provided for API consistency.</p>
 </div>
 
       <div id="footer">
-  Generated on Mon Dec 29 18:42:25 2025 by
+  Generated on Mon Dec 29 19:21:23 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

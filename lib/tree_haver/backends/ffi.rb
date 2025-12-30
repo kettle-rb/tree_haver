@@ -26,23 +26,73 @@ module TreeHaver
     # @see https://github.com/ffi/ffi Ruby FFI
     # @see https://tree-sitter.github.io/tree-sitter/ tree-sitter
     module FFI
-      # Check if the FFI gem is available (lazy evaluation)
+      # Module-level availability and capability methods
       #
-      # This method lazily checks for FFI gem availability to avoid
-      # polluting the environment at load time.
+      # These methods provide API consistency with other backends.
       class << self
-        # Check if the FFI gem can be loaded
-        # @return [Boolean] true if FFI gem can be loaded
+        # Check if the FFI backend is available
+        #
+        # The FFI backend requires:
+        # - The ffi gem to be installed
+        # - NOT running on TruffleRuby (STRUCT_BY_VALUE limitation)
+        # - MRI backend (ruby_tree_sitter) not already loaded (symbol conflicts)
+        #
+        # @return [Boolean] true if FFI backend can be used
+        # @example
+        #   if TreeHaver::Backends::FFI.available?
+        #     puts "FFI backend is ready"
+        #   end
+        def available?
+          return false unless ffi_gem_available?
+
+          # Check if MRI backend has been loaded (which blocks FFI)
+          !defined?(::TreeSitter::Parser)
+        end
+
+        # Check if the FFI gem can be loaded and is usable for tree-sitter
+        #
+        # @return [Boolean] true if FFI gem can be loaded and works with tree-sitter
         # @api private
+        # @note Returns false on TruffleRuby because TruffleRuby's FFI doesn't support
+        #   STRUCT_BY_VALUE return types (used by ts_tree_root_node, ts_node_child, etc.)
         def ffi_gem_available?
           return @ffi_gem_available if defined?(@ffi_gem_available)
 
           @ffi_gem_available = begin
+            # TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types
+            # which tree-sitter uses extensively (ts_tree_root_node, ts_node_child, etc.)
+            return false if RUBY_ENGINE == "truffleruby"
+
             require "ffi"
             true
           rescue LoadError
             false
           end
+        end
+
+        # Reset the load state (primarily for testing)
+        #
+        # @return [void]
+        # @api private
+        def reset!
+          @ffi_gem_available = nil
+        end
+
+        # Get capabilities supported by this backend
+        #
+        # @return [Hash{Symbol => Object}] capability map
+        # @example
+        #   TreeHaver::Backends::FFI.capabilities
+        #   # => { backend: :ffi, parse: true, query: false, bytes_field: true }
+        def capabilities
+          return {} unless available?
+          {
+            backend: :ffi,
+            parse: true,
+            query: false, # Query API not yet implemented in FFI backend
+            bytes_field: true,
+            incremental: false,
+          }
         end
       end
 
@@ -207,57 +257,6 @@ module TreeHaver
           def loaded?
             !!@loaded
           end
-        end
-      end
-
-      class << self
-        # Check if the FFI backend is available
-        #
-        # Returns true if:
-        # 1. The `ffi` gem is present
-        # 2. MRI backend (ruby_tree_sitter) has NOT been loaded
-        #
-        # FFI and MRI backends conflict at the libtree-sitter level.
-        # Once MRI loads, using FFI will cause segfaults.
-        #
-        # @return [Boolean] true if FFI backend can be used
-        # @example
-        #   if TreeHaver::Backends::FFI.available?
-        #     puts "FFI backend is ready"
-        #   end
-        def available?
-          return false unless TreeHaver::Backends::FFI.ffi_gem_available?
-
-          # Check if MRI backend has been loaded (which blocks FFI)
-          !defined?(::TreeSitter::Parser)
-        end
-
-        # Reset the load state (primarily for testing)
-        #
-        # Note: FFI backend doesn't maintain load state like other backends,
-        # but this method is provided for API consistency.
-        #
-        # @return [void]
-        # @api private
-        def reset!
-          # FFI backend uses constant-time availability check, no state to reset
-          nil
-        end
-
-        # Get capabilities supported by this backend
-        #
-        # @return [Hash{Symbol => Object}] capability map
-        # @example
-        #   TreeHaver::Backends::FFI.capabilities
-        #   # => { backend: :ffi, parse: true, query: false, bytes_field: true }
-        def capabilities
-          return {} unless available?
-          {
-            backend: :ffi,
-            parse: true,
-            query: false,
-            bytes_field: true,
-          }
         end
       end
 
