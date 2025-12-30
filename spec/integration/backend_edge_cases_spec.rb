@@ -145,7 +145,6 @@ RSpec.describe "Backend-specific behaviors" do
 
   describe "MRI backend edge cases", :mri_backend, :toml_grammar do
     before do
-      skip "MRI backend not available" unless TreeHaver::Backends::MRI.available?
       TreeHaver::LanguageRegistry.clear_cache!
     end
 
@@ -170,13 +169,7 @@ RSpec.describe "Backend-specific behaviors" do
     end
   end
 
-  describe "Citrus backend edge cases", :citrus_backend do
-    before do
-      require "toml-rb"
-    rescue LoadError
-      skip "toml-rb gem not available"
-    end
-
+  describe "Citrus backend edge cases", :citrus_backend, :toml_rb do
     it "handles grammar module registration" do
       TreeHaver.register_language(
         :toml_citrus_test,

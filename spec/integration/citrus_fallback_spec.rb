@@ -11,8 +11,6 @@ require "spec_helper"
 # tree-sitter backends failed, the Citrus fallback was attempted with
 # gem_name: nil and grammar_const: nil, causing require to receive nil
 # instead of a valid require path.
-#
-# See: https://github.com/pboling/tree_haver/issues/XXX
 RSpec.describe "Citrus fallback", :citrus_backend do
   before do
     TreeHaver::LanguageRegistry.clear_cache!
@@ -42,7 +40,7 @@ RSpec.describe "Citrus fallback", :citrus_backend do
   end
 
   describe "TreeHaver.parser_for with Citrus fallback" do
-    context "when tree-sitter backends are unavailable (simulating TruffleRuby)" do
+    context "when tree-sitter backends are unavailable (simulating TruffleRuby)", :toml_rb do
       before do
         # Stub all native tree-sitter backends as unavailable
         # This simulates the TruffleRuby environment where native extensions don't work
@@ -174,7 +172,7 @@ RSpec.describe "Citrus fallback", :citrus_backend do
         end
       end
 
-      context "with valid toml-rb configuration" do
+      context "with valid toml-rb configuration", :toml_rb do
         it "returns true" do
           finder = TreeHaver::CitrusGrammarFinder.new(
             language: :toml,
@@ -188,13 +186,12 @@ RSpec.describe "Citrus fallback", :citrus_backend do
     end
   end
 
-  describe "Explicit Citrus backend usage on MRI" do
+  describe "Explicit Citrus backend usage on MRI", :toml_rb do
     # This test explicitly uses Citrus backend even on MRI where tree-sitter works
     # This ensures we test the Citrus code path regardless of native backend availability
     it "can use Citrus backend explicitly via with_backend" do
       TreeHaver.with_backend(:citrus) do
         parser = TreeHaver::Parser.new
-        require "toml-rb"
         citrus_lang = TreeHaver::Backends::Citrus::Language.new(TomlRB::Document)
         parser.language = citrus_lang
 
@@ -207,7 +204,6 @@ RSpec.describe "Citrus fallback", :citrus_backend do
     it "can parse complex TOML via Citrus backend" do
       TreeHaver.with_backend(:citrus) do
         parser = TreeHaver::Parser.new
-        require "toml-rb"
         citrus_lang = TreeHaver::Backends::Citrus::Language.new(TomlRB::Document)
         parser.language = citrus_lang
 

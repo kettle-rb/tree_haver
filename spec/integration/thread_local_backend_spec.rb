@@ -167,7 +167,8 @@ RSpec.describe "Thread-local backend selection" do
   end
 
   describe "Thread isolation" do
-    it "different threads can use different backends simultaneously" do
+    # These tests use :mri and :ffi backends which are only available on MRI
+    it "different threads can use different backends simultaneously", :ffi_backend, :mri_backend do
       results = {}
 
       thread1 = Thread.new do
@@ -195,7 +196,7 @@ RSpec.describe "Thread-local backend selection" do
       expect(results[:thread2_end]).to eq(:mri)
     end
 
-    it "main thread is unaffected by other threads" do
+    it "main thread is unaffected by other threads", :ffi_backend, :mri_backend do
       TreeHaver.backend = :ffi
 
       thread = Thread.new do
@@ -212,7 +213,7 @@ RSpec.describe "Thread-local backend selection" do
       expect(TreeHaver.effective_backend).to eq(:ffi)
     end
 
-    it "handles multiple concurrent threads with different backends" do
+    it "handles multiple concurrent threads with different backends", :citrus_backend, :ffi_backend, :mri_backend, :rust_backend do
       results = Concurrent::Array.new if defined?(Concurrent::Array)
       results ||= []
       mutex = Mutex.new
@@ -234,7 +235,7 @@ RSpec.describe "Thread-local backend selection" do
     end
   end
 
-  describe "TreeHaver.backend_module" do
+  describe "TreeHaver.backend_module", :ffi_backend do
     it "uses effective_backend instead of global backend" do
       # Set global to :auto but thread-local to specific backend
       TreeHaver.backend = :auto
@@ -242,24 +243,15 @@ RSpec.describe "Thread-local backend selection" do
       TreeHaver.with_backend(:ffi) do
         mod = TreeHaver.backend_module
         # Should resolve based on :ffi, not :auto
-        expect(mod).to eq(TreeHaver::Backends::FFI) if TreeHaver::Backends::FFI.available?
+        expect(mod).to eq(TreeHaver::Backends::FFI)
       end
     end
 
     it "respects thread-local context when selecting backend" do
-      available_backends = []
-      available_backends << :mri if TreeHaver::Backends::MRI.available?
-      available_backends << :ffi if TreeHaver::Backends::FFI.available?
-      available_backends << :citrus if TreeHaver::Backends::Citrus.available?
-
-      skip "No backends available for testing" if available_backends.empty?
-
-      backend_name = available_backends.first
-
-      TreeHaver.with_backend(backend_name) do
+      TreeHaver.with_backend(:ffi) do
         mod = TreeHaver.backend_module
         expect(mod).not_to be_nil
-        expect(mod.capabilities[:backend]).to eq(backend_name)
+        expect(mod.capabilities[:backend]).to eq(:ffi)
       end
     end
   end
@@ -315,13 +307,13 @@ RSpec.describe "Thread-local backend selection" do
   end
 
   describe "TreeHaver.resolve_backend_module" do
-    it "returns correct module for explicit backend (non-conflicting)" do
+    it "returns correct module for explicit backend (non-conflicting)", :citrus_backend do
       # Use citrus since it never conflicts
       mod = TreeHaver.resolve_backend_module(:citrus)
       expect(mod).to eq(TreeHaver::Backends::Citrus)
     end
 
-    it "returns correct module for thread-local backend when passing nil" do
+    it "returns correct module for thread-local backend when passing nil", :citrus_backend do
       TreeHaver.with_backend(:citrus) do
         mod = TreeHaver.resolve_backend_module(nil)
         expect(mod).to eq(TreeHaver::Backends::Citrus)
@@ -330,7 +322,7 @@ RSpec.describe "Thread-local backend selection" do
       end
     end
 
-    it "returns correct module for each backend type (respecting conflicts)" do
+    it "returns correct module for each backend type (respecting conflicts)", :citrus_backend, :ffi_backend, :java_backend, :mri_backend, :rust_backend do
       {
         mri: TreeHaver::Backends::MRI,
         rust: TreeHaver::Backends::Rust,
@@ -363,7 +355,7 @@ RSpec.describe "Thread-local backend selection" do
       expect(mod).to eq(TreeHaver.backend_module)
     end
 
-    it "respects thread-local context when no explicit backend and verifies block isolation" do
+    it "respects thread-local context when no explicit backend and verifies block isolation", :citrus_backend do
       # Use citrus since it never conflicts
       outer_mod = nil
       TreeHaver.with_backend(:citrus) do
@@ -375,7 +367,7 @@ RSpec.describe "Thread-local backend selection" do
       expect(outer_mod).to eq(TreeHaver::Backends::Citrus)
     end
 
-    it "raises BackendConflict when FFI requested after MRI used", :backend_conflict do
+    it "raises BackendConflict when FFI requested after MRI used", :ffi_backend, :mri_backend do
       skip "MRI not loaded, cannot test conflict" unless defined?(TreeSitter::Parser)
       skip "Backend protection is disabled" unless TreeHaver.backend_protect?
 

@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: CHANGELOG
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "CHANGELOG";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: CHANGELOG</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1 id="changelog">Changelog</h1>
+
+<p><a href="https://semver.org/spec/v2.0.0.html"><img src="https://img.shields.io/badge/semver-2.0.0-FFDD67.svg?style=flat" alt="SemVer 2.0.0"></a> <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-FFDD67.svg?style=flat" alt="Keep-A-Changelog 1.0.0"></a></p>
+
+<p>All notable changes to this project will be documented in this file.</p>
+
+<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,<br>
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>,<br>
+and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
+Please file a bug if you notice a violation of semantic versioning.</p>
+
+<h2 id="unreleased"><a href="https://github.com/kettle-rb/tree_haver/compare/v3.2.0...HEAD">Unreleased</a></h2>
+
+<h3 id="added">Added</h3>
+
+<h3 id="changed">Changed</h3>
+
+<h3 id="deprecated">Deprecated</h3>
+
+<h3 id="removed">Removed</h3>
+
+<h3 id="fixed">Fixed</h3>
+
+<h3 id="security">Security</h3>
+
+<h2 id="320---2025-12-30">
+<a href="https://github.com/kettle-rb/tree_haver/compare/v3.1.2...v3.2.0">3.2.0</a> - 2025-12-30</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.0">v3.2.0</a>
+</li>
+  <li>COVERAGE: 86.82% – 2167/2496 lines in 22 files</li>
+  <li>BRANCH COVERAGE: 66.79% – 734/1099 branches in 22 files</li>
+  <li>90.03% documented</li>
+</ul>
+
+<h3 id="added-1">Added</h3>
+
+<ul>
+  <li>
+<code>TreeHaver::CITRUS_DEFAULTS</code> constant with default Citrus configurations for known languages
+    <ul>
+      <li>Enables automatic Citrus fallback for TOML without explicit <code>citrus_config</code> parameter</li>
+      <li>Currently includes configuration for <code>:toml</code> (gem: <code>toml-rb</code>, const: <code>TomlRB::Document</code>)</li>
+    </ul>
+  </li>
+  <li>Regression test suite for Citrus fallback (<code>spec/integration/citrus_fallback_spec.rb</code>)
+    <ul>
+      <li>Tests <code>parser_for</code> with all tree-sitter backends stubbed as unavailable (simulating TruffleRuby)</li>
+      <li>Tests <code>CitrusGrammarFinder</code> with nil <code>gem_name</code> and <code>require_path</code>
+</li>
+      <li>Tests explicit Citrus backend usage on MRI via <code>with_backend(:citrus)</code>
+</li>
+    </ul>
+  </li>
+  <li>Shared examples for TOML parsing tests (<code>spec/support/shared_examples/toml_parsing_examples.rb</code>)
+    <ul>
+      <li>
+<code>"toml parsing basics"</code> - tests basic parsing, positions, children, text extraction</li>
+      <li>
+<code>"toml node navigation"</code> - tests first_child, named_children navigation</li>
+    </ul>
+  </li>
+  <li>Multi-backend TOML test suite (<code>spec/integration/multi_backend_toml_spec.rb</code>)
+    <ul>
+      <li>Runs shared examples against both tree-sitter-toml and Citrus/toml-rb backends</li>
+      <li>Tests backend equivalence for parsing results and positions</li>
+      <li>Tagged appropriately so tests run on whichever backends are available</li>
+    </ul>
+  </li>
+  <li>Backend Platform Compatibility section to README
+    <ul>
+      <li>Complete compatibility matrix showing which backends work on MRI, JRuby, TruffleRuby</li>
+      <li>Detailed explanations for TruffleRuby and JRuby limitations</li>
+    </ul>
+  </li>
+  <li>
+<code>FFI.available?</code> method at module level for API consistency with other backends</li>
+  <li>
+<code>TreeHaver.resolve_native_backend_module</code> method for resolving only tree-sitter backends</li>
+  <li>
+<code>TreeHaver::NATIVE_BACKENDS</code> constant listing backends that support shared libraries</li>
+  <li>TruffleRuby short-circuit in <code>resolve_native_backend_module</code> for efficiency
+    <ul>
+      <li>Avoids trying 3 backends that are all known to fail on TruffleRuby</li>
+    </ul>
+  </li>
+  <li>
+<code>citrus_available?</code> method to check if Citrus backend is available</li>
+</ul>
+
+<h3 id="fixed-1">Fixed</h3>
+
+<ul>
+  <li>
+<strong><code>TreeHaver::Node#child</code> now returns <code>nil</code> for out-of-bounds indices on all backends</strong>
+    <ul>
+      <li>MRI backend (ruby_tree_sitter) raises <code>IndexError</code> for invalid indices</li>
+      <li>Other backends return <code>nil</code> for invalid indices</li>
+      <li>Now consistently returns <code>nil</code> across all backends for API compatibility</li>
+    </ul>
+  </li>
+  <li>
+<strong>Citrus backend <code>calculate_point</code> returns negative column values</strong>
+    <ul>
+      <li>When <code>offset</code> was 0, <code>@source.rindex("\n", -1)</code> searched from end of string</li>
+      <li>This caused <code>column = 0 - (position_of_last_newline) - 1</code> to be negative (e.g., -34)</li>
+      <li>Fix: Early return <code>{row: 0, column: 0}</code> for <code>offset &lt;= 0</code>
+</li>
+      <li>This bug affected both MRI and TruffleRuby when using Citrus backend</li>
+    </ul>
+  </li>
+  <li>
+<strong>Citrus fallback fails on TruffleRuby when no explicit <code>citrus_config</code> provided</strong>
+    <ul>
+      <li>
+<code>parser_for(:toml)</code> would fail with <code>TypeError: no implicit conversion of nil into String</code>
+</li>
+      <li>Root cause: <code>citrus_config</code> defaulted to <code>{}</code>, so <code>citrus_config[:gem_name]</code> was <code>nil</code>
+</li>
+      <li>
+<code>CitrusGrammarFinder</code> was instantiated with <code>gem_name: nil</code>, causing <code>require nil</code>
+</li>
+      <li>On TruffleRuby, this triggered a bug in <code>bundled_gems.rb</code> calling <code>File.path</code> on nil</li>
+      <li>Fix: Added <code>CITRUS_DEFAULTS</code> with known Citrus configurations (TOML currently)</li>
+      <li>Fix: <code>parser_for</code> now uses <code>CITRUS_DEFAULTS[name]</code> when no explicit config provided</li>
+      <li>Fix: Added guard in <code>CitrusGrammarFinder#available?</code> to return false when <code>require_path</code> is nil</li>
+      <li>Fix: Added <code>TypeError</code> to rescue clause for TruffleRuby-specific edge cases</li>
+    </ul>
+  </li>
+  <li>
+<strong><code>from_library</code> no longer falls back to pure-Ruby backends</strong>
+    <ul>
+      <li>Previously, calling <code>Language.from_library(path)</code> on TruffleRuby would fall back to Citrus<br>
+backend which then raised a confusing error about not supporting shared libraries</li>
+      <li>Now <code>from_library</code> only considers native tree-sitter backends (MRI, Rust, FFI, Java)</li>
+      <li>Clear error message when no native backend is available explaining the situation</li>
+    </ul>
+  </li>
+  <li>
+<strong>Integration specs now use <code>parser_for</code> instead of explicit paths</strong>
+    <ul>
+      <li>
+<code>tree_edge_cases_spec.rb</code> and <code>node_edge_cases_spec.rb</code> now use <code>TreeHaver.parser_for(:toml)</code><br>
+which auto-discovers the best available backend (tree-sitter or Citrus fallback)</li>
+      <li>Tests now work correctly on all platforms (MRI, JRuby, TruffleRuby)</li>
+      <li>Tagged with <code>:toml_parsing</code> which passes if ANY toml parser is available</li>
+    </ul>
+  </li>
+  <li>
+<strong>Core specs now use <code>parser_for</code> instead of explicit paths</strong>
+    <ul>
+      <li>
+<code>tree_spec.rb</code>, <code>node_spec.rb</code>, <code>parser_spec.rb</code> converted to use <code>TreeHaver.parser_for(:toml)</code>
+</li>
+      <li>All <code>:toml_grammar</code> tags changed to <code>:toml_parsing</code> for cross-platform compatibility</li>
+      <li>Tests now run on JRuby and TruffleRuby via Citrus/toml-rb fallback</li>
+    </ul>
+  </li>
+  <li>FFI backend now properly reports as unavailable on TruffleRuby
+    <ul>
+      <li>
+<code>ffi_gem_available?</code> returns <code>false</code> on TruffleRuby since tree-sitter uses STRUCT_BY_VALUE return types</li>
+      <li>
+<code>FFI.available?</code> added at module level (was only in Native submodule)</li>
+      <li>Prevents confusing runtime errors (Polyglot::ForeignException) by detecting incompatibility upfront</li>
+      <li>Dependency tags now check <code>truffleruby?</code> before attempting FFI backend tests</li>
+    </ul>
+  </li>
+  <li>MRI backend now properly reports as unavailable on JRuby and TruffleRuby
+    <ul>
+      <li>
+<code>available?</code> returns <code>false</code> on non-MRI platforms (C extension only works on MRI)</li>
+    </ul>
+  </li>
+  <li>Rust backend now properly reports as unavailable on JRuby and TruffleRuby
+    <ul>
+      <li>
+<code>available?</code> returns <code>false</code> on non-MRI platforms (magnus requires MRI’s C API)</li>
+    </ul>
+  </li>
+  <li>Backend compatibility matrix spec now properly skips tests for platform-incompatible backends
+    <ul>
+      <li>MRI and Rust backends skip on JRuby/TruffleRuby with clear skip messages</li>
+      <li>FFI backend skips on TruffleRuby with clear skip message</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="changed-1">Changed</h3>
+
+<ul>
+  <li>
+<strong>BREAKING: RSpec Dependency Tag Naming Convention Overhaul</strong>
+    <ul>
+      <li>All dependency tags now follow consistent naming conventions with suffixes</li>
+      <li>Backend tags now use <code>*_backend</code> suffix (e.g., <code>:commonmarker_backend</code>, <code>:markly_backend</code>)</li>
+      <li>Engine tags now use <code>*_engine</code> suffix (e.g., <code>:mri_engine</code>, <code>:jruby_engine</code>, <code>:truffleruby_engine</code>)</li>
+      <li>Grammar tags now use <code>*_grammar</code> suffix (e.g., <code>:bash_grammar</code>, <code>:toml_grammar</code>, <code>:json_grammar</code>)</li>
+      <li>Parsing capability tags now use <code>*_parsing</code> suffix (e.g., <code>:toml_parsing</code>, <code>:markdown_parsing</code>)</li>
+      <li>
+<strong>Migration required</strong>: Update specs using legacy tags:
+        <ul>
+          <li>
+<code>:commonmarker</code> → <code>:commonmarker_backend</code>
+</li>
+          <li>
+<code>:markly</code> → <code>:markly_backend</code>
+</li>
+          <li>
+<code>:mri</code> → <code>:mri_engine</code>
+</li>
+          <li>
+<code>:jruby</code> → <code>:jruby_engine</code>
+</li>
+          <li>
+<code>:truffleruby</code> → <code>:truffleruby_engine</code>
+</li>
+          <li>
+<code>:tree_sitter_bash</code> → <code>:bash_grammar</code>
+</li>
+          <li>
+<code>:tree_sitter_toml</code> → <code>:toml_grammar</code>
+</li>
+          <li>
+<code>:tree_sitter_json</code> → <code>:json_grammar</code>
+</li>
+          <li>
+<code>:tree_sitter_jsonc</code> → <code>:jsonc_grammar</code>
+</li>
+          <li>
+<code>:toml_backend</code> → <code>:toml_parsing</code>
+</li>
+          <li>
+<code>:markdown_backend</code> → <code>:markdown_parsing</code>
+</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+<strong>Removed inner-merge dependency tags from tree_haver</strong>
+    <ul>
+      <li>Tags <code>:toml_merge</code>, <code>:json_merge</code>, <code>:prism_merge</code>, <code>:psych_merge</code> removed</li>
+      <li>These belong in ast-merge gem, not tree_haver</li>
+      <li>Use <code>require "ast/merge/rspec/dependency_tags"</code> for merge gem tags</li>
+    </ul>
+  </li>
+  <li>
+<strong>API Consistency</strong>: All backends now have uniform <code>available?</code> API at module level:
+    <ul>
+      <li>
+<code>TreeHaver::Backends::FFI.available?</code> - checks ffi gem + not TruffleRuby + MRI not loaded</li>
+      <li>
+<code>TreeHaver::Backends::MRI.available?</code> - checks MRI platform + ruby_tree_sitter gem</li>
+      <li>
+<code>TreeHaver::Backends::Rust.available?</code> - checks MRI platform + tree_stump gem</li>
+      <li>
+<code>TreeHaver::Backends::Java.available?</code> - checks JRuby platform + jtreesitter JAR</li>
+      <li>
+<code>TreeHaver::Backends::Prism.available?</code> - checks prism gem (all platforms)</li>
+      <li>
+<code>TreeHaver::Backends::Psych.available?</code> - checks psych stdlib (all platforms)</li>
+      <li>
+<code>TreeHaver::Backends::Commonmarker.available?</code> - checks commonmarker gem (all platforms)</li>
+      <li>
+<code>TreeHaver::Backends::Markly.available?</code> - checks markly gem (all platforms)</li>
+      <li>
+<code>TreeHaver::Backends::Citrus.available?</code> - checks citrus gem (all platforms)</li>
+    </ul>
+  </li>
+  <li>README now accurately documents TruffleRuby backend support
+    <ul>
+      <li>FFI backend doesn’t work on TruffleRuby due to <code>STRUCT_BY_VALUE</code> limitation in TruffleRuby’s FFI</li>
+      <li>Rust backend (tree_stump) doesn’t work due to magnus/rb-sys incompatibility with TruffleRuby’s C API</li>
+      <li>TruffleRuby users should use Prism, Psych, Commonmarker, Markly, or Citrus backends</li>
+    </ul>
+  </li>
+  <li>Documented confirmed tree-sitter backend limitations:
+    <ul>
+      <li>
+<strong>TruffleRuby</strong>: No tree-sitter backend works (FFI, MRI, Rust all fail)</li>
+      <li>
+<strong>JRuby</strong>: Only Java and FFI backends work; Rust/MRI don’t</li>
+    </ul>
+  </li>
+  <li>Updated Rust Backend section with platform compatibility notes</li>
+  <li>Updated FFI Backend section with TruffleRuby limitation details</li>
+  <li>Use kettle-rb/ts-grammar-setup GHA in CI workflows</li>
+</ul>
+
+<h3 id="fixed-2">Fixed</h3>
+
+<ul>
+  <li>Rakefile now properly overrides <code>test</code> task after <code>require "kettle/dev"</code>
+    <ul>
+      <li>Works around a bug in kettle-dev where test task runs minitest loader in CI</li>
+      <li>Ensures <code>rake test</code> runs RSpec specs instead of empty minitest suite</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::RSpec::DependencyTags</code> now catches TruffleRuby FFI exceptions
+    <ul>
+      <li>TruffleRuby’s FFI raises <code>Polyglot::ForeignException</code> for unsupported types like <code>STRUCT_BY_VALUE</code>
+</li>
+      <li>
+<code>ffi_available?</code> and <code>libtree_sitter_available?</code> now return <code>false</code> instead of crashing</li>
+      <li>Fixes spec loading errors on TruffleRuby</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Backends::FFI::Language.from_library</code> now catches <code>RuntimeError</code> from TruffleRuby
+    <ul>
+      <li>TruffleRuby raises <code>RuntimeError</code> instead of <code>LoadError</code> when a shared library cannot be opened</li>
+      <li>Now properly converts to <code>TreeHaver::NotAvailable</code> with descriptive message</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Backends::FFI::Native.try_load!</code> now only sets <code>@loaded = true</code> after all <code>attach_function</code> calls succeed
+    <ul>
+      <li>Previously, <code>loaded?</code> returned <code>true</code> even when <code>attach_function</code> failed (e.g., on TruffleRuby)</li>
+      <li>Now <code>loaded?</code> correctly returns <code>false</code> when FFI functions couldn’t be attached</li>
+      <li>Ensures FFI tests are properly skipped on TruffleRuby</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="312---2025-12-29">
+<a href="https://github.com/kettle-rb/tree_haver/compare/v3.1.1...v3.1.2">3.1.2</a> - 2025-12-29</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/tree_haver/releases/tag/v3.1.2">v3.1.2</a>
+</li>
+  <li>COVERAGE: 87.40% – 2171/2484 lines in 22 files</li>
+  <li>BRANCH COVERAGE: 67.04% – 726/1083 branches in 22 files</li>
+  <li>90.03% documented</li>
+</ul>
+
+<h3 id="added-2">Added</h3>
+
+<ul>
+  <li>Enhanced <code>TreeHaver::RSpec::DependencyTags</code> debugging
+    <ul>
+      <li>
+<code>env_summary</code> method returns relevant environment variables for diagnosis</li>
+      <li>
+<code>grammar_works?</code> now logs detailed trace when <code>TREE_HAVER_DEBUG=1</code>
+</li>
+      <li>
+<code>before(:suite)</code> prints both env vars and dependency status when debugging</li>
+      <li>Helps diagnose differences between local and CI environments</li>
+    </ul>
+  </li>
+  <li>Many new specs for:
+    <ul>
+      <li>TreeHaver::GrammarFinder</li>
+      <li>TreeHaver::Node</li>
+      <li>TreeHaver::Tree</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="311---2025-12-28">
+<a href="https://github.com/kettle-rb/tree_haver/compare/v3.1.0...v3.1.1">3.1.1</a> - 2025-12-28</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/tree_haver/releases/tag/v3.1.1">v3.1.1</a>
+</li>
+  <li>COVERAGE: 87.44% – 2152/2461 lines in 22 files</li>
+  <li>BRANCH COVERAGE: 66.67% – 710/1065 branches in 22 files</li>
+  <li>90.02% documented</li>
+</ul>
+
+<h3 id="added-3">Added</h3>
+
+<ul>
+  <li>
+<strong><code>TreeHaver::RSpec::DependencyTags</code></strong>: Shared RSpec dependency detection for the entire gem family
+    <ul>
+      <li>New <code>lib/tree_haver/rspec.rb</code> entry point - other gems can simply <code>require "tree_haver/rspec"</code>
+</li>
+      <li>Detects all TreeHaver backends: FFI, MRI, Rust, Java, Prism, Psych, Commonmarker, Markly, Citrus</li>
+      <li>Ruby engine detection: <code>jruby?</code>, <code>truffleruby?</code>, <code>mri?</code>
+</li>
+      <li>Language grammar detection: <code>tree_sitter_bash_available?</code>, <code>tree_sitter_toml_available?</code>, <code>tree_sitter_json_available?</code>, <code>tree_sitter_jsonc_available?</code>
+</li>
+      <li>Inner-merge dependency detection: <code>toml_merge_available?</code>, <code>json_merge_available?</code>, <code>prism_merge_available?</code>, <code>psych_merge_available?</code>
+</li>
+      <li>Composite checks: <code>any_toml_backend_available?</code>, <code>any_markdown_backend_available?</code>
+</li>
+      <li>Records MRI backend usage when checking availability (critical for FFI conflict detection)</li>
+      <li>Configures RSpec exclusion filters for all dependency tags automatically</li>
+      <li>Supports debug output via <code>TREE_HAVER_DEBUG=1</code> environment variable</li>
+      <li>Comprehensive documentation with usage examples</li>
+    </ul>
+  </li>
+  <li>
+<strong><code>TreeHaver.parser_for</code></strong>: New high-level factory method for creating configured parsers
+    <ul>
+      <li>Handles all language loading complexity in one call</li>
+      <li>Auto-discovers tree-sitter grammar via <code>GrammarFinder</code>
+</li>
+      <li>Falls back to Citrus grammar if tree-sitter unavailable</li>
+      <li>Accepts <code>library_path</code> for explicit grammar location</li>
+      <li>Accepts <code>citrus_config</code> for Citrus fallback configuration</li>
+      <li>Raises <code>NotAvailable</code> with helpful message if no backend works</li>
+      <li>Example: <code>parser = TreeHaver.parser_for(:toml)</code>
+</li>
+      <li>Raises <code>NotAvailable</code> if the specified path doesn’t exist (Principle of Least Surprise)</li>
+      <li>Does not back to auto-discovery when an explicit path is provided</li>
+      <li>Re-raises with context-rich error message if loading from explicit path fails</li>
+      <li>Auto-discovery still works normally when no <code>library_path</code> is provided</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="changed-2">Changed</h3>
+
+<ul>
+  <li>
+<strong>Backend sibling navigation</strong>: Backends that don’t support sibling/parent navigation now raise <code>NotImplementedError</code> instead of returning <code>nil</code>
+    <ul>
+      <li>This distinguishes “not implemented” from “no sibling exists”</li>
+      <li>Affected backends: Prism, Psych</li>
+      <li>Affected methods: <code>next_sibling</code>, <code>prev_sibling</code>, <code>parent</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<strong>Canonical sibling method name</strong>: All backends now use <code>prev_sibling</code> as the canonical method name (not <code>previous_sibling</code>)
+    <ul>
+      <li>Matches the universal <code>TreeHaver::Node</code> API</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="fixed-3">Fixed</h3>
+
+<ul>
+  <li>
+<strong>Backend conflict detection</strong>: Fixed bug where MRI backend usage wasn’t being recorded during availability checks
+    <ul>
+      <li>
+<code>mri_backend_available?</code> now calls <code>TreeHaver.record_backend_usage(:mri)</code> after successfully loading ruby_tree_sitter</li>
+      <li>This ensures FFI conflict detection works correctly even when MRI is loaded indirectly</li>
+    </ul>
+  </li>
+  <li>
+<strong>GrammarFinder#not_found_message</strong>: Improved error message when grammar file exists but no tree-sitter runtime is available
+    <ul>
+      <li>Now suggests adding <code>ruby_tree_sitter</code>, <code>ffi</code>, or <code>tree_stump</code> gem to Gemfile</li>
+      <li>Clearer guidance for users who have grammar files but are missing the Ruby tree-sitter bindings</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="310---2025-12-18">
+<a href="https://github.com/kettle-rb/tree_haver/compare/v3.0.0...v3.1.0">3.1.0</a> - 2025-12-18</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/tree_haver/releases/tag/v3.1.0">v3.1.0</a>
+</li>
+  <li>COVERAGE: 82.65% – 943/1141 lines in 11 files</li>
+  <li>BRANCH COVERAGE: 63.80% – 349/547 branches in 11 files</li>
+  <li>88.97% documented</li>
+</ul>
+
+<h3 id="added-4">Added</h3>
+
+<ul>
+  <li>
+<strong>Position API Enhancements</strong> – Added consistent position methods to all backend Node classes for compatibility with <code>*-merge</code> gems
+    <ul>
+      <li>
+<code>start_line</code> - Returns 1-based line number where node starts (converts 0-based <code>start_point.row</code> to 1-based)</li>
+      <li>
+<code>end_line</code> - Returns 1-based line number where node ends (converts 0-based <code>end_point.row</code> to 1-based)</li>
+      <li>
+<code>source_position</code> - Returns hash <code>{start_line:, end_line:, start_column:, end_column:}</code> with 1-based lines and 0-based columns</li>
+      <li>
+<code>first_child</code> - Convenience method that returns <code>children.first</code> for iteration compatibility</li>
+      <li>
+<strong>Fixed:</strong> <code>TreeHaver::Node#start_point</code> and <code>#end_point</code> now handle both Point objects and hashes from backends (Prism, Citrus return hashes)</li>
+      <li>
+<strong>Fixed:</strong> Added Psych, Commonmarker, and Markly backends to <code>resolve_backend_module</code> and <code>backend_module</code> case statements so they can be explicitly selected with <code>TreeHaver.backend = :psych</code> etc.</li>
+      <li>
+<strong>Fixed:</strong> Added Prism, Psych, Commonmarker, and Markly backends to <code>unwrap_language</code> method so language objects are properly passed to backend parsers</li>
+      <li>
+<strong>Fixed:</strong> Commonmarker backend’s <code>text</code> method now safely handles container nodes that don’t have string_content (wraps in rescue TypeError)</li>
+      <li>
+<strong>Added to:</strong>
+        <ul>
+          <li>Main <code>TreeHaver::Node</code> wrapper (used by tree-sitter backends: MRI, FFI, Java, Rust)</li>
+          <li>
+<code>Backends::Commonmarker::Node</code> - uses Commonmarker’s <code>sourcepos</code> (already 1-based)</li>
+          <li>
+<code>Backends::Markly::Node</code> - uses Markly’s <code>source_position</code> (already 1-based)</li>
+          <li>
+<code>Backends::Prism::Node</code> - uses Prism’s <code>location</code> (already 1-based)</li>
+          <li>
+<code>Backends::Psych::Node</code> - calculates from <code>start_point</code>/<code>end_point</code> (0-based)</li>
+          <li>
+<code>Backends::Citrus::Node</code> - calculates from <code>start_point</code>/<code>end_point</code> (0-based)</li>
+        </ul>
+      </li>
+      <li>
+<strong>Backward Compatible:</strong> Existing <code>start_point</code>/<code>end_point</code> methods continue to work unchanged</li>
+      <li>
+<strong>Purpose:</strong> Enables all <code>*-merge</code> gems to use consistent position API without backend-specific workarounds</li>
+    </ul>
+  </li>
+  <li>
+<strong>Prism Backend</strong> – New backend wrapping Ruby’s official Prism parser (stdlib in Ruby 3.4+, gem for 3.2+)
+    <ul>
+      <li>
+<code>TreeHaver::Backends::Prism::Language</code> - Language wrapper (Ruby-only)</li>
+      <li>
+<code>TreeHaver::Backends::Prism::Parser</code> - Parser with <code>parse</code> and <code>parse_string</code> methods</li>
+      <li>
+<code>TreeHaver::Backends::Prism::Tree</code> - Tree wrapper with <code>root_node</code>, <code>errors</code>, <code>warnings</code>, <code>comments</code>
+</li>
+      <li>
+<code>TreeHaver::Backends::Prism::Node</code> - Node wrapper implementing full TreeHaver::Node protocol</li>
+      <li>Registered with <code>:prism</code> backend name, no conflicts with other backends</li>
+    </ul>
+  </li>
+  <li>
+<strong>Psych Backend</strong> – New backend wrapping Ruby’s standard library YAML parser
+    <ul>
+      <li>
+<code>TreeHaver::Backends::Psych::Language</code> - Language wrapper (YAML-only)</li>
+      <li>
+<code>TreeHaver::Backends::Psych::Parser</code> - Parser with <code>parse</code> and <code>parse_string</code> methods</li>
+      <li>
+<code>TreeHaver::Backends::Psych::Tree</code> - Tree wrapper with <code>root_node</code>, <code>errors</code>
+</li>
+      <li>
+<code>TreeHaver::Backends::Psych::Node</code> - Node wrapper implementing TreeHaver::Node protocol</li>
+      <li>Psych-specific methods: <code>mapping?</code>, <code>sequence?</code>, <code>scalar?</code>, <code>alias?</code>, <code>mapping_entries</code>, <code>anchor</code>, <code>tag</code>, <code>value</code>
+</li>
+      <li>Registered with <code>:psych</code> backend name, no conflicts with other backends</li>
+    </ul>
+  </li>
+  <li>
+<strong>Commonmarker Backend</strong> – New backend wrapping the Commonmarker gem (comrak Rust parser)
+    <ul>
+      <li>
+<code>TreeHaver::Backends::Commonmarker::Language</code> - Language wrapper with parse options passthrough</li>
+      <li>
+<code>TreeHaver::Backends::Commonmarker::Parser</code> - Parser with <code>parse</code> and <code>parse_string</code> methods</li>
+      <li>
+<code>TreeHaver::Backends::Commonmarker::Tree</code> - Tree wrapper with <code>root_node</code>
+</li>
+      <li>
+<code>TreeHaver::Backends::Commonmarker::Node</code> - Node wrapper implementing TreeHaver::Node protocol</li>
+      <li>Commonmarker-specific methods: <code>header_level</code>, <code>fence_info</code>, <code>url</code>, <code>title</code>, <code>next_sibling</code>, <code>previous_sibling</code>, <code>parent</code>
+</li>
+      <li>Registered with <code>:commonmarker</code> backend name, no conflicts with other backends</li>
+    </ul>
+  </li>
+  <li>
+<strong>Markly Backend</strong> – New backend wrapping the Markly gem (cmark-gfm C library)
+    <ul>
+      <li>
+<code>TreeHaver::Backends::Markly::Language</code> - Language wrapper with flags and extensions passthrough</li>
+      <li>
+<code>TreeHaver::Backends::Markly::Parser</code> - Parser with <code>parse</code> and <code>parse_string</code> methods</li>
+      <li>
+<code>TreeHaver::Backends::Markly::Tree</code> - Tree wrapper with <code>root_node</code>
+</li>
+      <li>
+<code>TreeHaver::Backends::Markly::Node</code> - Node wrapper implementing TreeHaver::Node protocol</li>
+      <li>Type normalization: <code>:header</code> → <code>"heading"</code>, <code>:hrule</code> → <code>"thematic_break"</code>, <code>:html</code> → <code>"html_block"</code>
+</li>
+      <li>Markly-specific methods: <code>header_level</code>, <code>fence_info</code>, <code>url</code>, <code>title</code>, <code>next_sibling</code>, <code>previous_sibling</code>, <code>parent</code>, <code>raw_type</code>
+</li>
+      <li>Registered with <code>:markly</code> backend name, no conflicts with other backends</li>
+    </ul>
+  </li>
+  <li>
+<strong>Automatic Citrus Fallback</strong> – When tree-sitter fails, automatically fall back to Citrus backend
+    <ul>
+      <li>
+<code>TreeHaver::Language.method_missing</code> now catches tree-sitter loading errors (<code>NotAvailable</code>, <code>ArgumentError</code>, <code>LoadError</code>, <code>FFI::NotFoundError</code>) and falls back to registered Citrus grammar</li>
+      <li>
+<code>TreeHaver::Parser#initialize</code> now catches parser creation errors and falls back to Citrus parser when backend is <code>:auto</code>
+</li>
+      <li>
+<code>TreeHaver::Parser#language=</code> automatically switches to Citrus parser when a Citrus language is assigned</li>
+      <li>Enables seamless use of pure-Ruby parsers (like toml-rb) when tree-sitter runtime is unavailable</li>
+    </ul>
+  </li>
+  <li>
+<strong>GrammarFinder Runtime Check</strong> – <code>GrammarFinder#available?</code> now verifies tree-sitter runtime is actually usable
+    <ul>
+      <li>New <code>GrammarFinder.tree_sitter_runtime_usable?</code> class method tests if parser can be created</li>
+      <li>
+<code>TREE_SITTER_BACKENDS</code> constant defines which backends use tree-sitter (MRI, FFI, Rust, Java)</li>
+      <li>Prevents registration of grammars when tree-sitter runtime isn’t functional</li>
+      <li>
+<code>GrammarFinder.reset_runtime_check!</code> for testing</li>
+    </ul>
+  </li>
+  <li>
+<strong>Empty ENV Variable as Explicit Skip</strong> – Setting <code>TREE_SITTER_&lt;LANG&gt;_PATH=''</code> explicitly disables that grammar
+    <ul>
+      <li>Previously, empty string was treated same as unset (would search paths)</li>
+      <li>Now, empty string means “do not use tree-sitter for this language”</li>
+      <li>Allows explicit opt-out to force fallback to alternative backends like Citrus</li>
+      <li>Useful for testing and environments where tree-sitter isn’t desired</li>
+    </ul>
+  </li>
+  <li>
+<strong>TOML Examples</strong> – New example scripts demonstrating TOML parsing with various backends
+    <ul>
+      <li>
+<code>examples/auto_toml.rb</code> - Auto backend selection with Citrus fallback demonstration</li>
+      <li>
+<code>examples/ffi_toml.rb</code> - FFI backend with TOML</li>
+      <li>
+<code>examples/mri_toml.rb</code> - MRI backend with TOML</li>
+      <li>
+<code>examples/rust_toml.rb</code> - Rust backend with TOML</li>
+      <li>
+<code>examples/java_toml.rb</code> - Java backend with TOML (JRuby only)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="fixed-4">Fixed</h3>
+
+<ul>
+  <li>
+<strong>BREAKING</strong>: <code>TreeHaver::Language.method_missing</code> no longer raises <code>ArgumentError</code> when only Citrus grammar is registered and tree-sitter backend is active – it now falls back to Citrus instead
+    <ul>
+      <li>Previously: Would raise “No grammar registered for :lang compatible with tree_sitter backend”</li>
+      <li>Now: Returns <code>TreeHaver::Backends::Citrus::Language</code> if Citrus grammar is registered</li>
+      <li>Migration: If you were catching this error, update your code to handle the fallback behavior</li>
+      <li>This is a bug fix, but would be a breaking change for some users who were relying on the old behavior</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="300---2025-12-16">
+<a href="https://github.com/kettle-rb/tree_haver/compare/v2.0.0...v3.0.0">3.0.0</a> - 2025-12-16</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/tree_haver/releases/tag/v3.0.0">v3.0.0</a>
+</li>
+  <li>COVERAGE: 85.19% – 909/1067 lines in 11 files</li>
+  <li>BRANCH COVERAGE: 67.47% – 338/501 branches in 11 files</li>
+  <li>92.93% documented</li>
+</ul>
+
+<h3 id="added-5">Added</h3>
+
+<h4 id="backend-requirements">Backend Requirements</h4>
+
+<ul>
+  <li>
+<strong>MRI Backend</strong>: Requires <code>ruby_tree_sitter</code> v2.0+ (exceptions inherit from <code>Exception</code> not <code>StandardError</code>)
+    <ul>
+      <li>In ruby_tree_sitter v2.0, TreeSitter errors were changed to inherit from Exception for thread-safety</li>
+      <li>TreeHaver now properly handles: <code>ParserNotFoundError</code>, <code>LanguageLoadError</code>, <code>SymbolNotFoundError</code>, etc.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="thread-safe-backend-selection-hybrid-approach">Thread-Safe Backend Selection (Hybrid Approach)</h4>
+
+<ul>
+  <li>
+<strong>NEW: Block-based backend API</strong> - <code>TreeHaver.with_backend(:ffi) { ... }</code> for thread-safe backend selection
+    <ul>
+      <li>Thread-local context with proper nesting support</li>
+      <li>Exception-safe (context restored even on errors)</li>
+      <li>Fully backward compatible with existing global backend setting</li>
+    </ul>
+  </li>
+  <li>
+<strong>NEW: Explicit backend parameters</strong>
+    <ul>
+      <li>
+<code>Parser.new(backend: :mri)</code> - specify backend when creating parser</li>
+      <li>
+<code>Language.from_library(path, backend: :ffi)</code> - specify backend when loading language</li>
+      <li>Backend parameters override thread context and global settings</li>
+    </ul>
+  </li>
+  <li>
+<strong>NEW: Backend introspection</strong> - <code>parser.backend</code> returns the current backend name (<code>:ffi</code>, <code>:mri</code>, etc.)</li>
+  <li>
+<strong>Backend precedence chain</strong>: <code>explicit parameter &gt; thread context &gt; global setting &gt; :auto</code>
+</li>
+  <li>
+<strong>Backend-aware caching</strong> - Language cache now includes backend in cache key to prevent cross-backend pollution</li>
+  <li>Added <code>TreeHaver.effective_backend</code> - returns the currently effective backend considering precedence</li>
+  <li>Added <code>TreeHaver.current_backend_context</code> - returns thread-local backend context</li>
+  <li>Added <code>TreeHaver.resolve_backend_module(explicit_backend)</code> - resolves backend module with precedence</li>
+</ul>
+
+<h4 id="examples-and-discovery">Examples and Discovery</h4>
+
+<ul>
+  <li>Added 18 comprehensive examples demonstrating all backends and languages
+    <ul>
+      <li>JSON examples (5): auto, MRI, Rust, FFI, Java</li>
+      <li>JSONC examples (5): auto, MRI, Rust, FFI, Java</li>
+      <li>Bash examples (5): auto, MRI, Rust, FFI, Java</li>
+      <li>Citrus examples (3): TOML, Finitio, Dhall</li>
+      <li>All examples use bundler inline (self-contained, no Gemfile needed)</li>
+      <li>Added <code>examples/run_all.rb</code> - comprehensive test runner with colored output</li>
+      <li>Updated <code>examples/README.md</code> - complete guide to all examples</li>
+    </ul>
+  </li>
+  <li>Added <code>TreeHaver::CitrusGrammarFinder</code> for language-agnostic discovery and registration of Citrus-based grammar gems
+    <ul>
+      <li>Automatically discovers Citrus grammar gems by gem name and grammar constant path</li>
+      <li>Validates grammar modules respond to <code>.parse(source)</code> before registration</li>
+      <li>Provides helpful error messages when grammars are not found</li>
+    </ul>
+  </li>
+  <li>Added multi-backend language registry supporting multiple backends per language simultaneously
+    <ul>
+      <li>Restructured <code>LanguageRegistry</code> to use nested hash: <code>{ language: { backend_type: config } }</code>
+</li>
+      <li>Enables registering both tree-sitter and Citrus grammars for the same language without conflicts</li>
+      <li>Supports runtime backend switching, benchmarking, and fallback scenarios</li>
+    </ul>
+  </li>
+  <li>Added <code>LanguageRegistry.register(name, backend_type, **config)</code> with backend-specific configuration storage</li>
+  <li>Added <code>LanguageRegistry.registered(name, backend_type = nil)</code> to query by specific backend or get all backends</li>
+  <li>Added <code>TreeHaver::Backends::Citrus::Node#structural?</code> method to distinguish structural nodes from terminals
+    <ul>
+      <li>Uses Citrus grammar’s <code>terminal?</code> method to dynamically determine node classification</li>
+      <li>Works with any Citrus grammar without language-specific knowledge</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="changed-3">Changed</h3>
+
+<ul>
+  <li>
+<strong>BREAKING</strong>: All errors now inherit from <code>TreeHaver::Error</code> which inherits from <code>Exception</code>
+    <ul>
+      <li>see: https://github.com/Faveod/ruby-tree-sitter/pull/83 for reasoning</li>
+    </ul>
+  </li>
+  <li>
+<strong>BREAKING</strong>: <code>LanguageRegistry.register</code> signature changed from <code>register(name, path:, symbol:)</code> to <code>register(name, backend_type, **config)</code>
+    <ul>
+      <li>This enables proper separation of tree-sitter and Citrus configurations</li>
+      <li>Users should update to use <code>TreeHaver.register_language</code> instead of calling <code>LanguageRegistry.register</code> directly</li>
+    </ul>
+  </li>
+  <li>Updated <code>TreeHaver.register_language</code> to support both tree-sitter and Citrus grammars in single call or separate calls
+    <ul>
+      <li>Can now register: <code>register_language(:toml, path: "...", symbol: "...", grammar_module: TomlRB::Document)</code>
+</li>
+      <li>
+<strong>INTENTIONAL DESIGN</strong>: Uses separate <code>if</code> statements (not <code>elsif</code>) to allow registering both backends simultaneously</li>
+      <li>Enables maximum flexibility: runtime backend switching, performance benchmarking, fallback scenarios</li>
+      <li>Multiple registrations for same language now merge instead of overwrite</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="improved">Improved</h3>
+
+<h4 id="code-quality-and-documentation">Code Quality and Documentation</h4>
+
+<ul>
+  <li>
+<strong>Uniform backend API</strong>: All backends now implement <code>reset!</code> method for consistent testing interface
+    <ul>
+      <li>Eliminates need for tests to manipulate private instance variables</li>
+      <li>Provides clean way to reset backend state between tests</li>
+    </ul>
+  </li>
+  <li>
+<strong>Documented design decisions</strong> with inline rationale
+    <ul>
+      <li>FFI Tree finalizer behavior and why Parser doesn’t use finalizers</li>
+      <li>
+<code>resolve_backend_module</code> early-return pattern with comprehensive comments</li>
+      <li>
+<code>register_language</code> multi-backend registration capability extensively documented</li>
+    </ul>
+  </li>
+  <li>
+<strong>Enhanced YARD documentation</strong>
+    <ul>
+      <li>All Citrus examples now include <code>gem_name</code> parameter (matches actual usage patterns)</li>
+      <li>Added complete examples showing both single-backend and multi-backend registration</li>
+      <li>Documented backend precedence chain and thread-safety guarantees</li>
+    </ul>
+  </li>
+  <li>
+<strong>Comprehensive test coverage</strong> for thread-safe backend selection
+    <ul>
+      <li>Thread-local context tests</li>
+      <li>Parser backend parameter tests</li>
+      <li>Language backend parameter tests</li>
+      <li>Concurrent parsing tests with multiple backends</li>
+      <li>Backend-aware cache isolation tests</li>
+      <li>Nested block behavior tests (inner blocks override outer blocks)</li>
+      <li>Exception safety tests (context restored even on errors)</li>
+      <li>Explicit parameter precedence tests</li>
+    </ul>
+  </li>
+  <li>Updated <code>Language.method_missing</code> to automatically select appropriate grammar based on active backend
+    <ul>
+      <li>tree-sitter backends (MRI, Rust, FFI, Java) query <code>:tree_sitter</code> registry key</li>
+      <li>Citrus backend queries <code>:citrus</code> registry key</li>
+      <li>Provides clear error messages when requested backend has no registered grammar</li>
+    </ul>
+  </li>
+  <li>Improved <code>TreeHaver::Backends::Citrus::Node#type</code> to use dynamic Citrus grammar introspection
+    <ul>
+      <li>Uses event <code>.name</code> method and Symbol events for accurate type extraction</li>
+      <li>Works with any Citrus grammar without language-specific code</li>
+      <li>Handles compound rules (Repeat, Choice, Optional) intelligently</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="fixed-5">Fixed</h3>
+
+<h4 id="thread-safety-and-backend-selection">Thread-Safety and Backend Selection</h4>
+
+<ul>
+  <li>Fixed <code>resolve_backend_module</code> to properly handle mocked backends without <code>available?</code> method
+    <ul>
+      <li>Assumes modules without <code>available?</code> are available (for test compatibility and backward compatibility)</li>
+      <li>Only rejects if module explicitly has <code>available?</code> method and returns false</li>
+      <li>Makes code more defensive and test-friendly</li>
+    </ul>
+  </li>
+  <li>Fixed Language cache to include backend in cache key
+    <ul>
+      <li>Prevents returning wrong backend’s Language object when switching backends</li>
+      <li>Essential for correctness with multiple backends in use</li>
+      <li>Cache key now: <code>"#{path}:#{symbol}:#{backend}"</code> instead of just <code>"#{path}:#{symbol}"</code>
+</li>
+    </ul>
+  </li>
+  <li>Fixed <code>TreeHaver.register_language</code> to properly support multi-backend registration
+    <ul>
+      <li>Documented intentional design: uses <code>if</code> not <code>elsif</code> to allow both backends in one call</li>
+      <li>Added comprehensive inline comments explaining why no early return</li>
+      <li>Added extensive YARD documentation with examples</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="backend-bug-fixes">Backend Bug Fixes</h4>
+
+<ul>
+  <li>Fixed critical double-wrapping bug in ALL backends (MRI, Rust, FFI, Java, Citrus)
+    <ul>
+      <li>Backend <code>Parser#parse</code> and <code>parse_string</code> methods now return raw backend trees</li>
+      <li>TreeHaver::Parser wraps the raw tree in TreeHaver::Tree (single wrapping)</li>
+      <li>Previously backends were returning TreeHaver::Tree, then TreeHaver::Parser wrapped it again (double wrapping)</li>
+      <li>This caused <code>@inner_tree</code> to be a TreeHaver::Tree instead of raw backend tree, leading to nil errors</li>
+    </ul>
+  </li>
+  <li>Fixed TreeHaver::Parser to pass source parameter when wrapping backend trees
+    <ul>
+      <li>Enables <code>Node#text</code> to work correctly by providing source for text extraction</li>
+      <li>Fixes all parse and parse_string methods to include <code>source: source</code> parameter</li>
+    </ul>
+  </li>
+  <li>Fixed MRI backend to properly use ruby_tree_sitter API
+    <ul>
+      <li>Fixed <code>require "tree_sitter"</code> (gem name is <code>ruby_tree_sitter</code> but requires <code>tree_sitter</code>)</li>
+      <li>Fixed <code>Language.load</code> to use correct argument order: <code>(symbol_name, path)</code>
+</li>
+      <li>Fixed <code>Parser#parse</code> to use <code>parse_string(nil, source)</code> instead of creating Input objects</li>
+      <li>Fixed <code>Language.from_library</code> to implement the expected signature matching other backends</li>
+    </ul>
+  </li>
+  <li>Fixed FFI backend missing essential node methods
+    <ul>
+      <li>Added <code>ts_node_start_byte</code>, <code>ts_node_end_byte</code>, <code>ts_node_start_point</code>, <code>ts_node_end_point</code>
+</li>
+      <li>Added <code>ts_node_is_null</code>, <code>ts_node_is_named</code>
+</li>
+      <li>These methods are required for accessing node byte positions and metadata</li>
+      <li>Fixes <code>NoMethodError</code> when using FFI backend to traverse AST nodes</li>
+    </ul>
+  </li>
+  <li>Fixed GrammarFinder error messages for environment variable validation
+    <ul>
+      <li>Detects leading/trailing whitespace in paths and provides correction suggestions</li>
+      <li>Shows when TREE_SITTER_*_PATH is set but points to nonexistent file</li>
+      <li>Provides helpful guidance for setting environment variables correctly</li>
+    </ul>
+  </li>
+  <li>Fixed registry conflicts when registering multiple backend types for the same language</li>
+  <li>Fixed <code>CitrusGrammarFinder</code> to use gem name as-is for require path (e.g., <code>require "toml-rb"</code> not <code>require "toml/rb"</code>)</li>
+  <li>Fixed Citrus backend infinite recursion in <code>Node#extract_type_from_event</code>
+    <ul>
+      <li>Added cycle detection to prevent stack overflow when traversing recursive grammar structures</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="known-issues">Known Issues</h3>
+
+<ul>
+  <li>
+<strong>MRI backend + Bash grammar</strong>: ABI/symbol loading incompatibility
+    <ul>
+      <li>The ruby_tree_sitter gem cannot load tree-sitter-bash grammar (symbol not found)</li>
+      <li>Workaround: Use FFI backend instead (works perfectly)</li>
+      <li>This is documented in examples and test runner</li>
+    </ul>
+  </li>
+  <li>
+<strong>Rust backend + Bash grammar</strong>: Version mismatch due to static linking
+    <ul>
+      <li>tree_stump statically links tree-sitter at compile time</li>
+      <li>System bash.so may be compiled with different tree-sitter version</li>
+      <li>Workaround: Use FFI backend (dynamic linking avoids version conflicts)</li>
+      <li>This is documented in examples with detailed explanations</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="notes-on-backward-compatibility">Notes on Backward Compatibility</h3>
+
+<p>Despite the major version bump to 3.0.0 (following semver due to the breaking <code>LanguageRegistry.register</code> signature change), <strong>most users will experience NO BREAKING CHANGES</strong>:</p>
+
+<h4 id="why-300">Why 3.0.0?</h4>
+
+<ul>
+  <li>
+<code>LanguageRegistry.register</code> signature changed to support multi-backend registration</li>
+  <li>However, most users should use <code>TreeHaver.register_language</code> (which remains backward compatible)</li>
+  <li>Direct calls to <code>LanguageRegistry.register</code> are rare in practice</li>
+</ul>
+
+<h4 id="what-stays-the-same">What Stays the Same?</h4>
+
+<ul>
+  <li>
+<strong>Global backend setting</strong>: <code>TreeHaver.backend = :ffi</code> works unchanged</li>
+  <li>
+<strong>Parser creation</strong>: <code>Parser.new</code> without parameters works as before</li>
+  <li>
+<strong>Language loading</strong>: <code>Language.from_library(path)</code> works as before</li>
+  <li>
+<strong>Auto-detection</strong>: Backend auto-selection still works when backend is <code>:auto</code>
+</li>
+  <li>
+<strong>All existing code</strong> continues to work without modifications</li>
+</ul>
+
+<h4 id="whats-new-all-optional">What’s New (All Optional)?</h4>
+
+<ul>
+  <li>Thread-safe block API: <code>TreeHaver.with_backend(:ffi) { ... }</code>
+</li>
+  <li>Explicit backend parameters: <code>Parser.new(backend: :mri)</code>
+</li>
+  <li>Backend introspection: <code>parser.backend</code>
+</li>
+  <li>Multi-backend language registration</li>
+</ul>
+
+<p><strong>Migration Path</strong>: Existing codebases can upgrade to 3.0.0 and gain access to new thread-safe features without changing any existing code. The new features are purely additive and opt-in.</p>
+
+<h2 id="200---2025-12-15">
+<a href="https://github.com/kettle-rb/tree_haver/compare/v1.0.0...v2.0.0">2.0.0</a> - 2025-12-15</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/tree_haver/releases/tag/v2.0.0">v2.0.0</a>
+</li>
+  <li>COVERAGE: 82.78% – 601/726 lines in 11 files</li>
+  <li>BRANCH COVERAGE: 70.45% – 186/264 branches in 11 files</li>
+  <li>91.90% documented</li>
+</ul>
+
+<h3 id="added-6">Added</h3>
+
+<ul>
+  <li>Added support for Citrus backend (<code>backends/citrus.rb</code>) - a pure Ruby grammar parser with its own distinct grammar structure</li>
+  <li>Added <code>TreeHaver::Tree</code> unified wrapper class providing consistent API across all backends</li>
+  <li>Added <code>TreeHaver::Node</code> unified wrapper class providing consistent API across all backends</li>
+  <li>Added <code>TreeHaver::Point</code> class that works as both object and hash for position compatibility</li>
+  <li>Added passthrough mechanism via <code>method_missing</code> for accessing backend-specific features</li>
+  <li>Added <code>inner_node</code> accessor on <code>TreeHaver::Node</code> for advanced backend-specific usage</li>
+  <li>Added <code>inner_tree</code> accessor on <code>TreeHaver::Tree</code> for advanced backend-specific usage</li>
+  <li>Added comprehensive test suite for <code>TreeHaver::Node</code> wrapper class (88 examples)</li>
+  <li>Added comprehensive test suite for <code>TreeHaver::Tree</code> wrapper class (17 examples)</li>
+  <li>Added comprehensive test suite for <code>TreeHaver::Parser</code> class (12 examples)</li>
+  <li>Added complete test coverage for Citrus backend (41 examples)</li>
+  <li>Enhanced <code>TreeHaver::Language</code> tests for dynamic language helpers</li>
+</ul>
+
+<h3 id="changed-4">Changed</h3>
+
+<ul>
+  <li>
+<strong>BREAKING:</strong> All backends now return <code>TreeHaver::Tree</code> from <code>Parser#parse</code> and <code>Parser#parse_string</code>
+</li>
+  <li>
+<strong>BREAKING:</strong> <code>TreeHaver::Tree#root_node</code> now returns <code>TreeHaver::Node</code> instead of backend-specific node</li>
+  <li>
+<strong>BREAKING:</strong> All child/sibling/parent methods on nodes now return <code>TreeHaver::Node</code> wrappers</li>
+  <li>Updated MRI backend (<code>backends/mri.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Updated Rust backend (<code>backends/rust.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Updated FFI backend (<code>backends/ffi.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Updated Java backend (<code>backends/java.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Updated Citrus backend (<code>backends/citrus.rb</code>) to return wrapped <code>TreeHaver::Tree</code> with source</li>
+  <li>Disabled old pass-through stub classes in <code>tree_haver.rb</code> (wrapped in <code>if false</code> for reference)</li>
+</ul>
+
+<h3 id="fixed-6">Fixed</h3>
+
+<ul>
+  <li>Fixed <code>TreeHaver::Tree#supports_editing?</code> and <code>#edit</code> to handle Delegator wrappers correctly by using <code>.method(:edit)</code> check instead of <code>respond_to?</code>
+</li>
+  <li>Fixed <code>PathValidator</code> to accept versioned <code>.so</code> files (e.g., <code>.so.0</code>, <code>.so.14</code>) which are standard on Linux systems</li>
+  <li>Fixed backend portability - code now works identically across MRI, Rust, FFI, Java, and Citrus backends</li>
+  <li>Fixed inconsistent API - <code>node.type</code> now works on all backends (was <code>node.kind</code> on TreeStump)</li>
+  <li>Fixed position objects - <code>start_point</code> and <code>end_point</code> now return objects that work as both <code>.row</code> and <code>[:row]</code>
+</li>
+  <li>Fixed child iteration - <code>node.each</code> and <code>node.children</code> now consistently return <code>TreeHaver::Node</code> objects</li>
+  <li>Fixed text extraction - <code>node.text</code> now works consistently by storing source in <code>TreeHaver::Tree</code>
+</li>
+</ul>
+
+<h2 id="100---2025-12-15">
+<a href="https://github.com/kettle-rb/tree_haver/compare/a89211bff10f4440b96758a8ac9d7d539001b0c8...v1.0.0">1.0.0</a> - 2025-12-15</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/tree_haver/tags/v1.0.0">v1.0.0</a>
+</li>
+  <li>COVERAGE: 97.21% – 487/501 lines in 8 files</li>
+  <li>BRANCH COVERAGE: 90.75% – 157/173 branches in 8 files</li>
+  <li>97.31% documented</li>
+</ul>
+
+<h3 id="added-7">Added</h3>
+
+<ul>
+  <li>Initial release</li>
+</ul>
+
+</div></div>
+
+      <div id="footer">
+  Generated on Tue Dec 30 04:57:25 2025 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-4.0.0).
+</div>
+
+    </div>
+  </body>
+</html>

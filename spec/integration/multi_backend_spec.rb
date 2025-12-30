@@ -5,13 +5,13 @@ require "spec_helper"
 # Integration tests for multi-backend scenarios and backend switching
 # NOTE: These tests use Citrus and MRI backends which can coexist.
 # FFI backend tests must run in isolation - see bin/rspec-ffi
-RSpec.describe "Multi-backend integration", :toml_grammar do
+RSpec.describe "Multi-backend integration" do
   after do
     TreeHaver.reset_backend!(to: :auto)
     Thread.current[:tree_haver_backend_context] = nil
   end
 
-  describe "backend switching during parsing" do
+  describe "backend switching during parsing", :citrus_backend, :mri_backend, :toml_grammar, :toml_rb do
     it "caches languages per backend correctly" do
       path = TreeHaverDependencies.find_toml_grammar_path
 
@@ -26,22 +26,16 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
 
       # Load with Citrus
       TreeHaver.backend = :citrus
-      if TreeHaver::Backends::Citrus.available?
-        lang_citrus = TreeHaver::Language.toml_test
-        expect(lang_citrus).to be_a(TreeHaver::Backends::Citrus::Language)
-      end
+      lang_citrus = TreeHaver::Language.toml_test
+      expect(lang_citrus).to be_a(TreeHaver::Backends::Citrus::Language)
 
       # Load with MRI - should get different cached object
       TreeHaver.backend = :mri
-      if TreeHaver::Backends::MRI.available?
-        lang_mri = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-        expect(lang_mri).to be_a(TreeHaver::Backends::MRI::Language)
+      lang_mri = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
+      expect(lang_mri).to be_a(TreeHaver::Backends::MRI::Language)
 
-        # Should be different objects due to backend-aware caching
-        if defined?(lang_citrus)
-          expect(lang_mri.class).not_to eq(lang_citrus.class)
-        end
-      end
+      # Should be different objects due to backend-aware caching
+      expect(lang_mri.class).not_to eq(lang_citrus.class)
     end
 
     it "allows parsing with different backends sequentially" do
@@ -59,27 +53,23 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
 
       # Parse with Citrus backend
       TreeHaver.backend = :citrus
-      if TreeHaver::Backends::Citrus.available?
-        parser1 = TreeHaver::Parser.new
-        lang1 = TreeHaver::Language.toml_parse
-        parser1.language = lang1
-        tree1 = parser1.parse(source)
-        expect(tree1.root_node).not_to be_nil
-      end
+      parser1 = TreeHaver::Parser.new
+      lang1 = TreeHaver::Language.toml_parse
+      parser1.language = lang1
+      tree1 = parser1.parse(source)
+      expect(tree1.root_node).not_to be_nil
 
       # Parse with MRI backend
       TreeHaver.backend = :mri
-      if TreeHaver::Backends::MRI.available?
-        parser2 = TreeHaver::Parser.new
-        lang2 = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-        parser2.language = lang2
-        tree2 = parser2.parse(source)
-        expect(tree2.root_node).not_to be_nil
-      end
+      parser2 = TreeHaver::Parser.new
+      lang2 = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
+      parser2.language = lang2
+      tree2 = parser2.parse(source)
+      expect(tree2.root_node).not_to be_nil
     end
   end
 
-  describe "thread-local backend with language loading" do
+  describe "thread-local backend with language loading", :mri_backend, :rust_backend, :toml_grammar do
     it "loads correct backend language in thread context" do
       path = TreeHaverDependencies.find_toml_grammar_path
 
@@ -89,19 +79,15 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
       # Use MRI and Rust which can coexist (not FFI which conflicts with MRI)
       thread1 = Thread.new do
         TreeHaver.with_backend(:rust) do
-          if TreeHaver::Backends::Rust.available?
-            lang = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-            mutex.synchronize { results << {thread: 1, class: lang.class} }
-          end
+          lang = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
+          mutex.synchronize { results << {thread: 1, class: lang.class} }
         end
       end
 
       thread2 = Thread.new do
         TreeHaver.with_backend(:mri) do
-          if TreeHaver::Backends::MRI.available?
-            lang = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-            mutex.synchronize { results << {thread: 2, class: lang.class} }
-          end
+          lang = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
+          mutex.synchronize { results << {thread: 2, class: lang.class} }
         end
       end
 
@@ -109,13 +95,12 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
       thread2.join
 
       # Should have loaded appropriate backend languages
-      if results.size == 2
-        expect(results[0][:class]).not_to eq(results[1][:class])
-      end
+      expect(results.size).to eq(2)
+      expect(results[0][:class]).not_to eq(results[1][:class])
     end
   end
 
-  describe "explicit backend parameter with language loading" do
+  describe "explicit backend parameter with language loading", :citrus_backend, :mri_backend, :toml_grammar do
     it "uses explicit backend regardless of global setting" do
       path = TreeHaverDependencies.find_toml_grammar_path
 
@@ -123,14 +108,12 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
       TreeHaver.backend = :citrus
 
       # But request MRI explicitly
-      if TreeHaver::Backends::MRI.available?
-        lang = TreeHaver::Language.from_library(
-          path,
-          symbol: "tree_sitter_toml",
-          backend: :mri,
-        )
-        expect(lang).to be_a(TreeHaver::Backends::MRI::Language)
-      end
+      lang = TreeHaver::Language.from_library(
+        path,
+        symbol: "tree_sitter_toml",
+        backend: :mri,
+      )
+      expect(lang).to be_a(TreeHaver::Backends::MRI::Language)
     end
 
     it "creates parser with explicit backend" do
@@ -138,10 +121,8 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
       TreeHaver.backend = :citrus
 
       # But create MRI parser explicitly
-      if TreeHaver::Backends::MRI.available?
-        parser = TreeHaver::Parser.new(backend: :mri)
-        expect(parser.backend).to eq(:mri)
-      end
+      parser = TreeHaver::Parser.new(backend: :mri)
+      expect(parser.backend).to eq(:mri)
     end
   end
 
@@ -166,63 +147,49 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
     end
   end
 
-  describe "language registration with multiple backends" do
-    it "registers same language for multiple backends", :toml_grammar do
+  describe "language registration with multiple backends", :citrus_backend, :mri_backend, :toml_grammar, :toml_rb do
+    it "registers same language for multiple backends" do
       path = TreeHaverDependencies.find_toml_grammar_path
 
-      begin
-        require "toml-rb"
+      # Register for both tree-sitter and Citrus
+      TreeHaver.register_language(
+        :toml_multi,
+        path: path,
+        symbol: "tree_sitter_toml",
+        grammar_module: TomlRB::Document,
+        gem_name: "toml-rb",
+      )
 
-        # Register for both tree-sitter and Citrus
-        TreeHaver.register_language(
-          :toml_multi,
-          path: path,
-          symbol: "tree_sitter_toml",
-          grammar_module: TomlRB::Document,
-          gem_name: "toml-rb",
-        )
-
-        reg = TreeHaver.registered_language(:toml_multi)
-        expect(reg).to have_key(:tree_sitter)
-        expect(reg).to have_key(:citrus)
-      rescue LoadError
-        skip "toml-rb gem not available"
-      end
+      reg = TreeHaver.registered_language(:toml_multi)
+      expect(reg).to have_key(:tree_sitter)
+      expect(reg).to have_key(:citrus)
     end
 
-    it "loads correct language implementation based on active backend", :toml_grammar do
+    it "loads correct language implementation based on active backend" do
       path = TreeHaverDependencies.find_toml_grammar_path
 
-      begin
-        require "toml-rb"
+      TreeHaver.register_language(
+        :toml_both,
+        path: path,
+        symbol: "tree_sitter_toml",
+        grammar_module: TomlRB::Document,
+        gem_name: "toml-rb",
+      )
 
-        TreeHaver.register_language(
-          :toml_both,
-          path: path,
-          symbol: "tree_sitter_toml",
-          grammar_module: TomlRB::Document,
-          gem_name: "toml-rb",
-        )
+      # Load with tree-sitter backend (MRI - not FFI since it conflicts with MRI)
+      # Note: FFI cannot be used after MRI has been loaded in the test suite
+      TreeHaver.backend = :mri
+      lang_ts = TreeHaver::Language.toml_both
+      expect(lang_ts).to be_a(TreeHaver::Backends::MRI::Language)
 
-        # Load with tree-sitter backend (MRI - not FFI since it conflicts with MRI)
-        # Note: FFI cannot be used after MRI has been loaded in the test suite
-        TreeHaver.backend = :mri
-        if TreeHaver::Backends::MRI.available?
-          lang_ts = TreeHaver::Language.toml_both
-          expect(lang_ts).to be_a(TreeHaver::Backends::MRI::Language)
-        end
-
-        # Load with Citrus backend (Citrus can coexist with MRI)
-        TreeHaver.backend = :citrus
-        lang_citrus = TreeHaver::Language.toml_both
-        expect(lang_citrus).to be_a(TreeHaver::Backends::Citrus::Language)
-      rescue LoadError
-        skip "toml-rb gem not available"
-      end
+      # Load with Citrus backend (Citrus can coexist with MRI)
+      TreeHaver.backend = :citrus
+      lang_citrus = TreeHaver::Language.toml_both
+      expect(lang_citrus).to be_a(TreeHaver::Backends::Citrus::Language)
     end
   end
 
-  describe "error handling across backends" do
+  describe "error handling across backends", :citrus_backend do
     it "raises appropriate error when no backend configuration exists" do
       TreeHaver.register_language(:incomplete, path: "/fake/path.so")
 
@@ -233,9 +200,7 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
       }.to raise_error(TreeHaver::NotAvailable, /no Citrus grammar registered/)
     end
 
-    it "falls back to Citrus when tree-sitter config missing for tree-sitter backend" do
-      require "toml-rb"
-
+    it "falls back to Citrus when tree-sitter config missing for tree-sitter backend", :mri_backend, :toml_rb do
       # Only register Citrus, not tree-sitter
       TreeHaver.register_language(
         :citrus_only,
@@ -247,8 +212,6 @@ RSpec.describe "Multi-backend integration", :toml_grammar do
       TreeHaver.backend = :mri
       language = TreeHaver::Language.citrus_only
       expect(language).to be_a(TreeHaver::Backends::Citrus::Language)
-    rescue LoadError
-      skip "toml-rb gem not available"
     end
   end
 end

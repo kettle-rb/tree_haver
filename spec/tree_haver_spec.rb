@@ -632,13 +632,12 @@ RSpec.describe TreeHaver do
       end
     end
 
-    describe "#language= with Citrus language", :citrus_backend do
+    describe "#language= with Citrus language", :citrus_backend, :toml_rb do
       it "switches to Citrus parser when given Citrus language" do
         # Start with a Citrus parser
         parser = described_class::Parser.new(backend: :citrus)
 
         # Create a Citrus language
-        require "toml-rb"
         citrus_lang = described_class::Backends::Citrus::Language.new(TomlRB::Document)
 
         # Set the Citrus language
