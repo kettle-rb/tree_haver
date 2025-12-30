@@ -27,6 +27,13 @@ Please file a bug if you notice a violation of semantic versioning.
   - Tests `parser_for` with all tree-sitter backends stubbed as unavailable (simulating TruffleRuby)
   - Tests `CitrusGrammarFinder` with nil `gem_name` and `require_path`
   - Tests explicit Citrus backend usage on MRI via `with_backend(:citrus)`
+- Shared examples for TOML parsing tests (`spec/support/shared_examples/toml_parsing_examples.rb`)
+  - `"toml parsing basics"` - tests basic parsing, positions, children, text extraction
+  - `"toml node navigation"` - tests first_child, named_children navigation
+- Multi-backend TOML test suite (`spec/integration/multi_backend_toml_spec.rb`)
+  - Runs shared examples against both tree-sitter-toml and Citrus/toml-rb backends
+  - Tests backend equivalence for parsing results and positions
+  - Tagged appropriately so tests run on whichever backends are available
 - Backend Platform Compatibility section to README
   - Complete compatibility matrix showing which backends work on MRI, JRuby, TruffleRuby
   - Detailed explanations for TruffleRuby and JRuby limitations
@@ -39,6 +46,15 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **`TreeHaver::Node#child` now returns `nil` for out-of-bounds indices on all backends**
+  - MRI backend (ruby_tree_sitter) raises `IndexError` for invalid indices
+  - Other backends return `nil` for invalid indices
+  - Now consistently returns `nil` across all backends for API compatibility
+- **Citrus backend `calculate_point` returns negative column values**
+  - When `offset` was 0, `@source.rindex("\n", -1)` searched from end of string
+  - This caused `column = 0 - (position_of_last_newline) - 1` to be negative (e.g., -34)
+  - Fix: Early return `{row: 0, column: 0}` for `offset <= 0`
+  - This bug affected both MRI and TruffleRuby when using Citrus backend
 - **Citrus fallback fails on TruffleRuby when no explicit `citrus_config` provided**
   - `parser_for(:toml)` would fail with `TypeError: no implicit conversion of nil into String`
   - Root cause: `citrus_config` defaulted to `{}`, so `citrus_config[:gem_name]` was `nil`

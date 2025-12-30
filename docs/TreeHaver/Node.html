@@ -1265,16 +1265,16 @@ underlying node implementation.</p>
       <pre class="lines">
 
 
-551
-552
-553
 554
 555
 556
-557</pre>
+557
+558
+559
+560</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 551</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 554</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_method_missing'>method_missing</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
@@ -1511,9 +1511,6 @@ The Comparable module provides &lt;, &lt;=, ==, &gt;=, &gt;, and between? based 
       <pre class="lines">
 
 
-466
-467
-468
 469
 470
 471
@@ -1523,10 +1520,13 @@ The Comparable module provides &lt;, &lt;=, ==, &gt;=, &gt;, and between? based 
 475
 476
 477
-478</pre>
+478
+479
+480
+481</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 466</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 469</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='rparen'>)</span>
@@ -1620,13 +1620,13 @@ equality for testing and collection membership, not position-based equality.</p>
       <pre class="lines">
 
 
-493
-494
-495
-496</pre>
+496
+497
+498
+499</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 493</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 496</span>
 
 <span class='kw'>def</span> <span class='op'>==</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='rparen'>)</span>
@@ -1685,7 +1685,7 @@ equality for testing and collection membership, not position-based equality.</p>
       
       
         &mdash;
-        <div class='inline'><p>Wrapped child node</p>
+        <div class='inline'><p>Wrapped child node, or nil if index out of bounds</p>
 </div>
       
     </li>
@@ -1702,7 +1702,10 @@ equality for testing and collection membership, not position-based equality.</p>
 295
 296
 297
-298</pre>
+298
+299
+300
+301</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 294</span>
@@ -1711,6 +1714,9 @@ equality for testing and collection membership, not position-based equality.</p>
   <span class='id identifier rubyid_child_node'>child_node</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_child_node'>child_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
   <span class='const'><span class='object_link'><a href="" title="TreeHaver::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='ivar'>@source</span><span class='rparen'>)</span>
+<span class='kw'>rescue</span> <span class='const'>IndexError</span>
+  <span class='comment'># Some backends (e.g., MRI w/ ruby_tree_sitter) raise IndexError for out of bounds
+</span>  <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1782,19 +1788,19 @@ equality for testing and collection membership, not position-based equality.</p>
       <pre class="lines">
 
 
-398
-399
-400
 401
 402
 403
 404
 405
 406
-407</pre>
+407
+408
+409
+410</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 398</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 401</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:child_by_field_name</span><span class='rparen'>)</span>
@@ -1906,12 +1912,12 @@ equality for testing and collection membership, not position-based equality.</p>
       <pre class="lines">
 
 
-374
-375
-376</pre>
+377
+378
+379</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 374</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 377</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_children'>children</span>
   <span class='lparen'>(</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_child_count'>child_count</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_i'>i</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
@@ -1976,13 +1982,13 @@ equality for testing and collection membership, not position-based equality.</p>
       <pre class="lines">
 
 
-389
-390
-391
-392</pre>
+392
+393
+394
+395</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 389</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 392</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_to_enum'>to_enum</span><span class='lparen'>(</span><span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
@@ -2355,12 +2361,12 @@ backend node have the same hash value.</p>
       <pre class="lines">
 
 
-507
-508
-509</pre>
+510
+511
+512</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 507</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 510</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_hash'>hash</span>
   <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span>
@@ -2408,12 +2414,12 @@ backend node have the same hash value.</p>
       <pre class="lines">
 
 
-444
-445
-446</pre>
+447
+448
+449</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 444</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 447</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#&lt;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'> type=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type'>type</span><span class='embexpr_end'>}</span><span class='tstring_content'> bytes=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='embexpr_end'>}</span><span class='tstring_content'>..</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_end_byte'>end_byte</span><span class='embexpr_end'>}</span><span class='tstring_content'>&gt;</span><span class='tstring_end'>&quot;</span></span>
@@ -2607,9 +2613,6 @@ Uses backend’s native named_child if available, otherwise provides fallback.</
       <pre class="lines">
 
 
-307
-308
-309
 310
 311
 312
@@ -2637,10 +2640,13 @@ Uses backend’s native named_child if available, otherwise provides fallback.</
 334
 335
 336
-337</pre>
+337
+338
+339
+340</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 307</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 310</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named_child'>named_child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
   <span class='comment'># Try native implementation first
@@ -2722,9 +2728,6 @@ Uses backend’s native named_child if available, otherwise provides fallback.</
       <pre class="lines">
 
 
-344
-345
-346
 347
 348
 349
@@ -2747,10 +2750,13 @@ Uses backend’s native named_child if available, otherwise provides fallback.</
 366
 367
 368
-369</pre>
+369
+370
+371
+372</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 344</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 347</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named_child_count'>named_child_count</span>
   <span class='comment'># Try native implementation first
@@ -2825,12 +2831,12 @@ Uses backend’s native named_child if available, otherwise provides fallback.</
       <pre class="lines">
 
 
-381
-382
-383</pre>
+384
+385
+386</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 381</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 384</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named_children'>named_children</span>
   <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:named?</span><span class='rparen'>)</span>
@@ -2878,15 +2884,15 @@ Uses backend’s native named_child if available, otherwise provides fallback.</
       <pre class="lines">
 
 
-425
-426
-427
 428
 429
-430</pre>
+430
+431
+432
+433</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 425</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 428</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:next_sibling</span><span class='rparen'>)</span>
@@ -2941,15 +2947,15 @@ Uses backend’s native named_child if available, otherwise provides fallback.</
       <pre class="lines">
 
 
-415
-416
-417
 418
 419
-420</pre>
+420
+421
+422
+423</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 415</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 418</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:parent</span><span class='rparen'>)</span>
@@ -3000,15 +3006,15 @@ Uses backend’s native named_child if available, otherwise provides fallback.</
       <pre class="lines">
 
 
-435
-436
-437
 438
 439
-440</pre>
+440
+441
+442
+443</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 435</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 438</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:prev_sibling</span><span class='rparen'>)</span>
@@ -3095,12 +3101,12 @@ Uses backend’s native named_child if available, otherwise provides fallback.</
       <pre class="lines">
 
 
-516
-517
-518</pre>
+519
+520
+521</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 516</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 519</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_respond_to_missing?'>respond_to_missing?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='kw'>super</span>
@@ -3577,12 +3583,12 @@ while anonymous nodes are syntax/punctuation (e.g., [, =, whitespace).</p>
       <pre class="lines">
 
 
-450
-451
-452</pre>
+453
+454
+455</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 450</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/node.rb', line 453</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='id identifier rubyid_text'>text</span>
@@ -3673,7 +3679,7 @@ while anonymous nodes are syntax/punctuation (e.g., [, =, whitespace).</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 30 01:30:35 2025 by
+  Generated on Tue Dec 30 02:04:34 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

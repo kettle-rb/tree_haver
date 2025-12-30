@@ -89,6 +89,21 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 </li>
     </ul>
   </li>
+  <li>Shared examples for TOML parsing tests (<code>spec/support/shared_examples/toml_parsing_examples.rb</code>)
+    <ul>
+      <li>
+<code>"toml parsing basics"</code> - tests basic parsing, positions, children, text extraction</li>
+      <li>
+<code>"toml node navigation"</code> - tests first_child, named_children navigation</li>
+    </ul>
+  </li>
+  <li>Multi-backend TOML test suite (<code>spec/integration/multi_backend_toml_spec.rb</code>)
+    <ul>
+      <li>Runs shared examples against both tree-sitter-toml and Citrus/toml-rb backends</li>
+      <li>Tests backend equivalence for parsing results and positions</li>
+      <li>Tagged appropriately so tests run on whichever backends are available</li>
+    </ul>
+  </li>
   <li>Backend Platform Compatibility section to README
     <ul>
       <li>Complete compatibility matrix showing which backends work on MRI, JRuby, TruffleRuby</li>
@@ -113,6 +128,24 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <h3 id="fixed">Fixed</h3>
 
 <ul>
+  <li>
+<strong><code>TreeHaver::Node#child</code> now returns <code>nil</code> for out-of-bounds indices on all backends</strong>
+    <ul>
+      <li>MRI backend (ruby_tree_sitter) raises <code>IndexError</code> for invalid indices</li>
+      <li>Other backends return <code>nil</code> for invalid indices</li>
+      <li>Now consistently returns <code>nil</code> across all backends for API compatibility</li>
+    </ul>
+  </li>
+  <li>
+<strong>Citrus backend <code>calculate_point</code> returns negative column values</strong>
+    <ul>
+      <li>When <code>offset</code> was 0, <code>@source.rindex("\n", -1)</code> searched from end of string</li>
+      <li>This caused <code>column = 0 - (position_of_last_newline) - 1</code> to be negative (e.g., -34)</li>
+      <li>Fix: Early return <code>{row: 0, column: 0}</code> for <code>offset &lt;= 0</code>
+</li>
+      <li>This bug affected both MRI and TruffleRuby when using Citrus backend</li>
+    </ul>
+  </li>
   <li>
 <strong>Citrus fallback fails on TruffleRuby when no explicit <code>citrus_config</code> provided</strong>
     <ul>
@@ -1061,7 +1094,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Tue Dec 30 01:30:34 2025 by
+  Generated on Tue Dec 30 02:04:34 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

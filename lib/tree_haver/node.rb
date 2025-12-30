@@ -290,11 +290,14 @@ module TreeHaver
     # Get a child by index
     #
     # @param index [Integer] Child index
-    # @return [Node, nil] Wrapped child node
+    # @return [Node, nil] Wrapped child node, or nil if index out of bounds
     def child(index)
       child_node = @inner_node.child(index)
       return if child_node.nil?
       Node.new(child_node, source: @source)
+    rescue IndexError
+      # Some backends (e.g., MRI w/ ruby_tree_sitter) raise IndexError for out of bounds
+      nil
     end
 
     # Get a named child by index

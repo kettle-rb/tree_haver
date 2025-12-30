@@ -451,8 +451,14 @@ module TreeHaver
         private
 
         def calculate_point(offset)
+          return {row: 0, column: 0} if offset <= 0
+
           lines_before = @source[0...offset].count("\n")
-          line_start = @source.rindex("\n", offset - 1) || -1
+          # Find the newline before this offset (or -1 if we're on line 0)
+          line_start = if offset > 0
+            @source.rindex("\n", offset - 1)
+          end
+          line_start ||= -1
           column = offset - line_start - 1
           {row: lines_before, column: column}
         end
