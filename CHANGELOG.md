@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [3.2.0] - 2025-12-30
+
+- TAG: [v3.2.0][3.2.0t]
+- COVERAGE: 86.82% -- 2167/2496 lines in 22 files
+- BRANCH COVERAGE: 66.79% -- 734/1099 branches in 22 files
+- 90.03% documented
+
+### Added
+
 - `TreeHaver::CITRUS_DEFAULTS` constant with default Citrus configurations for known languages
   - Enables automatic Citrus fallback for TOML without explicit `citrus_config` parameter
   - Currently includes configuration for `:toml` (gem: `toml-rb`, const: `TomlRB::Document`)
@@ -136,10 +155,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - Updated FFI Backend section with TruffleRuby limitation details
 - Use kettle-rb/ts-grammar-setup GHA in CI workflows
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Rakefile now properly overrides `test` task after `require "kettle/dev"`
@@ -156,8 +171,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - Previously, `loaded?` returned `true` even when `attach_function` failed (e.g., on TruffleRuby)
   - Now `loaded?` correctly returns `false` when FFI functions couldn't be attached
   - Ensures FFI tests are properly skipped on TruffleRuby
-
-### Security
 
 ## [3.1.2] - 2025-12-29
 
@@ -567,7 +580,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.1.2...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/kettle-rb/tree_haver/compare/v3.1.2...v3.2.0
+[3.2.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.0
 [3.1.2]: https://github.com/kettle-rb/tree_haver/compare/v3.1.1...v3.1.2
 [3.1.2t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.1.2
 [3.1.1]: https://github.com/kettle-rb/tree_haver/compare/v3.1.0...v3.1.1
