@@ -2,9 +2,9 @@
 
 require "spec_helper"
 
-# The :ffi tag ensures the before hook in dependency_tags.rb skips these tests
+# The :ffi_backend tag ensures the before hook in dependency_tags.rb skips these tests
 # when FFI is not available (e.g., after MRI has been loaded)
-RSpec.describe TreeHaver::Backends::FFI, :ffi do
+RSpec.describe TreeHaver::Backends::FFI, :ffi_backend do
   let(:backend) { described_class }
 
   before do
@@ -147,7 +147,7 @@ RSpec.describe TreeHaver::Backends::FFI, :ffi do
         end
       end
 
-      context "with symbol guessing", :ffi do
+      context "with symbol guessing", :ffi_backend do
         it "guesses symbol from libtree-sitter-<lang> filename" do
           bogus_path = "/tmp/libtree-sitter-yaml.so"
           expect {
@@ -164,7 +164,7 @@ RSpec.describe TreeHaver::Backends::FFI, :ffi do
       end
     end
 
-    describe "#to_ptr", :ffi do
+    describe "#to_ptr", :ffi_backend do
       it "returns the FFI pointer" do
         fake_ptr = double("FFI::Pointer", null?: false)
         lang = backend::Language.new(fake_ptr)
@@ -172,7 +172,7 @@ RSpec.describe TreeHaver::Backends::FFI, :ffi do
       end
     end
 
-    describe "#pointer", :ffi do
+    describe "#pointer", :ffi_backend do
       it "exposes the pointer attribute" do
         fake_ptr = double("FFI::Pointer")
         lang = backend::Language.new(fake_ptr)
@@ -196,7 +196,7 @@ RSpec.describe TreeHaver::Backends::FFI, :ffi do
       end
     end
 
-    describe "Parser", :ffi do
+    describe "Parser", :ffi_backend do
       it "does not use finalizers (intentional design decision)" do
         # Parser objects intentionally don't use finalizers because ts_parser_delete
         # can segfault during GC. Parser cleanup relies on process exit.
@@ -204,7 +204,7 @@ RSpec.describe TreeHaver::Backends::FFI, :ffi do
       end
     end
 
-    describe "Tree::finalizer", :ffi do
+    describe "Tree::finalizer", :ffi_backend do
       it "returns a Proc that safely deletes trees" do
         # Tree objects DO use finalizers (unlike Parser) because trees are
         # short-lived and numerous, and ts_tree_delete is safer during GC
@@ -222,7 +222,7 @@ RSpec.describe TreeHaver::Backends::FFI, :ffi do
     end
   end
 
-  describe "Tree", :ffi do
+  describe "Tree", :ffi_backend do
     describe "::finalizer" do
       it "does not define a finalizer method (intentional design decision)" do
         # We intentionally don't use finalizers because ts_parser_delete can segfault
@@ -232,7 +232,7 @@ RSpec.describe TreeHaver::Backends::FFI, :ffi do
     end
   end
 
-  describe "Node", :ffi do
+  describe "Node", :ffi_backend do
     describe "#each" do
       it "returns Enumerator when no block given" do
         fake_val = double("TSNode")

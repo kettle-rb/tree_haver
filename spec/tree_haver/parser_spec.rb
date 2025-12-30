@@ -2,13 +2,18 @@
 
 require "spec_helper"
 
-RSpec.describe TreeHaver::Parser, :toml_grammar do
+RSpec.describe TreeHaver::Parser, :toml_parsing do
   before do
     TreeHaver.reset_backend!(to: :auto)
   end
 
   after do
     TreeHaver.reset_backend!(to: :auto)
+  end
+
+  # Helper to create a parser using auto-discovery (works on all platforms)
+  def create_toml_parser
+    TreeHaver.parser_for(:toml)
   end
 
   describe "#initialize" do
@@ -35,24 +40,16 @@ RSpec.describe TreeHaver::Parser, :toml_grammar do
 
   describe "#language=" do
     it "sets the language on the backend parser" do
-      parser = described_class.new
-      path = TreeHaverDependencies.find_toml_grammar_path
-      language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-
-      expect {
-        parser.language = language
-      }.not_to raise_error
+      parser = create_toml_parser
+      # The parser_for already sets a language, so verify parsing works
+      tree = parser.parse("key = \"value\"")
+      expect(tree).to be_a(TreeHaver::Tree)
+      expect(tree.root_node).not_to be_nil
     end
   end
 
   describe "#parse" do
-    let(:parser) do
-      p = described_class.new
-      path = TreeHaverDependencies.find_toml_grammar_path
-      language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-      p.language = language
-      p
-    end
+    let(:parser) { create_toml_parser }
 
     it "parses source and returns a TreeHaver::Tree" do
       tree = parser.parse("key = \"value\"")
@@ -73,13 +70,7 @@ RSpec.describe TreeHaver::Parser, :toml_grammar do
   end
 
   describe "#parse_string" do
-    let(:parser) do
-      p = described_class.new
-      path = TreeHaverDependencies.find_toml_grammar_path
-      language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-      p.language = language
-      p
-    end
+    let(:parser) { create_toml_parser }
     let(:source) { "key = \"value\"" }
 
     context "with nil old_tree" do
@@ -248,7 +239,7 @@ RSpec.describe TreeHaver::Parser, :toml_grammar do
           expect(parser.backend).to eq(:mri)
         end
 
-        it "creates parser with FFI backend when specified", :ffi do
+        it "creates parser with FFI backend when specified", :ffi_backend do
           parser = described_class.new(backend: :ffi)
           expect(parser.backend).to eq(:ffi)
         end

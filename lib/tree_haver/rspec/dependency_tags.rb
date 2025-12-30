@@ -49,45 +49,45 @@
 #     # This test only runs when Psych is available
 #   end
 #
-#   it "requires Commonmarker backend", :commonmarker do
+#   it "requires Commonmarker backend", :commonmarker_backend do
 #     # This test only runs when commonmarker gem is available
 #   end
 #
-#   it "requires Markly backend", :markly do
+#   it "requires Markly backend", :markly_backend do
 #     # This test only runs when markly gem is available
 #   end
 #
-#   it "requires Citrus TOML grammar", :citrus_toml do
-#     # This test only runs when toml-rb with Citrus grammar is available
+#   it "requires Citrus backend", :citrus_backend do
+#     # This test only runs when Citrus gem is available
 #   end
 #
 # @example Language-specific grammar tags (for *-merge gems)
-#   it "requires tree-sitter-bash", :tree_sitter_bash do
+#   it "requires tree-sitter-bash", :bash_grammar do
 #     # This test only runs when bash grammar is available and parsing works
 #   end
 #
-#   it "requires tree-sitter-json", :tree_sitter_json do
+#   it "requires tree-sitter-json", :json_grammar do
 #     # This test only runs when json grammar is available and parsing works
-#   end
-#
-# @example Inner-merge dependencies (for markdown-merge CodeBlockMerger)
-#   it "requires toml-merge", :toml_merge do
-#     # This test only runs when toml-merge is fully functional
-#   end
-#
-#   it "requires prism-merge", :prism_merge do
-#     # This test only runs when prism-merge is fully functional
 #   end
 #
 # == Available Tags
 #
+# === Naming Conventions
+#
+# - `*_backend` = TreeHaver backends (mri, rust, ffi, java, prism, psych, commonmarker, markly, citrus)
+# - `*_engine` = Ruby engines (mri, jruby, truffleruby)
+# - `*_grammar` = tree-sitter grammar files (.so)
+# - `*_parsing` = any parsing capability for a language (combines multiple backends/grammars)
+# - `*_merge` = ast-merge family gems (toml-merge, json-merge, etc.)
+#
 # === Positive Tags (run when dependency IS available)
 #
-# ==== TreeHaver Backend Tags
+# ==== TreeHaver Backend Tags (*_backend)
 #
-# [:ffi]
+# [:ffi_backend]
 #   FFI backend is available. Checked dynamically per-test because FFI becomes
 #   unavailable after MRI backend is used (due to libtree-sitter runtime conflicts).
+#   Legacy alias: :ffi
 #
 # [:mri_backend]
 #   ruby_tree_sitter gem is available.
@@ -104,83 +104,66 @@
 # [:psych_backend]
 #   Psych is available (stdlib, should always be true).
 #
-# [:commonmarker]
+# [:commonmarker_backend]
 #   commonmarker gem is available.
 #
-# [:markly]
+# [:markly_backend]
 #   markly gem is available.
 #
-# [:citrus_toml]
-#   toml-rb gem with Citrus grammar is available.
+# [:citrus_backend]
+#   Citrus gem is available.
 #
-# ==== Ruby Engine Tags
+# ==== Ruby Engine Tags (*_engine)
 #
-# [:jruby]
-#   Running on JRuby.
-#
-# [:truffleruby]
-#   Running on TruffleRuby.
-#
-# [:mri]
+# [:mri_engine]
 #   Running on MRI (CRuby).
 #
-# ==== Grammar/Library Tags
+# [:jruby_engine]
+#   Running on JRuby.
+#
+# [:truffleruby_engine]
+#   Running on TruffleRuby.
+#
+# ==== Tree-Sitter Grammar Tags (*_grammar)
 #
 # [:libtree_sitter]
 #   libtree-sitter.so is loadable via FFI.
 #
-# [:toml_grammar]
-#   A TOML grammar library is available (via TREE_SITTER_TOML_PATH env var).
-#
-# [:native_parsing]
-#   Both libtree_sitter and toml_grammar are available.
-#
-# ==== Language-Specific Grammar Tags (for *-merge gems)
-#
-# [:tree_sitter_bash]
+# [:bash_grammar]
 #   tree-sitter-bash grammar is available and parsing works.
 #
-# [:tree_sitter_toml]
+# [:toml_grammar]
 #   tree-sitter-toml grammar is available and parsing works.
 #
-# [:tree_sitter_json]
+# [:json_grammar]
 #   tree-sitter-json grammar is available and parsing works.
 #
-# [:tree_sitter_jsonc]
+# [:jsonc_grammar]
 #   tree-sitter-jsonc grammar is available and parsing works.
+#
+# ==== Language Parsing Capability Tags (*_parsing)
+#
+# [:toml_parsing]
+#   At least one TOML parser (tree-sitter-toml OR toml-rb/Citrus) is available.
+#
+# [:markdown_parsing]
+#   At least one markdown parser (commonmarker OR markly) is available.
+#
+# [:native_parsing]
+#   A native tree-sitter backend and grammar are available.
+#
+# ==== Specific Library Tags
 #
 # [:toml_rb]
 #   toml-rb gem is available (Citrus backend for TOML).
 #
-# [:toml_backend]
-#   At least one TOML backend (tree-sitter or toml-rb) is available.
-#
-# [:markdown_backend]
-#   At least one markdown backend (markly or commonmarker) is available.
-#
-# ==== Inner-Merge Dependency Tags (for markdown-merge CodeBlockMerger)
-#
-# [:toml_merge]
-#   toml-merge gem is available and functional.
-#
-# [:json_merge]
-#   json-merge gem is available and functional.
-#
-# [:prism_merge]
-#   prism-merge gem is available and functional.
-#
-# [:psych_merge]
-#   psych-merge gem is available and functional.
-#
 # === Negated Tags (run when dependency is NOT available)
 #
 # All positive tags have negated versions prefixed with `not_`:
-# - :not_mri_backend, :not_rust_backend, :not_java_backend
-# - :not_jruby, :not_truffleruby, :not_mri
-# - :not_libtree_sitter, :not_toml_grammar
-# - :not_tree_sitter_bash, :not_tree_sitter_toml, :not_tree_sitter_json, :not_tree_sitter_jsonc
-# - :not_toml_rb, :not_toml_backend, :not_markdown_backend
-# - :not_toml_merge, :not_json_merge, :not_prism_merge, :not_psych_merge
+# - :not_mri_backend, :not_rust_backend, :not_java_backend, etc.
+# - :not_mri_engine, :not_jruby_engine, :not_truffleruby_engine
+# - :not_libtree_sitter, :not_bash_grammar, :not_toml_grammar, etc.
+# - :not_toml_parsing, :not_markdown_parsing
 #
 # == Backend Conflict Protection
 #
@@ -365,22 +348,14 @@ module TreeHaver
           @psych_available = TreeHaver::Backends::Psych.available?
         end
 
-        # Check if toml-rb with Citrus grammar is available
+        # Check if Citrus backend is available
         #
-        # @return [Boolean] true if toml-rb gem with Citrus grammar is available
-        def citrus_toml_available?
-          return @citrus_toml_available if defined?(@citrus_toml_available)
-          @citrus_toml_available = begin
-            require "toml-rb"
-            finder = TreeHaver::CitrusGrammarFinder.new(
-              language: :toml,
-              gem_name: "toml-rb",
-              grammar_const: "TomlRB::Document",
-            )
-            finder.available?
-          rescue LoadError, NameError
-            false
-          end
+        # This checks if the citrus gem is installed and the backend works.
+        #
+        # @return [Boolean] true if Citrus backend is available
+        def citrus_available?
+          return @citrus_available if defined?(@citrus_available)
+          @citrus_available = TreeHaver::Backends::Citrus.available?
         end
 
         # ============================================================
@@ -445,15 +420,19 @@ module TreeHaver
           @tree_sitter_jsonc_available = grammar_works?(:jsonc, '{"key": "value" /* comment */}')
         end
 
-        # Check if toml-rb gem is available (Citrus backend for TOML)
+        # Check if toml-rb gem is available and functional (Citrus backend for TOML)
         #
-        # @return [Boolean] true if toml-rb gem is available
+        # @return [Boolean] true if toml-rb gem is available and can parse TOML
         def toml_rb_available?
           return @toml_rb_available if defined?(@toml_rb_available)
           @toml_rb_available = begin
             require "toml-rb"
+            # Verify it can actually parse - just requiring isn't enough
+            TomlRB.parse('key = "value"')
             true
           rescue LoadError
+            false
+          rescue StandardError
             false
           end
         end
@@ -473,43 +452,6 @@ module TreeHaver
         end
 
         # ============================================================
-        # Inner-Merge Dependencies (for markdown-merge CodeBlockMerger)
-        # These check both gem availability AND backend functionality
-        # ============================================================
-
-        # Check if toml-merge is available and functional
-        #
-        # @return [Boolean] true if toml-merge works
-        def toml_merge_available?
-          return @toml_merge_available if defined?(@toml_merge_available)
-          @toml_merge_available = inner_merge_works?("toml/merge", "Toml::Merge::SmartMerger", "key = 'test'")
-        end
-
-        # Check if json-merge is available and functional
-        #
-        # @return [Boolean] true if json-merge works
-        def json_merge_available?
-          return @json_merge_available if defined?(@json_merge_available)
-          @json_merge_available = inner_merge_works?("json/merge", "Json::Merge::SmartMerger", '{"a":1}')
-        end
-
-        # Check if prism-merge is available and functional
-        #
-        # @return [Boolean] true if prism-merge works
-        def prism_merge_available?
-          return @prism_merge_available if defined?(@prism_merge_available)
-          @prism_merge_available = inner_merge_works?("prism/merge", "Prism::Merge::SmartMerger", "puts 1")
-        end
-
-        # Check if psych-merge is available and functional
-        #
-        # @return [Boolean] true if psych-merge works
-        def psych_merge_available?
-          return @psych_merge_available if defined?(@psych_merge_available)
-          @psych_merge_available = inner_merge_works?("psych/merge", "Psych::Merge::SmartMerger", "key: value")
-        end
-
-        # ============================================================
         # Summary and Reset
         # ============================================================
 
@@ -518,37 +460,32 @@ module TreeHaver
         # @return [Hash{Symbol => Boolean}] map of dependency name to availability
         def summary
           {
-            # TreeHaver backends
-            ffi: ffi_available?,
+            # TreeHaver backends (*_backend)
+            ffi_backend: ffi_available?,
             mri_backend: mri_backend_available?,
             rust_backend: rust_backend_available?,
             java_backend: java_backend_available?,
-            prism: prism_available?,
-            psych: psych_available?,
-            commonmarker: commonmarker_available?,
-            markly: markly_available?,
-            citrus_toml: citrus_toml_available?,
-            # Libraries
-            libtree_sitter: libtree_sitter_available?,
-            toml_grammar: toml_grammar_available?,
-            # Ruby engines
+            prism_backend: prism_available?,
+            psych_backend: psych_available?,
+            commonmarker_backend: commonmarker_available?,
+            markly_backend: markly_available?,
+            citrus_backend: citrus_available?,
+            # Ruby engines (*_engine)
             ruby_engine: RUBY_ENGINE,
-            jruby: jruby?,
-            truffleruby: truffleruby?,
-            mri: mri?,
-            # Language grammars
-            tree_sitter_bash: tree_sitter_bash_available?,
-            tree_sitter_toml: tree_sitter_toml_available?,
-            tree_sitter_json: tree_sitter_json_available?,
-            tree_sitter_jsonc: tree_sitter_jsonc_available?,
+            mri_engine: mri?,
+            jruby_engine: jruby?,
+            truffleruby_engine: truffleruby?,
+            # Tree-sitter grammars (*_grammar)
+            libtree_sitter: libtree_sitter_available?,
+            bash_grammar: tree_sitter_bash_available?,
+            toml_grammar: tree_sitter_toml_available?,
+            json_grammar: tree_sitter_json_available?,
+            jsonc_grammar: tree_sitter_jsonc_available?,
+            # Language parsing capabilities (*_parsing)
+            toml_parsing: any_toml_backend_available?,
+            markdown_parsing: any_markdown_backend_available?,
+            # Specific libraries
             toml_rb: toml_rb_available?,
-            any_toml_backend: any_toml_backend_available?,
-            any_markdown_backend: any_markdown_backend_available?,
-            # Inner-merge dependencies
-            toml_merge: toml_merge_available?,
-            json_merge: json_merge_available?,
-            prism_merge: prism_merge_available?,
-            psych_merge: psych_merge_available?,
           }
         end
 
@@ -620,21 +557,6 @@ module TreeHaver
           end
           false
         end
-
-        # Generic helper to check if an inner-merge gem is available and functional
-        #
-        # @param require_path [String] the require path for the gem
-        # @param merger_class [String] the full class name of the SmartMerger
-        # @param test_source [String] sample source code to test merging
-        # @return [Boolean] true if the merger can be instantiated
-        def inner_merge_works?(require_path, merger_class, test_source)
-          require require_path
-          klass = Object.const_get(merger_class)
-          klass.new(test_source, test_source)
-          true
-        rescue LoadError, NameError, TreeHaver::Error, TreeHaver::NotAvailable
-          false
-        end
       end
     end
   end
@@ -671,10 +593,16 @@ RSpec.configure do |config|
   # ============================================================
   # TreeHaver Backend Tags
   # ============================================================
+  # Tags: *_backend - require a specific TreeHaver backend to be available
+  #
+  # Native backends (load .so files):
+  #   :ffi_backend, :mri_backend, :rust_backend, :java_backend
+  # Pure-Ruby backends:
+  #   :prism_backend, :psych_backend, :commonmarker_backend, :markly_backend, :citrus_backend
 
   # FFI availability is checked dynamically per-test (not at load time)
   # because FFI becomes unavailable after MRI backend is used.
-  config.before(:each, :ffi) do
+  config.before(:each, :ffi_backend) do
     skip "FFI backend not available (MRI backend may have been used)" unless deps.ffi_available?
   end
 
@@ -683,52 +611,60 @@ RSpec.configure do |config|
   config.filter_run_excluding(java_backend: true) unless deps.java_backend_available?
   config.filter_run_excluding(prism_backend: true) unless deps.prism_available?
   config.filter_run_excluding(psych_backend: true) unless deps.psych_available?
-  config.filter_run_excluding(commonmarker: true) unless deps.commonmarker_available?
-  config.filter_run_excluding(markly: true) unless deps.markly_available?
-  config.filter_run_excluding(citrus_toml: true) unless deps.citrus_toml_available?
+  config.filter_run_excluding(commonmarker_backend: true) unless deps.commonmarker_available?
+  config.filter_run_excluding(markly_backend: true) unless deps.markly_available?
+  config.filter_run_excluding(citrus_backend: true) unless deps.citrus_available?
 
   # ============================================================
   # Ruby Engine Tags
   # ============================================================
+  # Tags: *_engine - require a specific Ruby engine
+  #   :mri_engine, :jruby_engine, :truffleruby_engine
 
-  config.filter_run_excluding(jruby: true) unless deps.jruby?
-  config.filter_run_excluding(truffleruby: true) unless deps.truffleruby?
-  config.filter_run_excluding(mri: true) unless deps.mri?
+  config.filter_run_excluding(mri_engine: true) unless deps.mri?
+  config.filter_run_excluding(jruby_engine: true) unless deps.jruby?
+  config.filter_run_excluding(truffleruby_engine: true) unless deps.truffleruby?
 
   # ============================================================
-  # Library/Grammar Tags
+  # Tree-Sitter Grammar Tags
   # ============================================================
+  # Tags: *_grammar - require a specific tree-sitter grammar (.so file)
+  #   :bash_grammar, :toml_grammar, :json_grammar, :jsonc_grammar
+  #
+  # Also: :libtree_sitter - requires the libtree-sitter runtime library
 
   config.filter_run_excluding(libtree_sitter: true) unless deps.libtree_sitter_available?
-  config.filter_run_excluding(toml_grammar: true) unless deps.toml_grammar_available?
+  config.filter_run_excluding(bash_grammar: true) unless deps.tree_sitter_bash_available?
+  config.filter_run_excluding(toml_grammar: true) unless deps.tree_sitter_toml_available?
+  config.filter_run_excluding(json_grammar: true) unless deps.tree_sitter_json_available?
+  config.filter_run_excluding(jsonc_grammar: true) unless deps.tree_sitter_jsonc_available?
+
+  # ============================================================
+  # Language Parsing Capability Tags
+  # ============================================================
+  # Tags: *_parsing - require ANY parser for a language (any backend that can parse it)
+  #   :toml_parsing   - any TOML parser (tree-sitter-toml OR toml-rb/Citrus)
+  #   :markdown_parsing - any Markdown parser (commonmarker OR markly)
+  #   :native_parsing - any native tree-sitter backend + grammar
+
+  config.filter_run_excluding(toml_parsing: true) unless deps.any_toml_backend_available?
+  config.filter_run_excluding(markdown_parsing: true) unless deps.any_markdown_backend_available?
   config.filter_run_excluding(native_parsing: true) unless deps.libtree_sitter_available? && deps.toml_grammar_available?
 
   # ============================================================
-  # Language-Specific Grammar Tags
+  # Specific Library Tags
   # ============================================================
+  # Tags for specific gems/libraries (not backends, but dependencies)
+  #   :toml_rb - the toml-rb gem (Citrus-based TOML parser)
 
-  config.filter_run_excluding(tree_sitter_bash: true) unless deps.tree_sitter_bash_available?
-  config.filter_run_excluding(tree_sitter_toml: true) unless deps.tree_sitter_toml_available?
-  config.filter_run_excluding(tree_sitter_json: true) unless deps.tree_sitter_json_available?
-  config.filter_run_excluding(tree_sitter_jsonc: true) unless deps.tree_sitter_jsonc_available?
   config.filter_run_excluding(toml_rb: true) unless deps.toml_rb_available?
-  config.filter_run_excluding(toml_backend: true) unless deps.any_toml_backend_available?
-  config.filter_run_excluding(markdown_backend: true) unless deps.any_markdown_backend_available?
-
-  # ============================================================
-  # Inner-Merge Dependency Tags
-  # ============================================================
-
-  config.filter_run_excluding(toml_merge: true) unless deps.toml_merge_available?
-  config.filter_run_excluding(json_merge: true) unless deps.json_merge_available?
-  config.filter_run_excluding(prism_merge: true) unless deps.prism_merge_available?
-  config.filter_run_excluding(psych_merge: true) unless deps.psych_merge_available?
 
   # ============================================================
   # Negated Tags (run when dependency is NOT available)
   # ============================================================
+  # Prefix: not_* - exclude tests when the dependency IS available
 
-  # NOTE: :not_ffi tag is not provided because FFI availability is dynamic.
+  # NOTE: :not_ffi_backend tag is not provided because FFI availability is dynamic.
 
   # TreeHaver backends
   config.filter_run_excluding(not_mri_backend: true) if deps.mri_backend_available?
@@ -736,31 +672,26 @@ RSpec.configure do |config|
   config.filter_run_excluding(not_java_backend: true) if deps.java_backend_available?
   config.filter_run_excluding(not_prism_backend: true) if deps.prism_available?
   config.filter_run_excluding(not_psych_backend: true) if deps.psych_available?
-  config.filter_run_excluding(not_commonmarker: true) if deps.commonmarker_available?
-  config.filter_run_excluding(not_markly: true) if deps.markly_available?
-  config.filter_run_excluding(not_citrus_toml: true) if deps.citrus_toml_available?
+  config.filter_run_excluding(not_commonmarker_backend: true) if deps.commonmarker_available?
+  config.filter_run_excluding(not_markly_backend: true) if deps.markly_available?
+  config.filter_run_excluding(not_citrus_backend: true) if deps.citrus_available?
 
   # Ruby engines
-  config.filter_run_excluding(not_jruby: true) if deps.jruby?
-  config.filter_run_excluding(not_truffleruby: true) if deps.truffleruby?
-  config.filter_run_excluding(not_mri: true) if deps.mri?
+  config.filter_run_excluding(not_mri_engine: true) if deps.mri?
+  config.filter_run_excluding(not_jruby_engine: true) if deps.jruby?
+  config.filter_run_excluding(not_truffleruby_engine: true) if deps.truffleruby?
 
-  # Libraries/grammars
+  # Tree-sitter grammars
   config.filter_run_excluding(not_libtree_sitter: true) if deps.libtree_sitter_available?
-  config.filter_run_excluding(not_toml_grammar: true) if deps.toml_grammar_available?
+  config.filter_run_excluding(not_bash_grammar: true) if deps.tree_sitter_bash_available?
+  config.filter_run_excluding(not_toml_grammar: true) if deps.tree_sitter_toml_available?
+  config.filter_run_excluding(not_json_grammar: true) if deps.tree_sitter_json_available?
+  config.filter_run_excluding(not_jsonc_grammar: true) if deps.tree_sitter_jsonc_available?
 
-  # Language grammars
-  config.filter_run_excluding(not_tree_sitter_bash: true) if deps.tree_sitter_bash_available?
-  config.filter_run_excluding(not_tree_sitter_toml: true) if deps.tree_sitter_toml_available?
-  config.filter_run_excluding(not_tree_sitter_json: true) if deps.tree_sitter_json_available?
-  config.filter_run_excluding(not_tree_sitter_jsonc: true) if deps.tree_sitter_jsonc_available?
+  # Language parsing capabilities
+  config.filter_run_excluding(not_toml_parsing: true) if deps.any_toml_backend_available?
+  config.filter_run_excluding(not_markdown_parsing: true) if deps.any_markdown_backend_available?
+
+  # Specific libraries
   config.filter_run_excluding(not_toml_rb: true) if deps.toml_rb_available?
-  config.filter_run_excluding(not_toml_backend: true) if deps.any_toml_backend_available?
-  config.filter_run_excluding(not_markdown_backend: true) if deps.any_markdown_backend_available?
-
-  # Inner-merge dependencies
-  config.filter_run_excluding(not_toml_merge: true) if deps.toml_merge_available?
-  config.filter_run_excluding(not_json_merge: true) if deps.json_merge_available?
-  config.filter_run_excluding(not_prism_merge: true) if deps.prism_merge_available?
-  config.filter_run_excluding(not_psych_merge: true) if deps.psych_merge_available?
 end

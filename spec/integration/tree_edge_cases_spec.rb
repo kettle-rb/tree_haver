@@ -3,15 +3,10 @@
 require "spec_helper"
 
 # Integration tests for Tree edge cases and method delegation
-RSpec.describe "TreeHaver::Tree edge cases", :toml_grammar do
+# Uses parser_for which auto-discovers backend (tree-sitter or Citrus fallback)
+RSpec.describe "TreeHaver::Tree edge cases", :toml_parsing do
   let(:source) { "[package]\nname = \"test\"" }
-  let(:parser) do
-    p = TreeHaver::Parser.new
-    path = TreeHaverDependencies.find_toml_grammar_path
-    language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-    p.language = language
-    p
-  end
+  let(:parser) { TreeHaver.parser_for(:toml) }
   let(:tree) { parser.parse(source) }
 
   describe "method delegation to inner_tree" do

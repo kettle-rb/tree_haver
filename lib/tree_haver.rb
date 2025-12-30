@@ -567,6 +567,66 @@ module TreeHaver
       mod
     end
 
+    # Native tree-sitter backends that support loading shared libraries (.so files)
+    # These backends wrap the tree-sitter C library via various bindings.
+    # Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are excluded.
+    NATIVE_BACKENDS = %i[mri rust ffi java].freeze
+
+    # Resolve a native tree-sitter backend module (for from_library)
+    #
+    # This method is similar to resolve_backend_module but ONLY considers
+    # backends that support loading shared libraries (.so files):
+    # - MRI (ruby_tree_sitter C extension)
+    # - Rust (tree_stump)
+    # - FFI (ffi gem with libtree-sitter)
+    # - Java (jtreesitter on JRuby)
+    #
+    # Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are NOT
+    # considered because they don't support from_library.
+    #
+    # @param explicit_backend [Symbol, String, nil] explicitly requested backend
+    # @return [Module, nil] the backend module or nil if none available
+    # @raise [BackendConflict] if the backend conflicts with previously used backends
+    def resolve_native_backend_module(explicit_backend = nil)
+      # Short-circuit on TruffleRuby: no native backends work
+      # - MRI: C extension, MRI only
+      # - Rust: magnus requires MRI's C API
+      # - FFI: STRUCT_BY_VALUE not supported
+      # - Java: requires JRuby's Java interop
+      if defined?(RUBY_ENGINE) && RUBY_ENGINE == "truffleruby"
+        return unless explicit_backend # Auto-select: no backends available
+        # If explicit backend requested, let it fail with proper error below
+      end
+
+      # Get the effective backend (considers thread-local and global settings)
+      requested = resolve_effective_backend(explicit_backend)
+
+      # If the effective backend is a native backend, use it
+      if NATIVE_BACKENDS.include?(requested)
+        return resolve_backend_module(requested)
+      end
+
+      # If a specific non-native backend was explicitly requested, return nil
+      # (from_library only works with native backends that load .so files)
+      return if explicit_backend
+
+      # If effective backend is :auto, auto-select from native backends in priority order
+      # Note: non-native backends set via with_backend are NOT used here because
+      # from_library only works with native backends
+      native_priority = if defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby"
+        %i[java ffi] # JRuby: Java first, then FFI
+      else
+        %i[mri rust ffi] # MRI: MRI first, then Rust, then FFI
+      end
+
+      native_priority.each do |backend|
+        mod = resolve_backend_module(backend)
+        return mod if mod
+      end
+
+      nil # No native backend available
+    end
+
     # Determine the concrete backend module to use
     #
     # This method performs backend auto-selection when backend is :auto.
@@ -934,13 +994,18 @@ module TreeHaver
           end
         end
 
-        mod = TreeHaver.resolve_backend_module(backend)
+        # from_library only works with tree-sitter backends that support .so files
+        # Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) don't support from_library
+        mod = TreeHaver.resolve_native_backend_module(backend)
 
         if mod.nil?
           if backend
-            raise NotAvailable, "Requested backend #{backend.inspect} is not available"
+            raise NotAvailable, "Requested backend #{backend.inspect} is not available or does not support shared libraries"
           else
-            raise NotAvailable, "No TreeHaver backend is available"
+            raise NotAvailable,
+              "No native tree-sitter backend is available for loading shared libraries. " \
+                "Available native backends (MRI, Rust, FFI, Java) require platform-specific setup. " \
+                "For pure-Ruby parsing, use backend-specific Language classes directly (e.g., Prism, Psych, Citrus)."
           end
         end
 

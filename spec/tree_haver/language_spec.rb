@@ -161,23 +161,23 @@ RSpec.describe TreeHaver::Language do
       end
 
       it "skips validation when validate: false" do
-        allow(TreeHaver).to receive(:backend_module).and_return(nil)
+        allow(TreeHaver).to receive(:resolve_native_backend_module).and_return(nil)
         # Should not raise ArgumentError for path, but will raise NotAvailable
         expect {
           described_class.from_library("../bad/path.so", validate: false)
-        }.to raise_error(TreeHaver::NotAvailable, /No TreeHaver backend/)
+        }.to raise_error(TreeHaver::NotAvailable, /No TreeHaver backend|No native tree-sitter backend/)
       end
     end
 
     context "when no backend available" do
       before do
-        allow(TreeHaver).to receive(:backend_module).and_return(nil)
+        allow(TreeHaver).to receive(:resolve_native_backend_module).and_return(nil)
       end
 
       it "raises NotAvailable" do
         expect {
           described_class.from_library("/usr/lib/libtest.so")
-        }.to raise_error(TreeHaver::NotAvailable, /No TreeHaver backend/)
+        }.to raise_error(TreeHaver::NotAvailable, /No TreeHaver backend|No native tree-sitter backend/)
       end
     end
 
@@ -192,7 +192,7 @@ RSpec.describe TreeHaver::Language do
       end
 
       before do
-        allow(TreeHaver).to receive(:backend_module).and_return(fake_backend_module)
+        allow(TreeHaver).to receive(:resolve_native_backend_module).and_return(fake_backend_module)
         TreeHaver::LanguageRegistry.clear_cache!
       end
 
@@ -226,7 +226,7 @@ RSpec.describe TreeHaver::Language do
       end
 
       before do
-        allow(TreeHaver).to receive(:backend_module).and_return(legacy_backend_module)
+        allow(TreeHaver).to receive(:resolve_native_backend_module).and_return(legacy_backend_module)
         TreeHaver::LanguageRegistry.clear_cache!
       end
 
@@ -464,14 +464,14 @@ RSpec.describe TreeHaver::Language do
         expect(lang1).not_to eq(lang2)
       end
 
-      it "prevents cache pollution between backends", :citrus_backend, :rust_backend do
+      it "prevents cache pollution between backends", :mri_backend, :rust_backend do
         rust_language = double("Rust Language")
-        citrus_language = double("Citrus Language")
+        mri_language = double("MRI Language")
 
         allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
           .and_return(rust_language)
-        allow(TreeHaver::Backends::Citrus::Language).to receive(:from_library)
-          .and_return(citrus_language)
+        allow(TreeHaver::Backends::MRI::Language).to receive(:from_library)
+          .and_return(mri_language)
 
         # Load with different backends - should call backend-specific loader each time
         lang1 = described_class.from_library(
@@ -482,7 +482,7 @@ RSpec.describe TreeHaver::Language do
         lang2 = described_class.from_library(
           mock_path,
           symbol: mock_symbol,
-          backend: :citrus,
+          backend: :mri,
         )
 
         # Load again with Rust - should use cache
@@ -493,12 +493,12 @@ RSpec.describe TreeHaver::Language do
         )
 
         expect(lang1).to eq(rust_language)
-        expect(lang2).to eq(citrus_language)
+        expect(lang2).to eq(mri_language)
         expect(lang3).to eq(rust_language)
         expect(lang1.object_id).to eq(lang3.object_id)  # Same cached object
 
         expect(TreeHaver::Backends::Rust::Language).to have_received(:from_library).once
-        expect(TreeHaver::Backends::Citrus::Language).to have_received(:from_library).once
+        expect(TreeHaver::Backends::MRI::Language).to have_received(:from_library).once
       end
     end
 
@@ -513,15 +513,15 @@ RSpec.describe TreeHaver::Language do
         )
       end
 
-      # Use Rust + Citrus which can coexist (unlike FFI + MRI)
-      it "loads languages with different backends in concurrent threads", :citrus_backend, :rust_backend do
+      # Use Rust + MRI which both support from_library and can coexist
+      it "loads languages with different backends in concurrent threads", :mri_backend, :rust_backend do
         rust_language = double("Rust Language")
-        citrus_language = double("Citrus Language")
+        mri_language = double("MRI Language")
 
         allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
           .and_return(rust_language)
-        allow(TreeHaver::Backends::Citrus::Language).to receive(:from_library)
-          .and_return(citrus_language)
+        allow(TreeHaver::Backends::MRI::Language).to receive(:from_library)
+          .and_return(mri_language)
 
         results = Concurrent::Array.new if defined?(Concurrent::Array)
         results ||= []
@@ -535,7 +535,7 @@ RSpec.describe TreeHaver::Language do
         end
 
         thread2 = Thread.new do
-          TreeHaver.with_backend(:citrus) do
+          TreeHaver.with_backend(:mri) do
             lang = described_class.from_library(mock_path, symbol: mock_symbol)
             mutex.synchronize { results << {thread: 2, language: lang} }
           end
@@ -546,17 +546,17 @@ RSpec.describe TreeHaver::Language do
 
         expect(results.size).to eq(2)
         expect(results.find { |r| r[:thread] == 1 }[:language]).to eq(rust_language)
-        expect(results.find { |r| r[:thread] == 2 }[:language]).to eq(citrus_language)
+        expect(results.find { |r| r[:thread] == 2 }[:language]).to eq(mri_language)
       end
 
-      it "loads languages with explicit backends in concurrent threads", :citrus_backend, :rust_backend do
+      it "loads languages with explicit backends in concurrent threads", :mri_backend, :rust_backend do
         rust_language = double("Rust Language")
-        citrus_language = double("Citrus Language")
+        mri_language = double("MRI Language")
 
         allow(TreeHaver::Backends::Rust::Language).to receive(:from_library)
           .and_return(rust_language)
-        allow(TreeHaver::Backends::Citrus::Language).to receive(:from_library)
-          .and_return(citrus_language)
+        allow(TreeHaver::Backends::MRI::Language).to receive(:from_library)
+          .and_return(mri_language)
 
         results = Concurrent::Array.new if defined?(Concurrent::Array)
         results ||= []
@@ -575,7 +575,7 @@ RSpec.describe TreeHaver::Language do
           lang = described_class.from_library(
             mock_path,
             symbol: mock_symbol,
-            backend: :citrus,
+            backend: :mri,
           )
           mutex.synchronize { results << {thread: 2, language: lang} }
         end
@@ -585,7 +585,7 @@ RSpec.describe TreeHaver::Language do
 
         expect(results.size).to eq(2)
         expect(results.find { |r| r[:thread] == 1 }[:language]).to eq(rust_language)
-        expect(results.find { |r| r[:thread] == 2 }[:language]).to eq(citrus_language)
+        expect(results.find { |r| r[:thread] == 2 }[:language]).to eq(mri_language)
       end
     end
 

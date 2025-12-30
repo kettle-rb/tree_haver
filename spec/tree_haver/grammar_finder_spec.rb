@@ -317,51 +317,72 @@ RSpec.describe TreeHaver::GrammarFinder do
   end
 
   describe "#search_info" do
-    before do
-      stub_env("TREE_SITTER_TOML_PATH" => nil)
-      allow(File).to receive(:exist?).and_return(false)
+    context "with basic diagnostics" do
+      before do
+        stub_env("TREE_SITTER_TOML_PATH" => nil)
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it "returns diagnostic hash" do
+        info = finder.search_info
+        expect(info).to be_a(Hash)
+        expect(info[:language]).to eq(:toml)
+        expect(info[:env_var]).to eq("TREE_SITTER_TOML_PATH")
+        expect(info[:symbol]).to eq("tree_sitter_toml")
+        expect(info[:search_paths]).to be_an(Array)
+      end
+
+      it "includes found_path" do
+        info = finder.search_info
+        expect(info).to have_key(:found_path)
+      end
+
+      it "includes available status" do
+        info = finder.search_info
+        expect(info).to have_key(:available)
+      end
     end
 
-    it "returns diagnostic hash" do
-      info = finder.search_info
-      expect(info).to be_a(Hash)
-      expect(info[:language]).to eq(:toml)
-      expect(info[:env_var]).to eq("TREE_SITTER_TOML_PATH")
-      expect(info[:symbol]).to eq("tree_sitter_toml")
-      expect(info[:search_paths]).to be_an(Array)
-    end
+    context "with all expected keys" do
+      it "returns diagnostic hash with all expected keys" do
+        info = finder.search_info
+        expect(info).to be_a(Hash)
+        expect(info).to include(:language, :env_var, :symbol, :library_filename, :search_paths, :available)
+      end
 
-    it "includes found_path" do
-      info = finder.search_info
-      expect(info).to have_key(:found_path)
-    end
-
-    it "includes available status" do
-      info = finder.search_info
-      expect(info).to have_key(:available)
+      it "includes env_value in search_info when env var is set and valid" do
+        stub_env("TREE_SITTER_TOML_PATH" => "/valid/path.so")
+        allow(File).to receive(:exist?).and_return(false)
+        allow(File).to receive(:exist?).with("/valid/path.so").and_return(true)
+        allow(TreeHaver::PathValidator).to receive(:safe_library_path?).and_return(true)
+        info = finder.search_info
+        expect(info[:env_value]).to eq("/valid/path.so")
+      end
     end
   end
 
   describe "#not_found_message" do
-    before do
-      hide_env("TREE_SITTER_TOML_PATH")
-      allow(File).to receive(:exist?).and_return(false)
-      finder.find_library_path # Trigger search to populate internal state
-    end
+    context "with basic error message" do
+      before do
+        hide_env("TREE_SITTER_TOML_PATH")
+        allow(File).to receive(:exist?).and_return(false)
+        finder.find_library_path # Trigger search to populate internal state
+      end
 
-    it "returns helpful error message" do
-      msg = finder.not_found_message
-      expect(msg).to include("toml")
-      expect(msg).to include("TREE_SITTER_TOML_PATH")
-    end
+      it "returns helpful error message" do
+        msg = finder.not_found_message
+        expect(msg).to include("toml")
+        expect(msg).to include("TREE_SITTER_TOML_PATH")
+      end
 
-    it "includes search paths" do
-      msg = finder.not_found_message
-      expect(msg).to include("Searched:")
+      it "includes search paths" do
+        msg = finder.not_found_message
+        expect(msg).to include("Searched:")
+      end
     end
   end
 
-  describe ".tree_sitter_runtime_usable?" do
+  describe ".tree_sitter_runtime_usable? basic behavior" do
     before do
       described_class.reset_runtime_check!
     end
@@ -422,7 +443,7 @@ RSpec.describe TreeHaver::GrammarFinder do
     end
   end
 
-  describe ".tree_sitter_runtime_usable?" do
+  describe ".tree_sitter_runtime_usable? edge cases" do
     context "when no backend module is available" do
       before do
         allow(TreeHaver).to receive(:resolve_backend_module).with(nil).and_return(nil)
@@ -480,7 +501,7 @@ RSpec.describe TreeHaver::GrammarFinder do
     end
   end
 
-  describe "#not_found_message" do
+  describe "#not_found_message edge cases" do
     let(:finder) { described_class.new(:test_lang) }
 
     context "when env var file exists but runtime unavailable" do
@@ -530,23 +551,6 @@ RSpec.describe TreeHaver::GrammarFinder do
         msg = finder.not_found_message
         expect(msg).to include("TREE_SITTER_TEST_LANG_PATH")
       end
-    end
-  end
-
-  describe "#search_info" do
-    it "returns diagnostic hash with all expected keys" do
-      info = finder.search_info
-      expect(info).to be_a(Hash)
-      expect(info).to include(:language, :env_var, :symbol, :library_filename, :search_paths, :available)
-    end
-
-    it "includes env_value in search_info when env var is set and valid" do
-      stub_env("TREE_SITTER_TOML_PATH" => "/valid/path.so")
-      allow(File).to receive(:exist?).and_return(false)
-      allow(File).to receive(:exist?).with("/valid/path.so").and_return(true)
-      allow(TreeHaver::PathValidator).to receive(:safe_library_path?).and_return(true)
-      info = finder.search_info
-      expect(info[:env_value]).to eq("/valid/path.so")
     end
   end
 end

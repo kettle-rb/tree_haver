@@ -536,8 +536,10 @@ RSpec.describe TreeHaver do
         before do
           # Register both tree-sitter and Citrus for same language
           mock_grammar = Module.new do
-            def self.parse(source)
-              # Mock parse
+            class << self
+              def parse(source)
+                # Mock parse
+              end
             end
           end
           described_class.register_language(

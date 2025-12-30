@@ -4,17 +4,16 @@ require "spec_helper"
 
 # Integration tests for Node edge cases and fallback behaviors
 # These test behaviors when backend nodes don't implement all optional methods
-RSpec.describe "TreeHaver::Node edge cases", :toml_grammar do
+#
+# Tests that use real parsing use parser_for which auto-discovers backend
+# (tree-sitter or Citrus fallback). Tests that only use mocks work on any platform.
+RSpec.describe "TreeHaver::Node edge cases" do
   let(:source) { "x = 42\ny = 13" }
-  let(:parser) do
-    p = TreeHaver::Parser.new
-    path = TreeHaverDependencies.find_toml_grammar_path
-    language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-    p.language = language
-    p
+
+  # Helper to create a parser using auto-discovery (works on all platforms)
+  def create_parser_with_language
+    TreeHaver.parser_for(:toml)
   end
-  let(:tree) { parser.parse(source) }
-  let(:root_node) { tree.root_node }
 
   describe "fallback behaviors when backend doesn't implement optional methods" do
     describe "#named_child_count" do
@@ -100,24 +99,28 @@ RSpec.describe "TreeHaver::Node edge cases", :toml_grammar do
       end
     end
 
-    describe "#start_point and #end_point wrapping" do
+    describe "#start_point and #end_point wrapping", :toml_parsing do
+      let(:parser) { create_parser_with_language }
+      let(:tree) { parser.parse(source) }
+      let(:root_node) { tree.root_node }
+
       it "wraps Point objects properly" do
         # Real nodes from tree-sitter return Point objects
-        if root_node.child_count > 0
-          first_child = root_node.child(0)
-          start_pt = first_child.start_point
-          end_pt = first_child.end_point
+        skip "No children to test" if root_node.child_count <= 0
 
-          # Should be wrapped as TreeHaver::Point
-          expect(start_pt).to be_a(TreeHaver::Point)
-          expect(end_pt).to be_a(TreeHaver::Point)
+        first_child = root_node.child(0)
+        start_pt = first_child.start_point
+        end_pt = first_child.end_point
 
-          # Should have row and column
-          expect(start_pt.row).to be_a(Integer)
-          expect(start_pt.column).to be_a(Integer)
-          expect(end_pt.row).to be_a(Integer)
-          expect(end_pt.column).to be_a(Integer)
-        end
+        # Should be wrapped as TreeHaver::Point
+        expect(start_pt).to be_a(TreeHaver::Point)
+        expect(end_pt).to be_a(TreeHaver::Point)
+
+        # Should have row and column
+        expect(start_pt.row).to be_a(Integer)
+        expect(start_pt.column).to be_a(Integer)
+        expect(end_pt.row).to be_a(Integer)
+        expect(end_pt.column).to be_a(Integer)
       end
     end
 
@@ -146,8 +149,14 @@ RSpec.describe "TreeHaver::Node edge cases", :toml_grammar do
   end
 
   describe "text extraction edge cases" do
-    it "extracts text using source when available" do
-      if root_node.child_count > 0
+    context "with real parsing", :toml_parsing do
+      let(:parser) { create_parser_with_language }
+      let(:tree) { parser.parse(source) }
+      let(:root_node) { tree.root_node }
+
+      it "extracts text using source when available" do
+        skip "No children to test" if root_node.child_count <= 0
+
         child = root_node.child(0)
         # Node should have source for text extraction
         text = child.text
@@ -167,7 +176,11 @@ RSpec.describe "TreeHaver::Node edge cases", :toml_grammar do
     end
   end
 
-  describe "equality comparison" do
+  describe "equality comparison", :toml_parsing do
+    let(:parser) { create_parser_with_language }
+    let(:tree) { parser.parse(source) }
+    let(:root_node) { tree.root_node }
+
     it "considers nodes with same inner_node equal" do
       node1 = TreeHaver::Node.new(root_node.inner_node, source: source)
       node2 = TreeHaver::Node.new(root_node.inner_node, source: source)
@@ -177,12 +190,12 @@ RSpec.describe "TreeHaver::Node edge cases", :toml_grammar do
     end
 
     it "considers nodes with different inner_node unequal" do
-      if root_node.child_count > 1
-        node1 = root_node.child(0)
-        node2 = root_node.child(1)
+      skip "Not enough children to test" if root_node.child_count <= 1
 
-        expect(node1).not_to eq(node2)
-      end
+      node1 = root_node.child(0)
+      node2 = root_node.child(1)
+
+      expect(node1).not_to eq(node2)
     end
   end
 end

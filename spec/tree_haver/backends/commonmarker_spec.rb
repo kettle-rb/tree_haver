@@ -182,7 +182,7 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
         end
       end
 
-      context "when commonmarker is available", :commonmarker do
+      context "when commonmarker is available", :commonmarker_backend do
         let(:markdown_source) do
           <<~MD
             # Heading 1
@@ -218,7 +218,7 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
       end
     end
 
-    describe "#parse_string", :commonmarker do
+    describe "#parse_string", :commonmarker_backend do
       let(:parser) { backend::Parser.new }
 
       before do
@@ -233,7 +233,7 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
     end
   end
 
-  describe "Tree", :commonmarker do
+  describe "Tree", :commonmarker_backend do
     let(:parser) { backend::Parser.new.tap { |p| p.language = backend::Language.markdown } }
     let(:source) { "# Hello\n\nA paragraph." }
     let(:tree) { parser.parse(source) }
@@ -273,7 +273,7 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
     end
   end
 
-  describe "Node", :commonmarker do
+  describe "Node", :commonmarker_backend do
     let(:parser) { backend::Parser.new.tap { |p| p.language = backend::Language.markdown } }
 
     describe "basic node properties" do
@@ -561,7 +561,7 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
     end
   end
 
-  describe "Point", :commonmarker do
+  describe "Point", :commonmarker_backend do
     let(:point) { backend::Point.new(5, 10) }
 
     describe "#row" do

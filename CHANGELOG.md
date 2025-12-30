@@ -24,9 +24,28 @@ Please file a bug if you notice a violation of semantic versioning.
   - Complete compatibility matrix showing which backends work on MRI, JRuby, TruffleRuby
   - Detailed explanations for TruffleRuby and JRuby limitations
 - `FFI.available?` method at module level for API consistency with other backends
+- `TreeHaver.resolve_native_backend_module` method for resolving only tree-sitter backends
+- `TreeHaver::NATIVE_BACKENDS` constant listing backends that support shared libraries
+- TruffleRuby short-circuit in `resolve_native_backend_module` for efficiency
+  - Avoids trying 3 backends that are all known to fail on TruffleRuby
+- `citrus_available?` method to check if Citrus backend is available
 
 ### Fixed
 
+- **`from_library` no longer falls back to pure-Ruby backends**
+  - Previously, calling `Language.from_library(path)` on TruffleRuby would fall back to Citrus
+    backend which then raised a confusing error about not supporting shared libraries
+  - Now `from_library` only considers native tree-sitter backends (MRI, Rust, FFI, Java)
+  - Clear error message when no native backend is available explaining the situation
+- **Integration specs now use `parser_for` instead of explicit paths**
+  - `tree_edge_cases_spec.rb` and `node_edge_cases_spec.rb` now use `TreeHaver.parser_for(:toml)`
+    which auto-discovers the best available backend (tree-sitter or Citrus fallback)
+  - Tests now work correctly on all platforms (MRI, JRuby, TruffleRuby)
+  - Tagged with `:toml_parsing` which passes if ANY toml parser is available
+- **Core specs now use `parser_for` instead of explicit paths**
+  - `tree_spec.rb`, `node_spec.rb`, `parser_spec.rb` converted to use `TreeHaver.parser_for(:toml)`
+  - All `:toml_grammar` tags changed to `:toml_parsing` for cross-platform compatibility
+  - Tests now run on JRuby and TruffleRuby via Citrus/toml-rb fallback
 - FFI backend now properly reports as unavailable on TruffleRuby
   - `ffi_gem_available?` returns `false` on TruffleRuby since tree-sitter uses STRUCT_BY_VALUE return types
   - `FFI.available?` added at module level (was only in Native submodule)
@@ -42,6 +61,28 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- **BREAKING: RSpec Dependency Tag Naming Convention Overhaul**
+  - All dependency tags now follow consistent naming conventions with suffixes
+  - Backend tags now use `*_backend` suffix (e.g., `:commonmarker_backend`, `:markly_backend`)
+  - Engine tags now use `*_engine` suffix (e.g., `:mri_engine`, `:jruby_engine`, `:truffleruby_engine`)
+  - Grammar tags now use `*_grammar` suffix (e.g., `:bash_grammar`, `:toml_grammar`, `:json_grammar`)
+  - Parsing capability tags now use `*_parsing` suffix (e.g., `:toml_parsing`, `:markdown_parsing`)
+  - **Migration required**: Update specs using legacy tags:
+    - `:commonmarker` → `:commonmarker_backend`
+    - `:markly` → `:markly_backend`
+    - `:mri` → `:mri_engine`
+    - `:jruby` → `:jruby_engine`
+    - `:truffleruby` → `:truffleruby_engine`
+    - `:tree_sitter_bash` → `:bash_grammar`
+    - `:tree_sitter_toml` → `:toml_grammar`
+    - `:tree_sitter_json` → `:json_grammar`
+    - `:tree_sitter_jsonc` → `:jsonc_grammar`
+    - `:toml_backend` → `:toml_parsing`
+    - `:markdown_backend` → `:markdown_parsing`
+- **Removed inner-merge dependency tags from tree_haver**
+  - Tags `:toml_merge`, `:json_merge`, `:prism_merge`, `:psych_merge` removed
+  - These belong in ast-merge gem, not tree_haver
+  - Use `require "ast/merge/rspec/dependency_tags"` for merge gem tags
 - **API Consistency**: All backends now have uniform `available?` API at module level:
   - `TreeHaver::Backends::FFI.available?` - checks ffi gem + not TruffleRuby + MRI not loaded
   - `TreeHaver::Backends::MRI.available?` - checks MRI platform + ruby_tree_sitter gem

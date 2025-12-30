@@ -187,7 +187,7 @@ RSpec.describe TreeHaver::Backends::Markly do
         end
       end
 
-      context "when markly is available", :markly do
+      context "when markly is available", :markly_backend do
         let(:markdown_source) do
           <<~MD
             # Heading 1
@@ -227,7 +227,7 @@ RSpec.describe TreeHaver::Backends::Markly do
       end
     end
 
-    describe "#parse_string", :markly do
+    describe "#parse_string", :markly_backend do
       let(:parser) { backend::Parser.new }
 
       before do
@@ -242,7 +242,7 @@ RSpec.describe TreeHaver::Backends::Markly do
     end
   end
 
-  describe "Tree", :markly do
+  describe "Tree", :markly_backend do
     let(:parser) { backend::Parser.new.tap { |p| p.language = backend::Language.markdown } }
     let(:source) { "# Hello\n\nA paragraph." }
     let(:tree) { parser.parse(source) }
@@ -282,7 +282,7 @@ RSpec.describe TreeHaver::Backends::Markly do
     end
   end
 
-  describe "Node", :markly do
+  describe "Node", :markly_backend do
     let(:parser) { backend::Parser.new.tap { |p| p.language = backend::Language.markdown } }
 
     describe "basic node properties" do
@@ -570,7 +570,7 @@ RSpec.describe TreeHaver::Backends::Markly do
     end
   end
 
-  describe "Point", :markly do
+  describe "Point", :markly_backend do
     let(:point) { backend::Point.new(5, 10) }
 
     describe "#row" do

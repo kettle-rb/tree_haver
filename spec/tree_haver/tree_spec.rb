@@ -2,15 +2,9 @@
 
 require "spec_helper"
 
-RSpec.describe TreeHaver::Tree, :toml_grammar do
+RSpec.describe TreeHaver::Tree, :toml_parsing do
   let(:source) { "[package]\nname = \"test\"" }
-  let(:parser) do
-    p = TreeHaver::Parser.new
-    path = TreeHaverDependencies.find_toml_grammar_path
-    language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-    p.language = language
-    p
-  end
+  let(:parser) { TreeHaver.parser_for(:toml) }
   let(:tree) { parser.parse(source) }
 
   describe "#initialize" do
@@ -209,7 +203,7 @@ RSpec.describe TreeHaver::Tree, :toml_grammar do
     end
   end
 
-  describe "#respond_to_missing?" do
+  describe "#respond_to_missing? with mock inner_tree" do
     let(:mock_inner_tree) do
       double("InnerTree", root_node: double("Node"))
     end

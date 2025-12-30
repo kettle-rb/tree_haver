@@ -30,7 +30,7 @@ RSpec.describe TreeHaver::Backends::Java do
       expect(result).to be(true).or be(false)
     end
 
-    context "when on JRuby", :jruby do
+    context "when on JRuby", :jruby_engine do
       it "returns true when java-tree-sitter classes are available", :java_backend do
         expect(backend.available?).to be true
       end

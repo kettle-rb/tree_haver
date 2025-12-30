@@ -256,10 +256,11 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
         language: :toml,
         gem_name: "toml-rb",
         grammar_const: "TomlRB::Document",
+        require_path: "toml-rb",
       )
     end
 
-    context "when toml-rb is installed and findable", :citrus_toml do
+    context "when toml-rb is installed and findable", :toml_rb do
       it "can find the grammar" do
         expect(toml_finder.available?).to be true
       end

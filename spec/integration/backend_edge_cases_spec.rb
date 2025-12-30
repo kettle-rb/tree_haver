@@ -15,7 +15,7 @@ RSpec.describe "Backend-specific behaviors" do
   end
 
   describe "with_backend block isolation tests" do
-    it "runs simple code in FFI backend block", :ffi do
+    it "runs simple code in FFI backend block", :ffi_backend do
       result = nil
       TreeHaver.with_backend(:ffi) do
         result = 1 + 1
@@ -31,7 +31,7 @@ RSpec.describe "Backend-specific behaviors" do
       expect(result).to eq(2)
     end
 
-    it "creates FFI parser without language", :ffi do
+    it "creates FFI parser without language", :ffi_backend do
       TreeHaver.with_backend(:ffi) do
         parser = TreeHaver::Parser.new
         expect(parser).to be_a(TreeHaver::Parser)
@@ -45,7 +45,7 @@ RSpec.describe "Backend-specific behaviors" do
       end
     end
 
-    it "loads FFI language without setting on parser", :ffi, :toml_grammar do
+    it "loads FFI language without setting on parser", :ffi_backend, :toml_grammar do
       TreeHaver.with_backend(:ffi) do
         path = TreeHaverDependencies.find_toml_grammar_path
         language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
@@ -61,7 +61,7 @@ RSpec.describe "Backend-specific behaviors" do
       end
     end
 
-    it "sets FFI language on parser", :ffi, :toml_grammar do
+    it "sets FFI language on parser", :ffi_backend, :toml_grammar do
       TreeHaver.with_backend(:ffi) do
         path = TreeHaverDependencies.find_toml_grammar_path
         language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
@@ -82,7 +82,7 @@ RSpec.describe "Backend-specific behaviors" do
     end
   end
 
-  describe "FFI backend edge cases", :ffi, :toml_grammar do
+  describe "FFI backend edge cases", :ffi_backend, :toml_grammar do
     before do
       TreeHaver::LanguageRegistry.clear_cache!
       TreeHaver.backend = :ffi

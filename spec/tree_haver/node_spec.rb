@@ -4,24 +4,18 @@ require "spec_helper"
 
 RSpec.describe TreeHaver::Node do
   let(:source) { "x = 42" }
-  let(:parser) do
-    p = TreeHaver::Parser.new
-    path = TreeHaverDependencies.find_toml_grammar_path
-    language = TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
-    p.language = language
-    p
-  end
+  let(:parser) { TreeHaver.parser_for(:toml) }
   let(:tree) { parser.parse(source) }
   let(:root_node) { tree.root_node }
 
   describe "#initialize" do
-    it "wraps a backend node with source", :toml_grammar do
+    it "wraps a backend node with source", :toml_parsing do
       node = described_class.new(root_node.inner_node, source: source)
       expect(node.inner_node).to eq(root_node.inner_node)
       expect(node.source).to eq(source)
     end
 
-    it "wraps a backend node without source", :toml_grammar do
+    it "wraps a backend node without source", :toml_parsing do
       node = described_class.new(root_node.inner_node)
       expect(node.inner_node).to eq(root_node.inner_node)
       expect(node.source).to be_nil
@@ -29,7 +23,7 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#type" do
-    it "returns the node type as a string", :toml_grammar do
+    it "returns the node type as a string", :toml_parsing do
       expect(root_node.type).to be_a(String)
     end
 
@@ -46,7 +40,7 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#start_byte and #end_byte" do
-    it "returns byte offsets", :toml_grammar do
+    it "returns byte offsets", :toml_parsing do
       expect(root_node.start_byte).to be_a(Integer)
       expect(root_node.end_byte).to be_a(Integer)
       expect(root_node.end_byte).to be > root_node.start_byte
@@ -55,12 +49,12 @@ RSpec.describe TreeHaver::Node do
 
   describe "#start_point and #end_point" do
     context "when backend supports start_point" do
-      it "returns Point objects", :toml_grammar do
+      it "returns Point objects", :toml_parsing do
         expect(root_node.start_point).to be_a(TreeHaver::Point)
         expect(root_node.end_point).to be_a(TreeHaver::Point)
       end
 
-      it "provides row and column", :toml_grammar do
+      it "provides row and column", :toml_parsing do
         point = root_node.start_point
         expect(point.row).to be_a(Integer)
         expect(point.column).to be_a(Integer)
@@ -87,12 +81,12 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#start_line" do
-    it "returns 1-based line number", :toml_grammar do
+    it "returns 1-based line number", :toml_parsing do
       expect(root_node.start_line).to be_a(Integer)
       expect(root_node.start_line).to be >= 1
     end
 
-    it "converts 0-based row to 1-based line", :toml_grammar do
+    it "converts 0-based row to 1-based line", :toml_parsing do
       # If start_point.row is 0, start_line should be 1
       expect(root_node.start_line).to eq(root_node.start_point.row + 1)
     end
@@ -100,7 +94,7 @@ RSpec.describe TreeHaver::Node do
     context "with multiline source" do
       let(:source) { "x = 1\ny = 2\nz = 3" }
 
-      it "returns correct line numbers for nodes on different lines", :toml_grammar do
+      it "returns correct line numbers for nodes on different lines", :toml_parsing do
         root_node.children.each do |child|
           # Each line should have a 1-based line number
           expect(child.start_line).to be >= 1
@@ -111,24 +105,24 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#end_line" do
-    it "returns 1-based line number", :toml_grammar do
+    it "returns 1-based line number", :toml_parsing do
       expect(root_node.end_line).to be_a(Integer)
       expect(root_node.end_line).to be >= 1
     end
 
-    it "converts 0-based row to 1-based line", :toml_grammar do
+    it "converts 0-based row to 1-based line", :toml_parsing do
       # If end_point.row is 0, end_line should be 1
       expect(root_node.end_line).to eq(root_node.end_point.row + 1)
     end
 
-    it "end_line is greater than or equal to start_line", :toml_grammar do
+    it "end_line is greater than or equal to start_line", :toml_parsing do
       expect(root_node.end_line).to be >= root_node.start_line
     end
 
     context "with multiline node" do
       let(:source) { "[table]\nx = 1\ny = 2" }
 
-      it "returns the line where the node ends", :toml_grammar do
+      it "returns the line where the node ends", :toml_parsing do
         # Root node should span multiple lines
         if root_node.end_point.row > root_node.start_point.row
           expect(root_node.end_line).to be > root_node.start_line
@@ -138,7 +132,7 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#source_position" do
-    it "returns a hash with position information", :toml_grammar do
+    it "returns a hash with position information", :toml_parsing do
       pos = root_node.source_position
       expect(pos).to be_a(Hash)
       expect(pos).to include(
@@ -149,26 +143,26 @@ RSpec.describe TreeHaver::Node do
       )
     end
 
-    it "has 1-based line numbers", :toml_grammar do
+    it "has 1-based line numbers", :toml_parsing do
       pos = root_node.source_position
       expect(pos[:start_line]).to be >= 1
       expect(pos[:end_line]).to be >= 1
       expect(pos[:end_line]).to be >= pos[:start_line]
     end
 
-    it "has 0-based column numbers", :toml_grammar do
+    it "has 0-based column numbers", :toml_parsing do
       pos = root_node.source_position
       expect(pos[:start_column]).to be >= 0
       expect(pos[:end_column]).to be >= 0
     end
 
-    it "matches start_line and end_line methods", :toml_grammar do
+    it "matches start_line and end_line methods", :toml_parsing do
       pos = root_node.source_position
       expect(pos[:start_line]).to eq(root_node.start_line)
       expect(pos[:end_line]).to eq(root_node.end_line)
     end
 
-    it "matches start_point and end_point columns", :toml_grammar do
+    it "matches start_point and end_point columns", :toml_parsing do
       pos = root_node.source_position
       expect(pos[:start_column]).to eq(root_node.start_point.column)
       expect(pos[:end_column]).to eq(root_node.end_point.column)
@@ -177,7 +171,7 @@ RSpec.describe TreeHaver::Node do
     context "with complex multiline source" do
       let(:source) { "[section]\nkey = \"value\"\n# comment\nother = 123" }
 
-      it "provides correct positions for all nodes", :toml_grammar do
+      it "provides correct positions for all nodes", :toml_parsing do
         root_node.children.each do |child|
           pos = child.source_position
 
@@ -200,7 +194,7 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#first_child" do
-    it "returns the first child node", :toml_grammar do
+    it "returns the first child node", :toml_parsing do
       if root_node.child_count > 0
         expect(root_node.first_child).to be_a(described_class)
         expect(root_node.first_child).to eq(root_node.children.first)
@@ -208,7 +202,7 @@ RSpec.describe TreeHaver::Node do
       end
     end
 
-    it "returns nil when node has no children", :toml_grammar do
+    it "returns nil when node has no children", :toml_parsing do
       # Find a leaf node (no children)
       leaf_node = nil
       root_node.children.each do |child|
@@ -226,7 +220,7 @@ RSpec.describe TreeHaver::Node do
     context "with multiple children" do
       let(:source) { "x = 1\ny = 2\nz = 3" }
 
-      it "returns the first child consistently", :toml_grammar do
+      it "returns the first child consistently", :toml_parsing do
         if root_node.child_count > 1
           first = root_node.first_child
           expect(first).to be_a(described_class)
@@ -240,12 +234,12 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#text" do
-    it "returns the node's text content", :toml_grammar do
+    it "returns the node's text content", :toml_parsing do
       expect(root_node.text).to be_a(String)
     end
 
     context "when backend supports text method" do
-      it "uses the backend's text method", :toml_grammar do
+      it "uses the backend's text method", :toml_parsing do
         allow(root_node.inner_node).to receive(:text).and_return("test")
         expect(root_node.text).to eq("test")
       end
@@ -279,13 +273,13 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#has_error?" do
-    it "returns a boolean", :toml_grammar do
+    it "returns a boolean", :toml_parsing do
       expect(root_node.has_error?).to be(true).or be(false)
     end
   end
 
   describe "#missing?" do
-    it "returns false when node is not missing", :toml_grammar do
+    it "returns false when node is not missing", :toml_parsing do
       expect(root_node.missing?).to be false
     end
 
@@ -307,7 +301,7 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#named?" do
-    it "returns a boolean", :toml_grammar do
+    it "returns a boolean", :toml_parsing do
       expect(root_node.named?).to be(true).or be(false)
     end
 
@@ -344,21 +338,21 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#child_count" do
-    it "returns the number of children", :toml_grammar do
+    it "returns the number of children", :toml_parsing do
       expect(root_node.child_count).to be_a(Integer)
       expect(root_node.child_count).to be >= 0
     end
   end
 
   describe "#child" do
-    it "returns a wrapped Node for valid index", :toml_grammar do
+    it "returns a wrapped Node for valid index", :toml_parsing do
       if root_node.child_count > 0
         child = root_node.child(0)
         expect(child).to be_a(described_class)
       end
     end
 
-    it "returns nil or raises for invalid index", :toml_grammar do
+    it "returns nil or raises for invalid index", :toml_parsing do
       # Different backends handle invalid indices differently:
       # - Some return nil
       # - Some raise IndexError
@@ -381,7 +375,7 @@ RSpec.describe TreeHaver::Node do
       expect(node.child(0)).to be_nil
     end
 
-    it "passes source to child nodes", :toml_grammar do
+    it "passes source to child nodes", :toml_parsing do
       if root_node.child_count > 0
         child = root_node.child(0)
         expect(child).to respond_to(:source)
@@ -390,19 +384,19 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#children" do
-    it "returns an array of wrapped Nodes", :toml_grammar do
+    it "returns an array of wrapped Nodes", :toml_parsing do
       children = root_node.children
       expect(children).to be_an(Array)
       expect(children).to all(be_a(described_class))
     end
 
-    it "passes source to all children", :toml_grammar do
+    it "passes source to all children", :toml_parsing do
       expect(root_node.children).to all(respond_to(:source))
     end
   end
 
   describe "#named_children" do
-    it "returns only named children", :toml_grammar do
+    it "returns only named children", :toml_parsing do
       named = root_node.named_children
       expect(named).to be_an(Array)
       named.each do |child|
@@ -413,7 +407,7 @@ RSpec.describe TreeHaver::Node do
 
   describe "#child_by_field_name" do
     context "when backend supports field names" do
-      it "returns wrapped node for valid field", :toml_grammar do
+      it "returns wrapped node for valid field", :toml_parsing do
         # This test will only run if the backend actually supports fields
         if root_node.inner_node.respond_to?(:child_by_field_name)
           result = root_node.child_by_field_name(:nonexistent_field)
@@ -462,14 +456,14 @@ RSpec.describe TreeHaver::Node do
       end
     end
 
-    it "has field as an alias", :toml_grammar do
+    it "has field as an alias", :toml_parsing do
       expect(root_node).to respond_to(:field)
       expect(root_node.method(:field)).to eq(root_node.method(:child_by_field_name))
     end
   end
 
   describe "#each" do
-    it "iterates over children", :toml_grammar do
+    it "iterates over children", :toml_parsing do
       count = 0
       root_node.each do |child|
         expect(child).to be_a(described_class)
@@ -478,21 +472,21 @@ RSpec.describe TreeHaver::Node do
       expect(count).to eq(root_node.child_count)
     end
 
-    it "returns an enumerator when no block given", :toml_grammar do
+    it "returns an enumerator when no block given", :toml_parsing do
       enumerator = root_node.each
       expect(enumerator).to be_a(Enumerator)
     end
   end
 
   describe "#field" do
-    it "is an alias for child_by_field_name", :toml_grammar do
+    it "is an alias for child_by_field_name", :toml_parsing do
       expect(root_node.method(:field)).to eq(root_node.method(:child_by_field_name))
     end
   end
 
   describe "#parent" do
     context "when backend supports parent" do
-      it "returns wrapped parent or nil", :toml_grammar do
+      it "returns wrapped parent or nil", :toml_parsing do
         if root_node.child_count > 0
           child = root_node.child(0)
           parent = child.parent
@@ -519,7 +513,7 @@ RSpec.describe TreeHaver::Node do
 
   describe "#next_sibling" do
     context "when backend supports next_sibling" do
-      it "returns wrapped sibling or nil", :toml_grammar do
+      it "returns wrapped sibling or nil", :toml_parsing do
         if root_node.child_count > 0
           child = root_node.child(0)
           sibling = child.next_sibling
@@ -546,7 +540,7 @@ RSpec.describe TreeHaver::Node do
 
   describe "#prev_sibling" do
     context "when backend supports prev_sibling" do
-      it "returns wrapped sibling or nil", :toml_grammar do
+      it "returns wrapped sibling or nil", :toml_parsing do
         if root_node.child_count > 1
           child = root_node.child(1)
           sibling = child.prev_sibling
@@ -572,7 +566,7 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#inspect" do
-    it "returns a debug-friendly string", :toml_grammar do
+    it "returns a debug-friendly string", :toml_parsing do
       result = root_node.inspect
       expect(result).to include("TreeHaver::Node")
       expect(result).to include("type=")
@@ -581,24 +575,24 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#to_s" do
-    it "returns the node text", :toml_grammar do
+    it "returns the node text", :toml_parsing do
       expect(root_node.to_s).to eq(root_node.text)
     end
   end
 
   describe "#respond_to_missing?" do
-    it "returns true for methods on inner_node", :toml_grammar do
+    it "returns true for methods on inner_node", :toml_parsing do
       method = root_node.inner_node.methods.first
       expect(root_node.respond_to?(method)).to be true
     end
 
-    it "returns false for non-existent methods", :toml_grammar do
+    it "returns false for non-existent methods", :toml_parsing do
       expect(root_node.respond_to?(:totally_fake_method_xyz)).to be false
     end
   end
 
   describe "#method_missing" do
-    it "delegates to inner_node if method exists", :toml_grammar do
+    it "delegates to inner_node if method exists", :toml_parsing do
       # Find a method that exists on inner_node but not on Node
       # Filter out methods that require arguments by checking arity
       backend_specific_method = root_node.inner_node.methods.find do |m|
@@ -624,7 +618,7 @@ RSpec.describe TreeHaver::Node do
       end
     end
 
-    it "raises NoMethodError for non-existent methods", :toml_grammar do
+    it "raises NoMethodError for non-existent methods", :toml_parsing do
       expect {
         root_node.totally_fake_method_xyz
       }.to raise_error(NoMethodError)
@@ -632,7 +626,7 @@ RSpec.describe TreeHaver::Node do
   end
 
   describe "#==" do
-    it "compares based on inner_node", :toml_grammar do
+    it "compares based on inner_node", :toml_parsing do
       node1 = described_class.new(root_node.inner_node, source: source)
       node2 = described_class.new(root_node.inner_node, source: source)
       different_node = root_node.child(0) if root_node.child_count > 0
@@ -1177,10 +1171,9 @@ RSpec.describe TreeHaver::Node do
         allow(parent_node).to receive(:child).with(0).and_return(named_child)
 
         # Child uses is_named? instead of named?
-        allow(named_child).to receive(:respond_to?).and_return(true) # default
+        allow(named_child).to receive_messages(respond_to?: true, is_named?: true)
         allow(named_child).to receive(:respond_to?).with(:named?).and_return(false)
         allow(named_child).to receive(:respond_to?).with(:is_named?).and_return(true)
-        allow(named_child).to receive(:is_named?).and_return(true)
       end
 
       it "uses is_named? fallback in named_child iteration" do
@@ -1244,18 +1237,18 @@ RSpec.describe TreeHaver::Node do
     end
 
     context "when children have neither named? nor is_named?" do
-      let(:unknown_child1) { double("Unknown1", type: "u1", child_count: 0) }
-      let(:unknown_child2) { double("Unknown2", type: "u2", child_count: 0) }
+      let(:first_unknown_child) { double("Unknown1", type: "u1", child_count: 0) }
+      let(:second_unknown_child) { double("Unknown2", type: "u2", child_count: 0) }
       let(:parent_node) do
         double("ParentNode", type: "parent", child_count: 2)
       end
 
       before do
         allow(parent_node).to receive(:respond_to?).with(:named_child_count).and_return(false)
-        allow(parent_node).to receive(:child).with(0).and_return(unknown_child1)
-        allow(parent_node).to receive(:child).with(1).and_return(unknown_child2)
+        allow(parent_node).to receive(:child).with(0).and_return(first_unknown_child)
+        allow(parent_node).to receive(:child).with(1).and_return(second_unknown_child)
 
-        [unknown_child1, unknown_child2].each do |child|
+        [first_unknown_child, second_unknown_child].each do |child|
           allow(child).to receive(:respond_to?).with(:named?).and_return(false)
           allow(child).to receive(:respond_to?).with(:is_named?).and_return(false)
         end
