@@ -69,16 +69,13 @@ jobs:
         if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}
         uses: actions/checkout@v6
 
-      - name: Set up Java
+      - name: Install tree-sitter and toml grammar
         if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}
-        uses: actions/setup-java@v5
+        uses: kettle-rb/ts-grammar-action@main
         with:
-          distribution: temurin
-          java-version: '23'
-
-      - name: Install tree-sitter dependencies (Ubuntu)
-        if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}
-        run: .github/scripts/ubuntu/setup-tree-sitter.sh --sudo --grammars=toml
+          grammar-toml: true
+          setup-jtreesitter: ${{ startsWith(matrix.ruby, 'jruby') }}
+          java-version: "23"
 
       - name: Setup Ruby & RubyGems
         if: ${{ !env.ACT || (! startsWith(matrix.ruby, 'jruby') && !startsWith(matrix.ruby, 'truffleruby')) }}
