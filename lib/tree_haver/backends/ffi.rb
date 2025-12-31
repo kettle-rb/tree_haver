@@ -395,14 +395,14 @@ module TreeHaver
             end
 
             requested = symbol || ENV["TREE_SITTER_LANG_SYMBOL"]
-            base = File.basename(path)
-            guessed_lang = base.sub(/^libtree[-_]sitter[-_]/, "").sub(/\.(so(\.\d+)?)|\.dylib|\.dll\z/, "")
+            # Use shared utility for consistent symbol derivation across backends
+            guessed_symbol = LibraryPathUtils.derive_symbol_from_path(path)
             # If an override was provided (arg or ENV), treat it as strict and do not fall back.
             # Only when no override is provided do we attempt guessed and default candidates.
             candidates = if requested && !requested.to_s.empty?
               [requested]
             else
-              [(guessed_lang.empty? ? nil : "tree_sitter_#{guessed_lang}"), "tree_sitter_toml"].compact
+              [guessed_symbol, "tree_sitter_toml"].compact.uniq
             end
 
             func = nil

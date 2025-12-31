@@ -316,9 +316,11 @@ module TreeHaver
           def from_library(path, symbol: nil, name: nil)
             raise TreeHaver::NotAvailable, "Java backend not available" unless Java.available?
 
-            # Derive symbol from name or path if not provided
-            base_name = File.basename(path, ".*").sub(/^lib/, "")
-            sym = symbol || "tree_sitter_#{name || base_name.sub(/^tree-sitter-/, "")}"
+            # Use shared utility for consistent symbol derivation across backends
+            # If symbol not provided, derive from name or path
+            sym = symbol || LibraryPathUtils.derive_symbol_from_path(path)
+            # If name was provided, use it to override the derived symbol
+            sym = "tree_sitter_#{name}" if name && !symbol
 
             begin
               arena = ::Java::JavaLangForeign::Arena.global

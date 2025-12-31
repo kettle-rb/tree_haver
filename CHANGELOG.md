@@ -20,7 +20,17 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `TreeHaver::LibraryPathUtils` module for consistent path parsing across all backends
+  - `derive_symbol_from_path(path)` - derives tree-sitter symbol (e.g., `tree_sitter_toml`) from library path
+  - `derive_language_name_from_path(path)` - derives language name (e.g., `toml`) from library path
+  - `derive_language_name_from_symbol(symbol)` - strips `tree_sitter_` prefix from symbol
+  - Handles various naming conventions: `libtree-sitter-toml.so`, `libtree_sitter_toml.so`, `tree-sitter-toml.so`, `toml.so`
+
 ### Changed
+
+- All backends now use shared `LibraryPathUtils` for path parsing
+  - MRI, Rust, FFI, and Java backends updated for consistency
+  - Ensures identical behavior across all tree-sitter backends
 
 ### Deprecated
 
@@ -32,6 +42,17 @@ Please file a bug if you notice a violation of semantic versioning.
   - Was: `require "ruby_tree_sitter"` (wrong - causes LoadError)
   - Now: `require "tree_sitter"` (correct - gem name is ruby_tree_sitter but require path is tree_sitter)
   - This fix ensures the MRI backend is correctly detected as available in CI environments
+- `TreeHaver::Backends::MRI::Language.from_library` now properly derives symbol from path
+  - Previously, calling `from_library(path)` without `symbol:` would fail because `language_name` was nil
+  - Now delegates to private `from_path` after deriving symbol, ensuring proper language name derivation
+  - `from_path` is now private (but still accessible via `send` for testing if needed)
+  - Extracts language name from paths like `/usr/lib/libtree-sitter-toml.so` → `tree_sitter_toml`
+  - Handles both dash and underscore separators in filenames
+  - Handles simple language names like `toml.so` → `tree_sitter_toml`
+- `TreeHaver::Backends::MRI::Parser#language=` now unwraps `TreeHaver::Backends::MRI::Language` wrappers
+  - Accepts both raw `TreeSitter::Language` and wrapped `TreeHaver::Backends::MRI::Language`
+- `TreeHaver::GrammarFinder.tree_sitter_runtime_usable?` no longer references `FFI::NotFoundError` directly
+  - Prevents `NameError` when FFI gem is not loaded
 
 ### Security
 

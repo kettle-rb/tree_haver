@@ -166,6 +166,21 @@ module TreeHaver
         #   lang = TreeHaver::Backends::MRI::Language.from_library("/path/to/lib.so", symbol: "tree_sitter_json")
         class << self
           def from_library(path, symbol: nil, name: nil)
+            # Derive symbol from path if not provided using shared utility
+            symbol ||= LibraryPathUtils.derive_symbol_from_path(path)
+            from_path(path, symbol: symbol, name: name)
+          end
+
+          private
+
+          # Load a language from a shared library path (internal implementation)
+          #
+          # @param path [String] absolute path to the language shared library
+          # @param symbol [String] the exported symbol name (e.g., "tree_sitter_json")
+          # @param name [String, nil] optional language name
+          # @return [Language] wrapped language handle
+          # @api private
+          def from_path(path, symbol: nil, name: nil)
             raise TreeHaver::NotAvailable, "ruby_tree_sitter not available" unless MRI.available?
 
             # ruby_tree_sitter's TreeSitter::Language.load takes (language_name, path_to_so)
@@ -173,8 +188,8 @@ module TreeHaver
             # NOT the full symbol name (e.g., NOT "tree_sitter_toml")
             # and path_to_so is the full path to the .so file
             #
-            # If name is not provided, derive it from symbol by stripping "tree_sitter_" prefix
-            language_name = name || symbol&.sub(/\Atree_sitter_/, "")
+            # If name is not provided, derive it from symbol using shared utility
+            language_name = name || LibraryPathUtils.derive_language_name_from_symbol(symbol)
             ts_lang = ::TreeSitter::Language.load(language_name, path)
             new(ts_lang, path: path, symbol: symbol)
           rescue NameError => e
@@ -189,16 +204,6 @@ module TreeHaver
             else
               raise # Re-raise if it's not a TreeSitter error
             end
-          end
-
-          # Load a language from a shared library path (legacy method)
-          #
-          # @param path [String] absolute path to the language shared library
-          # @param symbol [String] the exported symbol name (e.g., "tree_sitter_json")
-          # @return [Language] wrapped language handle
-          # @deprecated Use {from_library} instead
-          def from_path(path, symbol: nil)
-            from_library(path, symbol: symbol)
           end
         end
       end
@@ -229,19 +234,17 @@ module TreeHaver
 
         # Set the language for this parser
         #
-        # Note: TreeHaver::Parser unwraps language objects before calling this method.
-        # This backend receives raw ::TreeSitter::Language objects, never wrapped ones.
-        #
-        # @param lang [::TreeSitter::Language] the language to use (already unwrapped)
-        # @return [::TreeSitter::Language] the language that was set
+        # @param lang [::TreeSitter::Language, TreeHaver::Backends::MRI::Language] the language to use
+        # @return [::TreeSitter::Language, TreeHaver::Backends::MRI::Language] the language that was set
         # @raise [TreeHaver::NotAvailable] if setting language fails
         def language=(lang)
-          # lang is already unwrapped by TreeHaver::Parser, use directly
-          @parser.language = lang
+          # Unwrap if it's a TreeHaver wrapper
+          inner_lang = lang.respond_to?(:inner_language) ? lang.inner_language : lang
+          @parser.language = inner_lang
           # Verify it was set
           raise TreeHaver::NotAvailable, "Language not set correctly" if @parser.language.nil?
 
-          # Return the language object
+          # Return the original language object (wrapped or unwrapped)
           lang
         rescue Exception => e # rubocop:disable Lint/RescueException
           # TreeSitter errors inherit from Exception (not StandardError) in ruby_tree_sitter v2+

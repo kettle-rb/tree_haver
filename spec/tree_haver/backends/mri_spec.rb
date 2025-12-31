@@ -81,7 +81,7 @@ RSpec.describe TreeHaver::Backends::MRI do
   end
 
   describe "Language" do
-    describe "::from_path" do
+    describe "::from_library" do
       context "when MRI backend is not available" do
         before do
           # Stub available? to return false - this is more reliable than hide_const
@@ -91,7 +91,7 @@ RSpec.describe TreeHaver::Backends::MRI do
 
         it "raises NotAvailable" do
           expect {
-            backend::Language.from_path("/path/to/lib.so")
+            backend::Language.from_library("/path/to/lib.so")
           }.to raise_error(TreeHaver::NotAvailable, /ruby_tree_sitter not available/)
         end
       end
@@ -99,22 +99,24 @@ RSpec.describe TreeHaver::Backends::MRI do
       context "when path does not exist", :mri_backend do
         it "raises an error for non-existent path" do
           expect {
-            backend::Language.from_path("/nonexistent/path/to/lib.so")
-          }.to raise_error(StandardError)
+            backend::Language.from_library("/nonexistent/path/to/lib.so")
+          }.to raise_error(TreeHaver::NotAvailable)
         end
       end
 
       context "with valid TOML grammar", :mri_backend, :toml_grammar do
         it "loads the language successfully" do
           path = TreeHaverDependencies.find_toml_grammar_path
-          lang = backend::Language.from_path(path)
-          expect(lang).to be_a(TreeSitter::Language)
+          lang = backend::Language.from_library(path)
+          expect(lang).to be_a(backend::Language)
+          # Inner language should be the raw TreeSitter::Language
+          expect(lang.inner_language).to be_a(TreeSitter::Language)
         end
 
         it "calls TreeSitter::Language.load" do
           path = TreeHaverDependencies.find_toml_grammar_path
-          # This actually exercises line 67: ::TreeSitter::Language.load(path)
-          lang = backend::Language.from_path(path)
+          # This actually exercises the internal from_path method via from_library
+          lang = backend::Language.from_library(path)
           expect(lang).not_to be_nil
         end
       end
@@ -147,7 +149,7 @@ RSpec.describe TreeHaver::Backends::MRI do
       it "sets the language on the underlying parser" do
         parser = backend::Parser.new
         path = TreeHaverDependencies.find_toml_grammar_path
-        lang = backend::Language.from_path(path)
+        lang = backend::Language.from_library(path)
         # This actually exercises line 88: @parser.language = lang
         result = parser.language = lang
         expect(result).to eq(lang)
@@ -158,7 +160,7 @@ RSpec.describe TreeHaver::Backends::MRI do
       let(:parser) do
         p = backend::Parser.new
         path = TreeHaverDependencies.find_toml_grammar_path
-        p.language = backend::Language.from_path(path)
+        p.language = backend::Language.from_library(path)
         p
       end
 
@@ -169,10 +171,10 @@ RSpec.describe TreeHaver::Backends::MRI do
       end
 
       it "parses valid TOML and provides access to root node" do
-        tree = parser.parse("title = \"TOML\"\n")
+        tree = parser.parse("key = \"value\"\n")
         root = tree.root_node
-        expect(root).to be_a(TreeSitter::Node)
-        expect(root.type).to eq("document")
+        expect(root).not_to be_nil
+        expect(root.type).to eq(:document)
       end
     end
 
@@ -180,7 +182,7 @@ RSpec.describe TreeHaver::Backends::MRI do
       let(:parser) do
         p = backend::Parser.new
         path = TreeHaverDependencies.find_toml_grammar_path
-        p.language = backend::Language.from_path(path)
+        p.language = backend::Language.from_library(path)
         p
       end
 
@@ -194,7 +196,7 @@ RSpec.describe TreeHaver::Backends::MRI do
         old_tree = parser.parse("key = \"old\"\n")
         new_tree = parser.parse_string(old_tree, "key = \"new\"\n")
         expect(new_tree).to be_a(TreeSitter::Tree)
-        expect(new_tree.root_node.type).to eq("document")
+        expect(new_tree.root_node.type).to eq(:document)
       end
     end
   end
@@ -218,7 +220,7 @@ RSpec.describe TreeHaver::Backends::MRI do
   describe "full parsing workflow", :mri_backend, :toml_grammar do
     it "can parse TOML and traverse the AST" do
       path = TreeHaverDependencies.find_toml_grammar_path
-      lang = backend::Language.from_path(path)
+      lang = backend::Language.from_library(path)
       parser = backend::Parser.new
       parser.language = lang
 
@@ -229,7 +231,7 @@ RSpec.describe TreeHaver::Backends::MRI do
       TOML
 
       root = tree.root_node
-      expect(root.type).to eq("document")
+      expect(root.type).to eq(:document)
       expect(root.child_count).to be > 0
 
       # Check that we can access children

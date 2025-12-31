@@ -6,9 +6,8 @@ require "version_gem"
 # Standard library
 require "set"
 
-# This gem
+# This gem - only version can be required (never autoloaded)
 require_relative "tree_haver/version"
-require_relative "tree_haver/language_registry"
 
 # TreeHaver is a cross-Ruby adapter for code parsing with 10 backends.
 #
@@ -106,6 +105,10 @@ require_relative "tree_haver/language_registry"
 # @see GrammarFinder For automatic grammar library discovery
 # @see Backends For available parsing backends
 module TreeHaver
+  # Autoload internal modules
+  autoload :LibraryPathUtils, File.join(__dir__, "tree_haver", "library_path_utils")
+  autoload :LanguageRegistry, File.join(__dir__, "tree_haver", "language_registry")
+
   # Base error class for TreeHaver exceptions
   # @see https://github.com/Faveod/ruby-tree-sitter/pull/83 for inherit from Exception reasoning
   #

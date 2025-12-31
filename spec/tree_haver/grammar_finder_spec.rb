@@ -466,7 +466,7 @@ RSpec.describe TreeHaver::GrammarFinder do
       end
     end
 
-    context "when tree-sitter backend parser creation fails with FFI error" do
+    context "when tree-sitter backend parser creation fails with FFI error", :ffi_backend do
       before do
         allow(TreeHaver).to receive(:resolve_backend_module).with(nil).and_return(TreeHaver::Backends::FFI)
         allow(TreeHaver::Backends::FFI::Parser).to receive(:new).and_raise(FFI::NotFoundError.new("test"))

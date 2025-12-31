@@ -149,16 +149,15 @@ module TreeHaver
 
             # tree_stump uses TreeStump.register_lang(name, path) to register languages
             # The name is used to derive the symbol automatically (tree_sitter_<name>)
-            lang_name = name || File.basename(path, ".*").sub(/^libtree-sitter-/, "")
+            # Use shared utility for consistent path parsing across backends
+            lang_name = name || LibraryPathUtils.derive_language_name_from_path(path)
             ::TreeStump.register_lang(lang_name, path)
             new(lang_name, path: path)
           rescue RuntimeError => e
             raise TreeHaver::NotAvailable, "Failed to load language from #{path}: #{e.message}"
           end
 
-          # Alias for compatibility
-          #
-          # @see from_library
+          # Backward-compatible alias for from_library
           alias_method :from_path, :from_library
         end
       end

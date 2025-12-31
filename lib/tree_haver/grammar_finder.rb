@@ -270,7 +270,10 @@ module TreeHaver
           # Try to instantiate a parser - this will fail if runtime isn't available
           mod::Parser.new
           true
-        rescue NoMethodError, FFI::NotFoundError, LoadError, NotAvailable => _e
+        rescue NoMethodError, LoadError, NotAvailable => _e
+          false
+        rescue StandardError => _e
+          # Catch FFI::NotFoundError and other errors when FFI is loaded
           false
         end
       end
