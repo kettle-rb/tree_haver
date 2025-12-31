@@ -16,7 +16,7 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// First setup tree-sitter (auto-detects sudo requirement), then run bundle as the regular user
 	// Use ${containerWorkspaceFolder} to get the actual workspace path in the container
-	"postCreateCommand": "bash ${containerWorkspaceFolder}/.github/scripts/ubuntu/setup-tree-sitter.sh --workspace=${containerWorkspaceFolder} && bundle update --bundler",
+	"postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/setup-tree-sitter.sh --workspace=${containerWorkspaceFolder} && bundle update --bundler",
 
 	// Configure tool-specific properties.
   "customizations" : {
