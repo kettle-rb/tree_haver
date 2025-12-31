@@ -30,7 +30,7 @@ module TreeHaver
     # @param path [String, nil] path like "/usr/lib/libtree-sitter-toml.so"
     # @return [String, nil] symbol like "tree_sitter_toml", or nil if path is nil
     def derive_symbol_from_path(path)
-      return nil unless path
+      return unless path
 
       # Extract filename without extension: "libtree-sitter-toml" or "toml"
       filename = File.basename(path, ".*")
@@ -61,7 +61,7 @@ module TreeHaver
     # @return [String, nil] language name like "toml", or nil if path is nil
     def derive_language_name_from_path(path)
       symbol = derive_symbol_from_path(path)
-      return nil unless symbol
+      return unless symbol
 
       # Strip the "tree_sitter_" prefix to get the language name
       symbol.sub(/\Atree_sitter_/, "")
@@ -72,10 +72,9 @@ module TreeHaver
     # @param symbol [String, nil] symbol like "tree_sitter_toml"
     # @return [String, nil] language name like "toml", or nil if symbol is nil
     def derive_language_name_from_symbol(symbol)
-      return nil unless symbol
+      return unless symbol
 
       symbol.sub(/\Atree_sitter_/, "")
     end
   end
 end
-

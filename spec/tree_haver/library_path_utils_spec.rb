@@ -237,7 +237,7 @@ RSpec.describe TreeHaver::LibraryPathUtils do
 
   describe "module_function behavior" do
     it "allows calling methods on the module directly" do
-      expect(TreeHaver::LibraryPathUtils.derive_symbol_from_path("/lib/toml.so")).to eq("tree_sitter_toml")
+      expect(described_class.derive_symbol_from_path("/lib/toml.so")).to eq("tree_sitter_toml")
     end
 
     it "methods are private when module is included (standard module_function behavior)" do
@@ -277,4 +277,3 @@ RSpec.describe TreeHaver::LibraryPathUtils do
     end
   end
 end
-
