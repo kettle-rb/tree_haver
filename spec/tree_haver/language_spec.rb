@@ -675,4 +675,122 @@ RSpec.describe TreeHaver::Language do
       end
     end
   end
+
+  describe "method_missing Citrus fallback scenarios" do
+    context "when Citrus backend is active but registration has no grammar_module" do
+      before do
+        TreeHaver.backend = :citrus
+        # Register for Citrus but without grammar_module
+        TreeHaver::LanguageRegistry.register(
+          :citrus_no_grammar_test,
+          :citrus,
+          grammar_module: nil,
+        )
+      end
+
+      after do
+        TreeHaver.backend = :auto
+      end
+
+      it "raises NotAvailable when Citrus registration has no grammar_module" do
+        expect {
+          described_class.citrus_no_grammar_test
+        }.to raise_error(TreeHaver::NotAvailable, /no Citrus grammar registered/)
+      end
+    end
+
+    context "when tree-sitter backend is active with no tree-sitter registration" do
+      before do
+        TreeHaver.backend = :mri
+      end
+
+      after do
+        TreeHaver.backend = :auto
+      end
+
+      it "raises ArgumentError when no compatible registration found" do
+        # Register only for Citrus, then try to use with MRI backend
+        TreeHaver::LanguageRegistry.register(
+          :no_ts_path_test,
+          :citrus,
+          grammar_module: nil,  # No valid Citrus grammar
+        )
+
+        expect {
+          described_class.no_ts_path_test
+        }.to raise_error(ArgumentError, /No grammar registered.*compatible with tree_sitter backend/)
+      end
+    end
+
+    context "when tree-sitter fails and Citrus fallback is available" do
+      before do
+        TreeHaver.backend = :mri
+        # Register both tree-sitter (with bad path) and Citrus fallback
+        TreeHaver::LanguageRegistry.register(
+          :ts_fail_citrus_fallback_test,
+          :tree_sitter,
+          path: "/nonexistent/path.so",
+          symbol: "tree_sitter_test",
+        )
+        TreeHaver::LanguageRegistry.register(
+          :ts_fail_citrus_fallback_test,
+          :citrus,
+          grammar_module: double("Grammar", parse: true),
+        )
+      end
+
+      after do
+        TreeHaver.backend = :auto
+      end
+
+      it "falls back to Citrus when tree-sitter loading fails" do
+        language = described_class.ts_fail_citrus_fallback_test
+        expect(language).to be_a(TreeHaver::Backends::Citrus::Language)
+      end
+    end
+
+    context "when tree-sitter fails and no Citrus fallback available" do
+      before do
+        TreeHaver.backend = :mri
+        # Register only tree-sitter (with bad path), no Citrus
+        TreeHaver::LanguageRegistry.register(
+          :ts_fail_no_fallback_test,
+          :tree_sitter,
+          path: "/nonexistent/path.so",
+          symbol: "tree_sitter_test",
+        )
+      end
+
+      after do
+        TreeHaver.backend = :auto
+      end
+
+      it "re-raises the original error when no Citrus fallback" do
+        expect {
+          described_class.ts_fail_no_fallback_test
+        }.to raise_error(TreeHaver::NotAvailable)
+      end
+    end
+  end
+
+  describe "respond_to_missing?" do
+    it "returns true for registered language names" do
+      TreeHaver::LanguageRegistry.register(
+        :respond_test_lang,
+        :tree_sitter,
+        path: "/path.so",
+      )
+      expect(described_class.respond_to?(:respond_test_lang)).to be true
+    end
+
+    it "returns false for unregistered language names" do
+      expect(described_class.respond_to?(:definitely_not_registered_xyz)).to be false
+    end
+
+    it "delegates to super for non-language methods" do
+      # Standard Object methods should still work
+      expect(described_class.respond_to?(:to_s)).to be true
+      expect(described_class.respond_to?(:class)).to be true
+    end
+  end
 end

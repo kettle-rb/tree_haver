@@ -31,6 +31,12 @@ Please file a bug if you notice a violation of semantic versioning.
 - All backends now use shared `LibraryPathUtils` for path parsing
   - MRI, Rust, FFI, and Java backends updated for consistency
   - Ensures identical behavior across all tree-sitter backends
+- `TreeHaver::Language` class extracted to `lib/tree_haver/language.rb`
+  - No API changes, just file organization
+  - Loaded via autoload for lazy loading
+- `TreeHaver::Parser` class extracted to `lib/tree_haver/parser.rb`
+  - No API changes, just file organization
+  - Loaded via autoload for lazy loading
 
 ### Deprecated
 
@@ -53,6 +59,14 @@ Please file a bug if you notice a violation of semantic versioning.
   - Accepts both raw `TreeSitter::Language` and wrapped `TreeHaver::Backends::MRI::Language`
 - `TreeHaver::GrammarFinder.tree_sitter_runtime_usable?` no longer references `FFI::NotFoundError` directly
   - Prevents `NameError` when FFI gem is not loaded
+- `TreeHaver::Parser#initialize` no longer references `FFI::NotFoundError` directly in rescue clause
+  - Uses `defined?(::FFI::NotFoundError)` check to safely handle FFI errors when FFI is loaded
+  - Prevents `NameError: uninitialized constant TreeHaver::Parser::FFI` when FFI gem is not available
+  - Extracted error handling to `handle_parser_creation_failure` private method for clarity
+- `TreeHaver::Language.method_missing` no longer references `FFI::NotFoundError` directly in rescue clause
+  - Uses `defined?(::FFI::NotFoundError)` check to safely handle FFI errors when FFI is loaded
+  - Prevents `NameError` when FFI gem is not available but tree-sitter backends are used
+  - Extracted Citrus fallback logic to `handle_tree_sitter_load_failure` private method
 
 ### Security
 

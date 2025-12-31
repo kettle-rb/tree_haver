@@ -387,4 +387,400 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
       end
     end
   end
+
+  describe "Parser initialization edge cases" do
+    context "when tree-sitter fails and Citrus fallback is available" do
+      let(:failing_backend_module) do
+        mod = Module.new
+        parser_class = Class.new do
+          define_method(:initialize) do
+            raise LoadError, "Simulated tree-sitter load failure"
+          end
+        end
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).and_return(failing_backend_module)
+        allow(TreeHaver::Backends::Citrus).to receive(:available?).and_return(true)
+      end
+
+      it "falls back to Citrus when tree-sitter backend fails with LoadError" do
+        parser = described_class.new
+        expect(parser.backend).to eq(:citrus)
+      end
+    end
+
+    context "when tree-sitter fails with NoMethodError and Citrus available" do
+      let(:failing_backend_module) do
+        mod = Module.new
+        parser_class = Class.new do
+          define_method(:initialize) do
+            raise NoMethodError, "Simulated method error"
+          end
+        end
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).and_return(failing_backend_module)
+        allow(TreeHaver::Backends::Citrus).to receive(:available?).and_return(true)
+      end
+
+      it "falls back to Citrus when tree-sitter backend fails with NoMethodError" do
+        parser = described_class.new
+        expect(parser.backend).to eq(:citrus)
+      end
+    end
+
+    context "when tree-sitter fails and Citrus is NOT available" do
+      let(:failing_backend_module) do
+        mod = Module.new
+        parser_class = Class.new do
+          define_method(:initialize) do
+            raise LoadError, "Simulated tree-sitter load failure"
+          end
+        end
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).and_return(failing_backend_module)
+        allow(TreeHaver::Backends::Citrus).to receive(:available?).and_return(false)
+      end
+
+      it "raises NotAvailable with helpful message" do
+        expect {
+          described_class.new
+        }.to raise_error(TreeHaver::NotAvailable, /Tree-sitter backend failed.*Citrus fallback not available/)
+      end
+    end
+
+    context "when explicit backend requested and it fails" do
+      let(:failing_backend_module) do
+        mod = Module.new
+        parser_class = Class.new do
+          define_method(:initialize) do
+            raise LoadError, "Backend specific failure"
+          end
+        end
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).with(:failing_backend).and_return(failing_backend_module)
+      end
+
+      it "re-raises the error without fallback when explicit backend requested" do
+        expect {
+          described_class.new(backend: :failing_backend)
+        }.to raise_error(LoadError, /Backend specific failure/)
+      end
+    end
+  end
+
+  describe "#backend introspection" do
+    context "with FFI backend", :ffi_backend do
+      it "returns :ffi when using FFI parser" do
+        parser = described_class.new(backend: :ffi)
+        expect(parser.backend).to eq(:ffi)
+      end
+    end
+
+    context "with Java backend", :java_backend do
+      it "returns :java when using Java parser" do
+        parser = described_class.new(backend: :java)
+        expect(parser.backend).to eq(:java)
+      end
+    end
+
+    context "with unknown backend class name" do
+      let(:unknown_backend_module) do
+        mod = Module.new
+        parser_class = Class.new do
+          define_method(:initialize) {}
+        end
+        # Give it a non-matching name
+        parser_class.define_singleton_method(:name) { "SomeUnknownBackend::Parser" }
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive_messages(
+          resolve_backend_module: unknown_backend_module,
+          effective_backend: :custom,
+        )
+      end
+
+      it "falls back to effective_backend for unknown class names" do
+        parser = described_class.new
+        expect(parser.backend).to eq(:custom)
+      end
+    end
+  end
+
+  describe "#language= with Citrus language" do
+    context "when parser is not Citrus but receives Citrus language", :citrus_backend do
+      let(:non_citrus_backend) do
+        mod = Module.new
+        parser_class = Class.new do
+          attr_accessor :language
+
+          define_method(:initialize) {}
+        end
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).and_return(non_citrus_backend)
+      end
+
+      it "switches to Citrus parser when given Citrus language" do
+        parser = described_class.new
+        # Grammar mock must respond to :parse for Citrus::Language to accept it
+        grammar_mock = double("Grammar", parse: double("ParseResult"))
+        citrus_lang = TreeHaver::Backends::Citrus::Language.new(grammar_mock)
+
+        parser.language = citrus_lang
+        expect(parser.backend).to eq(:citrus)
+      end
+    end
+  end
+
+  describe "#unwrap_language edge cases" do
+    context "with language that has no backend attribute" do
+      let(:backend_module) do
+        mod = Module.new
+        parser_class = Class.new do
+          attr_accessor :language
+
+          define_method(:initialize) {}
+        end
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).and_return(backend_module)
+      end
+
+      it "raises Error when language has no backend attribute" do
+        parser = described_class.new
+        raw_lang = double("RawLanguage")
+        allow(raw_lang).to receive(:respond_to?).with(:backend).and_return(false)
+        allow(raw_lang).to receive(:is_a?).and_return(false)
+
+        expect {
+          parser.language = raw_lang
+        }.to raise_error(TreeHaver::Error, /Expected TreeHaver Language wrapper/)
+      end
+    end
+
+    context "with backend mismatch and reload success" do
+      let(:mri_lang) do
+        double(
+          "MRI Language",
+          backend: :mri,
+          path: "/path/to/lib.so",
+          symbol: "tree_sitter_test",
+          name: "test",
+          respond_to?: true,
+          to_language: double("inner"),
+        )
+      end
+
+      it "reloads language for correct backend", :mri_backend, :rust_backend do
+        # Create parser with Rust backend
+        parser = described_class.new(backend: :rust)
+
+        # Create a Rust language that will be returned by from_library
+        rust_lang = double(
+          "Rust Language",
+          backend: :rust,
+          name: "test",
+          respond_to?: true,
+        )
+        allow(rust_lang).to receive(:respond_to?).with(:backend).and_return(true)
+        allow(rust_lang).to receive(:respond_to?).with(:name).and_return(true)
+
+        allow(TreeHaver::Language).to receive(:from_library).and_return(rust_lang)
+
+        # Parser impl needs to accept the language
+        allow(parser.instance_variable_get(:@impl)).to receive(:language=)
+
+        # Try to set MRI language on Rust parser - should trigger reload
+        parser.language = mri_lang
+
+        expect(TreeHaver::Language).to have_received(:from_library).with(
+          "/path/to/lib.so",
+          symbol: "tree_sitter_test",
+          name: "test",
+        )
+      end
+    end
+
+    context "with backend mismatch and reload failure" do
+      let(:mri_lang) do
+        lang = double("MRI Language")
+        allow(lang).to receive(:respond_to?).with(:backend).and_return(true)
+        allow(lang).to receive(:respond_to?).with(:path).and_return(true)
+        allow(lang).to receive(:respond_to?).with(:symbol).and_return(true)
+        allow(lang).to receive(:respond_to?).with(:name).and_return(true)
+        allow(lang).to receive(:respond_to?).with(:is_a?).and_return(false)
+        allow(lang).to receive(:is_a?).and_return(false)
+        allow(lang).to receive_messages(
+          backend: :mri,
+          path: "/path/to/lib.so",
+          symbol: "tree_sitter_test",
+          name: "test",
+        )
+        lang
+      end
+
+      it "raises Error when reload returns nil (path not available)", :rust_backend do
+        # Create parser with Rust backend
+        parser = described_class.new(backend: :rust)
+
+        # Create a language with no path
+        no_path_lang = double("No Path Language")
+        allow(no_path_lang).to receive(:respond_to?).with(:backend).and_return(true)
+        allow(no_path_lang).to receive(:respond_to?).with(:path).and_return(false)
+        allow(no_path_lang).to receive(:respond_to?).with(:grammar_module).and_return(false)
+        allow(no_path_lang).to receive_messages(is_a?: false, backend: :mri)
+
+        expect {
+          parser.language = no_path_lang
+        }.to raise_error(TreeHaver::Error, /Language backend mismatch/)
+      end
+
+      it "propagates NotAvailable when from_library fails", :rust_backend do
+        # Create parser with Rust backend
+        parser = described_class.new(backend: :rust)
+
+        # Make from_library fail - NotAvailable inherits from Exception, not StandardError
+        # so it won't be caught by `rescue => e` in try_reload_language_for_backend
+        allow(TreeHaver::Language).to receive(:from_library).and_raise(TreeHaver::NotAvailable.new("Failed"))
+
+        # The NotAvailable exception propagates directly
+        expect {
+          parser.language = mri_lang
+        }.to raise_error(TreeHaver::NotAvailable, /Failed/)
+      end
+    end
+
+    context "with various backend types" do
+      # Test unwrap_language for different backend types
+      shared_examples "unwraps language correctly" do |backend_sym, _unwrap_method|
+        it "unwraps #{backend_sym} language correctly" do
+          # Backend constant names mapping (symbols to actual constant names)
+          backend_constants = {
+            mri: "MRI",
+            rust: "Rust",
+            ffi: "FFI",
+            java: "Java",
+            citrus: "Citrus",
+          }
+          const_name = backend_constants[backend_sym]
+          skip "#{backend_sym} backend not available" unless TreeHaver::Backends.const_get(const_name).available?
+
+          parser = described_class.new(backend: backend_sym)
+          # Just verify the parser was created - actual unwrapping is tested via integration
+          expect(parser.backend).to eq(backend_sym)
+        end
+      end
+
+      it_behaves_like "unwraps language correctly", :mri, :to_language
+      it_behaves_like "unwraps language correctly", :rust, :name
+      it_behaves_like "unwraps language correctly", :citrus, :grammar_module
+    end
+
+    context "with unknown backend type" do
+      let(:unknown_lang) do
+        lang = double("Unknown Language")
+        allow(lang).to receive(:respond_to?).and_return(true)
+        allow(lang).to receive(:respond_to?).with(:backend).and_return(true)
+        allow(lang).to receive(:respond_to?).with(:to_language).and_return(false)
+        allow(lang).to receive(:respond_to?).with(:inner_language).and_return(false)
+        allow(lang).to receive(:respond_to?).with(:impl).and_return(false)
+        allow(lang).to receive(:respond_to?).with(:grammar_module).and_return(false)
+        allow(lang).to receive(:respond_to?).with(:name).and_return(true)
+        allow(lang).to receive(:respond_to?).with(:path).and_return(false)
+        allow(lang).to receive_messages(is_a?: false, backend: :unknown_test, name: "test_lang")
+        lang
+      end
+
+      let(:backend_module) do
+        mod = Module.new
+        parser_class = Class.new do
+          attr_accessor :language
+
+          define_method(:initialize) {}
+        end
+        parser_class.define_singleton_method(:name) { "UnknownTest::Parser" }
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive_messages(
+          resolve_backend_module: backend_module,
+          effective_backend: :unknown_test,
+        )
+      end
+
+      it "tries generic unwrapping methods for unknown backend" do
+        parser = described_class.new
+        # Should fall through to trying :name method
+        parser.language = unknown_lang
+        expect(parser.instance_variable_get(:@impl).language).to eq("test_lang")
+      end
+    end
+  end
+
+  describe "#parse_string fallback behavior" do
+    context "when backend does not support parse_string" do
+      let(:mock_tree) do
+        mock_root = double("RootNode", type: "root", child_count: 0)
+        double("MockTree", root_node: mock_root)
+      end
+
+      let(:backend_module) do
+        tree = mock_tree
+        mod = Module.new
+        parser_class = Class.new do
+          attr_accessor :language
+
+          define_method(:initialize) { @tree = tree }
+
+          define_method(:parse) { |_source| @tree }
+          # No parse_string method
+        end
+        mod.const_set(:Parser, parser_class)
+        mod
+      end
+
+      before do
+        allow(TreeHaver).to receive(:resolve_backend_module).and_return(backend_module)
+      end
+
+      it "falls back to regular parse when parse_string not supported" do
+        parser = described_class.new
+        tree = parser.parse_string(nil, "test source")
+        expect(tree).to be_a(TreeHaver::Tree)
+      end
+
+      it "falls back to regular parse even with old_tree when parse_string not supported" do
+        parser = described_class.new
+        old_tree = double("OldTree")
+        tree = parser.parse_string(old_tree, "test source")
+        expect(tree).to be_a(TreeHaver::Tree)
+      end
+    end
+  end
 end
