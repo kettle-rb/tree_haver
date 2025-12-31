@@ -28,6 +28,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- `TreeHaver::RSpec::DependencyTags.mri_backend_available?` now uses correct require path
+  - Was: `require "ruby_tree_sitter"` (wrong - causes LoadError)
+  - Now: `require "tree_sitter"` (correct - gem name is ruby_tree_sitter but require path is tree_sitter)
+  - This fix ensures the MRI backend is correctly detected as available in CI environments
+
 ### Security
 
 ## [3.2.0] - 2025-12-30

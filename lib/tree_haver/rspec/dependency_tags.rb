@@ -242,7 +242,8 @@ module TreeHaver
           return @mri_backend_available = false unless mri?
 
           @mri_backend_available = begin
-            require "ruby_tree_sitter"
+            # Note: gem is ruby_tree_sitter but requires tree_sitter
+            require "tree_sitter"
             # Record that MRI backend is now loaded - this is critical for
             # conflict detection with FFI backend
             TreeHaver.record_backend_usage(:mri)
