@@ -17,7 +17,7 @@ gem "unparser", "~> 0.8", ">= 0.8.1"
 platform :mri do
   # MRI Backend
   gem "ruby_tree_sitter", require: false # DO NOT LOAD, because conflicts with FFI
-  gem "markly"
+  gem "markly", "~> 0.15", ">= 0.15.2"
   gem "commonmarker"
   # Rust Backend
   gem "tree_stump",
