@@ -34,7 +34,6 @@ end
 appraise "head" do
   # Why is gem "cgi" here? See: https://github.com/vcr/vcr/issues/1057
   #  gem "cgi", ">= 0.5"
-  gem "benchmark", "~> 0.4", ">= 0.4.1"
   eval_gemfile "modular/rspec.gemfile"
   eval_gemfile "modular/tree_sitter.gemfile"
   eval_gemfile "modular/x_std_libs.gemfile"
