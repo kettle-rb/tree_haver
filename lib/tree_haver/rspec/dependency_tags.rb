@@ -775,8 +775,29 @@ RSpec.configure do |config|
   }
 
   # Determine which backends should NOT have availability checked
-  # based on which *_backend_only tag is being run
+  # based on which *_backend_only tag is being run OR which backend is
+  # explicitly selected via TREE_HAVER_BACKEND environment variable.
   blocked_backends = Set.new
+
+  # Track whether we're in isolated test mode (running *_backend_only tags).
+  # This is different from just having TREE_HAVER_BACKEND set.
+  # In isolated mode, we skip ALL grammar checks because they might trigger
+  # backend loading via TreeHaver.parser_for's auto-detection.
+  # When just TREE_HAVER_BACKEND is set, grammar checks are fine because
+  # parser_for will use the selected backend, not auto-detect.
+  isolated_test_mode = false
+
+  # First, check if TREE_HAVER_BACKEND explicitly selects a backend.
+  # If so, block all backends that would conflict with it.
+  # This prevents loading MRI when TREE_HAVER_BACKEND=ffi, for example.
+  env_backend = ENV["TREE_HAVER_BACKEND"]
+  if env_backend && !env_backend.empty? && env_backend != "auto"
+    backend_sym = env_backend.to_sym
+    blockers = TreeHaver::Backends::BLOCKED_BY[backend_sym]
+    if blockers
+      blockers.each { |blocker| blocked_backends << blocker }
+    end
+  end
 
   # Check which *_backend_only tags are being run and block their conflicting backends
   # config.inclusion_filter contains tags passed via --tag on command line
@@ -806,6 +827,7 @@ RSpec.configure do |config|
     # Check if we're running this backend's isolated tests
     isolated_tag = :"#{backend}_backend_only"
     if inclusion_rules[isolated_tag]
+      isolated_test_mode = true
       # Add all backends that would block this one
       blockers.each { |blocker| blocked_backends << blocker }
     end
@@ -813,6 +835,7 @@ RSpec.configure do |config|
 
   # Store blocked_backends in a module variable so before(:suite) can access it
   TreeHaver::RSpec::DependencyTags.instance_variable_set(:@blocked_backends, blocked_backends)
+  TreeHaver::RSpec::DependencyTags.instance_variable_set(:@isolated_test_mode, isolated_test_mode)
 
   # Now configure exclusions, skipping availability checks for blocked backends
   backend_tags.each do |backend, tag|
@@ -847,9 +870,10 @@ RSpec.configure do |config|
   # loading blocked backends. The grammar checks use TreeHaver.parser_for which
   # would load the default backend (MRI) and block FFI.
 
-  # Skip grammar availability checks if any backend is blocked
-  # (i.e., we're running isolated backend tests)
-  if blocked_backends.none?
+  # Skip grammar availability checks only when in isolated test mode.
+  # When TREE_HAVER_BACKEND is explicitly set (but not using *_backend_only tags),
+  # grammar checks are fine because TreeHaver.parser_for respects the env var.
+  unless isolated_test_mode
     config.filter_run_excluding(libtree_sitter: true) unless deps.libtree_sitter_available?
     config.filter_run_excluding(bash_grammar: true) unless deps.tree_sitter_bash_available?
     config.filter_run_excluding(toml_grammar: true) unless deps.tree_sitter_toml_available?
@@ -868,7 +892,7 @@ RSpec.configure do |config|
   # NOTE: any_toml_backend_available? calls tree_sitter_toml_available? which
   # triggers grammar_works? and loads MRI. Skip when running isolated tests.
 
-  if blocked_backends.none?
+  unless isolated_test_mode
     config.filter_run_excluding(toml_parsing: true) unless deps.any_toml_backend_available?
     config.filter_run_excluding(markdown_parsing: true) unless deps.any_markdown_backend_available?
     config.filter_run_excluding(native_parsing: true) unless deps.any_native_grammar_available?
@@ -907,7 +931,7 @@ RSpec.configure do |config|
   config.filter_run_excluding(not_truffleruby_engine: true) if deps.truffleruby?
 
   # Tree-sitter grammars - skip when running isolated backend tests
-  if blocked_backends.none?
+  unless isolated_test_mode
     config.filter_run_excluding(not_libtree_sitter: true) if deps.libtree_sitter_available?
     config.filter_run_excluding(not_bash_grammar: true) if deps.tree_sitter_bash_available?
     config.filter_run_excluding(not_toml_grammar: true) if deps.tree_sitter_toml_available?

@@ -28,6 +28,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- RSpec dependency tags now respect `TREE_HAVER_BACKEND` environment variable
+  - When `TREE_HAVER_BACKEND=ffi` is set, MRI backend availability is not checked
+  - Prevents `BackendConflict` errors when loading gems that use tree-sitter grammars
+  - The `blocked_backends` set now includes backends that would conflict with the explicitly selected backend
+  - This allows `*-merge` gems to load correctly in test suites when a specific backend is selected
+
 ### Security
 
 ## [3.2.1] - 2025-12-31
