@@ -56,9 +56,10 @@ module TreeHaver
         # @note Returns false on TruffleRuby because TruffleRuby's FFI doesn't support
         #   STRUCT_BY_VALUE return types (used by ts_tree_root_node, ts_node_child, etc.)
         def ffi_gem_available?
-          return @ffi_gem_available if defined?(@ffi_gem_available)
+          return @loaded if @load_attempted
 
-          @ffi_gem_available = begin
+          @load_attempted = true
+          @loaded = begin
             # TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types
             # which tree-sitter uses extensively (ts_tree_root_node, ts_node_child, etc.)
             return false if RUBY_ENGINE == "truffleruby"
@@ -75,7 +76,8 @@ module TreeHaver
         # @return [void]
         # @api private
         def reset!
-          @ffi_gem_available = nil
+          @load_attempted = false
+          @loaded = false
         end
 
         # Get capabilities supported by this backend

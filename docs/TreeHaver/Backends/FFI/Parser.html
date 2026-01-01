@@ -245,8 +245,6 @@
       <pre class="lines">
 
 
-445
-446
 447
 448
 449
@@ -261,10 +259,12 @@
 458
 459
 460
-461</pre>
+461
+462
+463</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 445</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 447</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FFI not available</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../FFI.html" title="TreeHaver::Backends::FFI (module)">FFI</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../FFI.html#available%3F-class_method" title="TreeHaver::Backends::FFI.available? (method)">available?</a></span></span>
@@ -377,8 +377,6 @@ detects FFI Language wrappers (respond_to?(:to_ptr)) and passes them through.</p
       <pre class="lines">
 
 
-472
-473
 474
 475
 476
@@ -440,10 +438,12 @@ detects FFI Language wrappers (respond_to?(:to_ptr)) and passes them through.</p
 532
 533
 534
-535</pre>
+535
+536
+537</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 472</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 474</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_language='>language=</span><span class='lparen'>(</span><span class='id identifier rubyid_lang'>lang</span><span class='rparen'>)</span>
   <span class='comment'># Defensive check: ensure we received an FFI Language wrapper
@@ -592,17 +592,17 @@ detects FFI Language wrappers (respond_to?(:to_ptr)) and passes them through.</p
       <pre class="lines">
 
 
-542
-543
 544
 545
 546
 547
 548
-549</pre>
+549
+550
+551</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 542</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 544</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_src'>src</span> <span class='op'>=</span> <span class='const'>String</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
@@ -622,7 +622,7 @@ detects FFI Language wrappers (respond_to?(:to_ptr)) and passes them through.</p
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 30 04:57:26 2025 by
+  Generated on Wed Dec 31 17:50:53 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

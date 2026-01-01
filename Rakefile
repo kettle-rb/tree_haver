@@ -80,10 +80,11 @@ begin
   require "rspec/core/rake_task"
 
   # FFI specs run first in a clean environment
+  # Uses :ffi_backend_only tag which does NOT trigger mri_backend_available? check
   desc("Run FFI backend specs first (before MRI loads)")
   RSpec::Core::RakeTask.new(:ffi_specs) do |t|
     t.pattern = "./spec/**/*_spec.rb"
-    t.rspec_opts = "--tag ffi"
+    t.rspec_opts = "--tag ffi_backend_only"
   end
   # Set unique command name at execution time for SimpleCov merging
   desc("Set SimpleCov command name for FFI specs")
@@ -108,10 +109,11 @@ begin
   Rake::Task[:backend_matrix_specs].enhance([:set_matrix_command_name])
 
   # All other specs run after FFI specs
+  # Excludes :ffi_backend_only tests (which already ran in ffi_specs)
   desc("Run non-FFI specs (after FFI specs have run)")
   RSpec::Core::RakeTask.new(:remaining_specs) do |t|
     t.pattern = "./spec/**/*_spec.rb"
-    t.rspec_opts = "--tag ~ffi"
+    t.rspec_opts = "--tag ~ffi_backend_only"
   end
   desc("Set SimpleCov command name for remaining specs")
   task(:set_remaining_command_name) do

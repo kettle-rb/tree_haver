@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "set"
+
 # TreeHaver RSpec Dependency Tags
 #
 # This module provides dependency detection helpers for conditional test execution
@@ -89,8 +91,18 @@
 #   unavailable after MRI backend is used (due to libtree-sitter runtime conflicts).
 #   Legacy alias: :ffi
 #
+# [:ffi_backend_only]
+#   ISOLATED FFI tag - use when running FFI tests in isolation (e.g., ffi_specs task).
+#   Does NOT trigger mri_backend_available? check, preventing MRI from being loaded.
+#   Use this tag for tests that must run before MRI backend is loaded.
+#
 # [:mri_backend]
 #   ruby_tree_sitter gem is available.
+#
+# [:mri_backend_only]
+#   ISOLATED MRI tag - use when running MRI tests and FFI must not be checked.
+#   Does NOT trigger ffi_available? check, preventing FFI availability detection.
+#   Use this tag for tests that should run without FFI interference.
 #
 # [:rust_backend]
 #   tree_stump gem is available.
@@ -253,6 +265,60 @@ module TreeHaver
           end
         end
 
+        # Check if FFI backend is available WITHOUT loading MRI first
+        #
+        # This is used for the :ffi_backend_only tag which runs FFI tests
+        # in isolation before MRI can be loaded. Unlike ffi_available?,
+        # this method does NOT check mri_backend_available?.
+        #
+        # @return [Boolean] true if FFI backend is usable in isolation
+        def ffi_backend_only_available?
+          # TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types
+          return false if truffleruby?
+
+          # Check if FFI gem is available without loading tree_sitter
+          begin
+            require "ffi"
+          rescue LoadError
+            return false
+          end
+
+          # Try to actually use the FFI backend
+          path = find_toml_grammar_path
+          return false unless path && File.exist?(path)
+
+          TreeHaver.with_backend(:ffi) do
+            TreeHaver::Language.from_library(path, symbol: "tree_sitter_toml")
+          end
+          true
+        rescue TreeHaver::BackendConflict, TreeHaver::NotAvailable, LoadError
+          false
+        rescue StandardError
+          # Catch any other FFI-related errors
+          false
+        end
+
+        # Check if MRI backend is available WITHOUT checking FFI availability
+        #
+        # This is used for the :mri_backend_only tag which runs MRI tests
+        # without triggering any FFI availability checks.
+        #
+        # @return [Boolean] true if MRI backend is usable
+        def mri_backend_only_available?
+          return @mri_backend_only_available if defined?(@mri_backend_only_available)
+
+          # ruby_tree_sitter is a C extension that only works on MRI
+          return @mri_backend_only_available = false unless mri?
+
+          @mri_backend_only_available = begin
+            require "tree_sitter"
+            TreeHaver.record_backend_usage(:mri)
+            true
+          rescue LoadError
+            false
+          end
+        end
+
         # Check if tree_stump gem is available (Rust backend)
         #
         # The Rust backend only works on MRI Ruby (magnus uses MRI's C API).
@@ -312,9 +378,18 @@ module TreeHaver
         # Grammar paths should be configured via TREE_SITTER_TOML_PATH environment variable.
         # This keeps configuration explicit and avoids magic path guessing.
         #
-        # @return [String, nil] path from environment variable, or nil if not set
+        # @return [String, nil] path to TOML grammar library, or nil if not found
         def find_toml_grammar_path
-          ENV["TREE_SITTER_TOML_PATH"]
+          # First check environment variable
+          env_path = ENV["TREE_SITTER_TOML_PATH"]
+          return env_path if env_path && File.exist?(env_path)
+
+          # Use GrammarFinder to search standard paths
+          finder = TreeHaver::GrammarFinder.new(:toml, validate: false)
+          finder.find_library_path
+        rescue StandardError
+          # GrammarFinder might not be available or might fail
+          nil
         end
 
         # Check if commonmarker gem is available
@@ -588,14 +663,23 @@ RSpec.configure do |config|
         puts "  #{var}: #{value.inspect}"
       end
 
-      puts "\n=== TreeHaver Test Dependencies ==="
-      deps.summary.each do |dep, available|
-        status = case available
-        when true then "✓ available"
-        when false then "✗ not available"
-        else available.to_s
+      # Only print full dependency summary if we're not running with blocked backends
+      # The summary calls grammar availability checks which would load blocked backends
+      current_blocked = TreeHaver::RSpec::DependencyTags.instance_variable_get(:@blocked_backends) || Set.new
+      if current_blocked.any?
+        puts "\n=== TreeHaver Test Dependencies (limited - running isolated tests) ==="
+        puts "  blocked_backends: #{current_blocked.to_a.inspect}"
+        puts "  (Skipping full summary to avoid loading blocked backends)"
+      else
+        puts "\n=== TreeHaver Test Dependencies ==="
+        deps.summary.each do |dep, available|
+          status = case available
+          when true then "✓ available"
+          when false then "✗ not available"
+          else available.to_s
+          end
+          puts "  #{dep}: #{status}"
         end
-        puts "  #{dep}: #{status}"
       end
       puts "===================================\n"
     end
@@ -610,21 +694,116 @@ RSpec.configure do |config|
   #   :ffi_backend, :mri_backend, :rust_backend, :java_backend
   # Pure-Ruby backends:
   #   :prism_backend, :psych_backend, :commonmarker_backend, :markly_backend, :citrus_backend
+  #
+  # Isolated backend tags (for running tests without loading conflicting backends):
+  #   :ffi_backend_only - runs FFI tests without loading MRI backend
+  #   :mri_backend_only - runs MRI tests without checking FFI availability
 
   # FFI availability is checked dynamically per-test (not at load time)
   # because FFI becomes unavailable after MRI backend is used.
-  config.before(:each, :ffi_backend) do
+  # When running with :ffi_backend_only tag, this hook defers to the isolated check.
+  config.before(:each, :ffi_backend) do |example|
+    # If also tagged with :ffi_backend_only, let that hook handle the check
+    next if example.metadata[:ffi_backend_only]
+
     skip "FFI backend not available (MRI backend may have been used)" unless deps.ffi_available?
   end
 
-  config.filter_run_excluding(mri_backend: true) unless deps.mri_backend_available?
-  config.filter_run_excluding(rust_backend: true) unless deps.rust_backend_available?
-  config.filter_run_excluding(java_backend: true) unless deps.java_backend_available?
-  config.filter_run_excluding(prism_backend: true) unless deps.prism_available?
-  config.filter_run_excluding(psych_backend: true) unless deps.psych_available?
-  config.filter_run_excluding(commonmarker_backend: true) unless deps.commonmarker_available?
-  config.filter_run_excluding(markly_backend: true) unless deps.markly_available?
-  config.filter_run_excluding(citrus_backend: true) unless deps.citrus_available?
+  # ISOLATED FFI TAG: Checked dynamically but does NOT trigger mri_backend_available?
+  # Use this tag for tests that must run before MRI is loaded (e.g., in ffi_specs task)
+  config.before(:each, :ffi_backend_only) do
+    skip "FFI backend not available (isolated check)" unless deps.ffi_backend_only_available?
+  end
+
+  # ISOLATED MRI TAG: Checked dynamically but does NOT trigger ffi_available?
+  # Use this tag for tests that should run without FFI interference
+  config.before(:each, :mri_backend_only) do
+    skip "MRI backend not available (isolated check)" unless deps.mri_backend_only_available?
+  end
+
+  # ============================================================
+  # Dynamic Backend Exclusions (using BLOCKED_BY)
+  # ============================================================
+  # When running with *_backend_only tags, we skip availability checks for
+  # backends that would block the isolated backend. This prevents loading
+  # conflicting backends before isolated tests run.
+  #
+  # For example, when running with --tag ffi_backend_only:
+  # - FFI is blocked by [:mri] (from BLOCKED_BY)
+  # - So we skip mri_backend_available? to prevent loading MRI
+  #
+  # This is dynamic based on TreeHaver::Backends::BLOCKED_BY configuration.
+
+  # Map of backend symbols to their availability check methods
+  backend_availability_methods = {
+    mri: :mri_backend_available?,
+    rust: :rust_backend_available?,
+    ffi: :ffi_available?,
+    java: :java_backend_available?,
+    prism: :prism_available?,
+    psych: :psych_available?,
+    commonmarker: :commonmarker_available?,
+    markly: :markly_available?,
+    citrus: :citrus_available?,
+  }
+
+  # Map of backend symbols to their RSpec tag names
+  backend_tags = {
+    mri: :mri_backend,
+    rust: :rust_backend,
+    ffi: :ffi_backend,
+    java: :java_backend,
+    prism: :prism_backend,
+    psych: :psych_backend,
+    commonmarker: :commonmarker_backend,
+    markly: :markly_backend,
+    citrus: :citrus_backend,
+  }
+
+  # Determine which backends should NOT have availability checked
+  # based on which *_backend_only tag is being run
+  blocked_backends = Set.new
+
+  # Check which *_backend_only tags are being run and block their conflicting backends
+  # config.inclusion_filter contains tags passed via --tag on command line
+  inclusion_rules = config.inclusion_filter.rules
+
+  # If filter.rules is empty, check ARGV directly for --tag options
+  # This handles the case where RSpec hasn't processed filters yet during configuration
+  if inclusion_rules.empty?
+    ARGV.each_with_index do |arg, i|
+      if arg == "--tag" && ARGV[i + 1]
+        tag_value = ARGV[i + 1].to_sym
+        inclusion_rules[tag_value] = true
+      elsif arg.start_with?("--tag=")
+        tag_value = arg.sub("--tag=", "").to_sym
+        inclusion_rules[tag_value] = true
+      end
+    end
+  end
+
+  TreeHaver::Backends::BLOCKED_BY.each do |backend, blockers|
+    # Check if we're running this backend's isolated tests
+    isolated_tag = :"#{backend}_backend_only"
+    if inclusion_rules[isolated_tag]
+      # Add all backends that would block this one
+      blockers.each { |blocker| blocked_backends << blocker }
+    end
+  end
+
+  # Store blocked_backends in a module variable so before(:suite) can access it
+  TreeHaver::RSpec::DependencyTags.instance_variable_set(:@blocked_backends, blocked_backends)
+
+  # Now configure exclusions, skipping availability checks for blocked backends
+  backend_tags.each do |backend, tag|
+    next if blocked_backends.include?(backend)
+
+    # FFI is handled specially with before(:each) hook above
+    next if backend == :ffi
+
+    availability_method = backend_availability_methods[backend]
+    config.filter_run_excluding(tag => true) unless deps.public_send(availability_method)
+  end
 
   # ============================================================
   # Ruby Engine Tags
@@ -643,12 +822,20 @@ RSpec.configure do |config|
   #   :bash_grammar, :toml_grammar, :json_grammar, :jsonc_grammar
   #
   # Also: :libtree_sitter - requires the libtree-sitter runtime library
+  #
+  # NOTE: When running with *_backend_only tags, we skip these checks to avoid
+  # loading blocked backends. The grammar checks use TreeHaver.parser_for which
+  # would load the default backend (MRI) and block FFI.
 
-  config.filter_run_excluding(libtree_sitter: true) unless deps.libtree_sitter_available?
-  config.filter_run_excluding(bash_grammar: true) unless deps.tree_sitter_bash_available?
-  config.filter_run_excluding(toml_grammar: true) unless deps.tree_sitter_toml_available?
-  config.filter_run_excluding(json_grammar: true) unless deps.tree_sitter_json_available?
-  config.filter_run_excluding(jsonc_grammar: true) unless deps.tree_sitter_jsonc_available?
+  # Skip grammar availability checks if any backend is blocked
+  # (i.e., we're running isolated backend tests)
+  if blocked_backends.none?
+    config.filter_run_excluding(libtree_sitter: true) unless deps.libtree_sitter_available?
+    config.filter_run_excluding(bash_grammar: true) unless deps.tree_sitter_bash_available?
+    config.filter_run_excluding(toml_grammar: true) unless deps.tree_sitter_toml_available?
+    config.filter_run_excluding(json_grammar: true) unless deps.tree_sitter_json_available?
+    config.filter_run_excluding(jsonc_grammar: true) unless deps.tree_sitter_jsonc_available?
+  end
 
   # ============================================================
   # Language Parsing Capability Tags
@@ -657,10 +844,15 @@ RSpec.configure do |config|
   #   :toml_parsing   - any TOML parser (tree-sitter-toml OR toml-rb/Citrus)
   #   :markdown_parsing - any Markdown parser (commonmarker OR markly)
   #   :native_parsing - any native tree-sitter backend + grammar
+  #
+  # NOTE: any_toml_backend_available? calls tree_sitter_toml_available? which
+  # triggers grammar_works? and loads MRI. Skip when running isolated tests.
 
-  config.filter_run_excluding(toml_parsing: true) unless deps.any_toml_backend_available?
-  config.filter_run_excluding(markdown_parsing: true) unless deps.any_markdown_backend_available?
-  config.filter_run_excluding(native_parsing: true) unless deps.any_native_grammar_available?
+  if blocked_backends.none?
+    config.filter_run_excluding(toml_parsing: true) unless deps.any_toml_backend_available?
+    config.filter_run_excluding(markdown_parsing: true) unless deps.any_markdown_backend_available?
+    config.filter_run_excluding(native_parsing: true) unless deps.any_native_grammar_available?
+  end
 
   # ============================================================
   # Specific Library Tags
@@ -677,31 +869,35 @@ RSpec.configure do |config|
 
   # NOTE: :not_ffi_backend tag is not provided because FFI availability is dynamic.
 
-  # TreeHaver backends
-  config.filter_run_excluding(not_mri_backend: true) if deps.mri_backend_available?
-  config.filter_run_excluding(not_rust_backend: true) if deps.rust_backend_available?
-  config.filter_run_excluding(not_java_backend: true) if deps.java_backend_available?
-  config.filter_run_excluding(not_prism_backend: true) if deps.prism_available?
-  config.filter_run_excluding(not_psych_backend: true) if deps.psych_available?
-  config.filter_run_excluding(not_commonmarker_backend: true) if deps.commonmarker_available?
-  config.filter_run_excluding(not_markly_backend: true) if deps.markly_available?
-  config.filter_run_excluding(not_citrus_backend: true) if deps.citrus_available?
+  # TreeHaver backends - handled dynamically to respect blocked backends
+  backend_tags.each do |backend, tag|
+    next if blocked_backends.include?(backend)
+
+    # FFI is handled specially (availability is always dynamic)
+    next if backend == :ffi
+
+    negated_tag = :"not_#{tag}"
+    availability_method = backend_availability_methods[backend]
+    config.filter_run_excluding(negated_tag => true) if deps.public_send(availability_method)
+  end
 
   # Ruby engines
   config.filter_run_excluding(not_mri_engine: true) if deps.mri?
   config.filter_run_excluding(not_jruby_engine: true) if deps.jruby?
   config.filter_run_excluding(not_truffleruby_engine: true) if deps.truffleruby?
 
-  # Tree-sitter grammars
-  config.filter_run_excluding(not_libtree_sitter: true) if deps.libtree_sitter_available?
-  config.filter_run_excluding(not_bash_grammar: true) if deps.tree_sitter_bash_available?
-  config.filter_run_excluding(not_toml_grammar: true) if deps.tree_sitter_toml_available?
-  config.filter_run_excluding(not_json_grammar: true) if deps.tree_sitter_json_available?
-  config.filter_run_excluding(not_jsonc_grammar: true) if deps.tree_sitter_jsonc_available?
+  # Tree-sitter grammars - skip when running isolated backend tests
+  if blocked_backends.none?
+    config.filter_run_excluding(not_libtree_sitter: true) if deps.libtree_sitter_available?
+    config.filter_run_excluding(not_bash_grammar: true) if deps.tree_sitter_bash_available?
+    config.filter_run_excluding(not_toml_grammar: true) if deps.tree_sitter_toml_available?
+    config.filter_run_excluding(not_json_grammar: true) if deps.tree_sitter_json_available?
+    config.filter_run_excluding(not_jsonc_grammar: true) if deps.tree_sitter_jsonc_available?
 
-  # Language parsing capabilities
-  config.filter_run_excluding(not_toml_parsing: true) if deps.any_toml_backend_available?
-  config.filter_run_excluding(not_markdown_parsing: true) if deps.any_markdown_backend_available?
+    # Language parsing capabilities
+    config.filter_run_excluding(not_toml_parsing: true) if deps.any_toml_backend_available?
+    config.filter_run_excluding(not_markdown_parsing: true) if deps.any_markdown_backend_available?
+  end
 
   # Specific libraries
   config.filter_run_excluding(not_toml_rb: true) if deps.toml_rb_available?

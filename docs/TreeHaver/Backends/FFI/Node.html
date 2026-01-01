@@ -442,13 +442,13 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-611
-612
 613
-614</pre>
+614
+615
+616</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 611</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 613</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_ts_node_value'>ts_node_value</span><span class='rparen'>)</span>
   <span class='comment'># Store by-value struct (FFI will copy); methods pass it back by value
@@ -534,8 +534,6 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-706
-707
 708
 709
 710
@@ -544,10 +542,12 @@ tree-sitter C API, so we store the struct value directly.</p>
 713
 714
 715
-716</pre>
+716
+717
+718</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 706</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 708</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='rparen'>)</span>
@@ -626,14 +626,14 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-634
-635
 636
 637
-638</pre>
+638
+639
+640</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 634</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 636</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_child_count'>child_count</span> <span class='op'>||</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&lt;</span> <span class='int'>0</span>
@@ -687,12 +687,12 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-626
-627
-628</pre>
+628
+629
+630</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 626</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 628</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_count'>child_count</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_child_count'>ts_node_child_count</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -763,8 +763,6 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-684
-685
 686
 687
 688
@@ -774,10 +772,12 @@ tree-sitter C API, so we store the struct value directly.</p>
 692
 693
 694
-695</pre>
+695
+696
+697</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 684</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 686</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_enum_for'>enum_for</span><span class='lparen'>(</span><span class='symbol'>:each</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
@@ -834,12 +834,12 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-650
-651
-652</pre>
+652
+653
+654</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 650</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 652</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_end_byte'>ts_node_end_byte</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -891,14 +891,14 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-666
-667
 668
 669
-670</pre>
+670
+671
+672</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 666</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 668</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
   <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_end_point'>ts_node_end_point</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -948,13 +948,13 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-675
-676
 677
-678</pre>
+678
+679
+680</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 675</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 677</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
   <span class='comment'># Would need ts_node_has_error implementation
@@ -1003,12 +1003,12 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-643
-644
-645</pre>
+645
+646
+647</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 643</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 645</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_start_byte'>ts_node_start_byte</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1060,14 +1060,14 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-657
-658
 659
 660
-661</pre>
+661
+662
+663</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 657</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 659</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
   <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_start_point'>ts_node_start_point</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1121,12 +1121,12 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-619
-620
-621</pre>
+621
+622
+623</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 619</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 621</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_type'>ts_node_type</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1141,7 +1141,7 @@ tree-sitter C API, so we store the struct value directly.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 30 04:57:26 2025 by
+  Generated on Wed Dec 31 17:50:53 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

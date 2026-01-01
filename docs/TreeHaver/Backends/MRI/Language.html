@@ -272,29 +272,6 @@ API across all backends.</p>
 </li>
 
       
-        <li class="public deprecated">
-  <span class="summary_signature">
-    
-      <a href="#from_path-class_method" title="from_path (class method)">.<strong>from_path</strong>(path, symbol: nil)  &#x21d2; Language </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  <span class="deprecated note title">deprecated</span>
-  
-
-  
-    <span class="summary_desc"><strong>Deprecated.</strong> <div class='inline'><p>Use <span class='object_link'><a href="#from_library-class_method" title="TreeHaver::Backends::MRI::Language.from_library (method)">Language.from_library</a></span> instead</p>
-</div></span>
-  
-</li>
-
-      
     </ul>
   
     <h2>
@@ -761,150 +738,15 @@ API across all backends.</p>
 169
 170
 171
-172
-173
-174
-175
-176
-177
-178
-179
-180
-181
-182
-183
-184
-185
-186
-187
-188
-189
-190
-191
-192</pre>
+172</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 168</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ruby_tree_sitter not available</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../MRI.html" title="TreeHaver::Backends::MRI (module)">MRI</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../MRI.html#available%3F-class_method" title="TreeHaver::Backends::MRI.available? (method)">available?</a></span></span>
-
-  <span class='comment'># ruby_tree_sitter&#39;s TreeSitter::Language.load takes (language_name, path_to_so)
-</span>  <span class='comment'># where language_name is the language identifier (e.g., &quot;toml&quot;, &quot;json&quot;)
-</span>  <span class='comment'># NOT the full symbol name (e.g., NOT &quot;tree_sitter_toml&quot;)
-</span>  <span class='comment'># and path_to_so is the full path to the .so file
-</span>  <span class='comment'>#
-</span>  <span class='comment'># If name is not provided, derive it from symbol by stripping &quot;tree_sitter_&quot; prefix
-</span>  <span class='id identifier rubyid_language_name'>language_name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span> <span class='op'>||</span> <span class='id identifier rubyid_symbol'>symbol</span><span class='op'>&amp;.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>\Atree_sitter_</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_ts_lang'>ts_lang</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'><span class='object_link'><a href="../../../TreeSitter.html" title="TreeSitter (module)">TreeSitter</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../../TreeSitter.html#Language-constant" title="TreeSitter::Language (constant)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_load'>load</span><span class='lparen'>(</span><span class='id identifier rubyid_language_name'>language_name</span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_ts_lang'>ts_lang</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='id identifier rubyid_symbol'>symbol</span><span class='rparen'>)</span>
-<span class='kw'>rescue</span> <span class='const'>NameError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-  <span class='comment'># TreeSitter constant doesn&#39;t exist - backend not loaded
-</span>  <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ruby_tree_sitter not available: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-<span class='kw'>rescue</span> <span class='const'>Exception</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span> <span class='comment'># rubocop:disable Lint/RescueException
-</span>  <span class='comment'># TreeSitter errors inherit from Exception (not StandardError) in ruby_tree_sitter v2+
-</span>  <span class='comment'># We rescue Exception and check the class name dynamically to avoid NameError
-</span>  <span class='comment'># at parse time when TreeSitter constant isn&#39;t loaded yet
-</span>  <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../TreeSitter.html" title="TreeSitter (module)">TreeSitter</a></span></span><span class='op'>::</span><span class='const'>TreeSitterError</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../TreeSitter.html" title="TreeSitter (module)">TreeSitter</a></span></span><span class='op'>::</span><span class='const'>TreeSitterError</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Could not load language: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-  <span class='kw'>else</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='comment'># Re-raise if it&#39;s not a TreeSitter error
-</span>  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="from_path-class_method">
-  
-    .<strong>from_path</strong>(path, symbol: nil)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::MRI::Language (class)">Language</a></span></tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <div class="note deprecated"><strong>Deprecated.</strong> <div class='inline'><p>Use <span class='object_link'><a href="#from_library-class_method" title="TreeHaver::Backends::MRI::Language.from_library (method)">from_library</a></span> instead</p>
-</div></div>
-<p>Load a language from a shared library path (legacy method)</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>path</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>absolute path to the language shared library</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>symbol</span>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-        <em class="default">(defaults to: <tt>nil</tt>)</em>
-      
-      
-        &mdash;
-        <div class='inline'><p>the exported symbol name (e.g., “tree_sitter_json”)</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::MRI::Language (class)">Language</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>wrapped language handle</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-200
-201
-202</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 200</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_from_path'>from_path</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='id identifier rubyid_symbol'>symbol</span><span class='rparen'>)</span>
+  <span class='comment'># Derive symbol from path if not provided using shared utility
+</span>  <span class='id identifier rubyid_symbol'>symbol</span> <span class='op'>||=</span> <span class='const'><span class='object_link'><a href="../../LibraryPathUtils.html" title="TreeHaver::LibraryPathUtils (module)">LibraryPathUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_derive_symbol_from_path'><span class='object_link'><a href="../../LibraryPathUtils.html#derive_symbol_from_path-class_method" title="TreeHaver::LibraryPathUtils.derive_symbol_from_path (method)">derive_symbol_from_path</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_from_path'>from_path</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='id identifier rubyid_symbol'>symbol</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1125,7 +967,7 @@ Path and symbol uniquely identify a loaded language.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 30 04:57:26 2025 by
+  Generated on Wed Dec 31 17:50:53 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

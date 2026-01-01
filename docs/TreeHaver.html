@@ -79,7 +79,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/tree_haver.rb<span class="defines">,<br />
-  lib/tree_haver/node.rb,<br /> lib/tree_haver/tree.rb,<br /> lib/tree_haver/point.rb,<br /> lib/tree_haver/version.rb,<br /> lib/tree_haver/backends/ffi.rb,<br /> lib/tree_haver/backends/mri.rb,<br /> lib/tree_haver/backends/java.rb,<br /> lib/tree_haver/backends/rust.rb,<br /> lib/tree_haver/backends/prism.rb,<br /> lib/tree_haver/backends/psych.rb,<br /> lib/tree_haver/grammar_finder.rb,<br /> lib/tree_haver/path_validator.rb,<br /> lib/tree_haver/backends/citrus.rb,<br /> lib/tree_haver/backends/markly.rb,<br /> lib/tree_haver/language_registry.rb,<br /> lib/tree_haver/backends/commonmarker.rb,<br /> lib/tree_haver/citrus_grammar_finder.rb,<br /> lib/tree_haver/rspec/dependency_tags.rb</span>
+  lib/tree_haver/node.rb,<br /> lib/tree_haver/tree.rb,<br /> lib/tree_haver/point.rb,<br /> lib/tree_haver/parser.rb,<br /> lib/tree_haver/version.rb,<br /> lib/tree_haver/language.rb,<br /> lib/tree_haver/backends/ffi.rb,<br /> lib/tree_haver/backends/mri.rb,<br /> lib/tree_haver/backends/java.rb,<br /> lib/tree_haver/backends/rust.rb,<br /> lib/tree_haver/backends/prism.rb,<br /> lib/tree_haver/backends/psych.rb,<br /> lib/tree_haver/grammar_finder.rb,<br /> lib/tree_haver/path_validator.rb,<br /> lib/tree_haver/backends/citrus.rb,<br /> lib/tree_haver/backends/markly.rb,<br /> lib/tree_haver/language_registry.rb,<br /> lib/tree_haver/library_path_utils.rb,<br /> lib/tree_haver/backends/commonmarker.rb,<br /> lib/tree_haver/citrus_grammar_finder.rb,<br /> lib/tree_haver/rspec/dependency_tags.rb</span>
 </dd>
   </dl>
   
@@ -279,7 +279,7 @@ use Prism, Psych, Citrus, or potentially Commonmarker/Markly</li>
 <p class="children">
   
     
-      <strong class="modules">Modules:</strong> <span class='object_link'><a href="TreeHaver/Backends.html" title="TreeHaver::Backends (module)">Backends</a></span>, <span class='object_link'><a href="TreeHaver/LanguageRegistry.html" title="TreeHaver::LanguageRegistry (module)">LanguageRegistry</a></span>, <span class='object_link'><a href="TreeHaver/PathValidator.html" title="TreeHaver::PathValidator (module)">PathValidator</a></span>, <span class='object_link'><a href="TreeHaver/RSpec.html" title="TreeHaver::RSpec (module)">RSpec</a></span>, <span class='object_link'><a href="TreeHaver/Version.html" title="TreeHaver::Version (module)">Version</a></span>
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="TreeHaver/Backends.html" title="TreeHaver::Backends (module)">Backends</a></span>, <span class='object_link'><a href="TreeHaver/LanguageRegistry.html" title="TreeHaver::LanguageRegistry (module)">LanguageRegistry</a></span>, <span class='object_link'><a href="TreeHaver/LibraryPathUtils.html" title="TreeHaver::LibraryPathUtils (module)">LibraryPathUtils</a></span>, <span class='object_link'><a href="TreeHaver/PathValidator.html" title="TreeHaver::PathValidator (module)">PathValidator</a></span>, <span class='object_link'><a href="TreeHaver/RSpec.html" title="TreeHaver::RSpec (module)">RSpec</a></span>, <span class='object_link'><a href="TreeHaver/Version.html" title="TreeHaver::Version (module)">Version</a></span>
     
   
     
@@ -915,23 +915,23 @@ Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are excluded.</p
       <pre class="lines">
 
 
-338
-339
-340
-341
-342
-343
-344
-345
-346
 347
 348
 349
 350
-351</pre>
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 338</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 347</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend'>backend</span>
   <span class='ivar'>@backend</span> <span class='op'>||=</span> <span class='kw'>case</span> <span class='lparen'>(</span><span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_HAVER_BACKEND</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='symbol'>:auto</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -1030,12 +1030,12 @@ Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are excluded.</p
       <pre class="lines">
 
 
-361
-362
-363</pre>
+370
+371
+372</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 361</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 370</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend='>backend=</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='op'>&amp;.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -1103,15 +1103,6 @@ Citrus is the final fallback as it’s pure Ruby and works everywhere.</p>
       <pre class="lines">
 
 
-657
-658
-659
-660
-661
-662
-663
-664
-665
 666
 667
 668
@@ -1140,10 +1131,19 @@ Citrus is the final fallback as it’s pure Ruby and works everywhere.</p>
 691
 692
 693
-694</pre>
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 657</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 666</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend_module'>backend_module</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_effective_backend'>effective_backend</span>  <span class='comment'># Changed from: backend
@@ -1213,12 +1213,12 @@ Citrus is the final fallback as it’s pure Ruby and works everywhere.</p>
       <pre class="lines">
 
 
-290
-291
-292</pre>
+299
+300
+301</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 290</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 299</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend_protect'>backend_protect</span>
   <span class='id identifier rubyid_backend_protect?'>backend_protect?</span>
@@ -1283,13 +1283,13 @@ For example, FFI will not work after MRI has been used.</p>
       <pre class="lines">
 
 
-276
-277
-278
-279</pre>
+285
+286
+287
+288</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 276</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 285</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend_protect='>backend_protect=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='ivar'>@backend_protect_mutex</span> <span class='op'>||=</span> <span class='const'>Mutex</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
@@ -1342,13 +1342,13 @@ For example, FFI will not work after MRI has been used.</p>
       <pre class="lines">
 
 
-284
-285
-286
-287</pre>
+293
+294
+295
+296</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 284</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 293</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend_protect?'>backend_protect?</span>
   <span class='kw'>return</span> <span class='ivar'>@backend_protect</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@backend_protect</span><span class='rparen'>)</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -1401,12 +1401,12 @@ For example, FFI will not work after MRI has been used.</p>
       <pre class="lines">
 
 
-297
-298
-299</pre>
+306
+307
+308</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 297</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 306</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backends_used'>backends_used</span>
   <span class='ivar'>@backends_used</span> <span class='op'>||=</span> <span class='const'>Set</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -1477,14 +1477,14 @@ Common keys include:</p>
       <pre class="lines">
 
 
-710
-711
-712
-713
-714</pre>
+719
+720
+721
+722
+723</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 710</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 719</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='id identifier rubyid_mod'>mod</span> <span class='op'>=</span> <span class='id identifier rubyid_backend_module'>backend_module</span>
@@ -1557,20 +1557,20 @@ Common keys include:</p>
       <pre class="lines">
 
 
-324
-325
-326
-327
-328
-329
-330
-331
-332
 333
-334</pre>
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 324</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 333</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_backend_conflict!'>check_backend_conflict!</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_backend_protect?'>backend_protect?</span>
@@ -1649,13 +1649,13 @@ Common keys include:</p>
       <pre class="lines">
 
 
-314
-315
-316
-317</pre>
+323
+324
+325
+326</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 314</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 323</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_conflicting_backends_for'>conflicting_backends_for</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_blockers'>blockers</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="TreeHaver/Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Backends.html#BLOCKED_BY-constant" title="TreeHaver::Backends::BLOCKED_BY (constant)">BLOCKED_BY</a></span></span><span class='lbracket'>[</span><span class='id identifier rubyid_backend'>backend</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -1724,15 +1724,15 @@ Common keys include:</p>
       <pre class="lines">
 
 
-390
-391
-392
-393
-394
-395</pre>
+399
+400
+401
+402
+403
+404</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 390</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 399</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_current_backend_context'>current_backend_context</span>
   <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_current'>current</span><span class='lbracket'>[</span><span class='symbol'>:tree_haver_backend_context</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbrace'>{</span>
@@ -1805,13 +1805,13 @@ Common keys include:</p>
       <pre class="lines">
 
 
-408
-409
-410
-411</pre>
+417
+418
+419
+420</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 408</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 417</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_effective_backend'>effective_backend</span>
   <span class='id identifier rubyid_ctx'>ctx</span> <span class='op'>=</span> <span class='id identifier rubyid_current_backend_context'>current_backend_context</span>
@@ -2024,15 +2024,6 @@ Common keys include:</p>
       <pre class="lines">
 
 
-856
-857
-858
-859
-860
-861
-862
-863
-864
 865
 866
 867
@@ -2105,10 +2096,19 @@ Common keys include:</p>
 934
 935
 936
-937</pre>
+937
+938
+939
+940
+941
+942
+943
+944
+945
+946</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 856</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 865</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parser_for'>parser_for</span><span class='lparen'>(</span><span class='id identifier rubyid_language_name'>language_name</span><span class='comma'>,</span> <span class='label'>library_path:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>citrus_config:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='id identifier rubyid_language_name'>language_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
@@ -2245,12 +2245,12 @@ Common keys include:</p>
       <pre class="lines">
 
 
-306
-307
-308</pre>
+315
+316
+317</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 306</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 315</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_record_backend_usage'>record_backend_usage</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_backends_used'>backends_used</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_backend'>backend</span>
@@ -2457,15 +2457,6 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-789
-790
-791
-792
-793
-794
-795
-796
-797
 798
 799
 800
@@ -2485,10 +2476,19 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
 814
 815
 816
-817</pre>
+817
+818
+819
+820
+821
+822
+823
+824
+825
+826</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 789</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 798</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_language'>register_language</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>grammar_module:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>gem_name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Register tree-sitter backend if path provided
@@ -2589,12 +2589,12 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-824
-825
-826</pre>
+833
+834
+835</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 824</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 833</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_registered_language'>registered_language</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="TreeHaver/LanguageRegistry.html" title="TreeHaver::LanguageRegistry (module)">LanguageRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_registered'><span class='object_link'><a href="TreeHaver/LanguageRegistry.html#registered-class_method" title="TreeHaver::LanguageRegistry.registered (method)">registered</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
@@ -2669,12 +2669,12 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-375
-376
-377</pre>
+384
+385
+386</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 375</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 384</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_backend!'>reset_backend!</span><span class='lparen'>(</span><span class='label'>to:</span> <span class='symbol'>:auto</span><span class='rparen'>)</span>
   <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='id identifier rubyid_to'>to</span><span class='op'>&amp;.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -2773,15 +2773,6 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-530
-531
-532
-533
-534
-535
-536
-537
-538
 539
 540
 541
@@ -2825,10 +2816,19 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
 579
 580
 581
-582</pre>
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 530</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 539</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_resolve_backend_module'>resolve_backend_module</span><span class='lparen'>(</span><span class='id identifier rubyid_explicit_backend'>explicit_backend</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Temporarily override effective backend
@@ -2970,13 +2970,13 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-517
-518
-519
-520</pre>
+526
+527
+528
+529</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 517</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 526</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_resolve_effective_backend'>resolve_effective_backend</span><span class='lparen'>(</span><span class='id identifier rubyid_explicit_backend'>explicit_backend</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_explicit_backend'>explicit_backend</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='kw'>if</span> <span class='id identifier rubyid_explicit_backend'>explicit_backend</span>
@@ -3079,15 +3079,6 @@ considered because they don’t support from_library.</p>
       <pre class="lines">
 
 
-604
-605
-606
-607
-608
-609
-610
-611
-612
 613
 614
 615
@@ -3117,10 +3108,19 @@ considered because they don’t support from_library.</p>
 639
 640
 641
-642</pre>
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 604</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 613</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_resolve_native_backend_module'>resolve_native_backend_module</span><span class='lparen'>(</span><span class='id identifier rubyid_explicit_backend'>explicit_backend</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Short-circuit on TruffleRuby: no native backends work
@@ -3363,15 +3363,6 @@ threads can safely use different backends without interfering with each other.</
       <pre class="lines">
 
 
-481
-482
-483
-484
-485
-486
-487
-488
-489
 490
 491
 492
@@ -3384,10 +3375,19 @@ threads can safely use different backends without interfering with each other.</
 499
 500
 501
-502</pre>
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 481</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 490</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_with_backend'>with_backend</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backend name required</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -3421,7 +3421,7 @@ threads can safely use different backends without interfering with each other.</
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 30 04:57:25 2025 by
+  Generated on Wed Dec 31 17:50:53 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

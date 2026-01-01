@@ -272,6 +272,29 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#ffi_backend_only_available%3F-class_method" title="ffi_backend_only_available? (class method)">.<strong>ffi_backend_only_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if FFI backend is available WITHOUT loading MRI first.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#find_toml_grammar_path-class_method" title="find_toml_grammar_path (class method)">.<strong>find_toml_grammar_path</strong>  &#x21d2; String<sup>?</sup> </a>
     
 
@@ -425,6 +448,29 @@
 
   
     <span class="summary_desc"><div class='inline'><p>Check if ruby_tree_sitter gem is available (MRI backend).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#mri_backend_only_available%3F-class_method" title="mri_backend_only_available? (class method)">.<strong>mri_backend_only_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if MRI backend is available WITHOUT checking FFI availability.</p>
 </div></span>
   
 </li>
@@ -757,12 +803,12 @@
       <pre class="lines">
 
 
-450
-451
-452</pre>
+526
+527
+528</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 450</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 526</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_any_markdown_backend_available?'>any_markdown_backend_available?</span>
   <span class='id identifier rubyid_markly_available?'>markly_available?</span> <span class='op'>||</span> <span class='id identifier rubyid_commonmarker_available?'>commonmarker_available?</span>
@@ -810,17 +856,17 @@
       <pre class="lines">
 
 
-454
-455
-456
-457
-458
-459
-460
-461</pre>
+530
+531
+532
+533
+534
+535
+536
+537</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 454</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 530</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_any_native_grammar_available?'>any_native_grammar_available?</span>
   <span class='id identifier rubyid_libtree_sitter_available?'>libtree_sitter_available?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span>
@@ -877,12 +923,12 @@
       <pre class="lines">
 
 
-443
-444
-445</pre>
+519
+520
+521</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 443</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 519</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_any_toml_backend_available?'>any_toml_backend_available?</span>
   <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span> <span class='op'>||</span> <span class='id identifier rubyid_toml_rb_available?'>toml_rb_available?</span>
@@ -936,13 +982,13 @@
       <pre class="lines">
 
 
-356
-357
-358
-359</pre>
+432
+433
+434
+435</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 356</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 432</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_citrus_available?'>citrus_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@citrus_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@citrus_available</span><span class='rparen'>)</span>
@@ -995,13 +1041,13 @@
       <pre class="lines">
 
 
-322
-323
-324
-325</pre>
+398
+399
+400
+401</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 322</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 398</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_commonmarker_available?'>commonmarker_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@commonmarker_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@commonmarker_available</span><span class='rparen'>)</span>
@@ -1054,20 +1100,20 @@
       <pre class="lines">
 
 
-505
-506
-507
-508
-509
-510
-511
-512
-513
-514
-515</pre>
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 505</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 581</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_env_summary'>env_summary</span>
   <span class='lbrace'>{</span>
@@ -1141,28 +1187,28 @@ first (via <code>rake spec</code> which runs ffi_specs then remaining_specs).</p
       <pre class="lines">
 
 
-210
-211
-212
-213
-214
-215
-216
-217
-218
-219
-220
-221
 222
 223
 224
 225
 226
 227
-228</pre>
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 210</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 222</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ffi_available?'>ffi_available?</span>
   <span class='comment'># TruffleRuby&#39;s FFI doesn&#39;t support STRUCT_BY_VALUE return types
@@ -1181,6 +1227,111 @@ first (via <code>rake spec</code> which runs ffi_specs then remaining_specs).</p
   <span class='kw'>false</span>
 <span class='kw'>rescue</span> <span class='const'>StandardError</span>
   <span class='comment'># Catch any other FFI-related errors (e.g., Polyglot::ForeignException)
+</span>  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="ffi_backend_only_available?-class_method">
+  
+    .<strong>ffi_backend_only_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if FFI backend is available WITHOUT loading MRI first</p>
+
+<p>This is used for the :ffi_backend_only tag which runs FFI tests<br />
+in isolation before MRI can be loaded. Unlike ffi_available?,<br />
+this method does NOT check mri_backend_available?.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if FFI backend is usable in isolation</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 275</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_ffi_backend_only_available?'>ffi_backend_only_available?</span>
+  <span class='comment'># TruffleRuby&#39;s FFI doesn&#39;t support STRUCT_BY_VALUE return types
+</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_truffleruby?'>truffleruby?</span>
+
+  <span class='comment'># Check if FFI gem is available without loading tree_sitter
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ffi</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='kw'>return</span> <span class='kw'>false</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Try to actually use the FFI backend
+</span>  <span class='id identifier rubyid_path'>path</span> <span class='op'>=</span> <span class='id identifier rubyid_find_toml_grammar_path'>find_toml_grammar_path</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_path'>path</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_with_backend'><span class='object_link'><a href="../../TreeHaver.html#with_backend-class_method" title="TreeHaver.with_backend (method)">with_backend</a></span></span><span class='lparen'>(</span><span class='symbol'>:ffi</span><span class='rparen'>)</span> <span class='kw'>do</span>
+    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="../Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter_toml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='kw'>true</span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendConflict.html" title="TreeHaver::BackendConflict (class)">BackendConflict</a></span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='const'>LoadError</span>
+  <span class='kw'>false</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span>
+  <span class='comment'># Catch any other FFI-related errors
 </span>  <span class='kw'>false</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1220,7 +1371,7 @@ This keeps configuration explicit and avoids magic path guessing.</p>
       
       
         &mdash;
-        <div class='inline'><p>path from environment variable, or nil if not set</p>
+        <div class='inline'><p>path to TOML grammar library, or nil if not found</p>
 </div>
       
     </li>
@@ -1233,15 +1384,33 @@ This keeps configuration explicit and avoids magic path guessing.</p>
       <pre class="lines">
 
 
-315
-316
-317</pre>
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 315</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 382</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_find_toml_grammar_path'>find_toml_grammar_path</span>
-  <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_TOML_PATH</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='comment'># First check environment variable
+</span>  <span class='id identifier rubyid_env_path'>env_path</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_TOML_PATH</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_env_path'>env_path</span> <span class='kw'>if</span> <span class='id identifier rubyid_env_path'>env_path</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_env_path'>env_path</span><span class='rparen'>)</span>
+
+  <span class='comment'># Use GrammarFinder to search standard paths
+</span>  <span class='id identifier rubyid_finder'>finder</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../GrammarFinder.html" title="TreeHaver::GrammarFinder (class)">GrammarFinder</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../GrammarFinder.html#initialize-instance_method" title="TreeHaver::GrammarFinder#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='comma'>,</span> <span class='label'>validate:</span> <span class='kw'>false</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_find_library_path'>find_library_path</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span>
+  <span class='comment'># GrammarFinder might not be available or might fail
+</span>  <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1290,13 +1459,13 @@ This keeps configuration explicit and avoids magic path guessing.</p>
       <pre class="lines">
 
 
-277
-278
-279
-280</pre>
+344
+345
+346
+347</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 277</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 344</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_java_backend_available?'>java_backend_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@java_backend_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@java_backend_available</span><span class='rparen'>)</span>
@@ -1349,12 +1518,12 @@ This keeps configuration explicit and avoids magic path guessing.</p>
       <pre class="lines">
 
 
-368
-369
-370</pre>
+444
+445
+446</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 368</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 444</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_jruby?'>jruby?</span>
   <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RUBY_ENGINE</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>jruby</span><span class='tstring_end'>&quot;</span></span>
@@ -1406,23 +1575,23 @@ This keeps configuration explicit and avoids magic path guessing.</p>
       <pre class="lines">
 
 
-285
-286
-287
-288
-289
-290
-291
-292
-293
-294
-295
-296
-297
-298</pre>
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 285</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 352</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_libtree_sitter_available?'>libtree_sitter_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@libtree_sitter_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@libtree_sitter_available</span><span class='rparen'>)</span>
@@ -1485,13 +1654,13 @@ This keeps configuration explicit and avoids magic path guessing.</p>
       <pre class="lines">
 
 
-330
-331
-332
-333</pre>
+406
+407
+408
+409</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 330</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 406</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_markly_available?'>markly_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@markly_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@markly_available</span><span class='rparen'>)</span>
@@ -1544,12 +1713,12 @@ This keeps configuration explicit and avoids magic path guessing.</p>
       <pre class="lines">
 
 
-382
-383
-384</pre>
+458
+459
+460</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 382</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 458</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_mri?'>mri?</span>
   <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RUBY_ENGINE</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ruby</span><span class='tstring_end'>&quot;</span></span>
@@ -1606,25 +1775,26 @@ detection - without it, FFI would not know that MRI has been loaded.</p>
       <pre class="lines">
 
 
-238
-239
-240
-241
-242
-243
-244
-245
-246
-247
-248
-249
 250
 251
 252
-253</pre>
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 238</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 250</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_mri_backend_available?'>mri_backend_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@mri_backend_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@mri_backend_available</span><span class='rparen'>)</span>
@@ -1633,10 +1803,93 @@ detection - without it, FFI would not know that MRI has been loaded.</p>
 </span>  <span class='kw'>return</span> <span class='ivar'>@mri_backend_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_mri?'>mri?</span>
 
   <span class='ivar'>@mri_backend_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
-    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ruby_tree_sitter</span><span class='tstring_end'>&quot;</span></span>
+    <span class='comment'># Note: gem is ruby_tree_sitter but requires tree_sitter
+</span>    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter</span><span class='tstring_end'>&quot;</span></span>
     <span class='comment'># Record that MRI backend is now loaded - this is critical for
 </span>    <span class='comment'># conflict detection with FFI backend
 </span>    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_record_backend_usage'><span class='object_link'><a href="../../TreeHaver.html#record_backend_usage-class_method" title="TreeHaver.record_backend_usage (method)">record_backend_usage</a></span></span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span>
+    <span class='kw'>true</span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="mri_backend_only_available?-class_method">
+  
+    .<strong>mri_backend_only_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if MRI backend is available WITHOUT checking FFI availability</p>
+
+<p>This is used for the :mri_backend_only tag which runs MRI tests<br />
+without triggering any FFI availability checks.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if MRI backend is usable</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 307</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_mri_backend_only_available?'>mri_backend_only_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@mri_backend_only_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@mri_backend_only_available</span><span class='rparen'>)</span>
+
+  <span class='comment'># ruby_tree_sitter is a C extension that only works on MRI
+</span>  <span class='kw'>return</span> <span class='ivar'>@mri_backend_only_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_mri?'>mri?</span>
+
+  <span class='ivar'>@mri_backend_only_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter</span><span class='tstring_end'>&quot;</span></span>
+    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_record_backend_usage'><span class='object_link'><a href="../../TreeHaver.html#record_backend_usage-class_method" title="TreeHaver.record_backend_usage (method)">record_backend_usage</a></span></span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span>
     <span class='kw'>true</span>
   <span class='kw'>rescue</span> <span class='const'>LoadError</span>
     <span class='kw'>false</span>
@@ -1689,13 +1942,13 @@ detection - without it, FFI would not know that MRI has been loaded.</p>
       <pre class="lines">
 
 
-338
-339
-340
-341</pre>
+414
+415
+416
+417</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 338</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 414</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prism_available?'>prism_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@prism_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@prism_available</span><span class='rparen'>)</span>
@@ -1748,13 +2001,13 @@ detection - without it, FFI would not know that MRI has been loaded.</p>
       <pre class="lines">
 
 
-346
-347
-348
-349</pre>
+422
+423
+424
+425</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 346</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 422</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_psych_available?'>psych_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@psych_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@psych_available</span><span class='rparen'>)</span>
@@ -1793,14 +2046,14 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-523
-524
-525
-526
-527</pre>
+599
+600
+601
+602
+603</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 523</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 599</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
   <span class='id identifier rubyid_instance_variables'>instance_variables</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ivar'>ivar</span><span class='op'>|</span>
@@ -1856,22 +2109,22 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-260
-261
-262
-263
-264
-265
-266
-267
-268
-269
-270
-271
-272</pre>
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 260</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 327</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_rust_backend_available?'>rust_backend_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@rust_backend_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@rust_backend_available</span><span class='rparen'>)</span>
@@ -1933,40 +2186,40 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-470
-471
-472
-473
-474
-475
-476
-477
-478
-479
-480
-481
-482
-483
-484
-485
-486
-487
-488
-489
-490
-491
-492
-493
-494
-495
-496
-497
-498
-499
-500</pre>
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 470</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 546</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_summary'>summary</span>
   <span class='lbrace'>{</span>
@@ -2046,14 +2299,14 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-303
-304
-305
-306
-307</pre>
+370
+371
+372
+373
+374</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 303</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 370</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_toml_grammar_available?'>toml_grammar_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@toml_grammar_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@toml_grammar_available</span><span class='rparen'>)</span>
@@ -2107,22 +2360,22 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-426
-427
-428
-429
-430
-431
-432
-433
-434
-435
-436
-437
-438</pre>
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 426</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 502</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_toml_rb_available?'>toml_rb_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@toml_rb_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@toml_rb_available</span><span class='rparen'>)</span>
@@ -2184,13 +2437,13 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-394
-395
-396
-397</pre>
+470
+471
+472
+473</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 394</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 470</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_bash_available?'>tree_sitter_bash_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@tree_sitter_bash_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_bash_available</span><span class='rparen'>)</span>
@@ -2243,13 +2496,13 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-410
-411
-412
-413</pre>
+486
+487
+488
+489</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 410</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 486</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_json_available?'>tree_sitter_json_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@tree_sitter_json_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_json_available</span><span class='rparen'>)</span>
@@ -2302,13 +2555,13 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-418
-419
-420
-421</pre>
+494
+495
+496
+497</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 418</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 494</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_jsonc_available?'>tree_sitter_jsonc_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@tree_sitter_jsonc_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_jsonc_available</span><span class='rparen'>)</span>
@@ -2361,13 +2614,13 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-402
-403
-404
-405</pre>
+478
+479
+480
+481</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 402</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 478</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@tree_sitter_toml_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_toml_available</span><span class='rparen'>)</span>
@@ -2420,12 +2673,12 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-375
-376
-377</pre>
+451
+452
+453</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 375</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 451</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_truffleruby?'>truffleruby?</span>
   <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RUBY_ENGINE</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>truffleruby</span><span class='tstring_end'>&quot;</span></span>
@@ -2440,7 +2693,7 @@ Note: This does NOT undo backend usage recording.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 30 04:57:25 2025 by
+  Generated on Wed Dec 31 17:50:53 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

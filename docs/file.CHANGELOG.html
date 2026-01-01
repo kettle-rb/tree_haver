@@ -72,13 +72,156 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>
+<code>TreeHaver::LibraryPathUtils</code> module for consistent path parsing across all backends
+    <ul>
+      <li>
+<code>derive_symbol_from_path(path)</code> - derives tree-sitter symbol (e.g., <code>tree_sitter_toml</code>) from library path</li>
+      <li>
+<code>derive_language_name_from_path(path)</code> - derives language name (e.g., <code>toml</code>) from library path</li>
+      <li>
+<code>derive_language_name_from_symbol(symbol)</code> - strips <code>tree_sitter_</code> prefix from symbol</li>
+      <li>Handles various naming conventions: <code>libtree-sitter-toml.so</code>, <code>libtree_sitter_toml.so</code>, <code>tree-sitter-toml.so</code>, <code>toml.so</code>
+</li>
+    </ul>
+  </li>
+  <li>Isolated backend RSpec tags for running tests without loading conflicting backends
+    <ul>
+      <li>
+<code>:ffi_backend_only</code> - runs FFI tests without triggering <code>mri_backend_available?</code> check</li>
+      <li>
+<code>:mri_backend_only</code> - runs MRI tests without triggering <code>ffi_available?</code> check</li>
+      <li>Uses <code>TreeHaver::Backends::BLOCKED_BY</code> to dynamically determine which availability checks to skip</li>
+      <li>Enables <code>rake ffi_specs</code> to run FFI tests before MRI is loaded</li>
+    </ul>
+  </li>
+  <li>
+<code>DependencyTags.ffi_backend_only_available?</code> - checks FFI availability without loading MRI</li>
+  <li>
+<code>DependencyTags.mri_backend_only_available?</code> - checks MRI availability without checking FFI</li>
+</ul>
+
 <h3 id="changed">Changed</h3>
+
+<ul>
+  <li>All backends now use shared <code>LibraryPathUtils</code> for path parsing
+    <ul>
+      <li>MRI, Rust, FFI, and Java backends updated for consistency</li>
+      <li>Ensures identical behavior across all tree-sitter backends</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Language</code> class extracted to <code>lib/tree_haver/language.rb</code>
+    <ul>
+      <li>No API changes, just file organization</li>
+      <li>Loaded via autoload for lazy loading</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Parser</code> class extracted to <code>lib/tree_haver/parser.rb</code>
+    <ul>
+      <li>No API changes, just file organization</li>
+      <li>Loaded via autoload for lazy loading</li>
+    </ul>
+  </li>
+  <li>Backend availability exclusions in <code>dependency_tags.rb</code> are now dynamic
+    <ul>
+      <li>Uses <code>TreeHaver::Backends::BLOCKED_BY</code> to skip availability checks for blocked backends</li>
+      <li>When running with <code>--tag ffi_backend_only</code>, MRI availability is not checked</li>
+      <li>Prevents MRI from being loaded before FFI tests can run</li>
+    </ul>
+  </li>
+  <li>Rakefile <code>ffi_specs</code> task now uses <code>:ffi_backend_only</code> tag
+    <ul>
+      <li>Ensures FFI tests run without loading MRI backend first</li>
+    </ul>
+  </li>
+</ul>
 
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>Rakefile now uses correct RSpec tags for FFI isolation
+    <ul>
+      <li>The <code>ffi_specs</code> task uses <code>:ffi_backend_only</code> to prevent MRI from loading</li>
+      <li>The <code>remaining_specs</code> task excludes <code>:ffi_backend_only</code> tests</li>
+      <li>Tags in Rakefile align with canonical tags from <code>dependency_tags.rb</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::RSpec::DependencyTags.mri_backend_available?</code> now uses correct require path
+    <ul>
+      <li>Was: <code>require "ruby_tree_sitter"</code> (wrong - causes LoadError)</li>
+      <li>Now: <code>require "tree_sitter"</code> (correct - gem name is ruby_tree_sitter but require path is tree_sitter)</li>
+      <li>This fix ensures the MRI backend is correctly detected as available in CI environments</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Backends::MRI::Language.from_library</code> now properly derives symbol from path
+    <ul>
+      <li>Previously, calling <code>from_library(path)</code> without <code>symbol:</code> would fail because <code>language_name</code> was nil</li>
+      <li>Now delegates to private <code>from_path</code> after deriving symbol, ensuring proper language name derivation</li>
+      <li>
+<code>from_path</code> is now private (but still accessible via <code>send</code> for testing if needed)</li>
+      <li>Extracts language name from paths like <code>/usr/lib/libtree-sitter-toml.so</code> → <code>tree_sitter_toml</code>
+</li>
+      <li>Handles both dash and underscore separators in filenames</li>
+      <li>Handles simple language names like <code>toml.so</code> → <code>tree_sitter_toml</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Backends::MRI::Parser#language=</code> now unwraps <code>TreeHaver::Backends::MRI::Language</code> wrappers
+    <ul>
+      <li>Accepts both raw <code>TreeSitter::Language</code> and wrapped <code>TreeHaver::Backends::MRI::Language</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::GrammarFinder.tree_sitter_runtime_usable?</code> no longer references <code>FFI::NotFoundError</code> directly
+    <ul>
+      <li>Prevents <code>NameError</code> when FFI gem is not loaded</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Parser#initialize</code> no longer references <code>FFI::NotFoundError</code> directly in rescue clause
+    <ul>
+      <li>Uses <code>defined?(::FFI::NotFoundError)</code> check to safely handle FFI errors when FFI is loaded</li>
+      <li>Prevents <code>NameError: uninitialized constant TreeHaver::Parser::FFI</code> when FFI gem is not available</li>
+      <li>Extracted error handling to <code>handle_parser_creation_failure</code> private method for clarity</li>
+    </ul>
+  </li>
+  <li>RSpec <code>dependency_tags.rb</code> now correctly detects <code>--tag</code> options during configuration
+    <ul>
+      <li>RSpec’s <code>config.inclusion_filter.rules</code> is empty during configuration phase</li>
+      <li>Now parses <code>ARGV</code> directly to detect <code>--tag ffi_backend_only</code> and similar tags</li>
+      <li>Skips grammar availability checks (which load MRI) when running isolated backend tests</li>
+      <li>Skips full dependency summary in <code>before(:suite)</code> when backends are blocked</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Backends::FFI.reset!</code> now uses consistent pattern with other backends
+    <ul>
+      <li>Was using <code>@ffi_gem_available</code> with <code>defined?()</code> check, which returned truthy after <code>reset!</code> set it to nil</li>
+      <li>Now uses <code>@load_attempted</code> / <code>@loaded</code> pattern like MRI, Rust, Citrus, Prism, Psych, etc.</li>
+      <li>This fixes FFI tests failing after the first test when <code>reset!</code> was called in <code>after</code> blocks</li>
+    </ul>
+  </li>
+  <li>
+<code>TreeHaver::Language.method_missing</code> no longer references <code>FFI::NotFoundError</code> directly in rescue clause
+    <ul>
+      <li>Uses <code>defined?(::FFI::NotFoundError)</code> check to safely handle FFI errors when FFI is loaded</li>
+      <li>Prevents <code>NameError</code> when FFI gem is not available but tree-sitter backends are used</li>
+      <li>Extracted Citrus fallback logic to <code>handle_tree_sitter_load_failure</code> private method</li>
+    </ul>
+  </li>
+</ul>
 
 <h3 id="security">Security</h3>
 
@@ -1111,7 +1254,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Tue Dec 30 04:57:25 2025 by
+  Generated on Wed Dec 31 17:50:52 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

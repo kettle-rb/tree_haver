@@ -4,7 +4,10 @@ require "spec_helper"
 
 # The :ffi_backend tag ensures the before hook in dependency_tags.rb skips these tests
 # when FFI is not available (e.g., after MRI has been loaded)
-RSpec.describe TreeHaver::Backends::FFI, :ffi_backend do
+#
+# The :ffi_backend_only tag allows running these tests in isolation (via `rake ffi_specs`)
+# WITHOUT triggering mri_backend_available? check, which prevents MRI from being loaded.
+RSpec.describe TreeHaver::Backends::FFI, :check_output, :ffi_backend, :ffi_backend_only do
   let(:backend) { described_class }
 
   before do

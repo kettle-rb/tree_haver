@@ -392,8 +392,6 @@ C library without requiring MRI C extensions.</p>
       <pre class="lines">
 
 
-87
-88
 89
 90
 91
@@ -401,10 +399,12 @@ C library without requiring MRI C extensions.</p>
 93
 94
 95
-96</pre>
+96
+97
+98</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 87</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 89</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='kw'>return</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_available?'>available?</span>
@@ -488,15 +488,17 @@ STRUCT_BY_VALUE return types (used by ts_tree_root_node, ts_node_child, etc.)</p
 68
 69
 70
-71</pre>
+71
+72</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 58</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ffi_gem_available?'>ffi_gem_available?</span>
-  <span class='kw'>return</span> <span class='ivar'>@ffi_gem_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@ffi_gem_available</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='ivar'>@loaded</span> <span class='kw'>if</span> <span class='ivar'>@load_attempted</span>
 
-  <span class='ivar'>@ffi_gem_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
+  <span class='ivar'>@load_attempted</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>begin</span>
     <span class='comment'># TruffleRuby&#39;s FFI doesn&#39;t support STRUCT_BY_VALUE return types
 </span>    <span class='comment'># which tree-sitter uses extensively (ts_tree_root_node, ts_node_child, etc.)
 </span>    <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>truffleruby</span><span class='tstring_end'>&quot;</span></span>
@@ -541,15 +543,17 @@ STRUCT_BY_VALUE return types (used by ts_tree_root_node, ts_node_child, etc.)</p
       <pre class="lines">
 
 
-77
 78
-79</pre>
+79
+80
+81</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 77</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 78</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
-  <span class='ivar'>@ffi_gem_available</span> <span class='op'>=</span> <span class='kw'>nil</span>
+  <span class='ivar'>@load_attempted</span> <span class='op'>=</span> <span class='kw'>false</span>
+  <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>false</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -561,7 +565,7 @@ STRUCT_BY_VALUE return types (used by ts_tree_root_node, ts_node_child, etc.)</p
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 30 04:57:25 2025 by
+  Generated on Wed Dec 31 17:50:53 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

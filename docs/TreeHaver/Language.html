@@ -94,17 +94,38 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/tree_haver.rb</dd>
+    <dd>lib/tree_haver/language.rb</dd>
   </dl>
   
 </div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Represents a tree-sitter language grammar</p>
+    <p>Represents a language grammar for parsing source code</p>
 
-<p>A Language object is an opaque handle to a TSLanguage* that defines<br />
-the grammar rules for parsing a specific programming language.</p>
+<p>Language is the entry point for loading and using grammars. It provides<br />
+a unified interface that works across all backends (MRI, Rust, FFI, Java, Citrus).</p>
+
+<p>For tree-sitter backends, languages are loaded from shared library files (.so/.dylib/.dll).<br />
+For pure-Ruby backends (Citrus, Prism, Psych), languages are built-in or provided by gems.</p>
+
+<p>== Loading Languages</p>
+
+<p>The primary way to load a language is via registration:</p>
+
+<p>TreeHaver.register_language(:toml, path: “/path/to/libtree-sitter-toml.so”)<br />
+  language = TreeHaver::Language.toml</p>
+
+<p>For explicit loading without registration:</p>
+
+<p>language = TreeHaver::Language.from_library(<br />
+    “/path/to/libtree-sitter-toml.so”,<br />
+    symbol: “tree_sitter_toml”<br />
+  )</p>
+
+<p>For ruby_tree_sitter compatibility:</p>
+
+<p>language = TreeHaver::Language.load(“toml”, “/path/to/libtree-sitter-toml.so”)</p>
 
 
   </div>
@@ -115,19 +136,10 @@ the grammar rules for parsing a specific programming language.</p>
     <h4 class="tag_title">Examples:</h4>
     
       
-        <h5 class="example_title"><div class='inline'><p>Load a language from a shared library</p>
+        <h5 class="example_title"><div class='inline'><p>Register and load a language</p>
 </div></h5>
       
-      <pre class="example code"><code><span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>Language</span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span>
-  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/usr/local/lib/libtree-sitter-toml.so</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-  <span class='label'>symbol:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter_toml</span><span class='tstring_end'>&quot;</span></span>
-<span class='rparen'>)</span></code></pre>
-    
-      
-        <h5 class="example_title"><div class='inline'><p>Use a registered language</p>
-</div></h5>
-      
-      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_register_language'><span class='object_link'><a href="../TreeHaver.html#register_language-class_method" title="TreeHaver.register_language (method)">register_language</a></span></span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/path/to/libtree-sitter-toml.so</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_register_language'><span class='object_link'><a href="../TreeHaver.html#register_language-class_method" title="TreeHaver.register_language (method)">register_language</a></span></span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/path/to/grammar.so</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>Language</span><span class='period'>.</span><span class='id identifier rubyid_toml'>toml</span></code></pre>
     
   </div>
@@ -445,49 +457,49 @@ unless you’ve already validated the path).</p>
       <pre class="lines">
 
 
-1004
-1005
-1006
-1007
-1008
-1009
-1010
-1011
-1012
-1013
-1014
-1015
-1016
-1017
-1018
-1019
-1020
-1021
-1022
-1023
-1024
-1025
-1026
-1027
-1028
-1029
-1030
-1031
-1032
-1033
-1034
-1035
-1036
-1037
-1038
-1039
-1040
-1041
-1042
-1043</pre>
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1004</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 83</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>validate:</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='label'>backend:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_validate'>validate</span>
@@ -668,12 +680,12 @@ unless you’ve already validated the path).</p>
       <pre class="lines">
 
 
-969
-970
-971</pre>
+48
+49
+50</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 969</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 48</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_load'>load</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>validate:</span> <span class='kw'>true</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter_</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>name:</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>validate:</span> <span class='id identifier rubyid_validate'>validate</span><span class='rparen'>)</span>
@@ -817,87 +829,85 @@ used based on registration and current backend.</p>
       <pre class="lines">
 
 
-1070
-1071
-1072
-1073
-1074
-1075
-1076
-1077
-1078
-1079
-1080
-1081
-1082
-1083
-1084
-1085
-1086
-1087
-1088
-1089
-1090
-1091
-1092
-1093
-1094
-1095
-1096
-1097
-1098
-1099
-1100
-1101
-1102
-1103
-1104
-1105
-1106
-1107
-1108
-1109
-1110
-1111
-1112
-1113
-1114
-1115
-1116
-1117
-1118
-1119
-1120
-1121
-1122
-1123
-1124
-1125
-1126
-1127
-1128
-1129
-1130
-1131
-1132
-1133
-1134
-1135
-1136
-1137
-1138
-1139
-1140
-1141
-1142
-1143
-1144
-1145
-1146
-1147</pre>
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1070</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 149</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_method_missing'>method_missing</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='comment'># Resolve only if the language name was registered
@@ -949,18 +959,16 @@ used based on registration and current backend.</p>
 
     <span class='kw'>begin</span>
       <span class='kw'>return</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='id identifier rubyid_symbol'>symbol</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
-    <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='const'>LoadError</span><span class='comma'>,</span> <span class='const'>FFI</span><span class='op'>::</span><span class='const'>NotFoundError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid__e'>_e</span>
+    <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='const'>LoadError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
       <span class='comment'># Tree-sitter failed to load - check for Citrus fallback
-</span>      <span class='comment'># This handles cases where:
-</span>      <span class='comment'># - The .so file doesn&#39;t exist or can&#39;t be loaded (NotAvailable, LoadError)
-</span>      <span class='comment'># - FFI can&#39;t find required symbols like ts_parser_new (FFI::NotFoundError)
-</span>      <span class='comment'># - Invalid arguments were provided (ArgumentError)
-</span>      <span class='id identifier rubyid_citrus_reg'>citrus_reg</span> <span class='op'>=</span> <span class='id identifier rubyid_all_backends'>all_backends</span><span class='lbracket'>[</span><span class='symbol'>:citrus</span><span class='rbracket'>]</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_citrus_reg'>citrus_reg</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_citrus_reg'>citrus_reg</span><span class='lbracket'>[</span><span class='symbol'>:grammar_module</span><span class='rbracket'>]</span>
-        <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Backends/Citrus.html" title="TreeHaver::Backends::Citrus (module)">Citrus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Backends/Citrus/Language.html" title="TreeHaver::Backends::Citrus::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Backends/Citrus/Language.html#initialize-instance_method" title="TreeHaver::Backends::Citrus::Language#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_citrus_reg'>citrus_reg</span><span class='lbracket'>[</span><span class='symbol'>:grammar_module</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+</span>      <span class='id identifier rubyid_handle_tree_sitter_load_failure'>handle_tree_sitter_load_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid_all_backends'>all_backends</span><span class='rparen'>)</span>
+    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='comment'># Also catch FFI::NotFoundError if FFI is loaded (can&#39;t reference directly as FFI may not exist)
+</span>      <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='op'>::</span><span class='const'>FFI</span><span class='op'>::</span><span class='const'>NotFoundError</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='op'>::</span><span class='const'>FFI</span><span class='op'>::</span><span class='const'>NotFoundError</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_handle_tree_sitter_load_failure'>handle_tree_sitter_load_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid_all_backends'>all_backends</span><span class='rparen'>)</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_raise'>raise</span>
       <span class='kw'>end</span>
-      <span class='comment'># No Citrus fallback available, re-raise the original error
-</span>      <span class='id identifier rubyid_raise'>raise</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
 
@@ -1024,12 +1032,12 @@ used based on registration and current backend.</p>
       <pre class="lines">
 
 
-1150
-1151
-1152</pre>
+227
+228
+229</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1150</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 227</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_respond_to_missing?'>respond_to_missing?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='op'>!</span><span class='op'>!</span><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_registered_language'><span class='object_link'><a href="../TreeHaver.html#registered_language-class_method" title="TreeHaver.registered_language (method)">registered_language</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='kw'>super</span>
@@ -1044,7 +1052,7 @@ used based on registration and current backend.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Dec 30 04:57:25 2025 by
+  Generated on Wed Dec 31 17:50:53 2025 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
