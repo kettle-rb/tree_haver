@@ -297,6 +297,45 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
         it "returns node text content" do
           expect(root.text).to be_a(String)
         end
+
+        context "when string_content raises TypeError (container node)" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:mock_child) { double("CommonmarkerChild", type: :text) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:string_content).and_return(true)
+            allow(mock_node).to receive(:string_content).and_raise(TypeError)
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(true)
+            allow(mock_node).to receive(:each).and_yield(mock_child)
+            allow(mock_child).to receive(:respond_to?).with(:string_content).and_return(true)
+            allow(mock_child).to receive(:string_content).and_return("child text")
+            allow(mock_child).to receive(:respond_to?).with(:each).and_return(false)
+          end
+
+          it "concatenates children's text" do
+            expect(node.text).to eq("child text")
+          end
+        end
+
+        context "when node doesn't respond to string_content" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:mock_child) { double("CommonmarkerChild", type: :text) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:string_content).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(true)
+            allow(mock_node).to receive(:each).and_yield(mock_child)
+            allow(mock_child).to receive(:respond_to?).with(:string_content).and_return(true)
+            allow(mock_child).to receive(:string_content).and_return("child text")
+            allow(mock_child).to receive(:respond_to?).with(:each).and_return(false)
+          end
+
+          it "concatenates children's text" do
+            expect(node.text).to eq("child text")
+          end
+        end
       end
 
       describe "#children" do
@@ -355,6 +394,73 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
           expect(point).to respond_to(:row)
           expect(point).to respond_to(:column)
         end
+
+        context "when source_position is not available" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([1, 1, 3, 15])
+            point = node.start_point
+            expect(point.row).to eq(0)  # 1-based to 0-based
+            expect(point.column).to eq(0)
+          end
+
+          it "returns (0, 0) when sourcepos is nil" do
+            allow(mock_node).to receive(:sourcepos).and_return(nil)
+            point = node.start_point
+            expect(point.row).to eq(0)
+            expect(point.column).to eq(0)
+          end
+
+          it "returns (0, 0) when sourcepos raises" do
+            allow(mock_node).to receive(:sourcepos).and_raise(StandardError)
+            point = node.start_point
+            expect(point.row).to eq(0)
+            expect(point.column).to eq(0)
+          end
+        end
+
+        context "when source_position returns nil" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node).to receive(:source_position).and_return(nil)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([2, 5, 4, 10])
+            point = node.start_point
+            expect(point.row).to eq(1)  # 2 - 1
+            expect(point.column).to eq(4)  # 5 - 1
+          end
+        end
+
+        context "when source_position raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node).to receive(:source_position).and_raise(StandardError)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([1, 1, 1, 10])
+            point = node.start_point
+            expect(point.row).to eq(0)
+            expect(point.column).to eq(0)
+          end
+        end
       end
 
       describe "#end_point" do
@@ -362,6 +468,73 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
           point = root.end_point
           expect(point).to respond_to(:row)
           expect(point).to respond_to(:column)
+        end
+
+        context "when source_position is not available" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([1, 1, 3, 15])
+            point = node.end_point
+            expect(point.row).to eq(2)  # 3 - 1
+            expect(point.column).to eq(14)  # 15 - 1
+          end
+
+          it "returns (0, 0) when sourcepos is nil" do
+            allow(mock_node).to receive(:sourcepos).and_return(nil)
+            point = node.end_point
+            expect(point.row).to eq(0)
+            expect(point.column).to eq(0)
+          end
+
+          it "returns (0, 0) when sourcepos raises" do
+            allow(mock_node).to receive(:sourcepos).and_raise(StandardError)
+            point = node.end_point
+            expect(point.row).to eq(0)
+            expect(point.column).to eq(0)
+          end
+        end
+
+        context "when source_position returns nil" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node).to receive(:source_position).and_return(nil)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([1, 1, 5, 20])
+            point = node.end_point
+            expect(point.row).to eq(4)  # 5 - 1
+            expect(point.column).to eq(19)  # 20 - 1
+          end
+        end
+
+        context "when source_position raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node).to receive(:source_position).and_raise(StandardError)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([1, 1, 2, 5])
+            point = node.end_point
+            expect(point.row).to eq(1)
+            expect(point.column).to eq(4)
+          end
         end
       end
 
@@ -384,12 +557,126 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
           expect(root.start_line).to be_a(Integer)
           expect(root.start_line).to be >= 1
         end
+
+        context "when source_position is not available" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([5, 1, 10, 15])
+            expect(node.start_line).to eq(5)
+          end
+
+          it "returns 1 when sourcepos is nil" do
+            allow(mock_node).to receive(:sourcepos).and_return(nil)
+            expect(node.start_line).to eq(1)
+          end
+
+          it "returns 1 when sourcepos raises" do
+            allow(mock_node).to receive(:sourcepos).and_raise(StandardError)
+            expect(node.start_line).to eq(1)
+          end
+        end
+
+        context "when source_position returns nil" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node).to receive(:source_position).and_return(nil)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([7, 1, 10, 15])
+            expect(node.start_line).to eq(7)
+          end
+        end
+
+        context "when source_position raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node).to receive(:source_position).and_raise(StandardError)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([3, 1, 5, 10])
+            expect(node.start_line).to eq(3)
+          end
+        end
       end
 
       describe "#end_line" do
         it "returns line number" do
           expect(root.end_line).to be_a(Integer)
           expect(root.end_line).to be >= root.start_line
+        end
+
+        context "when source_position is not available" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([1, 1, 10, 15])
+            expect(node.end_line).to eq(10)
+          end
+
+          it "returns 1 when sourcepos is nil" do
+            allow(mock_node).to receive(:sourcepos).and_return(nil)
+            expect(node.end_line).to eq(1)
+          end
+
+          it "returns 1 when sourcepos raises" do
+            allow(mock_node).to receive(:sourcepos).and_raise(StandardError)
+            expect(node.end_line).to eq(1)
+          end
+        end
+
+        context "when source_position returns nil" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node).to receive(:source_position).and_return(nil)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([1, 1, 15, 20])
+            expect(node.end_line).to eq(15)
+          end
+        end
+
+        context "when source_position raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node).to receive(:source_position).and_raise(StandardError)
+          end
+
+          it "falls back to sourcepos method" do
+            allow(mock_node).to receive(:sourcepos).and_return([1, 1, 8, 5])
+            expect(node.end_line).to eq(8)
+          end
         end
       end
 
@@ -452,6 +739,34 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
             expect(child.parent).to be_nil.or be_a(backend::Node)
           end
         end
+
+        context "when inner_node.parent raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:parent).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.parent).to be_nil
+          end
+        end
+
+        context "when inner_node.parent returns nil" do
+          let(:mock_node) { double("CommonmarkerNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:parent).and_return(nil)
+          end
+
+          it "returns nil" do
+            expect(node.parent).to be_nil
+          end
+        end
       end
 
       describe "#next_sibling" do
@@ -462,6 +777,34 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
             expect(sibling).to be_nil.or be_a(backend::Node)
           end
         end
+
+        context "when inner_node.next_sibling raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:next_sibling).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.next_sibling).to be_nil
+          end
+        end
+
+        context "when inner_node.next_sibling returns nil" do
+          let(:mock_node) { double("CommonmarkerNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:next_sibling).and_return(nil)
+          end
+
+          it "returns nil" do
+            expect(node.next_sibling).to be_nil
+          end
+        end
       end
 
       describe "#prev_sibling" do
@@ -470,6 +813,34 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
             second = root.child(1)
             sibling = second.prev_sibling
             expect(sibling).to be_nil.or be_a(backend::Node)
+          end
+        end
+
+        context "when inner_node.previous_sibling raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:previous_sibling).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.prev_sibling).to be_nil
+          end
+        end
+
+        context "when inner_node.previous_sibling returns nil" do
+          let(:mock_node) { double("CommonmarkerNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:previous_sibling).and_return(nil)
+          end
+
+          it "returns nil" do
+            expect(node.prev_sibling).to be_nil
           end
         end
       end
@@ -491,6 +862,52 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
 
         it "returns nil for non-comparable" do
           expect(root <=> "string").to be_nil
+        end
+
+        it "returns nil when other doesn't respond to start_byte" do
+          other = double("Other")
+          allow(other).to receive(:respond_to?).with(:start_byte).and_return(false)
+          expect(root <=> other).to be_nil
+        end
+
+        context "when start_byte comparison returns non-zero" do
+          let(:mock_node_earlier) { double("NodeEarlier", type: :paragraph) }
+          let(:mock_node_later) { double("NodeLater", type: :paragraph) }
+          let(:node_earlier) { backend::Node.new(mock_node_earlier, source) }
+          let(:node_later) { backend::Node.new(mock_node_later, source) }
+
+          before do
+            allow(mock_node_earlier).to receive_messages(respond_to?: false)
+            allow(mock_node_later).to receive_messages(respond_to?: false)
+            allow(mock_node_earlier).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node_later).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node_earlier).to receive(:source_position).and_return({start_line: 1, start_column: 1, end_line: 1, end_column: 5})
+            allow(mock_node_later).to receive(:source_position).and_return({start_line: 2, start_column: 1, end_line: 2, end_column: 5})
+          end
+
+          it "returns comparison result based on start_byte" do
+            expect(node_earlier <=> node_later).to be < 0
+          end
+        end
+
+        context "when start_byte is equal but end_byte differs" do
+          let(:mock_node_shorter) { double("NodeShorter", type: :paragraph) }
+          let(:mock_node_longer) { double("NodeLonger", type: :paragraph) }
+          let(:node_shorter) { backend::Node.new(mock_node_shorter, source) }
+          let(:node_longer) { backend::Node.new(mock_node_longer, source) }
+
+          before do
+            allow(mock_node_shorter).to receive_messages(respond_to?: false)
+            allow(mock_node_longer).to receive_messages(respond_to?: false)
+            allow(mock_node_shorter).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node_longer).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node_shorter).to receive(:source_position).and_return({start_line: 1, start_column: 1, end_line: 1, end_column: 5})
+            allow(mock_node_longer).to receive(:source_position).and_return({start_line: 1, start_column: 1, end_line: 1, end_column: 10})
+          end
+
+          it "compares by end_byte" do
+            expect(node_shorter <=> node_longer).to be < 0
+          end
         end
       end
 
@@ -519,6 +936,20 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
         it "returns nil for non-heading nodes" do
           expect(root.header_level).to be_nil
         end
+
+        context "when header_level raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :heading) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:header_level).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.header_level).to be_nil
+          end
+        end
       end
 
       describe "#fence_info" do
@@ -537,6 +968,20 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
         it "returns nil for non-code-block nodes" do
           expect(root.fence_info).to be_nil
         end
+
+        context "when fence_info raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :code_block) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:fence_info).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.fence_info).to be_nil
+          end
+        end
       end
 
       describe "#url" do
@@ -547,6 +992,20 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
           result = tree.root_node.url
           expect(result).to be_nil.or be_a(String)
         end
+
+        context "when url raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :link) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:url).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.url).to be_nil
+          end
+        end
       end
 
       describe "#title" do
@@ -556,6 +1015,20 @@ RSpec.describe TreeHaver::Backends::Commonmarker do
         it "returns title when available" do
           result = tree.root_node.title
           expect(result).to be_nil.or be_a(String)
+        end
+
+        context "when title raises" do
+          let(:mock_node) { double("CommonmarkerNode", type: :link) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:each).and_return(false)
+            allow(mock_node).to receive(:title).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.title).to be_nil
+          end
         end
       end
     end

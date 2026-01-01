@@ -75,6 +75,21 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
         # Second call should return cached value
         expect(nil_finder.available?).to be false
       end
+
+      context "when TREE_HAVER_DEBUG is set" do
+        before do
+          stub_env("TREE_HAVER_DEBUG" => "1")
+        end
+
+        it "outputs warning" do
+          fresh_finder = described_class.new(
+            language: :debug_test,
+            gem_name: nil,
+            grammar_const: "Debug::Grammar",
+          )
+          expect { fresh_finder.available? }.to output(/require_path is nil or empty/).to_stderr
+        end
+      end
     end
 
     context "with empty require_path" do
@@ -88,6 +103,21 @@ RSpec.describe TreeHaver::CitrusGrammarFinder do
 
       it "returns false when require_path is empty" do
         expect(empty_finder.available?).to be false
+      end
+
+      context "when TREE_HAVER_DEBUG is set" do
+        before do
+          stub_env("TREE_HAVER_DEBUG" => "1")
+        end
+
+        it "outputs warning" do
+          fresh_finder = described_class.new(
+            language: :debug_test,
+            gem_name: "",
+            grammar_const: "Debug::Grammar",
+          )
+          expect { fresh_finder.available? }.to output(/require_path is nil or empty/).to_stderr
+        end
       end
     end
 

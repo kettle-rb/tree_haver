@@ -43,7 +43,7 @@ jobs:
           # ruby-head
           - ruby: "ruby-head"
             appraisal: "head"
-            exec_cmd: "rake spec"
+            exec_cmd: "rake test"
             gemfile: "Appraisal.root"
             rubygems: default
             bundler: default
@@ -51,7 +51,7 @@ jobs:
           # truffleruby-head
           - ruby: "truffleruby-head"
             appraisal: "head"
-            exec_cmd: "rake spec"
+            exec_cmd: "rake test"
             gemfile: "Appraisal.root"
             rubygems: default
             bundler: default
@@ -59,7 +59,7 @@ jobs:
           # jruby-head
           - ruby: "jruby-head"
             appraisal: "head"
-            exec_cmd: "rake spec"
+            exec_cmd: "rake test"
             gemfile: "Appraisal.root"
             rubygems: default
             bundler: default

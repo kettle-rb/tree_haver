@@ -8,4 +8,12 @@ SimpleCov.start do
   track_files "lib/**/*.rb"
   track_files "lib/**/*.rake"
   track_files "exe/*.rb"
+
+  # Exclude test/spec files from coverage tracking
+  add_filter "/examples/"
+  add_filter "/gemfiles/"
+  add_filter "/spec/"
+  add_filter "/spec_matrix/"
+  add_filter "/vendor/"
+  add_filter "/lib/tree_haver/rspec/"
 end

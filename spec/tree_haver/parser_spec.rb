@@ -191,10 +191,8 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
     end
 
     describe "Parser.new" do
-      context "with no backend parameter" do
+      context "with no backend parameter", :citrus_backend do
         it "uses effective backend from context/global (non-conflicting)" do
-          skip "No backend available" unless TreeHaver.backend_module
-
           # Use citrus since it never conflicts
           TreeHaver.with_backend(:citrus) do
             parser = described_class.new
@@ -203,8 +201,6 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
         end
 
         it "uses global backend when no context set" do
-          skip "No backend available" unless TreeHaver.backend_module
-
           TreeHaver.backend = :auto
           parser = described_class.new
           # parser.backend returns the actual resolved backend, not :auto
@@ -215,26 +211,20 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
       end
 
       context "with explicit backend parameter" do
-        it "uses specified backend regardless of context (non-conflicting)" do
-          skip "Citrus backend not available" unless TreeHaver::Backends::Citrus.available?
-
+        it "uses specified backend regardless of context (non-conflicting)", :citrus_backend do
           TreeHaver.with_backend(:mri) do
             parser = described_class.new(backend: :citrus)
             expect(parser.backend).to eq(:citrus)
           end
         end
 
-        it "overrides global backend setting (non-conflicting)" do
-          skip "Citrus backend not available" unless TreeHaver::Backends::Citrus.available?
-
+        it "overrides global backend setting (non-conflicting)", :citrus_backend do
           TreeHaver.backend = :mri
           parser = described_class.new(backend: :citrus)
           expect(parser.backend).to eq(:citrus)
         end
 
-        it "creates parser with MRI backend when specified" do
-          skip "MRI backend not available" unless TreeHaver::Backends::MRI.available?
-
+        it "creates parser with MRI backend when specified", :mri_backend do
           parser = described_class.new(backend: :mri)
           expect(parser.backend).to eq(:mri)
         end
@@ -247,11 +237,6 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
         it "creates parser with Rust backend when specified", :rust_backend do
           parser = described_class.new(backend: :rust)
           expect(parser.backend).to eq(:rust)
-        end
-
-        it "creates parser with MRI backend when specified", :mri_backend do
-          parser = described_class.new(backend: :mri)
-          expect(parser.backend).to eq(:mri)
         end
 
         it "creates parser with Citrus backend when specified", :citrus_backend do
@@ -305,14 +290,9 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
       end
     end
 
-    describe "Thread-safe parser creation" do
+    describe "Thread-safe parser creation", :citrus_backend, :rust_backend do
       it "creates parsers with different backends in concurrent threads" do
         # Use Rust and Citrus which can coexist (not FFI which conflicts with MRI)
-        rust_available = TreeHaver::Backends::Rust.available?
-        citrus_available = TreeHaver::Backends::Citrus.available?
-
-        skip "Need at least Rust and Citrus backends" unless rust_available && citrus_available
-
         results = Concurrent::Array.new if defined?(Concurrent::Array)
         results ||= []
         mutex = Mutex.new
@@ -341,11 +321,6 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
 
       it "creates parsers with explicit backends in concurrent threads" do
         # Use Rust and Citrus which can coexist (not FFI which conflicts with MRI)
-        rust_available = TreeHaver::Backends::Rust.available?
-        citrus_available = TreeHaver::Backends::Citrus.available?
-
-        skip "Need at least Rust and Citrus backends" unless rust_available && citrus_available
-
         results = Concurrent::Array.new if defined?(Concurrent::Array)
         results ||= []
         mutex = Mutex.new
@@ -369,17 +344,14 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
       end
     end
 
-    describe "Backward compatibility" do
+    describe "Backward compatibility", :citrus_backend do
       it "works without backend parameter (existing behavior)" do
-        skip "No backend available" unless TreeHaver.backend_module
-
         parser = described_class.new
         expect(parser).to be_a(described_class)
       end
 
       it "respects global backend setting (existing behavior)" do
         # Use Citrus which doesn't conflict with MRI (not FFI)
-        skip "Citrus backend not available" unless TreeHaver::Backends::Citrus.available?
 
         TreeHaver.backend = :citrus
         parser = described_class.new
@@ -676,28 +648,20 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
 
     context "with various backend types" do
       # Test unwrap_language for different backend types
-      shared_examples "unwraps language correctly" do |backend_sym, _unwrap_method|
-        it "unwraps #{backend_sym} language correctly" do
-          # Backend constant names mapping (symbols to actual constant names)
-          backend_constants = {
-            mri: "MRI",
-            rust: "Rust",
-            ffi: "FFI",
-            java: "Java",
-            citrus: "Citrus",
-          }
-          const_name = backend_constants[backend_sym]
-          skip "#{backend_sym} backend not available" unless TreeHaver::Backends.const_get(const_name).available?
-
-          parser = described_class.new(backend: backend_sym)
-          # Just verify the parser was created - actual unwrapping is tested via integration
-          expect(parser.backend).to eq(backend_sym)
-        end
+      it "unwraps MRI language correctly", :mri_backend do
+        parser = described_class.new(backend: :mri)
+        expect(parser.backend).to eq(:mri)
       end
 
-      it_behaves_like "unwraps language correctly", :mri, :to_language
-      it_behaves_like "unwraps language correctly", :rust, :name
-      it_behaves_like "unwraps language correctly", :citrus, :grammar_module
+      it "unwraps Rust language correctly", :rust_backend do
+        parser = described_class.new(backend: :rust)
+        expect(parser.backend).to eq(:rust)
+      end
+
+      it "unwraps Citrus language correctly", :citrus_backend do
+        parser = described_class.new(backend: :citrus)
+        expect(parser.backend).to eq(:citrus)
+      end
     end
 
     context "with unknown backend type" do

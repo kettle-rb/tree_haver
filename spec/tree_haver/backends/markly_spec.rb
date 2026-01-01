@@ -306,6 +306,73 @@ RSpec.describe TreeHaver::Backends::Markly do
         it "returns node text content" do
           expect(root.text).to be_a(String)
         end
+
+        context "when string_content is not available" do
+          let(:mock_node) { double("MarklyNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          context "when to_plaintext works" do
+            before do
+              allow(mock_node).to receive_messages(
+                to_plaintext: "plain text content",
+              )
+              allow(mock_node).to receive(:respond_to?).with(:string_content).and_return(false)
+              allow(mock_node).to receive(:respond_to?).with(:to_plaintext).and_return(true)
+              allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            end
+
+            it "uses to_plaintext" do
+              expect(node.text).to eq("plain text content")
+            end
+          end
+
+          context "when to_plaintext raises" do
+            let(:mock_child) { double("MarklyChild", type: :text) }
+
+            before do
+              allow(mock_node).to receive(:respond_to?).with(:string_content).and_return(false)
+              allow(mock_node).to receive(:respond_to?).with(:to_plaintext).and_return(true)
+              allow(mock_node).to receive(:to_plaintext).and_raise(StandardError)
+              allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+              allow(mock_node).to receive(:first_child).and_return(mock_child)
+              allow(mock_child).to receive_messages(
+                next: nil,
+                string_content: "child text",
+                first_child: nil,
+              )
+              allow(mock_child).to receive(:respond_to?).with(:string_content).and_return(true)
+              allow(mock_child).to receive(:respond_to?).with(:to_plaintext).and_return(false)
+              allow(mock_child).to receive(:respond_to?).with(:source_position).and_return(false)
+            end
+
+            it "concatenates children text" do
+              expect(node.text).to eq("child text")
+            end
+          end
+
+          context "when to_plaintext is not available" do
+            let(:mock_child) { double("MarklyChild", type: :text) }
+
+            before do
+              allow(mock_node).to receive(:respond_to?).with(:string_content).and_return(false)
+              allow(mock_node).to receive(:respond_to?).with(:to_plaintext).and_return(false)
+              allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+              allow(mock_node).to receive(:first_child).and_return(mock_child)
+              allow(mock_child).to receive_messages(
+                next: nil,
+                string_content: "child text",
+                first_child: nil,
+              )
+              allow(mock_child).to receive(:respond_to?).with(:string_content).and_return(true)
+              allow(mock_child).to receive(:respond_to?).with(:to_plaintext).and_return(false)
+              allow(mock_child).to receive(:respond_to?).with(:source_position).and_return(false)
+            end
+
+            it "concatenates children text" do
+              expect(node.text).to eq("child text")
+            end
+          end
+        end
       end
 
       describe "#children" do
@@ -313,6 +380,39 @@ RSpec.describe TreeHaver::Backends::Markly do
           children = root.children
           expect(children).to be_an(Array)
           expect(children).to all(be_a(backend::Node))
+        end
+
+        context "when first_child raises" do
+          let(:mock_node) { double("MarklyNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:first_child).and_raise(StandardError)
+          end
+
+          it "returns empty array" do
+            expect(node.children).to eq([])
+          end
+        end
+
+        context "when child.next raises" do
+          let(:mock_node) { double("MarklyNode", type: :document) }
+          let(:mock_child) { double("MarklyChild", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:first_child).and_return(mock_child)
+            allow(mock_child).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_child).to receive(:next).and_raise(StandardError)
+          end
+
+          it "returns children collected before the error" do
+            children = node.children
+            expect(children.size).to eq(1)
+            expect(children.first).to be_a(backend::Node)
+          end
         end
       end
 
@@ -357,6 +457,43 @@ RSpec.describe TreeHaver::Backends::Markly do
       let(:source) { "# Heading\n\nParagraph text." }
       let(:tree) { parser.parse(source) }
       let(:root) { tree.root_node }
+
+      describe "#inner_source_position" do
+        context "when source_position returns nil" do
+          let(:mock_node) { double("MarklyNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(true)
+            allow(mock_node).to receive(:source_position).and_return(nil)
+          end
+
+          it "returns DEFAULT_SOURCE_POSITION" do
+            pos = node.send(:inner_source_position)
+            expect(pos[:start_line]).to eq(1)
+            expect(pos[:start_column]).to eq(1)
+            expect(pos[:end_line]).to eq(1)
+            expect(pos[:end_column]).to eq(1)
+          end
+        end
+
+        context "when node doesn't respond to source_position" do
+          let(:mock_node) { double("MarklyNode", type: :document) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+          end
+
+          it "returns DEFAULT_SOURCE_POSITION" do
+            pos = node.send(:inner_source_position)
+            expect(pos[:start_line]).to eq(1)
+            expect(pos[:start_column]).to eq(1)
+            expect(pos[:end_line]).to eq(1)
+            expect(pos[:end_column]).to eq(1)
+          end
+        end
+      end
 
       describe "#start_point" do
         it "returns a Point" do
@@ -461,6 +598,34 @@ RSpec.describe TreeHaver::Backends::Markly do
             expect(child.parent).to be_nil.or be_a(backend::Node)
           end
         end
+
+        context "when inner_node.parent raises" do
+          let(:mock_node) { double("MarklyNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:parent).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.parent).to be_nil
+          end
+        end
+
+        context "when inner_node.parent returns nil" do
+          let(:mock_node) { double("MarklyNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:parent).and_return(nil)
+          end
+
+          it "returns nil" do
+            expect(node.parent).to be_nil
+          end
+        end
       end
 
       describe "#next_sibling" do
@@ -471,6 +636,34 @@ RSpec.describe TreeHaver::Backends::Markly do
             expect(sibling).to be_nil.or be_a(backend::Node)
           end
         end
+
+        context "when inner_node.next raises" do
+          let(:mock_node) { double("MarklyNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:next).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.next_sibling).to be_nil
+          end
+        end
+
+        context "when inner_node.next returns nil" do
+          let(:mock_node) { double("MarklyNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:next).and_return(nil)
+          end
+
+          it "returns nil" do
+            expect(node.next_sibling).to be_nil
+          end
+        end
       end
 
       describe "#prev_sibling" do
@@ -479,6 +672,34 @@ RSpec.describe TreeHaver::Backends::Markly do
             second = root.child(1)
             sibling = second.prev_sibling
             expect(sibling).to be_nil.or be_a(backend::Node)
+          end
+        end
+
+        context "when inner_node.previous raises" do
+          let(:mock_node) { double("MarklyNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:previous).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.prev_sibling).to be_nil
+          end
+        end
+
+        context "when inner_node.previous returns nil" do
+          let(:mock_node) { double("MarklyNode", type: :paragraph) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:previous).and_return(nil)
+          end
+
+          it "returns nil" do
+            expect(node.prev_sibling).to be_nil
           end
         end
       end
@@ -528,6 +749,20 @@ RSpec.describe TreeHaver::Backends::Markly do
         it "returns nil for non-heading nodes" do
           expect(root.header_level).to be_nil
         end
+
+        context "when header_level raises" do
+          let(:mock_node) { double("MarklyNode", type: :header) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:header_level).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.header_level).to be_nil
+          end
+        end
       end
 
       describe "#fence_info" do
@@ -546,6 +781,20 @@ RSpec.describe TreeHaver::Backends::Markly do
         it "returns nil for non-code-block nodes" do
           expect(root.fence_info).to be_nil
         end
+
+        context "when fence_info raises" do
+          let(:mock_node) { double("MarklyNode", type: :code_block) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:fence_info).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.fence_info).to be_nil
+          end
+        end
       end
 
       describe "#url" do
@@ -556,6 +805,20 @@ RSpec.describe TreeHaver::Backends::Markly do
           result = tree.root_node.url
           expect(result).to be_nil.or be_a(String)
         end
+
+        context "when url raises" do
+          let(:mock_node) { double("MarklyNode", type: :link) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:url).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.url).to be_nil
+          end
+        end
       end
 
       describe "#title" do
@@ -565,6 +828,20 @@ RSpec.describe TreeHaver::Backends::Markly do
         it "returns title when available" do
           result = tree.root_node.title
           expect(result).to be_nil.or be_a(String)
+        end
+
+        context "when title raises" do
+          let(:mock_node) { double("MarklyNode", type: :link) }
+          let(:node) { backend::Node.new(mock_node, source) }
+
+          before do
+            allow(mock_node).to receive(:respond_to?).with(:source_position).and_return(false)
+            allow(mock_node).to receive(:title).and_raise(StandardError)
+          end
+
+          it "returns nil" do
+            expect(node.title).to be_nil
+          end
         end
       end
     end

@@ -390,6 +390,23 @@ RSpec.describe TreeHaver::Node do
         expect(child).to respond_to(:source)
       end
     end
+
+    context "when backend raises IndexError for out of bounds" do
+      let(:indexing_node) do
+        double(
+          "IndexingNode",
+          child_count: 1,
+          type: "parent",
+        )
+      end
+
+      it "rescues IndexError and returns nil" do
+        allow(indexing_node).to receive(:child).with(99).and_raise(IndexError, "index out of bounds")
+
+        node = described_class.new(indexing_node, source: source)
+        expect(node.child(99)).to be_nil
+      end
+    end
   end
 
   describe "#children" do
@@ -502,6 +519,49 @@ RSpec.describe TreeHaver::Node do
           expect(parent).to be_a(described_class).or be_nil
         end
       end
+
+      it "returns wrapped parent node when parent exists", :toml_parsing do
+        # Create a source that will have a child with a parent
+        if root_node.child_count > 0
+          child = root_node.child(0)
+          parent = child.parent
+          if parent
+            expect(parent).to be_a(described_class)
+            expect(parent.inner_node).not_to be_nil
+          end
+        end
+      end
+
+      it "wraps the parent with source", :toml_parsing do
+        if root_node.child_count > 0
+          child = root_node.child(0)
+          parent = child.parent
+          if parent
+            expect(parent.source).to eq(source)
+          end
+        end
+      end
+
+      context "with mock backend that returns parent" do
+        let(:parent_inner) { double("ParentInner", type: "parent", child_count: 0) }
+        let(:child_inner) do
+          double(
+            "ChildInner",
+            type: "child",
+            child_count: 0,
+          )
+        end
+
+        it "returns wrapped parent node" do
+          allow(child_inner).to receive(:respond_to?).with(:parent).and_return(true)
+          allow(child_inner).to receive(:parent).and_return(parent_inner)
+
+          node = described_class.new(child_inner, source: source)
+          parent = node.parent
+          expect(parent).to be_a(described_class)
+          expect(parent.inner_node).to eq(parent_inner)
+        end
+      end
     end
 
     context "when backend doesn't support parent" do
@@ -518,6 +578,18 @@ RSpec.describe TreeHaver::Node do
         expect(node.parent).to be_nil
       end
     end
+
+    context "when parent returns nil" do
+      let(:orphan_node) { double("OrphanNode", type: "orphan", child_count: 0) }
+
+      it "returns nil" do
+        allow(orphan_node).to receive(:respond_to?).with(:parent).and_return(true)
+        allow(orphan_node).to receive(:parent).and_return(nil)
+
+        node = described_class.new(orphan_node, source: source)
+        expect(node.parent).to be_nil
+      end
+    end
   end
 
   describe "#next_sibling" do
@@ -527,6 +599,38 @@ RSpec.describe TreeHaver::Node do
           child = root_node.child(0)
           sibling = child.next_sibling
           expect(sibling).to be_a(described_class).or be_nil
+        end
+      end
+
+      it "returns wrapped sibling when sibling exists", :toml_parsing do
+        if root_node.child_count > 1
+          child = root_node.child(0)
+          sibling = child.next_sibling
+          if sibling
+            expect(sibling).to be_a(described_class)
+            expect(sibling.inner_node).not_to be_nil
+          end
+        end
+      end
+
+      context "with mock backend that returns next_sibling" do
+        let(:sibling_inner) { double("SiblingInner", type: "sibling", child_count: 0) }
+        let(:node_inner) do
+          double(
+            "NodeInner",
+            type: "node",
+            child_count: 0,
+          )
+        end
+
+        it "returns wrapped sibling node" do
+          allow(node_inner).to receive(:respond_to?).with(:next_sibling).and_return(true)
+          allow(node_inner).to receive(:next_sibling).and_return(sibling_inner)
+
+          node = described_class.new(node_inner, source: source)
+          sibling = node.next_sibling
+          expect(sibling).to be_a(described_class)
+          expect(sibling.inner_node).to eq(sibling_inner)
         end
       end
     end
@@ -545,6 +649,18 @@ RSpec.describe TreeHaver::Node do
         expect(node.next_sibling).to be_nil
       end
     end
+
+    context "when next_sibling returns nil (last sibling)" do
+      let(:last_sibling_node) { double("LastSiblingNode", type: "last", child_count: 0) }
+
+      it "returns nil" do
+        allow(last_sibling_node).to receive(:respond_to?).with(:next_sibling).and_return(true)
+        allow(last_sibling_node).to receive(:next_sibling).and_return(nil)
+
+        node = described_class.new(last_sibling_node, source: source)
+        expect(node.next_sibling).to be_nil
+      end
+    end
   end
 
   describe "#prev_sibling" do
@@ -554,6 +670,38 @@ RSpec.describe TreeHaver::Node do
           child = root_node.child(1)
           sibling = child.prev_sibling
           expect(sibling).to be_a(described_class).or be_nil
+        end
+      end
+
+      it "returns wrapped sibling when sibling exists", :toml_parsing do
+        if root_node.child_count > 1
+          child = root_node.child(1)
+          sibling = child.prev_sibling
+          if sibling
+            expect(sibling).to be_a(described_class)
+            expect(sibling.inner_node).not_to be_nil
+          end
+        end
+      end
+
+      context "with mock backend that returns prev_sibling" do
+        let(:sibling_inner) { double("PrevSiblingInner", type: "prev_sibling", child_count: 0) }
+        let(:node_inner) do
+          double(
+            "NodeInner",
+            type: "node",
+            child_count: 0,
+          )
+        end
+
+        it "returns wrapped sibling node" do
+          allow(node_inner).to receive(:respond_to?).with(:prev_sibling).and_return(true)
+          allow(node_inner).to receive(:prev_sibling).and_return(sibling_inner)
+
+          node = described_class.new(node_inner, source: source)
+          sibling = node.prev_sibling
+          expect(sibling).to be_a(described_class)
+          expect(sibling.inner_node).to eq(sibling_inner)
         end
       end
     end
@@ -569,6 +717,18 @@ RSpec.describe TreeHaver::Node do
 
       it "returns nil" do
         node = described_class.new(simple_node, source: source)
+        expect(node.prev_sibling).to be_nil
+      end
+    end
+
+    context "when prev_sibling returns nil (first sibling)" do
+      let(:first_sibling_node) { double("FirstSiblingNode", type: "first", child_count: 0) }
+
+      it "returns nil" do
+        allow(first_sibling_node).to receive(:respond_to?).with(:prev_sibling).and_return(true)
+        allow(first_sibling_node).to receive(:prev_sibling).and_return(nil)
+
+        node = described_class.new(first_sibling_node, source: source)
         expect(node.prev_sibling).to be_nil
       end
     end
@@ -1034,6 +1194,46 @@ RSpec.describe TreeHaver::Node do
         node = described_class.new(fallback_node)
         result = node.named_child(99)
         expect(result).to be_nil
+      end
+
+      context "with is_named? fallback" do
+        let(:is_named_child) { double("IsNamedChild", type: "is_named_style", child_count: 0) }
+        let(:is_named_node) do
+          double(
+            "IsNamedNode",
+            type: "parent",
+            child_count: 1,
+          )
+        end
+
+        before do
+          allow(is_named_node).to receive(:respond_to?).with(:named_child).and_return(false)
+          allow(is_named_node).to receive(:child).with(0).and_return(is_named_child)
+
+          # Child uses is_named? instead of named?
+          allow(is_named_child).to receive_messages(
+            respond_to?: false,
+            is_named?: true,
+          )
+          allow(is_named_child).to receive(:respond_to?).with(:type).and_return(true)
+          allow(is_named_child).to receive(:respond_to?).with(:named?).and_return(false)
+          allow(is_named_child).to receive(:respond_to?).with(:is_named?).and_return(true)
+        end
+
+        it "uses is_named? when named? is not available" do
+          node = described_class.new(is_named_node)
+          result = node.named_child(0)
+          expect(result).to be_a(described_class)
+          expect(result.type).to eq("is_named_style")
+        end
+
+        it "returns nil when is_named? returns false" do
+          allow(is_named_child).to receive(:is_named?).and_return(false)
+
+          node = described_class.new(is_named_node)
+          result = node.named_child(0)
+          expect(result).to be_nil
+        end
       end
     end
   end

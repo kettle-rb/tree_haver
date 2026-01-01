@@ -699,6 +699,20 @@ RSpec.configure do |config|
   #   :ffi_backend_only - runs FFI tests without loading MRI backend
   #   :mri_backend_only - runs MRI tests without checking FFI availability
 
+  # FFI backend exclusion:
+  # If MRI has already been used, FFI is blocked and will never be available.
+  # In this case, exclude FFI tests tagged with :ffi_backend entirely rather than
+  # showing them as pending.
+  #
+  # NOTE: We do NOT exclude :ffi_backend_only here because the Rakefile uses
+  # `--tag ~ffi_backend_only` for the remaining_specs task. RSpec interprets
+  # `--tag ~X` as an include filter with key "~X", which conflicts with
+  # filter_run_excluding. Instead, :ffi_backend_only tests will be skipped
+  # via the before(:each) hook below when FFI is not available.
+  if TreeHaver.backends_used.include?(:mri)
+    config.filter_run_excluding(ffi_backend: true)
+  end
+
   # FFI availability is checked dynamically per-test (not at load time)
   # because FFI becomes unavailable after MRI backend is used.
   # When running with :ffi_backend_only tag, this hook defers to the isolated check.
@@ -773,10 +787,16 @@ RSpec.configure do |config|
   if inclusion_rules.empty?
     ARGV.each_with_index do |arg, i|
       if arg == "--tag" && ARGV[i + 1]
-        tag_value = ARGV[i + 1].to_sym
+        tag_str = ARGV[i + 1]
+        # Skip exclusion tags (prefixed with ~) - they are NOT inclusion filters
+        next if tag_str.start_with?("~")
+        tag_value = tag_str.to_sym
         inclusion_rules[tag_value] = true
       elsif arg.start_with?("--tag=")
-        tag_value = arg.sub("--tag=", "").to_sym
+        tag_str = arg.sub("--tag=", "")
+        # Skip exclusion tags (prefixed with ~) - they are NOT inclusion filters
+        next if tag_str.start_with?("~")
+        tag_value = tag_str.to_sym
         inclusion_rules[tag_value] = true
       end
     end

@@ -55,7 +55,7 @@ jobs:
           # Coverage
           - ruby: "ruby"
             appraisal: "coverage"
-            exec_cmd: "rake spec"
+            exec_cmd: "rake test"
             gemfile: "Appraisal.root"
             rubygems: latest
             bundler: latest

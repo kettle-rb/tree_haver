@@ -123,30 +123,12 @@ begin
   end
   Rake::Task[:remaining_specs].enhance([:set_remaining_command_name])
 
-  # Final task to run all specs (for spec task, runs in single process for final coverage merge)
-  desc("Run all specs in one process (no FFI isolation)")
-  RSpec::Core::RakeTask.new(:all_specs) do |t|
-    t.pattern = "spec/**{,/*/**}/*_spec.rb"
-  end
-  desc("Set SimpleCov command name for all specs")
-  task(:set_all_command_name) do
-    ENV["MAX_ROWS"] = "3"
-    ENV["K_SOUP_COV_COMMAND_NAME"] = "All Specs"
-  end
-  Rake::Task[:all_specs].enhance([:set_all_command_name])
-
   # Override the default spec task to run in sequence
-  # NOTE: We do NOT include :all_specs here because ffi_specs + remaining_specs already
-  # cover all specs. Including all_specs would cause duplicated test runs.
-  Rake::Task[:spec].clear if Rake::Task.task_defined?(:spec)
-  desc("Run specs with FFI tests first, then backend matrix, then remaining tests")
-  task(spec: [:ffi_specs, :backend_matrix_specs, :remaining_specs]) # rubocop:disable Rake/DuplicateTask:
-
-  # Override the test task to run spec (not minitest)
-  # This works around a bug in kettle-dev where test task runs minitest loader in CI
+  # kettle-dev creates an RSpec::Core::RakeTask.new(:spec) which has both
+  # prerequisites and actions. We will leave that one alone, and just use test here.
   Rake::Task[:test].clear if Rake::Task.task_defined?(:test)
-  desc("Run tests (alias for spec)")
-  task(test: :spec)
+  desc("Run specs with FFI tests first, then backend matrix, then remaining tests")
+  task(test: [:ffi_specs, :backend_matrix_specs, :remaining_specs]) # rubocop:disable Rake/DuplicateTask:
 rescue LoadError
   desc("(stub) spec is unavailable")
   task(:spec) do # rubocop:disable Rake/DuplicateTask
