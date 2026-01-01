@@ -28,13 +28,22 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.2.2] - 2026-01-01
+
+- TAG: [v3.2.2][3.2.2t]
+- COVERAGE: 94.79% -- 2076/2190 lines in 22 files
+- BRANCH COVERAGE: 81.35% -- 733/901 branches in 22 files
+- 90.14% documented
+
+### Fixed
+
 - RSpec dependency tags now respect `TREE_HAVER_BACKEND` environment variable
   - When `TREE_HAVER_BACKEND=ffi` is set, MRI backend availability is not checked
   - Prevents `BackendConflict` errors when loading gems that use tree-sitter grammars
   - The `blocked_backends` set now includes backends that would conflict with the explicitly selected backend
   - This allows `*-merge` gems to load correctly in test suites when a specific backend is selected
-
-### Security
 
 ## [3.2.1] - 2025-12-31
 
@@ -665,7 +674,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.1...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.2...HEAD
+[3.2.2]: https://github.com/kettle-rb/tree_haver/compare/v3.2.1...v3.2.2
+[3.2.2t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.2
 [3.2.1]: https://github.com/kettle-rb/tree_haver/compare/v3.2.0...v3.2.1
 [3.2.1t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.1
 [3.2.0]: https://github.com/kettle-rb/tree_haver/compare/v3.1.2...v3.2.0
