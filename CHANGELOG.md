@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [3.2.1] - 2025-12-31
+
+- TAG: [v3.2.1][3.2.1t]
+- COVERAGE: 94.75% -- 2075/2190 lines in 22 files
+- BRANCH COVERAGE: 81.35% -- 733/901 branches in 22 files
+- 90.14% documented
+
+### Added
+
 - `TreeHaver::LibraryPathUtils` module for consistent path parsing across all backends
   - `derive_symbol_from_path(path)` - derives tree-sitter symbol (e.g., `tree_sitter_toml`) from library path
   - `derive_language_name_from_path(path)` - derives language name (e.g., `toml`) from library path
@@ -50,10 +69,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - Prevents MRI from being loaded before FFI tests can run
 - Rakefile `ffi_specs` task now uses `:ffi_backend_only` tag
   - Ensures FFI tests run without loading MRI backend first
-
-### Deprecated
-
-### Removed
 
 ### Fixed
 
@@ -93,8 +108,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - Uses `defined?(::FFI::NotFoundError)` check to safely handle FFI errors when FFI is loaded
   - Prevents `NameError` when FFI gem is not available but tree-sitter backends are used
   - Extracted Citrus fallback logic to `handle_tree_sitter_load_failure` private method
-
-### Security
 
 ## [3.2.0] - 2025-12-30
 
@@ -646,7 +659,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.1...HEAD
+[3.2.1]: https://github.com/kettle-rb/tree_haver/compare/v3.2.0...v3.2.1
+[3.2.1t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.1
 [3.2.0]: https://github.com/kettle-rb/tree_haver/compare/v3.1.2...v3.2.0
 [3.2.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.0
 [3.1.2]: https://github.com/kettle-rb/tree_haver/compare/v3.1.1...v3.1.2
