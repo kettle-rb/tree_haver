@@ -1788,7 +1788,7 @@ See [LICENSE.txt](LICENSE.txt) for the official [Copyright Notice](https://opens
 
 <ul>
     <li>
-        Copyright (c) 2025 Peter H. Boling, of
+        Copyright (c) 2025-2026 Peter H. Boling, of
         <a href="https://discord.gg/3qme4XHNKN">
             Galtzo.com
             <picture>
