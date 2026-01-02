@@ -16,7 +16,7 @@ require_relative "tree_haver/version"
 #
 # == Backends
 #
-# Supports 10 backends:
+# Supports 9 backends:
 # - Tree-sitter: MRI (C), Rust, FFI, Java
 # - Native parsers: Prism (Ruby), Psych (YAML), Commonmarker (Markdown), Markly (GFM)
 # - Pure Ruby: Citrus (portable fallback)
@@ -265,6 +265,11 @@ module TreeHaver
 
   # Parser class for parsing source code into syntax trees
   autoload :Parser, File.join(__dir__, "tree_haver", "parser")
+
+  # Native tree-sitter backends that support loading shared libraries (.so files)
+  # These backends wrap the tree-sitter C library via various bindings.
+  # Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are excluded.
+  NATIVE_BACKENDS = %i[mri rust ffi java].freeze
 
   # Get the current backend selection
   #
@@ -590,10 +595,6 @@ module TreeHaver
       mod
     end
 
-    # Native tree-sitter backends that support loading shared libraries (.so files)
-    # These backends wrap the tree-sitter C library via various bindings.
-    # Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are excluded.
-    NATIVE_BACKENDS = %i[mri rust ffi java].freeze
 
     # Resolve a native tree-sitter backend module (for from_library)
     #
@@ -836,113 +837,106 @@ module TreeHaver
 
     # Create a parser configured for a specific language
     #
-    # This is the recommended high-level API for creating a parser. It handles:
-    # 1. Checking if the language is already registered
-    # 2. Auto-discovering tree-sitter grammar via GrammarFinder
-    # 3. Falling back to Citrus grammar if tree-sitter is unavailable
-    # 4. Creating and configuring the parser
+    # Respects the effective backend setting (via TREE_HAVER_BACKEND env var,
+    # TreeHaver.backend=, or with_backend block).
     #
     # @param language_name [Symbol, String] the language to parse (e.g., :toml, :json, :bash)
     # @param library_path [String, nil] optional explicit path to tree-sitter grammar library
     # @param symbol [String, nil] optional tree-sitter symbol name (defaults to "tree_sitter_<name>")
     # @param citrus_config [Hash, nil] optional Citrus fallback configuration
-    # @option citrus_config [String] :gem_name gem name for the Citrus grammar
-    # @option citrus_config [String] :grammar_const fully qualified constant name for grammar module
     # @return [TreeHaver::Parser] configured parser with language set
     # @raise [TreeHaver::NotAvailable] if no parser backend is available for the language
     #
     # @example Basic usage (auto-discovers grammar)
     #   parser = TreeHaver.parser_for(:toml)
-    #   tree = parser.parse("[package]\nname = \"my-app\"")
     #
-    # @example With explicit library path
-    #   parser = TreeHaver.parser_for(:toml, library_path: "/custom/path/libtree-sitter-toml.so")
-    #
-    # @example With Citrus fallback configuration
-    #   parser = TreeHaver.parser_for(:toml,
-    #     citrus_config: { gem_name: "toml-rb", grammar_const: "TomlRB::Document" }
-    #   )
+    # @example Force Citrus backend
+    #   TreeHaver.with_backend(:citrus) { TreeHaver.parser_for(:toml) }
     def parser_for(language_name, library_path: nil, symbol: nil, citrus_config: nil)
       name = language_name.to_sym
       symbol ||= "tree_sitter_#{name}"
+      requested = effective_backend
 
-      # Step 1: Try to get the language (may already be registered)
-      language = begin
-        # Check if already registered and loadable
-        if registered_language(name)
-          Language.public_send(name, path: library_path, symbol: symbol)
-        end
-      rescue NotAvailable, ArgumentError, LoadError
-        nil
+      # Determine which backends to try based on effective_backend
+      try_tree_sitter = (requested == :auto) || NATIVE_BACKENDS.include?(requested)
+      try_citrus = (requested == :auto) || (requested == :citrus)
+
+      language = nil
+
+      # Try tree-sitter if applicable
+      if try_tree_sitter && !language
+        language = load_tree_sitter_language(name, library_path: library_path, symbol: symbol)
       end
 
-      # Step 2: If not registered, try GrammarFinder for tree-sitter
-      unless language
-        # Principle of Least Surprise: If user provides an explicit path,
-        # it MUST exist. Don't silently fall back to auto-discovery.
-        if library_path && !library_path.empty?
-          unless File.exist?(library_path)
-            raise NotAvailable,
-              "Specified parser path does not exist: #{library_path}"
-          end
-          begin
-            register_language(name, path: library_path, symbol: symbol)
-            language = Language.public_send(name)
-          rescue NotAvailable, ArgumentError, LoadError => e
-            # Re-raise with more context since user explicitly provided this path
-            raise NotAvailable,
-              "Failed to load parser from specified path #{library_path}: #{e.message}"
-          end
-        else
-          # Auto-discover via GrammarFinder (no explicit path provided)
-          begin
-            finder = GrammarFinder.new(name)
-            if finder.available?
-              finder.register!
-              language = Language.public_send(name)
-            end
-          rescue NotAvailable, ArgumentError, LoadError
-            language = nil
-          end
-        end
+      # Try Citrus if applicable
+      if try_citrus && !language
+        language = load_citrus_language(name, citrus_config: citrus_config)
       end
 
-      # Step 3: Try Citrus fallback if tree-sitter failed
-      unless language
-        # Use explicit config, or fall back to built-in defaults for known languages
-        citrus_config ||= CITRUS_DEFAULTS[name] || {}
+      # Raise if nothing worked
+      raise NotAvailable, "No parser available for #{name}. " \
+        "Install tree-sitter-#{name} or configure a Citrus grammar." unless language
 
-        # Only attempt if we have the required configuration
-        if citrus_config[:gem_name] && citrus_config[:grammar_const]
-          begin
-            citrus_finder = CitrusGrammarFinder.new(
-              language: name,
-              gem_name: citrus_config[:gem_name],
-              grammar_const: citrus_config[:grammar_const],
-              require_path: citrus_config[:require_path],
-            )
-            if citrus_finder.available?
-              citrus_finder.register!
-              language = Language.public_send(name)
-            end
-          rescue NotAvailable, ArgumentError, LoadError, NameError, TypeError
-            language = nil
-          end
-        end
-      end
-
-      # Step 4: Raise if nothing worked
-      unless language
-        raise NotAvailable,
-          "No parser available for #{name}. " \
-            "Install tree-sitter-#{name} or the appropriate Ruby gem. " \
-            "Set TREE_SITTER_#{name.to_s.upcase}_PATH for custom grammar location."
-      end
-
-      # Step 5: Create and configure parser
+      # Create and configure parser
       parser = Parser.new
       parser.language = language
       parser
+    end
+
+    private
+
+    # Load a tree-sitter language, either from registry or via auto-discovery
+    # @return [Language, nil]
+    # @raise [NotAvailable] if explicit library_path is provided but doesn't exist or can't load
+    def load_tree_sitter_language(name, library_path: nil, symbol: nil)
+      # If explicit path provided, it must work - don't swallow errors
+      if library_path && !library_path.empty?
+        raise NotAvailable, "Specified parser path does not exist: #{library_path}" unless File.exist?(library_path)
+        register_language(name, path: library_path, symbol: symbol)
+        return Language.public_send(name)
+      end
+
+      # Auto-discovery: errors are acceptable, just return nil
+      begin
+        # Try already-registered tree-sitter language (not Citrus)
+        # But only if the registered path actually exists - ignore stale/test registrations
+        registration = registered_language(name)
+        ts_reg = registration&.dig(:tree_sitter)
+        if ts_reg && ts_reg[:path] && File.exist?(ts_reg[:path])
+          return Language.public_send(name, symbol: symbol)
+        end
+
+        # Auto-discover via GrammarFinder
+        finder = GrammarFinder.new(name)
+        if finder.available?
+          finder.register!
+          return Language.public_send(name)
+        end
+      rescue NotAvailable, ArgumentError, LoadError
+        # Auto-discovery failed, that's okay
+      end
+
+      nil
+    end
+
+    # Load a Citrus language from configuration or defaults
+    # @return [Language, nil]
+    def load_citrus_language(name, citrus_config: nil)
+      config = citrus_config || CITRUS_DEFAULTS[name] || {}
+      return nil unless config[:gem_name] && config[:grammar_const]
+
+      finder = CitrusGrammarFinder.new(
+        language: name,
+        gem_name: config[:gem_name],
+        grammar_const: config[:grammar_const],
+        require_path: config[:require_path],
+      )
+      return nil unless finder.available?
+
+      finder.register!
+      Language.public_send(name)
+    rescue NotAvailable, ArgumentError, LoadError, NameError, TypeError
+      nil
     end
   end
 

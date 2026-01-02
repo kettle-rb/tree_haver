@@ -200,7 +200,7 @@ RSpec.describe "Multi-backend integration" do
       }.to raise_error(TreeHaver::NotAvailable, /no Citrus grammar registered/)
     end
 
-    it "falls back to Citrus when tree-sitter config missing for tree-sitter backend", :mri_backend, :toml_rb do
+    it "raises error when native backend explicitly requested but only Citrus registered", :mri_backend, :toml_rb do
       # Only register Citrus, not tree-sitter
       TreeHaver.register_language(
         :citrus_only,
@@ -208,9 +208,25 @@ RSpec.describe "Multi-backend integration" do
         gem_name: "toml-rb",
       )
 
-      # Try to load with MRI backend - should fall back to Citrus
+      # Try to load with MRI backend - should raise error, not silently fall back to Citrus
+      # When user explicitly requests a native backend, they should get that backend or an error
       TreeHaver.backend = :mri
-      language = TreeHaver::Language.citrus_only
+      expect {
+        TreeHaver::Language.citrus_only
+      }.to raise_error(ArgumentError, /No grammar registered.*tree_sitter/)
+    end
+
+    it "falls back to Citrus when backend is :auto and only Citrus registered", :citrus_backend, :toml_rb do
+      # Only register Citrus, not tree-sitter
+      TreeHaver.register_language(
+        :citrus_fallback_test,
+        grammar_module: TomlRB::Document,
+        gem_name: "toml-rb",
+      )
+
+      # With :auto backend, should fall back to Citrus when tree-sitter not available
+      TreeHaver.backend = :auto
+      language = TreeHaver::Language.citrus_fallback_test
       expect(language).to be_a(TreeHaver::Backends::Citrus::Language)
     end
   end

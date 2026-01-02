@@ -303,10 +303,33 @@ RSpec.describe TreeHaver::Language do
         TreeHaver.backend = :auto
       end
 
-      it "falls back to Citrus when tree-sitter registration not available" do
-        # With our new fallback behavior, when only Citrus is registered
-        # and tree-sitter backend is active, we fall back to Citrus
-        language = described_class.test_lang_citrus_only
+      it "raises error when native backend explicitly requested but only Citrus registered" do
+        # When user explicitly requests a native backend (:mri), they should get
+        # that backend or an error - not silent fallback to Citrus
+        expect {
+          described_class.test_lang_citrus_only
+        }.to raise_error(ArgumentError, /No grammar registered.*tree_sitter/)
+      end
+    end
+
+    context "with Citrus-only registration and :auto backend" do
+      before do
+        TreeHaver.backend = :auto
+        # Register only for Citrus, not tree-sitter - use unique name
+        TreeHaver::LanguageRegistry.register(
+          :test_lang_citrus_auto,
+          :citrus,
+          grammar_module: double("Grammar", parse: true),
+        )
+      end
+
+      after do
+        TreeHaver.backend = :auto
+      end
+
+      it "falls back to Citrus when backend is :auto and only Citrus registered" do
+        # With :auto backend, fallback to Citrus is allowed
+        language = described_class.test_lang_citrus_auto
         expect(language).to be_a(TreeHaver::Backends::Citrus::Language)
       end
     end
@@ -722,7 +745,7 @@ RSpec.describe TreeHaver::Language do
       end
     end
 
-    context "when tree-sitter fails and Citrus fallback is available" do
+    context "when tree-sitter fails with explicit native backend and Citrus is available" do
       before do
         TreeHaver.backend = :mri
         # Register both tree-sitter (with bad path) and Citrus fallback
@@ -743,8 +766,39 @@ RSpec.describe TreeHaver::Language do
         TreeHaver.backend = :auto
       end
 
-      it "falls back to Citrus when tree-sitter loading fails" do
-        language = described_class.ts_fail_citrus_fallback_test
+      it "raises error when native backend explicitly requested - no silent fallback to Citrus" do
+        # When user explicitly requests :mri, they should get MRI or an error
+        # NOT silent fallback to Citrus
+        expect {
+          described_class.ts_fail_citrus_fallback_test
+        }.to raise_error(TreeHaver::NotAvailable)
+      end
+    end
+
+    context "when tree-sitter fails with :auto backend and Citrus is available" do
+      before do
+        TreeHaver.backend = :auto
+        # Register both tree-sitter (with bad path) and Citrus fallback
+        TreeHaver::LanguageRegistry.register(
+          :ts_fail_citrus_auto_test,
+          :tree_sitter,
+          path: "/nonexistent/path.so",
+          symbol: "tree_sitter_test",
+        )
+        TreeHaver::LanguageRegistry.register(
+          :ts_fail_citrus_auto_test,
+          :citrus,
+          grammar_module: double("Grammar", parse: true),
+        )
+      end
+
+      after do
+        TreeHaver.backend = :auto
+      end
+
+      it "falls back to Citrus when backend is :auto" do
+        # With :auto backend, fallback to Citrus is allowed
+        language = described_class.ts_fail_citrus_auto_test
         expect(language).to be_a(TreeHaver::Backends::Citrus::Language)
       end
     end

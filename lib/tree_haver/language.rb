@@ -211,10 +211,13 @@ module TreeHaver
 
         # No tree-sitter path registered - check for Citrus fallback
         # This enables auto-fallback when tree-sitter grammar is not installed
-        # but a Citrus grammar (pure Ruby) is available
-        citrus_reg = all_backends[:citrus]
-        if citrus_reg && citrus_reg[:grammar_module]
-          return Backends::Citrus::Language.new(citrus_reg[:grammar_module])
+        # but a Citrus grammar (pure Ruby) is available.
+        # Only fall back when backend is :auto - explicit native backend requests should fail.
+        if TreeHaver.effective_backend == :auto
+          citrus_reg = all_backends[:citrus]
+          if citrus_reg && citrus_reg[:grammar_module]
+            return Backends::Citrus::Language.new(citrus_reg[:grammar_module])
+          end
         end
 
         # No appropriate registration found
@@ -237,17 +240,29 @@ module TreeHaver
       # - FFI can't find required symbols like ts_parser_new (FFI::NotFoundError)
       # - Invalid arguments were provided (ArgumentError)
       #
+      # Fallback to Citrus ONLY happens when:
+      # - The effective backend is :auto (user didn't explicitly request a native backend)
+      # - A Citrus grammar is registered for the language
+      #
+      # If the user explicitly requested a native backend (:mri, :rust, :ffi, :java),
+      # we should NOT silently fall back to Citrus - that would violate the user's intent.
+      #
       # @param error [Exception] the original error
       # @param all_backends [Hash] all registered backends for the language
-      # @return [Backends::Citrus::Language] if Citrus fallback available
-      # @raise [Exception] re-raises original error if no fallback
+      # @return [Backends::Citrus::Language] if Citrus fallback available and allowed
+      # @raise [Exception] re-raises original error if no fallback or fallback not allowed
       # @api private
       def handle_tree_sitter_load_failure(error, all_backends)
-        citrus_reg = all_backends[:citrus]
-        if citrus_reg && citrus_reg[:grammar_module]
-          return Backends::Citrus::Language.new(citrus_reg[:grammar_module])
+        # Only fall back to Citrus when backend is :auto
+        # If user explicitly requested a native backend, respect that choice
+        effective = TreeHaver.effective_backend
+        if effective == :auto
+          citrus_reg = all_backends[:citrus]
+          if citrus_reg && citrus_reg[:grammar_module]
+            return Backends::Citrus::Language.new(citrus_reg[:grammar_module])
+          end
         end
-        # No Citrus fallback available, re-raise the original error
+        # No Citrus fallback allowed or available, re-raise the original error
         raise error
       end
     end

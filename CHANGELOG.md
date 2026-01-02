@@ -28,6 +28,38 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **`parser_for` now respects explicitly requested non-native backends** - Previously,
+  `parser_for` would always try tree-sitter backends first and only fall back to alternative
+  backends if tree-sitter was unavailable. Now it checks `effective_backend` and skips
+  tree-sitter attempts entirely when a non-native backend is explicitly requested via:
+  - `TREE_HAVER_BACKEND=citrus` (or `prism`, `psych`, `commonmarker`, `markly`)
+  - `TreeHaver.backend = :citrus`
+  - `TreeHaver.with_backend(:citrus) { ... }`
+  
+  Native backends (`:mri`, `:rust`, `:ffi`, `:java`) still use tree-sitter grammar discovery.
+
+- **`load_tree_sitter_language` now correctly ignores Citrus registrations** - Previously,
+  if a language was registered with Citrus first, `load_tree_sitter_language` would
+  incorrectly try to use it even when a native backend was explicitly requested. Now it
+  only uses registrations that have a `:tree_sitter` key, allowing proper backend switching
+  between Citrus and native tree-sitter backends.
+
+- **`load_tree_sitter_language` now validates registered paths exist** - Previously,
+  if a language had a stale/invalid tree-sitter registration with a non-existent path
+  (e.g., from a test), the code would try to use it and fail. Now it checks
+  `File.exist?(path)` before using a registered path, falling back to auto-discovery
+  via `GrammarFinder` if the registered path doesn't exist.
+
+- **`Language.method_missing` no longer falls back to Citrus when native backend explicitly requested** -
+  Previously, when tree-sitter loading failed (e.g., .so file missing), the code would
+  silently fall back to Citrus even if the user explicitly requested `:mri`, `:rust`, 
+  `:ffi`, or `:java`. Now fallback to Citrus only happens when `effective_backend` is `:auto`.
+  This is a **breaking change** for users who relied on silent fallback behavior.
+
+- **Simplified `parser_for` implementation** - Refactored from complex nested conditionals to
+  cleaner helper methods (`load_tree_sitter_language`, `load_citrus_language`). The logic is
+  now easier to follow and maintain.
+
 ### Security
 
 ## [3.2.2] - 2026-01-01

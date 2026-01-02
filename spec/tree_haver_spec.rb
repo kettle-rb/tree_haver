@@ -506,26 +506,71 @@ RSpec.describe TreeHaver do
     end
 
     context "when library_path is provided but does not exist" do
-      it "raises NotAvailable" do
+      it "raises NotAvailable with path in message" do
         expect {
           described_class.parser_for(:nonexistent_lang, library_path: "/nonexistent/path.so")
         }.to raise_error(described_class::NotAvailable, /does not exist/)
       end
+
+      it "does not fall back to Citrus when explicit path fails" do
+        # Even if Citrus config exists, explicit path failure should raise
+        expect {
+          described_class.parser_for(:toml, library_path: "/nonexistent/toml.so")
+        }.to raise_error(described_class::NotAvailable, /does not exist/)
+      end
     end
 
-    context "when no parser is available" do
-      before do
-        # rubocop:disable RSpec/AnyInstance
-        # Stub GrammarFinder to not find anything
-        allow_any_instance_of(described_class::GrammarFinder).to receive(:available?).and_return(false)
-        allow_any_instance_of(described_class::CitrusGrammarFinder).to receive(:available?).and_return(false)
-        # rubocop:enable RSpec/AnyInstance
-      end
-
+    context "when no parser available for language" do
       it "raises NotAvailable" do
         expect {
           described_class.parser_for(:totally_unknown_language_xyz)
         }.to raise_error(described_class::NotAvailable, /No parser available/)
+      end
+    end
+
+    describe "backend selection" do
+      context "when backend is :citrus" do
+        before do
+          described_class.backend = :citrus
+        end
+
+        it "creates a parser with citrus backend", :citrus_backend do
+          parser = described_class.parser_for(:toml)
+          expect(parser).to be_a(described_class::Parser)
+          expect(parser.backend).to eq(:citrus)
+        end
+      end
+
+      context "when using with_backend(:citrus)" do
+        it "creates a parser with citrus backend within the block", :citrus_backend do
+          described_class.with_backend(:citrus) do
+            parser = described_class.parser_for(:toml)
+            expect(parser).to be_a(described_class::Parser)
+            expect(parser.backend).to eq(:citrus)
+          end
+        end
+      end
+
+      context "when backend is :mri" do
+        before do
+          described_class.backend = :mri
+        end
+
+        it "creates a parser with mri backend", :mri_backend, :toml_grammar do
+          parser = described_class.parser_for(:toml)
+
+          expect(parser).to be_a(described_class::Parser)
+          expect(parser.backend).to eq(:mri)
+        end
+      end
+    end
+
+    describe "CITRUS_DEFAULTS" do
+      it "includes configuration for :toml" do
+        expect(described_class::CITRUS_DEFAULTS[:toml]).to include(
+          gem_name: "toml-rb",
+          grammar_const: "TomlRB::Document",
+        )
       end
     end
   end
