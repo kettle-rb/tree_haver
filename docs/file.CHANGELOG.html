@@ -68,7 +68,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-rb/tree_haver/compare/v3.2.2...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-rb/tree_haver/compare/v3.2.3...HEAD">Unreleased</a></h2>
 
 <h3 id="added">Added</h3>
 
@@ -82,6 +82,61 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="security">Security</h3>
 
+<h2 id="323---2026-01-02">
+<a href="https://github.com/kettle-rb/tree_haver/compare/v3.2.2...v3.2.3">3.2.3</a> - 2026-01-02</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.3">v3.2.3</a>
+</li>
+  <li>COVERAGE: 94.91% – 2088/2200 lines in 22 files</li>
+  <li>BRANCH COVERAGE: 81.37% – 738/907 branches in 22 files</li>
+  <li>90.14% documented</li>
+</ul>
+
+<h3 id="fixed-1">Fixed</h3>
+
+<ul>
+  <li>
+<strong><code>parser_for</code> now respects explicitly requested non-native backends</strong> - Previously,<br>
+<code>parser_for</code> would always try tree-sitter backends first and only fall back to alternative<br>
+backends if tree-sitter was unavailable. Now it checks <code>effective_backend</code> and skips<br>
+tree-sitter attempts entirely when a non-native backend is explicitly requested via:
+    <ul>
+      <li>
+<code>TREE_HAVER_BACKEND=citrus</code> (or <code>prism</code>, <code>psych</code>, <code>commonmarker</code>, <code>markly</code>)</li>
+      <li><code>TreeHaver.backend = :citrus</code></li>
+      <li><code>TreeHaver.with_backend(:citrus) { ... }</code></li>
+    </ul>
+
+    <p>Native backends (<code>:mri</code>, <code>:rust</code>, <code>:ffi</code>, <code>:java</code>) still use tree-sitter grammar discovery.</p>
+  </li>
+  <li>
+    <p><strong><code>load_tree_sitter_language</code> now correctly ignores Citrus registrations</strong> - Previously,<br>
+if a language was registered with Citrus first, <code>load_tree_sitter_language</code> would<br>
+incorrectly try to use it even when a native backend was explicitly requested. Now it<br>
+only uses registrations that have a <code>:tree_sitter</code> key, allowing proper backend switching<br>
+between Citrus and native tree-sitter backends.</p>
+  </li>
+  <li>
+    <p><strong><code>load_tree_sitter_language</code> now validates registered paths exist</strong> - Previously,<br>
+if a language had a stale/invalid tree-sitter registration with a non-existent path<br>
+(e.g., from a test), the code would try to use it and fail. Now it checks<br>
+<code>File.exist?(path)</code> before using a registered path, falling back to auto-discovery<br>
+via <code>GrammarFinder</code> if the registered path doesn’t exist.</p>
+  </li>
+  <li>
+    <p><strong><code>Language.method_missing</code> no longer falls back to Citrus when native backend explicitly requested</strong> -<br>
+Previously, when tree-sitter loading failed (e.g., .so file missing), the code would<br>
+silently fall back to Citrus even if the user explicitly requested <code>:mri</code>, <code>:rust</code>,<br>
+<code>:ffi</code>, or <code>:java</code>. Now fallback to Citrus only happens when <code>effective_backend</code> is <code>:auto</code>.<br>
+This is a <strong>breaking change</strong> for users who relied on silent fallback behavior.</p>
+  </li>
+  <li>
+<strong>Simplified <code>parser_for</code> implementation</strong> - Refactored from complex nested conditionals to<br>
+cleaner helper methods (<code>load_tree_sitter_language</code>, <code>load_citrus_language</code>). The logic is<br>
+now easier to follow and maintain.</li>
+</ul>
+
 <h2 id="322---2026-01-01">
 <a href="https://github.com/kettle-rb/tree_haver/compare/v3.2.1...v3.2.2">3.2.2</a> - 2026-01-01</h2>
 
@@ -93,7 +148,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>90.14% documented</li>
 </ul>
 
-<h3 id="fixed-1">Fixed</h3>
+<h3 id="fixed-2">Fixed</h3>
 
 <ul>
   <li>RSpec dependency tags now respect <code>TREE_HAVER_BACKEND</code> environment variable
@@ -186,7 +241,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
 </ul>
 
-<h3 id="fixed-2">Fixed</h3>
+<h3 id="fixed-3">Fixed</h3>
 
 <ul>
   <li>Rakefile now uses correct RSpec tags for FFI isolation
@@ -332,7 +387,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <code>citrus_available?</code> method to check if Citrus backend is available</li>
 </ul>
 
-<h3 id="fixed-3">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 
 <ul>
   <li>
@@ -532,7 +587,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>Use kettle-rb/ts-grammar-setup GHA in CI workflows</li>
 </ul>
 
-<h3 id="fixed-4">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 
 <ul>
   <li>Rakefile now properly overrides <code>test</code> task after <code>require "kettle/dev"</code>
@@ -677,7 +732,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   </li>
 </ul>
 
-<h3 id="fixed-5">Fixed</h3>
+<h3 id="fixed-6">Fixed</h3>
 
 <ul>
   <li>
@@ -870,7 +925,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   </li>
 </ul>
 
-<h3 id="fixed-6">Fixed</h3>
+<h3 id="fixed-7">Fixed</h3>
 
 <ul>
   <li>
@@ -1068,7 +1123,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   </li>
 </ul>
 
-<h3 id="fixed-7">Fixed</h3>
+<h3 id="fixed-8">Fixed</h3>
 
 <h4 id="thread-safety-and-backend-selection">Thread-Safety and Backend Selection</h4>
 
@@ -1260,7 +1315,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>Disabled old pass-through stub classes in <code>tree_haver.rb</code> (wrapped in <code>if false</code> for reference)</li>
 </ul>
 
-<h3 id="fixed-8">Fixed</h3>
+<h3 id="fixed-9">Fixed</h3>
 
 <ul>
   <li>Fixed <code>TreeHaver::Tree#supports_editing?</code> and <code>#edit</code> to handle Delegator wrappers correctly by using <code>.method(:edit)</code> check instead of <code>respond_to?</code>
@@ -1295,7 +1350,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Thu Jan  1 01:42:02 2026 by
+  Generated on Fri Jan  2 05:34:03 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

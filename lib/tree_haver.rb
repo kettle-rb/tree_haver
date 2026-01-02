@@ -595,7 +595,6 @@ module TreeHaver
       mod
     end
 
-
     # Resolve a native tree-sitter backend module (for from_library)
     #
     # This method is similar to resolve_backend_module but ONLY considers
@@ -923,7 +922,7 @@ module TreeHaver
     # @return [Language, nil]
     def load_citrus_language(name, citrus_config: nil)
       config = citrus_config || CITRUS_DEFAULTS[name] || {}
-      return nil unless config[:gem_name] && config[:grammar_const]
+      return unless config[:gem_name] && config[:grammar_const]
 
       finder = CitrusGrammarFinder.new(
         language: name,
@@ -931,7 +930,7 @@ module TreeHaver
         grammar_const: config[:grammar_const],
         require_path: config[:require_path],
       )
-      return nil unless finder.available?
+      return unless finder.available?
 
       finder.register!
       Language.public_send(name)

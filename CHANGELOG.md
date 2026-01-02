@@ -28,6 +28,17 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.2.3] - 2026-01-02
+
+- TAG: [v3.2.3][3.2.3t]
+- COVERAGE: 94.91% -- 2088/2200 lines in 22 files
+- BRANCH COVERAGE: 81.37% -- 738/907 branches in 22 files
+- 90.14% documented
+
+### Fixed
+
 - **`parser_for` now respects explicitly requested non-native backends** - Previously,
   `parser_for` would always try tree-sitter backends first and only fall back to alternative
   backends if tree-sitter was unavailable. Now it checks `effective_backend` and skips
@@ -35,7 +46,7 @@ Please file a bug if you notice a violation of semantic versioning.
   - `TREE_HAVER_BACKEND=citrus` (or `prism`, `psych`, `commonmarker`, `markly`)
   - `TreeHaver.backend = :citrus`
   - `TreeHaver.with_backend(:citrus) { ... }`
-  
+
   Native backends (`:mri`, `:rust`, `:ffi`, `:java`) still use tree-sitter grammar discovery.
 
 - **`load_tree_sitter_language` now correctly ignores Citrus registrations** - Previously,
@@ -52,15 +63,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 - **`Language.method_missing` no longer falls back to Citrus when native backend explicitly requested** -
   Previously, when tree-sitter loading failed (e.g., .so file missing), the code would
-  silently fall back to Citrus even if the user explicitly requested `:mri`, `:rust`, 
+  silently fall back to Citrus even if the user explicitly requested `:mri`, `:rust`,
   `:ffi`, or `:java`. Now fallback to Citrus only happens when `effective_backend` is `:auto`.
   This is a **breaking change** for users who relied on silent fallback behavior.
 
 - **Simplified `parser_for` implementation** - Refactored from complex nested conditionals to
   cleaner helper methods (`load_tree_sitter_language`, `load_citrus_language`). The logic is
   now easier to follow and maintain.
-
-### Security
 
 ## [3.2.2] - 2026-01-01
 
@@ -706,7 +715,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.2...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.3...HEAD
+[3.2.3]: https://github.com/kettle-rb/tree_haver/compare/v3.2.2...v3.2.3
+[3.2.3t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.3
 [3.2.2]: https://github.com/kettle-rb/tree_haver/compare/v3.2.1...v3.2.2
 [3.2.2t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.2
 [3.2.1]: https://github.com/kettle-rb/tree_haver/compare/v3.2.0...v3.2.1

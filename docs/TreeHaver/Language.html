@@ -904,7 +904,10 @@ used based on registration and current backend.</p>
 221
 222
 223
-224</pre>
+224
+225
+226
+227</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 149</span>
@@ -974,10 +977,13 @@ used based on registration and current backend.</p>
 
   <span class='comment'># No tree-sitter path registered - check for Citrus fallback
 </span>  <span class='comment'># This enables auto-fallback when tree-sitter grammar is not installed
-</span>  <span class='comment'># but a Citrus grammar (pure Ruby) is available
-</span>  <span class='id identifier rubyid_citrus_reg'>citrus_reg</span> <span class='op'>=</span> <span class='id identifier rubyid_all_backends'>all_backends</span><span class='lbracket'>[</span><span class='symbol'>:citrus</span><span class='rbracket'>]</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_citrus_reg'>citrus_reg</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_citrus_reg'>citrus_reg</span><span class='lbracket'>[</span><span class='symbol'>:grammar_module</span><span class='rbracket'>]</span>
-    <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Backends/Citrus.html" title="TreeHaver::Backends::Citrus (module)">Citrus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Backends/Citrus/Language.html" title="TreeHaver::Backends::Citrus::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Backends/Citrus/Language.html#initialize-instance_method" title="TreeHaver::Backends::Citrus::Language#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_citrus_reg'>citrus_reg</span><span class='lbracket'>[</span><span class='symbol'>:grammar_module</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+</span>  <span class='comment'># but a Citrus grammar (pure Ruby) is available.
+</span>  <span class='comment'># Only fall back when backend is :auto - explicit native backend requests should fail.
+</span>  <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_effective_backend'><span class='object_link'><a href="../TreeHaver.html#effective_backend-class_method" title="TreeHaver.effective_backend (method)">effective_backend</a></span></span> <span class='op'>==</span> <span class='symbol'>:auto</span>
+    <span class='id identifier rubyid_citrus_reg'>citrus_reg</span> <span class='op'>=</span> <span class='id identifier rubyid_all_backends'>all_backends</span><span class='lbracket'>[</span><span class='symbol'>:citrus</span><span class='rbracket'>]</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_citrus_reg'>citrus_reg</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_citrus_reg'>citrus_reg</span><span class='lbracket'>[</span><span class='symbol'>:grammar_module</span><span class='rbracket'>]</span>
+      <span class='kw'>return</span> <span class='const'><span class='object_link'><a href="Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Backends/Citrus.html" title="TreeHaver::Backends::Citrus (module)">Citrus</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Backends/Citrus/Language.html" title="TreeHaver::Backends::Citrus::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Backends/Citrus/Language.html#initialize-instance_method" title="TreeHaver::Backends::Citrus::Language#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_citrus_reg'>citrus_reg</span><span class='lbracket'>[</span><span class='symbol'>:grammar_module</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
   <span class='kw'>end</span>
 
   <span class='comment'># No appropriate registration found
@@ -1032,12 +1038,12 @@ used based on registration and current backend.</p>
       <pre class="lines">
 
 
-227
-228
-229</pre>
+230
+231
+232</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 227</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 230</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_respond_to_missing?'>respond_to_missing?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='op'>!</span><span class='op'>!</span><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_registered_language'><span class='object_link'><a href="../TreeHaver.html#registered_language-class_method" title="TreeHaver.registered_language (method)">registered_language</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='kw'>super</span>
@@ -1052,7 +1058,7 @@ used based on registration and current backend.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Jan  1 01:42:02 2026 by
+  Generated on Fri Jan  2 05:34:04 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
