@@ -27,8 +27,8 @@ env:
   #   since we aren't submitting these reports anywhere.
   # Because we run tests in different rake tasks,
   #   we don't get a complete coverage picture, and this is artificially low.
-  K_SOUP_COV_MIN_BRANCH: 61
-  K_SOUP_COV_MIN_LINE: 82
+  K_SOUP_COV_MIN_BRANCH: 76
+  K_SOUP_COV_MIN_LINE: 89
   K_SOUP_COV_MIN_HARD: false
   K_SOUP_COV_FORMATTERS: "html,xml,rcov,lcov,json,tty"
   K_SOUP_COV_DO: true
