@@ -102,6 +102,30 @@ module TreeHaver
           def markdown(options: {})
             new(:markdown, options: options)
           end
+
+          # Load language from library path (API compatibility)
+          #
+          # Commonmarker only supports Markdown, so path and symbol parameters are ignored.
+          # This method exists for API consistency with tree-sitter backends,
+          # allowing `TreeHaver.parser_for(:markdown)` to work regardless of backend.
+          #
+          # @param _path [String] Ignored - Commonmarker doesn't load external grammars
+          # @param symbol [String, nil] Ignored
+          # @param name [String, nil] Language name hint (defaults to :markdown)
+          # @return [Language] Markdown language
+          # @raise [TreeHaver::NotAvailable] if requested language is not Markdown
+          def from_library(_path = nil, symbol: nil, name: nil)
+            # Derive language name from symbol if provided
+            lang_name = name || (symbol && symbol.to_s.sub(/^tree_sitter_/, ""))&.to_sym || :markdown
+
+            unless lang_name == :markdown
+              raise TreeHaver::NotAvailable,
+                "Commonmarker backend only supports Markdown, not #{lang_name}. " \
+                "Use a tree-sitter backend for #{lang_name} support."
+            end
+
+            markdown
+          end
         end
 
         # Comparison for sorting/equality

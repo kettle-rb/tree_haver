@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# Setup jtreesitter JAR for JRuby Java backend
+#
+# TreeHaver requires jtreesitter >= 0.26.0. Older versions are NOT supported.
+#
+# Usage:
+#   ./bin/setup-jtreesitter [version]
+#
+# Environment variables set (add to your shell profile or .envrc):
+#   TREE_SITTER_JAVA_JARS_DIR - Directory containing jtreesitter JAR
+#   CLASSPATH - Includes jtreesitter JAR
+#
+# Example .envrc additions:
+#   export TREE_SITTER_JAVA_JARS_DIR="$HOME/.local/share/jtreesitter"
+#   export CLASSPATH="$TREE_SITTER_JAVA_JARS_DIR/jtreesitter-0.26.0.jar${CLASSPATH:+:$CLASSPATH}"
+
+set -euo pipefail
+
+JTREESITTER_VERSION="${1:-0.26.0}"
+INSTALL_DIR="${TREE_SITTER_JAVA_JARS_DIR:-$HOME/.local/share/jtreesitter}"
+
+# Validate minimum version
+MAJOR_VERSION=$(echo "$JTREESITTER_VERSION" | cut -d. -f1)
+MINOR_VERSION=$(echo "$JTREESITTER_VERSION" | cut -d. -f2)
+if [[ "$MAJOR_VERSION" -lt 1 && "$MINOR_VERSION" -lt 26 ]]; then
+  echo "ERROR: jtreesitter >= 0.26.0 is required. Version $JTREESITTER_VERSION is not supported."
+  exit 1
+fi
+
+echo "========================================"
+echo "Setting up jtreesitter ${JTREESITTER_VERSION}"
+echo "========================================"
+echo ""
+
+# Create install directory
+mkdir -p "${INSTALL_DIR}"
+
+JAR_URL="https://repo1.maven.org/maven2/io/github/tree-sitter/jtreesitter/${JTREESITTER_VERSION}/jtreesitter-${JTREESITTER_VERSION}.jar"
+JAR_PATH="${INSTALL_DIR}/jtreesitter-${JTREESITTER_VERSION}.jar"
+
+# Check if already installed
+if [[ -f "${JAR_PATH}" ]]; then
+  echo "jtreesitter ${JTREESITTER_VERSION} already installed at:"
+  echo "  ${JAR_PATH}"
+  echo ""
+else
+  echo "Downloading from Maven Central..."
+  echo "  URL: ${JAR_URL}"
+  echo ""
+
+  if ! curl -fsSL "${JAR_URL}" -o "${JAR_PATH}"; then
+    echo "ERROR: Failed to download jtreesitter from Maven Central"
+    exit 1
+  fi
+
+  echo "Downloaded successfully!"
+  echo ""
+fi
+
+echo "Installation details:"
+ls -la "${JAR_PATH}"
+echo ""
+
+echo "========================================"
+echo "SETUP INSTRUCTIONS"
+echo "========================================"
+echo ""
+echo "Add these to your shell profile (~/.bashrc, ~/.zshrc) or .envrc:"
+echo ""
+echo "  export TREE_SITTER_JAVA_JARS_DIR=\"${INSTALL_DIR}\""
+echo "  export CLASSPATH=\"${JAR_PATH}\${CLASSPATH:+:\$CLASSPATH}\""
+echo ""
+echo "Or for direnv (.envrc):"
+echo ""
+echo "  export TREE_SITTER_JAVA_JARS_DIR=\"${INSTALL_DIR}\""
+echo "  export CLASSPATH=\"${JAR_PATH}\${CLASSPATH:+:\$CLASSPATH}\""
+echo ""
+echo "Then reload your shell or run: source ~/.bashrc"
+echo ""
+echo "========================================"
+echo "VERIFICATION"
+echo "========================================"
+echo ""
+echo "After setting environment variables, verify with JRuby:"
+echo ""
+echo "  TREE_HAVER_BACKEND=java jruby -e '"
+echo "    require \"bundler/setup\""
+echo "    require \"tree_haver\""
+echo "    puts \"Java backend available: #{TreeHaver::Backends::Java.available?}\""
+echo "  '"
+echo ""
+

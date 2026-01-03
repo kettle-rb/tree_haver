@@ -36,7 +36,7 @@ RSpec.describe TreeHaver::Backends::Java do
       end
     end
 
-    context "when not on JRuby", :not_jruby do
+    context "when not on JRuby", :not_jruby_engine do
       before do
         backend.reset!
       end

@@ -131,17 +131,46 @@ module TreeHaver
         # Alias eql? to ==
         alias_method :eql?, :==
 
-        # Not applicable for Citrus (tree-sitter-specific)
+        # Load language from library path (API compatibility)
         #
-        # Citrus grammars are Ruby modules, not shared libraries.
-        # This method exists for API compatibility but will raise an error.
+        # Citrus grammars are Ruby modules, not shared libraries. This method
+        # provides API compatibility with tree-sitter backends by looking up
+        # registered Citrus grammars by name.
         #
-        # @raise [TreeHaver::NotAvailable] always raises
+        # For full API consistency, register a Citrus grammar with:
+        #   TreeHaver.register_language(:toml, grammar_module: TomlRB::Document)
+        #
+        # Then this method will find it when called via `TreeHaver.parser_for(:toml)`.
+        #
+        # @param path [String, nil] Ignored for Citrus (used to derive language name)
+        # @param symbol [String, nil] Used to derive language name if path not provided
+        # @param name [String, Symbol, nil] Language name to look up
+        # @return [Language] Citrus language wrapper
+        # @raise [TreeHaver::NotAvailable] if no Citrus grammar is registered for the language
         class << self
-          def from_library(path, symbol: nil, name: nil)
-            raise TreeHaver::NotAvailable,
-              "Citrus backend doesn't use shared libraries. " \
-                "Use Citrus::Language.new(GrammarModule) instead."
+          def from_library(path = nil, symbol: nil, name: nil)
+            # Derive language name from path, symbol, or explicit name
+            lang_name = name&.to_sym ||
+                        (symbol && symbol.to_s.sub(/^tree_sitter_/, ""))&.to_sym ||
+                        (path && TreeHaver::LibraryPathUtils.derive_language_name_from_path(path))&.to_sym
+
+            unless lang_name
+              raise TreeHaver::NotAvailable,
+                "Citrus backend requires a language name. " \
+                "Provide name: parameter or register a grammar with TreeHaver.register_language."
+            end
+
+            # Look up registered Citrus grammar
+            registration = TreeHaver::LanguageRegistry.registered(lang_name, :citrus)
+
+            unless registration
+              raise TreeHaver::NotAvailable,
+                "No Citrus grammar registered for #{lang_name.inspect}. " \
+                "Register one with: TreeHaver.register_language(:#{lang_name}, grammar_module: YourGrammar)"
+            end
+
+            grammar_module = registration[:grammar_module]
+            new(grammar_module)
           end
 
           alias_method :from_path, :from_library

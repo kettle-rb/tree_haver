@@ -100,6 +100,30 @@ module TreeHaver
           def yaml
             new(:yaml)
           end
+
+          # Load language from library path (API compatibility)
+          #
+          # Psych only supports YAML, so path and symbol parameters are ignored.
+          # This method exists for API consistency with tree-sitter backends,
+          # allowing `TreeHaver.parser_for(:yaml)` to work regardless of backend.
+          #
+          # @param _path [String] Ignored - Psych doesn't load external grammars
+          # @param symbol [String, nil] Ignored
+          # @param name [String, nil] Language name hint (defaults to :yaml)
+          # @return [Language] YAML language
+          # @raise [TreeHaver::NotAvailable] if requested language is not YAML
+          def from_library(_path = nil, symbol: nil, name: nil)
+            # Derive language name from symbol if provided
+            lang_name = name || (symbol && symbol.to_s.sub(/^tree_sitter_/, ""))&.to_sym || :yaml
+
+            unless lang_name == :yaml
+              raise TreeHaver::NotAvailable,
+                "Psych backend only supports YAML, not #{lang_name}. " \
+                "Use a tree-sitter backend for #{lang_name} support."
+            end
+
+            yaml
+          end
         end
 
         # Comparison for sorting/equality

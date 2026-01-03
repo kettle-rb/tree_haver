@@ -153,16 +153,28 @@ module TreeHaver
             new(:ruby, options: options)
           end
 
-          # Not applicable for Prism (tree-sitter-specific)
+          # Load language from library path (API compatibility)
           #
-          # Prism is Ruby-only and doesn't load external grammar libraries.
-          # This method exists for API compatibility but will raise an error.
+          # Prism only supports Ruby, so path and symbol parameters are ignored.
+          # This method exists for API consistency with tree-sitter backends,
+          # allowing `TreeHaver.parser_for(:ruby)` to work regardless of backend.
           #
-          # @raise [TreeHaver::NotAvailable] always raises
-          def from_library(path, symbol: nil, name: nil)
-            raise TreeHaver::NotAvailable,
-              "Prism backend doesn't use shared libraries. " \
-                "Use Prism::Language.ruby instead."
+          # @param _path [String] Ignored - Prism doesn't load external grammars
+          # @param symbol [String, nil] Ignored
+          # @param name [String, nil] Language name hint (defaults to :ruby)
+          # @return [Language] Ruby language
+          # @raise [TreeHaver::NotAvailable] if requested language is not Ruby
+          def from_library(_path = nil, symbol: nil, name: nil)
+            # Derive language name from symbol if provided
+            lang_name = name || (symbol && symbol.to_s.sub(/^tree_sitter_/, ""))&.to_sym || :ruby
+
+            unless lang_name == :ruby
+              raise TreeHaver::NotAvailable,
+                "Prism backend only supports Ruby, not #{lang_name}. " \
+                "Use a tree-sitter backend for #{lang_name} support."
+            end
+
+            ruby
           end
 
           alias_method :from_path, :from_library

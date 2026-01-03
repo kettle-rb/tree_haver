@@ -1,0 +1,238 @@
+#!/usr/bin/env bash
+# Build tree-sitter grammars from source for compatibility with tree-sitter 0.24+
+#
+# Usage:
+#   ./bin/build-grammar toml
+#   ./bin/build-grammar json
+#   ./bin/build-grammar bash
+#
+# Prerequisites:
+#   - git
+#   - C compiler (gcc or clang)
+
+set -euo pipefail
+
+GRAMMAR="${1:-toml}"
+BUILD_DIR="${BUILD_DIR:-/tmp/tree-sitter-grammars}"
+INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/lib/tree-sitter}"
+
+# Grammar repositories (matching ts-grammar-action)
+# Format: "url|branch|type" where type is optional (default: github, alternative: direct)
+declare -A GRAMMAR_REPOS=(
+  ["bash"]="https://github.com/tree-sitter/tree-sitter-bash|master|github"
+  ["json"]="https://github.com/tree-sitter/tree-sitter-json|master|github"
+  ["jsonc"]="https://gitlab.com/WhyNotHugo/tree-sitter-jsonc/-/archive/main/tree-sitter-jsonc-main.zip|main|direct"
+  ["toml"]="https://github.com/tree-sitter-grammars/tree-sitter-toml|master|github"
+  ["markdown"]="https://github.com/tree-sitter-grammars/tree-sitter-markdown|split_parser|github"
+  ["ruby"]="https://github.com/tree-sitter/tree-sitter-ruby|master|github"
+  ["javascript"]="https://github.com/tree-sitter/tree-sitter-javascript|master|github"
+  ["typescript"]="https://github.com/tree-sitter/tree-sitter-typescript|master|github"
+  ["python"]="https://github.com/tree-sitter/tree-sitter-python|master|github"
+)
+
+# Symbol names (usually tree_sitter_<lang>)
+declare -A GRAMMAR_SYMBOLS=(
+  ["bash"]="tree_sitter_bash"
+  ["json"]="tree_sitter_json"
+  ["jsonc"]="tree_sitter_jsonc"
+  ["toml"]="tree_sitter_toml"
+  ["markdown"]="tree_sitter_markdown"
+  ["ruby"]="tree_sitter_ruby"
+  ["javascript"]="tree_sitter_javascript"
+  ["typescript"]="tree_sitter_typescript"
+  ["python"]="tree_sitter_python"
+)
+
+if [[ -z "${GRAMMAR_REPOS[$GRAMMAR]:-}" ]]; then
+  echo "ERROR: Unknown grammar '$GRAMMAR'"
+  echo "Available grammars: ${!GRAMMAR_REPOS[*]}"
+  exit 1
+fi
+
+IFS='|' read -r REPO_URL BRANCH URL_TYPE <<< "${GRAMMAR_REPOS[$GRAMMAR]}"
+SYMBOL="${GRAMMAR_SYMBOLS[$GRAMMAR]}"
+
+echo "========================================"
+echo "Building tree-sitter-${GRAMMAR}"
+echo "========================================"
+echo ""
+echo "Source:     ${REPO_URL}"
+echo "Branch:     ${BRANCH}"
+echo "Type:       ${URL_TYPE}"
+echo "Build dir:  ${BUILD_DIR}"
+echo "Install to: ${INSTALL_DIR}"
+echo ""
+
+# Create directories
+mkdir -p "${BUILD_DIR}" "${INSTALL_DIR}"
+cd "${BUILD_DIR}"
+
+# Clean up any previous builds
+rm -rf "tree-sitter-${GRAMMAR}-"* "${GRAMMAR}.zip" 2>/dev/null || true
+
+# Download the grammar
+if [[ "$URL_TYPE" == "direct" ]]; then
+  # Direct URL (e.g., GitLab archive URLs)
+  echo "Downloading from direct URL..."
+  if ! curl -fsSL "$REPO_URL" -o "${GRAMMAR}.zip"; then
+    echo "ERROR: Failed to download tree-sitter-${GRAMMAR}"
+    exit 1
+  fi
+else
+  # GitHub-style archive URL
+  echo "Downloading from GitHub..."
+  if ! curl -fsSL "${REPO_URL}/archive/refs/heads/${BRANCH}.zip" -o "${GRAMMAR}.zip"; then
+    # Try alternative branch (main vs master)
+    ALT_BRANCH=$([[ "$BRANCH" == "master" ]] && echo "main" || echo "master")
+    echo "Branch ${BRANCH} not found, trying ${ALT_BRANCH}..."
+    if ! curl -fsSL "${REPO_URL}/archive/refs/heads/${ALT_BRANCH}.zip" -o "${GRAMMAR}.zip"; then
+      echo "ERROR: Failed to download tree-sitter-${GRAMMAR}"
+      exit 1
+    fi
+    BRANCH="$ALT_BRANCH"
+  fi
+fi
+
+echo "Extracting..."
+unzip -q "${GRAMMAR}.zip"
+
+# Find the extracted directory
+GRAMMAR_DIR=$(find . -maxdepth 1 -type d -name "tree-sitter-${GRAMMAR}*" | head -1)
+if [[ -z "$GRAMMAR_DIR" ]]; then
+  echo "ERROR: Could not find extracted directory"
+  ls -la
+  exit 1
+fi
+
+cd "$GRAMMAR_DIR"
+echo "Working in: $(pwd)"
+
+# Regenerate parser.c with current tree-sitter CLI for ABI compatibility
+# This is critical for tree-sitter 0.24+ which changed the ABI
+if command -v tree-sitter &> /dev/null; then
+  echo ""
+  echo "Regenerating parser with tree-sitter CLI for ABI compatibility..."
+  TS_VERSION=$(tree-sitter --version 2>&1 | head -1)
+  echo "  tree-sitter version: ${TS_VERSION}"
+
+  # Check if grammar.js exists (needed for regeneration)
+  if [[ -f "grammar.js" ]]; then
+    # Save original parser.c timestamp for comparison
+    ORIGINAL_MTIME=""
+    if [[ -f "src/parser.c" ]]; then
+      ORIGINAL_MTIME=$(stat -c %Y "src/parser.c" 2>/dev/null || stat -f %m "src/parser.c" 2>/dev/null || echo "")
+    fi
+
+    echo "  Running: tree-sitter generate"
+    if tree-sitter generate; then
+      echo "  ✓ tree-sitter generate completed"
+
+      # Verify parser.c was actually regenerated
+      if [[ -f "src/parser.c" ]]; then
+        NEW_MTIME=$(stat -c %Y "src/parser.c" 2>/dev/null || stat -f %m "src/parser.c" 2>/dev/null || echo "")
+        if [[ -n "$ORIGINAL_MTIME" && "$ORIGINAL_MTIME" == "$NEW_MTIME" ]]; then
+          echo "  ⚠ Warning: parser.c was not modified - regeneration may have failed"
+        else
+          echo "  ✓ parser.c was regenerated"
+        fi
+
+        # Check for ABI version in regenerated parser.c
+        if grep -q "ts_language_abi_version" "src/parser.c" 2>/dev/null; then
+          echo "  ✓ Generated parser uses ts_language_abi_version (tree-sitter 0.24+ compatible)"
+        elif grep -q "ts_language_version" "src/parser.c" 2>/dev/null; then
+          echo "  ⚠ Warning: Generated parser uses ts_language_version (tree-sitter < 0.24)"
+          echo "    Your tree-sitter CLI may be outdated. Try: brew upgrade tree-sitter"
+        fi
+      fi
+    else
+      echo "  ✗ tree-sitter generate failed"
+      echo "  Trying with --no-bindings flag..."
+      if tree-sitter generate --no-bindings; then
+        echo "  ✓ tree-sitter generate --no-bindings completed"
+      else
+        echo "  ✗ tree-sitter generate --no-bindings also failed"
+        echo "  Using existing parser.c (may not be compatible with tree-sitter 0.24+)"
+      fi
+    fi
+  else
+    echo "  Warning: No grammar.js found, using existing parser.c"
+    echo "  The grammar may not be compatible with tree-sitter 0.24+"
+  fi
+else
+  echo ""
+  echo "Warning: tree-sitter CLI not found"
+  echo "  Install with: brew install tree-sitter"
+  echo "  Or: npm install -g tree-sitter-cli"
+  echo "  Without regeneration, grammar may not be compatible with tree-sitter 0.24+"
+fi
+
+# Find src directory
+SRC_DIR="./src"
+if [[ ! -d "${SRC_DIR}" ]]; then
+  echo "ERROR: Cannot find src directory"
+  ls -la
+  exit 1
+fi
+
+if [[ ! -f "${SRC_DIR}/parser.c" ]]; then
+  echo "ERROR: Cannot find parser.c in ${SRC_DIR}"
+  ls -la "${SRC_DIR}/"
+  exit 1
+fi
+
+echo ""
+echo "Compiling..."
+
+# Compile
+CC="${CC:-gcc}"
+CFLAGS="${CFLAGS:--O2 -fPIC}"
+
+# Compile parser.c
+${CC} ${CFLAGS} -I"${SRC_DIR}" -c "${SRC_DIR}/parser.c" -o parser.o
+
+OBJECTS="parser.o"
+
+# Check for scanner (some grammars have external scanners)
+if [[ -f "${SRC_DIR}/scanner.c" ]]; then
+  echo "Compiling C scanner..."
+  ${CC} ${CFLAGS} -I"${SRC_DIR}" -c "${SRC_DIR}/scanner.c" -o scanner.o
+  OBJECTS="parser.o scanner.o"
+elif [[ -f "${SRC_DIR}/scanner.cc" ]]; then
+  echo "Compiling C++ scanner..."
+  CXX="${CXX:-g++}"
+  ${CXX} ${CFLAGS} -I"${SRC_DIR}" -c "${SRC_DIR}/scanner.cc" -o scanner.o
+  OBJECTS="parser.o scanner.o"
+fi
+
+echo "Linking shared library..."
+OUTPUT_LIB="${INSTALL_DIR}/libtree-sitter-${GRAMMAR}.so"
+${CC} -shared -o "${OUTPUT_LIB}" ${OBJECTS}
+
+echo ""
+echo "========================================"
+echo "SUCCESS!"
+echo "========================================"
+echo ""
+echo "Library built at: ${OUTPUT_LIB}"
+echo ""
+ls -la "${OUTPUT_LIB}"
+echo ""
+
+# Verify the symbol is exported
+if command -v nm &> /dev/null; then
+  echo "Verifying symbol export..."
+  if nm -D "${OUTPUT_LIB}" 2>/dev/null | grep -q "${SYMBOL}"; then
+    echo "  ✓ Symbol '${SYMBOL}' is exported"
+  else
+    echo "  ⚠ Symbol '${SYMBOL}' not found in exports"
+    echo "  Available symbols:"
+    nm -D "${OUTPUT_LIB}" 2>/dev/null | grep "tree_sitter" | head -5
+  fi
+fi
+
+echo ""
+echo "Add to your .envrc:"
+echo ""
+echo "  export TREE_SITTER_${GRAMMAR^^}_PATH=\"${OUTPUT_LIB}\""
+echo ""
+

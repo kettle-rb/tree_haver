@@ -20,13 +20,82 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- **BackendAPI validation module** - New `TreeHaver::BackendAPI` module for validating
+  backend API compliance:
+  - `BackendAPI.validate(backend_module)` - Returns validation results hash
+  - `BackendAPI.validate!(backend_module)` - Raises on validation failure
+  - `BackendAPI.validate_node_instance(node)` - Validates a node instance
+  - Defines required and optional methods for Language, Parser, Tree, and Node classes
+  - Documents API contract for wrapper vs raw backends
+  - New `examples/validate_backends.rb` script to validate all backends
+- **Java backend Node class now implements full API** - Added missing methods to ensure
+  API consistency with other backends:
+  - `parent` - Get parent node
+  - `next_sibling` - Get next sibling node
+  - `prev_sibling` - Get previous sibling node
+  - `named?` - Check if node is named
+  - `child_by_field_name` - Get child by field name
+  - All methods properly handle jtreesitter 0.26.0's `Optional<Node>` return types
+- **Three environment variables for backend control** - Fine-grained control over which
+  backends are available:
+  - `TREE_HAVER_BACKEND` - Single backend selection (auto, mri, ffi, rust, java, citrus, etc.)
+  - `TREE_HAVER_NATIVE_BACKEND` - Allow list for native backends (auto, none, or comma-separated
+    list like `mri,ffi`). Use `none` for pure-Ruby-only mode.
+  - `TREE_HAVER_RUBY_BACKEND` - Allow list for pure Ruby backends (auto, none, or comma-separated
+    list like `citrus,prism`). Use `none` for native-only mode.
+- **Backend availability now respects allow lists** - When `TREE_HAVER_NATIVE_BACKEND` is set
+  to specific backends (e.g., `mri,ffi`), all other native backends are reported as "not available"
+- **Java backend updated for jtreesitter 0.26.0** - Full compatibility with jtreesitter 0.26.0:
+  - Updated `Parser#parse` and `Parser#parse_string` to handle `Optional<Tree>` return type
+  - Updated `Tree#root_node` to handle `Optional<Node>` return type
+  - Fixed `parse_string` argument order to match jtreesitter 0.26.0 API: `parse(String, Tree)`
+  - Updated `Language.load_by_name` to use `SymbolLookup` API (single-arg `load(name)` removed)
+  - Added `bin/setup-jtreesitter` script to download jtreesitter JAR from Maven Central
+  - Added `bin/build-grammar` script to build tree-sitter grammars from source
+  - Older versions of jtreesitter are NOT supported
+
 ### Changed
+
+- **API normalized: `from_library` is now universal** - All language-specific backends
+  (Psych, Prism, Commonmarker, Markly) now implement `Language.from_library` for API
+  consistency. This allows `TreeHaver.parser_for(:yaml)` to work uniformly regardless
+  of which backend is active:
+  - **Psych**: `from_library` accepts (and ignores) path/symbol, returns YAML language
+  - **Prism**: `from_library` accepts (and ignores) path/symbol, returns Ruby language
+  - **Commonmarker**: `from_library` accepts (and ignores) path/symbol, returns Markdown language
+  - **Markly**: `from_library` accepts (and ignores) path/symbol, returns Markdown language
+  - All raise `TreeHaver::NotAvailable` if a different language is requested
+- **Citrus backend `from_library` now looks up registered grammars** - Instead of always
+  raising an error, `Backends::Citrus::Language.from_library` now looks up registered
+  Citrus grammars by name via `LanguageRegistry`. This enables `TreeHaver.parser_for(:toml)`
+  to work seamlessly when a Citrus grammar has been registered with
+  `TreeHaver.register_language(:toml, grammar_module: TomlRB::Document)`.
+- **Java backend requires jtreesitter >= 0.26.0** - Due to API changes in jtreesitter,
+  older versions are no longer supported. The tree-sitter runtime library must also be
+  version 0.26.x to match.
+  by the RSpec dependency tags. This ensures tests tagged with `:mri_backend` only run when
+  MRI is in the allow list. Same for `TREE_HAVER_RUBY_BACKEND` and pure Ruby backends.
+- New `TreeHaver.allowed_native_backends` method returns the allow list for native backends.
+- New `TreeHaver.allowed_ruby_backends` method returns the allow list for pure Ruby backends.
+- New `TreeHaver.backend_allowed?(backend)` method checks if a specific backend is allowed
+  based on the current environment variable settings.
+- New `DependencyTags.allowed_native_backends` and `DependencyTags.allowed_ruby_backends` methods.
+- Updated `examples/test_backend_selection.rb` script to test all three environment variables.
+
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- **`java_backend_available?` now verifies grammar loading works** - Previously, the
+  `DependencyTags.java_backend_available?` method only checked if java-tree-sitter
+  classes could be loaded, but didn't verify that grammars could actually be used.
+  This caused tests tagged with `:java_backend` to run on JRuby even when the grammar
+  `.so` files (built for MRI) were incompatible with java-tree-sitter's Foreign Function
+  Memory API. Now the check does a live test by attempting to load a grammar, ensuring
+  the tag accurately reflects whether the Java backend is fully functional.
 
 ### Security
 

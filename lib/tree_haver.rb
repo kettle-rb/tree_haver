@@ -108,6 +108,7 @@ module TreeHaver
   # Autoload internal modules
   autoload :LibraryPathUtils, File.join(__dir__, "tree_haver", "library_path_utils")
   autoload :LanguageRegistry, File.join(__dir__, "tree_haver", "language_registry")
+  autoload :BackendAPI, File.join(__dir__, "tree_haver", "backend_api")
 
   # Base error class for TreeHaver exceptions
   # @see https://github.com/Faveod/ruby-tree-sitter/pull/83 for inherit from Exception reasoning
@@ -350,18 +351,92 @@ module TreeHaver
     # @example
     #   TreeHaver.backend  # => :auto
     def backend
-      @backend ||= case (ENV["TREE_HAVER_BACKEND"] || :auto).to_s # rubocop:disable ThreadSafety/ClassInstanceVariable
-      when "mri" then :mri
-      when "rust" then :rust
-      when "ffi" then :ffi
-      when "java" then :java
-      when "citrus" then :citrus
-      when "prism" then :prism
-      when "psych" then :psych
-      when "commonmarker" then :commonmarker
-      when "markly" then :markly
-      else :auto
+      return @backend if defined?(@backend) && @backend # rubocop:disable ThreadSafety/ClassInstanceVariable
+
+      @backend = parse_single_backend_env # rubocop:disable ThreadSafety/ClassInstanceVariable
+    end
+
+    # Valid native backend names (require native extensions)
+    VALID_NATIVE_BACKENDS = %w[mri rust ffi java].freeze
+
+    # Valid pure Ruby backend names (no native extensions)
+    VALID_RUBY_BACKENDS = %w[citrus prism psych commonmarker markly].freeze
+
+    # All valid backend names
+    VALID_BACKENDS = (VALID_NATIVE_BACKENDS + VALID_RUBY_BACKENDS + %w[auto none]).freeze
+
+    # Get allowed native backends from TREE_HAVER_NATIVE_BACKEND environment variable
+    #
+    # Supports comma-separated values like "mri,ffi".
+    # Special values:
+    # - "auto" or empty/unset: automatically select from available native backends
+    # - "none": no native backends allowed (pure Ruby only)
+    #
+    # @return [Array<Symbol>] list of allowed native backend symbols, or [:auto] or [:none]
+    # @example Allow only MRI and FFI
+    #   # TREE_HAVER_NATIVE_BACKEND=mri,ffi
+    #   TreeHaver.allowed_native_backends  # => [:mri, :ffi]
+    # @example Auto-select native backends (default)
+    #   # TREE_HAVER_NATIVE_BACKEND not set, empty, or "auto"
+    #   TreeHaver.allowed_native_backends  # => [:auto]
+    # @example Disable all native backends
+    #   # TREE_HAVER_NATIVE_BACKEND=none
+    #   TreeHaver.allowed_native_backends  # => [:none]
+    def allowed_native_backends
+      @allowed_native_backends ||= parse_backend_list_env("TREE_HAVER_NATIVE_BACKEND", VALID_NATIVE_BACKENDS) # rubocop:disable ThreadSafety/ClassInstanceVariable
+    end
+
+    # Get allowed Ruby backends from TREE_HAVER_RUBY_BACKEND environment variable
+    #
+    # Supports comma-separated values like "citrus,prism".
+    # Special values:
+    # - "auto" or empty/unset: automatically select from available Ruby backends
+    # - "none": no Ruby backends allowed (native only)
+    #
+    # @return [Array<Symbol>] list of allowed Ruby backend symbols, or [:auto] or [:none]
+    # @example Allow only Citrus
+    #   # TREE_HAVER_RUBY_BACKEND=citrus
+    #   TreeHaver.allowed_ruby_backends  # => [:citrus]
+    # @example Auto-select Ruby backends (default)
+    #   # TREE_HAVER_RUBY_BACKEND not set, empty, or "auto"
+    #   TreeHaver.allowed_ruby_backends  # => [:auto]
+    def allowed_ruby_backends
+      @allowed_ruby_backends ||= parse_backend_list_env("TREE_HAVER_RUBY_BACKEND", VALID_RUBY_BACKENDS) # rubocop:disable ThreadSafety/ClassInstanceVariable
+    end
+
+    # Check if a specific backend is allowed based on environment variables
+    #
+    # Checks TREE_HAVER_NATIVE_BACKEND for native backends and
+    # TREE_HAVER_RUBY_BACKEND for pure Ruby backends.
+    #
+    # @param backend_name [Symbol, String] the backend to check
+    # @return [Boolean] true if the backend is allowed
+    # @example
+    #   # TREE_HAVER_NATIVE_BACKEND=mri
+    #   TreeHaver.backend_allowed?(:mri)    # => true
+    #   TreeHaver.backend_allowed?(:ffi)    # => false
+    #   TreeHaver.backend_allowed?(:citrus) # => true (Ruby backends use separate env var)
+    def backend_allowed?(backend_name)
+      backend_sym = backend_name.to_sym
+
+      # Check if it's a native backend
+      if VALID_NATIVE_BACKENDS.include?(backend_sym.to_s)
+        allowed = allowed_native_backends
+        return true if allowed == [:auto]
+        return false if allowed == [:none]
+        return allowed.include?(backend_sym)
       end
+
+      # Check if it's a Ruby backend
+      if VALID_RUBY_BACKENDS.include?(backend_sym.to_s)
+        allowed = allowed_ruby_backends
+        return true if allowed == [:auto]
+        return false if allowed == [:none]
+        return allowed.include?(backend_sym)
+      end
+
+      # Unknown backend or :auto - allow
+      true
     end
 
     # Set the backend to use
@@ -388,6 +463,52 @@ module TreeHaver
     #   TreeHaver.reset_backend!(to: :ffi)
     def reset_backend!(to: :auto)
       @backend = to&.to_sym # rubocop:disable ThreadSafety/ClassInstanceVariable
+      @allowed_native_backends = nil # rubocop:disable ThreadSafety/ClassInstanceVariable
+      @allowed_ruby_backends = nil # rubocop:disable ThreadSafety/ClassInstanceVariable
+    end
+
+    # Parse TREE_HAVER_BACKEND environment variable (single backend)
+    #
+    # @return [Symbol] the backend symbol (:auto if not set or invalid)
+    # @api private
+    def parse_single_backend_env
+      env_value = ENV["TREE_HAVER_BACKEND"]
+      return :auto if env_value.nil? || env_value.strip.empty?
+
+      name = env_value.strip.downcase
+      return :auto unless VALID_BACKENDS.include?(name) && name != "all" && name != "none"
+
+      name.to_sym
+    end
+
+    # Parse a backend list environment variable
+    #
+    # @param env_var [String] the environment variable name
+    # @param valid_backends [Array<String>] list of valid backend names
+    # @return [Array<Symbol>] list of backend symbols, or [:auto] or [:none]
+    # @api private
+    def parse_backend_list_env(env_var, valid_backends)
+      env_value = ENV[env_var]
+
+      # Empty or unset means "auto"
+      return [:auto] if env_value.nil? || env_value.strip.empty?
+
+      normalized = env_value.strip.downcase
+
+      # Handle special values
+      return [:auto] if normalized == "auto"
+      return [:none] if normalized == "none"
+
+      # Split on comma and parse each backend
+      backends = normalized.split(",").map(&:strip).uniq
+
+      # Convert to symbols, filtering out invalid ones
+      parsed = backends.filter_map do |name|
+        valid_backends.include?(name) ? name.to_sym : nil
+      end
+
+      # Return :auto if no valid backends found
+      parsed.empty? ? [:auto] : parsed
     end
 
     # Thread-local backend context storage

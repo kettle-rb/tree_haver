@@ -2,26 +2,35 @@
 
 module TreeHaver
   module Backends
-    # Java backend for JRuby using java-tree-sitter (jtreesitter)
+    # Java backend for JRuby using jtreesitter (java-tree-sitter)
     #
-    # This backend integrates with java-tree-sitter JARs on JRuby,
+    # This backend integrates with jtreesitter JARs on JRuby,
     # leveraging JRuby's native Java integration for optimal performance.
     #
-    # java-tree-sitter provides Java bindings to tree-sitter and supports:
+    # == Features
+    #
+    # jtreesitter (java-tree-sitter) provides Java bindings to tree-sitter and supports:
     # - Parsing source code into syntax trees
     # - Incremental parsing via Parser.parse(Tree, String)
     # - The Query API for pattern matching
     # - Tree editing for incremental re-parsing
     #
+    # == Version Requirements
+    #
+    # - jtreesitter >= 0.26.0 (required)
+    # - tree-sitter runtime library >= 0.26.0 (must match jtreesitter version)
+    #
+    # Older versions of jtreesitter are NOT supported due to API changes.
+    #
     # == Platform Compatibility
     #
     # - MRI Ruby: ✗ Not available (no JVM)
     # - JRuby: ✓ Full support (native Java integration)
-    # - TruffleRuby: ✗ Not available (java-tree-sitter requires JRuby's Java interop)
+    # - TruffleRuby: ✗ Not available (jtreesitter requires JRuby's Java interop)
     #
     # == Installation
     #
-    # 1. Download the JAR from Maven Central:
+    # 1. Download jtreesitter 0.26.0+ JAR from Maven Central:
     #    https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter
     #
     # 2. Set the environment variable to point to the JAR directory:
@@ -31,7 +40,7 @@ module TreeHaver
     #    jruby -e "require 'tree_haver'; puts TreeHaver::Backends::Java.available?"
     #
     # @see https://github.com/tree-sitter/java-tree-sitter source
-    # @see https://tree-sitter.github.io/java-tree-sitter java-tree-sitter documentation
+    # @see https://tree-sitter.github.io/java-tree-sitter jtreesitter documentation
     # @see https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter Maven Central
     module Java
       # The Java package for java-tree-sitter
@@ -402,16 +411,51 @@ module TreeHaver
           def load_by_name(name)
             raise TreeHaver::NotAvailable, "Java backend not available" unless Java.available?
 
+            # Try to find the grammar library in standard locations
+            # Look for library names like "tree-sitter-toml" or "libtree-sitter-toml"
+            lib_names = [
+              "tree-sitter-#{name}",
+              "libtree-sitter-#{name}",
+              "tree_sitter_#{name}",
+            ]
+
             begin
-              # java-tree-sitter's Language.load(String) searches for the language
-              # in the classpath using standard naming conventions
-              java_lang = Java.java_classes[:Language].load(name)
-              new(java_lang, symbol: "tree_sitter_#{name}")
+              arena = ::Java::JavaLangForeign::Arena.global
+              symbol_lookup_class = ::Java::JavaLangForeign::SymbolLookup
+
+              # Ensure runtime lookup is available
+              unless Java.runtime_lookup
+                Java.runtime_lookup = symbol_lookup_class.libraryLookup("libtree-sitter.so", arena)
+              end
+
+              # Try each library name
+              grammar_lookup = nil
+              lib_names.each do |lib_name|
+                begin
+                  grammar_lookup = symbol_lookup_class.libraryLookup(lib_name, arena)
+                  break
+                rescue ::Java::JavaLang::IllegalArgumentException
+                  # Library not found in search path, try next name
+                  next
+                end
+              end
+
+              unless grammar_lookup
+                raise TreeHaver::NotAvailable,
+                  "Failed to load language '#{name}': Library not found. " \
+                    "Ensure the grammar library (e.g., libtree-sitter-#{name}.so) " \
+                    "is in LD_LIBRARY_PATH."
+              end
+
+              combined_lookup = grammar_lookup.or(Java.runtime_lookup)
+              sym = "tree_sitter_#{name}"
+              java_lang = Java.java_classes[:Language].load(combined_lookup, sym)
+              new(java_lang, symbol: sym)
             rescue ::Java::JavaLang::RuntimeException => e
               raise TreeHaver::NotAvailable,
                 "Failed to load language '#{name}': #{e.message}. " \
-                  "Ensure the grammar JAR (e.g., tree-sitter-#{name}-X.Y.Z.jar) " \
-                  "is in TREE_SITTER_JAVA_JARS_DIR."
+                  "Ensure the grammar library (e.g., libtree-sitter-#{name}.so) " \
+                  "is in LD_LIBRARY_PATH."
             end
           end
         end
@@ -450,8 +494,10 @@ module TreeHaver
         # @param source [String] the source code to parse
         # @return [Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
         def parse(source)
-          java_tree = @parser.parse(source)
-          # Return raw Java::Tree - TreeHaver::Parser will wrap it
+          java_result = @parser.parse(source)
+          # jtreesitter 0.26.0 returns Optional<Tree>
+          java_tree = unwrap_optional(java_result)
+          raise TreeHaver::Error, "Parser returned no tree" unless java_tree
           Tree.new(java_tree)
         end
 
@@ -466,17 +512,43 @@ module TreeHaver
         # @param old_tree [Tree, nil] previous backend tree for incremental parsing (already unwrapped)
         # @param source [String] the source code to parse
         # @return [Tree] raw backend tree (wrapping happens in TreeHaver::Parser)
-        # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Parser.html#parse(io.github.treesitter.jtreesitter.Tree,java.lang.String)
+        # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Parser.html#parse(java.lang.String,io.github.treesitter.jtreesitter.Tree)
         def parse_string(old_tree, source)
           # old_tree is already unwrapped to Tree wrapper's impl by TreeHaver::Parser
           if old_tree
-            java_old_tree = old_tree.is_a?(Tree) ? old_tree.impl : old_tree
-            java_tree = @parser.parse(java_old_tree, source)
+            # Get the actual Java Tree object
+            java_old_tree = if old_tree.is_a?(Tree)
+              old_tree.impl
+            else
+              unwrap_optional(old_tree)
+            end
+
+            if java_old_tree
+              # jtreesitter 0.26.0 API: parse(String source, Tree oldTree)
+              java_result = @parser.parse(source, java_old_tree)
+            else
+              java_result = @parser.parse(source)
+            end
           else
-            java_tree = @parser.parse(source)
+            java_result = @parser.parse(source)
           end
-          # Return raw Java::Tree - TreeHaver::Parser will wrap it
+          # jtreesitter 0.26.0 returns Optional<Tree>
+          java_tree = unwrap_optional(java_result)
+          raise TreeHaver::Error, "Parser returned no tree" unless java_tree
           Tree.new(java_tree)
+        end
+
+        private
+
+        # Unwrap Java Optional
+        #
+        # jtreesitter 0.26.0 returns Optional<T> from many methods.
+        #
+        # @param value [Object] an Optional or direct value
+        # @return [Object, nil] unwrapped value or nil if empty
+        def unwrap_optional(value)
+          return value unless value.respond_to?(:isPresent)
+          value.isPresent ? value.get : nil
         end
       end
 
@@ -494,8 +566,18 @@ module TreeHaver
         # Get the root node of the tree
         #
         # @return [Node] the root node
+        # @raise [TreeHaver::Error] if tree has no root node
         def root_node
-          Node.new(@impl.rootNode)
+          result = @impl.rootNode
+          # jtreesitter 0.26.0: rootNode() may return Optional<Node> or Node directly
+          java_node = if result.respond_to?(:isPresent)
+            raise TreeHaver::Error, "Tree has no root node" unless result.isPresent
+            result.get
+          else
+            result
+          end
+          raise TreeHaver::Error, "Tree has no root node" unless java_node
+          Node.new(java_node)
         end
 
         # Mark the tree as edited for incremental re-parsing
@@ -556,9 +638,27 @@ module TreeHaver
         # Get a child by index
         #
         # @param index [Integer] the child index
-        # @return [Node] the child node
+        # @return [Node, nil] the child node or nil if index out of bounds
         def child(index)
-          Node.new(@impl.child(index))
+          # jtreesitter 0.26.0: getChild returns Optional<Node> or throws IndexOutOfBoundsException
+          result = @impl.getChild(index)
+          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          java_node = result.respond_to?(:get) ? result.get : result
+          Node.new(java_node)
+        rescue ::Java::JavaLang::IndexOutOfBoundsException
+          nil
+        end
+
+        # Get a child by field name
+        #
+        # @param name [String] the field name
+        # @return [Node, nil] the child node or nil if not found
+        def child_by_field_name(name)
+          # jtreesitter 0.26.0: getChildByFieldName returns Optional<Node>
+          result = @impl.getChildByFieldName(name)
+          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          java_node = result.respond_to?(:get) ? result.get : result
+          Node.new(java_node)
         end
 
         # Iterate over children
@@ -614,6 +714,46 @@ module TreeHaver
         # @return [Boolean] true if this is a MISSING node
         def missing?
           @impl.isMissing
+        end
+
+        # Check if this is a named node
+        #
+        # @return [Boolean] true if this is a named node
+        def named?
+          @impl.isNamed
+        end
+
+        # Get the parent node
+        #
+        # @return [Node, nil] the parent node or nil if this is the root
+        def parent
+          # jtreesitter 0.26.0: getParent returns Optional<Node>
+          result = @impl.getParent
+          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          java_node = result.respond_to?(:get) ? result.get : result
+          Node.new(java_node)
+        end
+
+        # Get the next sibling node
+        #
+        # @return [Node, nil] the next sibling or nil if none
+        def next_sibling
+          # jtreesitter 0.26.0: getNextSibling returns Optional<Node>
+          result = @impl.getNextSibling
+          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          java_node = result.respond_to?(:get) ? result.get : result
+          Node.new(java_node)
+        end
+
+        # Get the previous sibling node
+        #
+        # @return [Node, nil] the previous sibling or nil if none
+        def prev_sibling
+          # jtreesitter 0.26.0: getPrevSibling returns Optional<Node>
+          result = @impl.getPrevSibling
+          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          java_node = result.respond_to?(:get) ? result.get : result
+          Node.new(java_node)
         end
 
         # Get the text of this node

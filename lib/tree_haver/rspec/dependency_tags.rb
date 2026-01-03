@@ -201,6 +201,63 @@ module TreeHaver
     module DependencyTags
       class << self
         # ============================================================
+        # Backend Selection via Environment Variables
+        # ============================================================
+        #
+        # Three environment variables control backend availability:
+        #
+        # TREE_HAVER_BACKEND - Single backend selection (the primary one to use)
+        #   Values: auto, mri, ffi, rust, java, citrus, prism, psych, commonmarker, markly
+        #   Default: auto
+        #
+        # TREE_HAVER_NATIVE_BACKEND - Allow list for native backends
+        #   Values: all, none, or comma-separated list (mri, ffi, rust, java)
+        #   Default: all (empty or unset)
+        #   Example: TREE_HAVER_NATIVE_BACKEND=mri,ffi
+        #
+        # TREE_HAVER_RUBY_BACKEND - Allow list for pure Ruby backends
+        #   Values: all, none, or comma-separated list (citrus, prism, psych, commonmarker, markly)
+        #   Default: all (empty or unset)
+        #   Example: TREE_HAVER_RUBY_BACKEND=citrus
+        #
+        # This ensures tests tagged with :mri_backend only run when MRI is allowed, etc.
+
+        # Get the selected backend from TREE_HAVER_BACKEND
+        #
+        # @return [Symbol] the selected backend (:auto if not set)
+        def selected_backend
+          return @selected_backend if defined?(@selected_backend)
+          @selected_backend = TreeHaver.backend
+        end
+
+        # Get allowed native backends from TREE_HAVER_NATIVE_BACKEND
+        #
+        # @return [Array<Symbol>] list of allowed native backends, or [:all] or [:none]
+        def allowed_native_backends
+          return @allowed_native_backends if defined?(@allowed_native_backends)
+          @allowed_native_backends = TreeHaver.allowed_native_backends
+        end
+
+        # Get allowed Ruby backends from TREE_HAVER_RUBY_BACKEND
+        #
+        # @return [Array<Symbol>] list of allowed Ruby backends, or [:all] or [:none]
+        def allowed_ruby_backends
+          return @allowed_ruby_backends if defined?(@allowed_ruby_backends)
+          @allowed_ruby_backends = TreeHaver.allowed_ruby_backends
+        end
+
+        # Check if a specific backend is allowed based on environment variables
+        #
+        # Delegates to TreeHaver.backend_allowed? which handles both
+        # TREE_HAVER_NATIVE_BACKEND and TREE_HAVER_RUBY_BACKEND.
+        #
+        # @param backend [Symbol] the backend to check (:mri, :ffi, :citrus, etc.)
+        # @return [Boolean] true if the backend is allowed
+        def backend_allowed?(backend)
+          TreeHaver.backend_allowed?(backend)
+        end
+
+        # ============================================================
         # TreeHaver Backend Availability
         # ============================================================
 
@@ -220,6 +277,10 @@ module TreeHaver
         #
         # @return [Boolean] true if FFI backend is usable
         def ffi_available?
+          # If TREE_HAVER_BACKEND explicitly selects a different native backend,
+          # FFI is not available for testing
+          return false unless backend_allowed?(:ffi)
+
           # TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types
           # (used by ts_tree_root_node, ts_node_child, ts_node_start_point, etc.)
           return false if truffleruby?
@@ -250,6 +311,10 @@ module TreeHaver
         def mri_backend_available?
           return @mri_backend_available if defined?(@mri_backend_available)
 
+          # If TREE_HAVER_BACKEND explicitly selects a different native backend,
+          # MRI is not available for testing
+          return @mri_backend_available = false unless backend_allowed?(:mri)
+
           # ruby_tree_sitter is a C extension that only works on MRI
           return @mri_backend_available = false unless mri?
 
@@ -273,6 +338,10 @@ module TreeHaver
         #
         # @return [Boolean] true if FFI backend is usable in isolation
         def ffi_backend_only_available?
+          # If TREE_HAVER_BACKEND explicitly selects a different native backend,
+          # FFI is not available for testing
+          return false unless backend_allowed?(:ffi)
+
           # TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types
           return false if truffleruby?
 
@@ -307,6 +376,10 @@ module TreeHaver
         def mri_backend_only_available?
           return @mri_backend_only_available if defined?(@mri_backend_only_available)
 
+          # If TREE_HAVER_BACKEND explicitly selects a different native backend,
+          # MRI is not available for testing
+          return @mri_backend_only_available = false unless backend_allowed?(:mri)
+
           # ruby_tree_sitter is a C extension that only works on MRI
           return @mri_backend_only_available = false unless mri?
 
@@ -327,6 +400,10 @@ module TreeHaver
         def rust_backend_available?
           return @rust_backend_available if defined?(@rust_backend_available)
 
+          # If TREE_HAVER_BACKEND explicitly selects a different native backend,
+          # Rust is not available for testing
+          return @rust_backend_available = false unless backend_allowed?(:rust)
+
           # tree_stump uses magnus which requires MRI's C API
           return @rust_backend_available = false unless mri?
 
@@ -338,12 +415,58 @@ module TreeHaver
           end
         end
 
-        # Check if Java backend is available (requires JRuby + java-tree-sitter / jtreesitter)
+        # Check if Java backend is available AND can actually load grammars
         #
-        # @return [Boolean] true if Java backend is available
+        # The Java backend requires:
+        # 1. Running on JRuby
+        # 2. java-tree-sitter (jtreesitter) JAR available
+        # 3. Grammars built for java-tree-sitter's Foreign Function Memory API
+        #
+        # Note: Standard `.so` files built for MRI's tree-sitter C bindings are NOT
+        # compatible with java-tree-sitter. You need grammar JARs from Maven Central
+        # or libraries specifically built for Java FFM API.
+        #
+        # @return [Boolean] true if Java backend is available and can load grammars
         def java_backend_available?
           return @java_backend_available if defined?(@java_backend_available)
-          @java_backend_available = jruby? && TreeHaver::Backends::Java.available?
+
+          # If TREE_HAVER_BACKEND explicitly selects a different native backend,
+          # Java is not available for testing
+          return @java_backend_available = false unless backend_allowed?(:java)
+
+          # Must be on JRuby and have java-tree-sitter classes available
+          return @java_backend_available = false unless jruby?
+          return @java_backend_available = false unless TreeHaver::Backends::Java.available?
+
+          # Try to actually load a grammar to verify the backend works end-to-end
+          # This catches the case where Java classes load but grammars fail
+          # (e.g., when using MRI-built .so files on JRuby)
+          @java_backend_available = java_grammar_loadable?
+        end
+
+        # Check if Java backend can actually load a grammar
+        #
+        # This does a live test by trying to load a TOML grammar via the Java backend.
+        # It catches the common failure case where java-tree-sitter is available but
+        # the grammar .so files are incompatible (built for MRI, not java-tree-sitter).
+        #
+        # @return [Boolean] true if a grammar can be loaded via Java backend
+        # @api private
+        def java_grammar_loadable?
+          return false unless jruby?
+
+          path = find_toml_grammar_path
+          return false unless path && File.exist?(path)
+
+          TreeHaver.with_backend(:java) do
+            TreeHaver::Backends::Java::Language.from_library(path, symbol: "tree_sitter_toml")
+          end
+          true
+        rescue TreeHaver::NotAvailable, TreeHaver::Error, LoadError
+          false
+        rescue StandardError
+          # Catch any other Java-related errors
+          false
         end
 
         # Check if libtree-sitter runtime library is loadable
@@ -545,6 +668,10 @@ module TreeHaver
         # @return [Hash{Symbol => Boolean}] map of dependency name to availability
         def summary
           {
+            # Backend selection from environment variables
+            selected_backend: selected_backend,
+            allowed_native_backends: allowed_native_backends,
+            allowed_ruby_backends: allowed_ruby_backends,
             # TreeHaver backends (*_backend)
             ffi_backend: ffi_available?,
             mri_backend: mri_backend_available?,
@@ -598,8 +725,22 @@ module TreeHaver
         # @return [void]
         def reset!
           instance_variables.each do |ivar|
+            # Don't reset ENV-based values
+            next if %i[@selected_backend @allowed_native_backends @allowed_ruby_backends].include?(ivar)
             remove_instance_variable(ivar) if ivar.to_s.end_with?("_available")
           end
+        end
+
+        # Reset selected backend caches (useful for testing with different ENV values)
+        #
+        # Also resets TreeHaver's backend caches.
+        #
+        # @return [void]
+        def reset_selected_backend!
+          remove_instance_variable(:@selected_backend) if defined?(@selected_backend)
+          remove_instance_variable(:@allowed_native_backends) if defined?(@allowed_native_backends)
+          remove_instance_variable(:@allowed_ruby_backends) if defined?(@allowed_ruby_backends)
+          TreeHaver.reset_backend!
         end
 
         private
