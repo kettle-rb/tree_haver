@@ -264,6 +264,29 @@ and to pass through Markly-specific options (flags, extensions).</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#from_library-class_method" title="from_library (class method)">.<strong>from_library</strong>(_path = nil, symbol: nil, name: nil)  &#x21d2; Language </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Load language from library path (API compatibility).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#markdown-class_method" title="markdown (class method)">.<strong>markdown</strong>(flags: nil, extensions: [:table])  &#x21d2; Language </a>
     
 
@@ -705,7 +728,158 @@ and to pass through Markly-specific options (flags, extensions).</p>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="markdown-class_method">
+  <h3 class="signature first" id="from_library-class_method">
+  
+    .<strong>from_library</strong>(_path = nil, symbol: nil, name: nil)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::Markly::Language (class)">Language</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Load language from library path (API compatibility)</p>
+
+<p>Markly only supports Markdown, so path and symbol parameters are ignored.<br />
+This method exists for API consistency with tree-sitter backends,<br />
+allowing <code>TreeHaver.parser_for(:markdown)</code> to work regardless of backend.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>_path</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Ignored - Markly doesn’t load external grammars</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>symbol</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Ignored</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>Language name hint (defaults to :markdown)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::Markly::Language (class)">Language</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>Markdown language</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">TreeHaver::NotAvailable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>if requested language is not Markdown</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/markly.rb', line 132</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid__path'>_path</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='comment'># Derive language name from symbol if provided
+</span>  <span class='id identifier rubyid_lang_name'>lang_name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span> <span class='op'>||</span> <span class='id identifier rubyid_symbol'>symbol</span><span class='op'>&amp;.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='op'>&amp;.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^tree_sitter_</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='op'>&amp;.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='op'>||</span> <span class='symbol'>:markdown</span>
+
+  <span class='kw'>unless</span> <span class='id identifier rubyid_lang_name'>lang_name</span> <span class='op'>==</span> <span class='symbol'>:markdown</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Markly backend only supports Markdown, not </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lang_name'>lang_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>. </span><span class='tstring_end'>&quot;</span></span> \
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Use a tree-sitter backend for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lang_name'>lang_name</span><span class='embexpr_end'>}</span><span class='tstring_content'> support.</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_markdown'>markdown</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="markdown-class_method">
   
     .<strong>markdown</strong>(flags: nil, extensions: [:table])  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::Markly::Language (class)">Language</a></span></tt> 
   
@@ -830,13 +1004,13 @@ and to pass through Markly-specific options (flags, extensions).</p>
       <pre class="lines">
 
 
-123
-124
-125
-126</pre>
+147
+148
+149
+150</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/markly.rb', line 123</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/markly.rb', line 147</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Markly::Language (class)">Language</a></span></span><span class='rparen'>)</span>
@@ -862,12 +1036,12 @@ and to pass through Markly-specific options (flags, extensions).</p>
       <pre class="lines">
 
 
-128
-129
-130</pre>
+152
+153
+154</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/markly.rb', line 128</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/markly.rb', line 152</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#&lt;TreeHaver::Backends::Markly::Language name=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> flags=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_flags'>flags</span><span class='embexpr_end'>}</span><span class='tstring_content'> extensions=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_extensions'>extensions</span><span class='embexpr_end'>}</span><span class='tstring_content'>&gt;</span><span class='tstring_end'>&quot;</span></span>
@@ -882,7 +1056,7 @@ and to pass through Markly-specific options (flags, extensions).</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  2 05:34:05 2026 by
+  Generated on Sun Jan  4 06:23:41 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

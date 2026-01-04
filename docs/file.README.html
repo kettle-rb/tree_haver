@@ -341,7 +341,22 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
 
 <h4 id="java-backend-jruby-only">Java Backend (JRuby only)</h4>
 
-<p>No additional dependencies required beyond grammar JARs built for java-tree-sitter / jtreesitter.</p>
+<p><strong>Requires jtreesitter &gt;= 0.26.0</strong> from Maven Central. Older versions are not supported due to breaking API changes.</p>
+
+<pre class="code language-ruby"><code class="language-ruby"># No gem dependency - uses JRuby&#39;s built-in Java integration
+# Download the JAR:
+# curl -L -o jtreesitter-0.26.0.jar \
+#   &quot;https://repo1.maven.org/maven2/io/github/tree-sitter/jtreesitter/0.26.0/jtreesitter-0.26.0.jar&quot;
+
+# Set environment variable:
+# export TREE_SITTER_JAVA_JARS_DIR=/path/to/jars
+</code></pre>
+
+<p><strong>Also requires</strong>:</p>
+<ul>
+  <li>Tree-sitter runtime library (<code>libtree-sitter.so</code>) version 0.26+ (must match jtreesitter version)</li>
+  <li>Grammar <code>.so</code> files built against tree-sitter 0.26+ (or rebuilt with <code>tree-sitter generate</code>)</li>
+</ul>
 
 <h3 id="backend-platform-compatibility">Backend Platform Compatibility</h3>
 
@@ -354,6 +369,7 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <th style="text-align: center">MRI</th>
       <th style="text-align: center">JRuby</th>
       <th style="text-align: center">TruffleRuby</th>
+      <th style="text-align: center">API Complete</th>
       <th>Notes</th>
     </tr>
   </thead>
@@ -364,6 +380,7 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <td style="text-align: center">✅</td>
       <td style="text-align: center">❌</td>
       <td style="text-align: center">❌</td>
+      <td style="text-align: center">✅</td>
       <td>C extension, MRI only</td>
     </tr>
     <tr>
@@ -372,6 +389,7 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <td style="text-align: center">✅</td>
       <td style="text-align: center">❌</td>
       <td style="text-align: center">❌</td>
+      <td style="text-align: center">✅</td>
       <td>magnus/rb-sys incompatible with non-MRI</td>
     </tr>
     <tr>
@@ -379,6 +397,7 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <td style="text-align: center">✅</td>
       <td style="text-align: center">✅</td>
       <td style="text-align: center">❌</td>
+      <td style="text-align: center">⚠️</td>
       <td>TruffleRuby FFI doesn’t support <code>STRUCT_BY_VALUE</code>
 </td>
     </tr>
@@ -388,10 +407,12 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <td style="text-align: center">❌</td>
       <td style="text-align: center">✅</td>
       <td style="text-align: center">❌</td>
-      <td>JRuby only, requires grammar JARs</td>
+      <td style="text-align: center">✅</td>
+      <td>JRuby only, requires jtreesitter &gt;= 0.26.0</td>
     </tr>
     <tr>
       <td><strong>Prism</strong></td>
+      <td style="text-align: center">✅</td>
       <td style="text-align: center">✅</td>
       <td style="text-align: center">✅</td>
       <td style="text-align: center">✅</td>
@@ -402,6 +423,7 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <td style="text-align: center">✅</td>
       <td style="text-align: center">✅</td>
       <td style="text-align: center">✅</td>
+      <td style="text-align: center">✅</td>
       <td>YAML parsing, stdlib</td>
     </tr>
     <tr>
@@ -409,6 +431,7 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <td style="text-align: center">✅</td>
       <td style="text-align: center">✅</td>
       <td style="text-align: center">✅</td>
+      <td style="text-align: center">⚠️</td>
       <td>Pure Ruby, no native dependencies</td>
     </tr>
     <tr>
@@ -416,6 +439,7 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <td style="text-align: center">✅</td>
       <td style="text-align: center">❌</td>
       <td style="text-align: center">❓</td>
+      <td style="text-align: center">✅</td>
       <td>Rust extension for Markdown</td>
     </tr>
     <tr>
@@ -423,12 +447,117 @@ gem &quot;citrus&quot;, &quot;~&gt; 3.0&quot;
       <td style="text-align: center">✅</td>
       <td style="text-align: center">❌</td>
       <td style="text-align: center">❓</td>
+      <td style="text-align: center">✅</td>
       <td>C extension for Markdown</td>
     </tr>
   </tbody>
 </table>
 
-<p><strong>Legend</strong>: ✅ = Works, ❌ = Does not work, ❓ = Untested</p>
+<p><strong>Legend</strong>: ✅ = Works / Complete, ❌ = Does not work, ❓ = Untested, ⚠️ = Partial (some optional methods missing)</p>
+
+<p><strong>API Complete</strong> indicates whether the backend implements all optional Node methods (<code>parent</code>, <code>next_sibling</code>, <code>prev_sibling</code>, <code>named?</code>, <code>missing?</code>, <code>text</code>, <code>child_by_field_name</code>). Backends marked ⚠️ work but may be missing some advanced traversal methods. Use <code>TreeHaver::BackendAPI.validate(backend_module)</code> to check specific backends.</p>
+
+<h3 id="version-requirements-for-tree-sitter-backends">Version Requirements for Tree-Sitter Backends</h3>
+
+<h4 id="tree-sitter-runtime-library">tree-sitter Runtime Library</h4>
+
+<p>All tree-sitter backends (MRI, Rust, FFI, Java) require the tree-sitter runtime library. <strong>Version 0.26+ is required</strong> for the Java backend (to match jtreesitter 0.26.0). Other backends may work with 0.24+, but 0.26+ is recommended for consistency.</p>
+
+<pre class="code language-bash"><code class="language-bash"># Check your tree-sitter version
+tree-sitter --version  # Should be 0.26.0 or newer for Java backend
+
+# macOS
+brew install tree-sitter
+
+# Ubuntu/Debian
+apt-get install libtree-sitter0 libtree-sitter-dev
+
+# Fedora
+dnf install tree-sitter tree-sitter-devel
+</code></pre>
+
+<h4 id="jtreesitter-java-backend">jtreesitter (Java Backend)</h4>
+
+<p><strong>The Java backend requires jtreesitter &gt;= 0.26.0.</strong> This version introduced breaking API changes:</p>
+
+<ul>
+  <li>
+<code>Parser.parse()</code> returns <code>Optional&lt;Tree&gt;</code> instead of <code>Tree</code>
+</li>
+  <li>
+<code>Tree.getRootNode()</code> returns <code>Node</code> directly (not <code>Optional&lt;Node&gt;</code>)</li>
+  <li>
+<code>Node.getChild()</code>, <code>getParent()</code>, <code>getNextSibling()</code>, <code>getPrevSibling()</code> return <code>Optional&lt;Node&gt;</code>
+</li>
+  <li>
+<code>Language.load(name)</code> was removed; use <code>SymbolLookup</code> API instead</li>
+</ul>
+
+<p>Older versions of jtreesitter are <strong>NOT supported</strong>.</p>
+
+<pre class="code language-bash"><code class="language-bash"># Download jtreesitter 0.26.0 from Maven Central
+curl -L -o jtreesitter-0.26.0.jar \
+  &quot;https://repo1.maven.org/maven2/io/github/tree-sitter/jtreesitter/0.26.0/jtreesitter-0.26.0.jar&quot;
+
+# Or use the provided setup script
+bin/setup-jtreesitter
+</code></pre>
+
+<p>Set the environment variable to point to your JAR directory:</p>
+
+<pre class="code language-bash"><code class="language-bash">export TREE_SITTER_JAVA_JARS_DIR=/path/to/jars
+</code></pre>
+
+<h4 id="grammar-abi-compatibility">Grammar ABI Compatibility</h4>
+
+<p><strong>CRITICAL</strong>: Grammars must be built against a compatible tree-sitter version.</p>
+
+<p>Tree-sitter 0.24+ changed how language ABI versions are reported (from <code>ts_language_version()</code> to <code>ts_language_abi_version()</code>). For the Java backend with jtreesitter 0.26.0, grammars must be built against tree-sitter 0.26+. If you get errors like:</p>
+
+<pre class="code ruby"><code class="ruby">Failed to load tree_sitter_toml
+Version mismatch detected: The grammar was built against tree-sitter &lt; 0.26
+</code></pre>
+
+<p>You need to rebuild the grammar from source:</p>
+
+<pre class="code language-bash"><code class="language-bash"># Use the provided build script
+bin/build-grammar toml
+
+# Or manually:
+git clone https://github.com/tree-sitter-grammars/tree-sitter-toml
+cd tree-sitter-toml
+tree-sitter generate  # Regenerates parser.c for your tree-sitter version
+cc -shared -fPIC -o libtree-sitter-toml.so src/parser.c src/scanner.c -I src
+</code></pre>
+
+<p><strong>Grammar sources for common languages:</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Language</th>
+      <th>Repository</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>TOML</td>
+      <td><a href="https://github.com/tree-sitter-grammars/tree-sitter-toml">tree-sitter-grammars/tree-sitter-toml</a></td>
+    </tr>
+    <tr>
+      <td>JSON</td>
+      <td><a href="https://github.com/tree-sitter/tree-sitter-json">tree-sitter/tree-sitter-json</a></td>
+    </tr>
+    <tr>
+      <td>JSONC</td>
+      <td><a href="https://gitlab.com/WhyNotHugo/tree-sitter-jsonc">WhyNotHugo/tree-sitter-jsonc</a></td>
+    </tr>
+    <tr>
+      <td>Bash</td>
+      <td><a href="https://github.com/tree-sitter/tree-sitter-bash">tree-sitter/tree-sitter-bash</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <h4 id="truffleruby-limitations">TruffleRuby Limitations</h4>
 
@@ -444,14 +573,16 @@ TruffleRuby users should use: <strong>Prism</strong> (Ruby), <strong>Psych</stro
 
 <h4 id="jruby-limitations">JRuby Limitations</h4>
 
-<p>JRuby runs on the JVM and <strong>cannot load native <code>.so</code> extensions</strong>:</p>
+<p>JRuby runs on the JVM and <strong>cannot load native <code>.so</code> extensions via Ruby’s C API</strong>:</p>
 
 <ul>
   <li>
 <strong>MRI/Rust</strong>: C and Rust extensions simply cannot be loaded</li>
   <li>
-<strong>FFI</strong>: Works! JRuby has excellent FFI support<br>
-JRuby users should use: <strong>FFI backend</strong> or <strong>Java backend</strong> for tree-sitter, plus <strong>Prism</strong>, <strong>Psych</strong>, <strong>Citrus</strong> for other formats.</li>
+<strong>FFI</strong>: Works! JRuby has excellent FFI support</li>
+  <li>
+<strong>Java</strong>: Works! The Java backend uses jtreesitter (requires &gt;= 0.26.0)<br>
+JRuby users should use: <strong>Java backend</strong> (best performance, full API) or <strong>FFI backend</strong> for tree-sitter, plus <strong>Prism</strong>, <strong>Psych</strong>, <strong>Citrus</strong> for other formats.</li>
 </ul>
 
 <h3 id="why-treehaver">Why TreeHaver?</h3>
@@ -704,9 +835,9 @@ TreeHaver solves these problems by providing a unified API that automatically se
   </tbody>
 </table>
 
-<p><strong>Note:</strong> Java backend works with grammar JARs built specifically for <code>java-tree-sitter</code> / <code>jtreesitter</code>, or grammar .so files that statically link tree-sitter. This is why FFI is recommended for JRuby &amp; TruffleRuby.</p>
+<p><strong>Note:</strong> Java backend works with grammar <code>.so</code> files built against tree-sitter 0.24+. The grammars must be rebuilt with <code>tree-sitter generate</code> if they were compiled against older tree-sitter versions. FFI is recommended for JRuby as it’s easier to set up.</p>
 
-<p><strong>Note:</strong> TreeHaver can use <code>ruby_tree_sitter</code> (MRI) or <code>tree_stump</code> (MRI, JRuby?) as backends, or <code>java-tree-sitter</code> (<a href="https://tree-sitter.github.io/java-tree-sitter/">docs</a>, <a href="https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter">maven</a>, <a href="https://github.com/tree-sitter/java-tree-sitter">source</a>, JRuby), or FFI on any backend, giving you TreeHaver’s unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.</p>
+<p><strong>Note:</strong> TreeHaver can use <code>ruby_tree_sitter</code> (MRI) or <code>tree_stump</code> (MRI) as backends, or <code>java-tree-sitter</code> / <code>jtreesitter</code> &gt;= 0.26.0 (<a href="https://tree-sitter.github.io/java-tree-sitter/">docs</a>, <a href="https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter">maven</a>, <a href="https://github.com/tree-sitter/java-tree-sitter">source</a>, JRuby), or FFI on any backend, giving you TreeHaver’s unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.</p>
 
 <p><strong>Note:</strong> <code>tree_stump</code> currently requires unreleased fixes in the <code>main</code> branch.</p>
 
@@ -1029,7 +1160,7 @@ by following the instructions below.</p>
     </tr>
     <tr>
       <td><strong>Java</strong></td>
-      <td>JNI bindings</td>
+      <td>JNI bindings (jtreesitter &gt;= 0.26.0)</td>
       <td>⚡ Very Fast</td>
       <td>JRuby only</td>
       <td>
@@ -1389,11 +1520,37 @@ export TREE_HAVER_TRUSTED_DIRS=&quot;/home/linuxbrew/.linuxbrew/Cellar,~/.local/
 export TREE_SITTER_JSON_PATH=/usr/local/lib/libtree-sitter-json.so
 </code></pre>
 
-<h4 id="jruby-specific-java-backend-jars">JRuby-Specific: Java Backend JARs</h4>
+<h4 id="jruby-specific-java-backend-configuration">JRuby-Specific: Java Backend Configuration</h4>
 
-<p>For the Java backend on JRuby:</p>
+<p>For the Java backend on JRuby, you need:</p>
 
-<pre class="code language-bash"><code class="language-bash">export TREE_SITTER_JAVA_JARS_DIR=/path/to/java-tree-sitter/jars
+<ol>
+  <li>
+<strong>jtreesitter &gt;= 0.26.0</strong> JAR from Maven Central</li>
+  <li>
+<strong>Tree-sitter runtime library</strong> (<code>libtree-sitter.so</code>) version 0.26+</li>
+  <li>
+<strong>Grammar <code>.so</code> files</strong> built against tree-sitter 0.26+</li>
+</ol>
+
+<pre class="code language-bash"><code class="language-bash"># Download jtreesitter JAR (or use bin/setup-jtreesitter)
+export TREE_SITTER_JAVA_JARS_DIR=/path/to/java-tree-sitter/jars
+
+# Point to tree-sitter runtime (must be 0.26+)
+export TREE_SITTER_RUNTIME_LIB=/usr/local/lib/libtree-sitter.so
+
+# Point to grammar libraries (must be built for tree-sitter 0.26+)
+export TREE_SITTER_TOML_PATH=/path/to/libtree-sitter-toml.so
+</code></pre>
+
+<p><strong>Building grammars for Java backend:</strong></p>
+
+<p>If you get “version mismatch” errors, rebuild the grammar:</p>
+
+<pre class="code language-bash"><code class="language-bash"># Use the provided build script
+bin/build-grammar toml
+
+# This regenerates parser.c for your tree-sitter version and compiles it
 </code></pre>
 
 <p>For more see <a href="https://tree-sitter.github.io/java-tree-sitter/">docs</a>, <a href="https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter">maven</a>, and <a href="https://github.com/tree-sitter/java-tree-sitter">source</a>.</p>
@@ -2563,7 +2720,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Fri Jan  2 05:34:03 2026 by
+  Generated on Sun Jan  4 06:23:39 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

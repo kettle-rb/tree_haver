@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [3.2.4] - 2026-01-04
+
+- TAG: [v3.2.4][3.2.4t]
+- COVERAGE: 92.07% -- 2229/2421 lines in 23 files
+- BRANCH COVERAGE: 74.79% -- 786/1051 branches in 23 files
+- 90.37% documented
+
+### Added
+
 - **External backend registration via `backend_module`** - External gems can now register
   their own pure Ruby backends using the same API as built-in backends. This enables gems
   like rbs-merge to integrate with `TreeHaver.parser_for` without modifying tree_haver:
@@ -147,10 +166,6 @@ TreeHaver.register_language(
   pure Ruby backends. The module must provide `Language` and `Parser` classes with the
   standard TreeHaver API (`available?`, `capabilities`, `from_library`, etc.).
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - **`TreeHaver::Node#text` now handles backends with different `text` method signatures** -
@@ -184,8 +199,6 @@ TreeHaver.register_language(
   `.so` files (built for MRI) were incompatible with java-tree-sitter's Foreign Function
   Memory API. Now the check does a live test by attempting to load a grammar, ensuring
   the tag accurately reflects whether the Java backend is fully functional.
-
-### Security
 
 ## [3.2.3] - 2026-01-02
 
@@ -872,7 +885,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.3...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.4...HEAD
+[3.2.4]: https://github.com/kettle-rb/tree_haver/compare/v3.2.3...v3.2.4
+[3.2.4t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.4
 [3.2.3]: https://github.com/kettle-rb/tree_haver/compare/v3.2.2...v3.2.3
 [3.2.3t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.3
 [3.2.2]: https://github.com/kettle-rb/tree_haver/compare/v3.2.1...v3.2.2

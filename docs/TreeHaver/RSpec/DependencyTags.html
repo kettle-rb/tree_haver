@@ -111,6 +111,52 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#allowed_native_backends-class_method" title="allowed_native_backends (class method)">.<strong>allowed_native_backends</strong>  &#x21d2; Array&lt;Symbol&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get allowed native backends from TREE_HAVER_NATIVE_BACKEND.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#allowed_ruby_backends-class_method" title="allowed_ruby_backends (class method)">.<strong>allowed_ruby_backends</strong>  &#x21d2; Array&lt;Symbol&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get allowed Ruby backends from TREE_HAVER_RUBY_BACKEND.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#any_markdown_backend_available%3F-class_method" title="any_markdown_backend_available? (class method)">.<strong>any_markdown_backend_available?</strong>  &#x21d2; Boolean </a>
     
 
@@ -157,6 +203,29 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#any_rbs_backend_available%3F-class_method" title="any_rbs_backend_available? (class method)">.<strong>any_rbs_backend_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if at least one RBS backend is available.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#any_toml_backend_available%3F-class_method" title="any_toml_backend_available? (class method)">.<strong>any_toml_backend_available?</strong>  &#x21d2; Boolean </a>
     
 
@@ -172,6 +241,29 @@
 
   
     <span class="summary_desc"><div class='inline'><p>Check if at least one TOML backend is available.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#backend_allowed%3F-class_method" title="backend_allowed? (class method)">.<strong>backend_allowed?</strong>(backend)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if a specific backend is allowed based on environment variables.</p>
 </div></span>
   
 </li>
@@ -332,7 +424,30 @@
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Check if Java backend is available (requires JRuby + java-tree-sitter / jtreesitter).</p>
+    <span class="summary_desc"><div class='inline'><p>Check if Java backend is available AND can actually load grammars.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#java_grammar_loadable%3F-class_method" title="java_grammar_loadable? (class method)">.<strong>java_grammar_loadable?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  <span class="private note title">private</span>
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if Java backend can actually load a grammar.</p>
 </div></span>
   
 </li>
@@ -433,4 +548,3056 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#mri_backend_available%3F-
+      <a href="#mri_backend_available%3F-class_method" title="mri_backend_available? (class method)">.<strong>mri_backend_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if ruby_tree_sitter gem is available (MRI backend).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#mri_backend_only_available%3F-class_method" title="mri_backend_only_available? (class method)">.<strong>mri_backend_only_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if MRI backend is available WITHOUT checking FFI availability.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#prism_available%3F-class_method" title="prism_available? (class method)">.<strong>prism_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if prism gem is available.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#psych_available%3F-class_method" title="psych_available? (class method)">.<strong>psych_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if psych is available (stdlib, should always be true).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#rbs_gem_available%3F-class_method" title="rbs_gem_available? (class method)">.<strong>rbs_gem_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+      (also: rbs_backend_available?)
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if the RBS gem is available and functional.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reset!-class_method" title="reset! (class method)">.<strong>reset!</strong>  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Reset all memoized availability checks.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#reset_selected_backend!-class_method" title="reset_selected_backend! (class method)">.<strong>reset_selected_backend!</strong>  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Reset selected backend caches (useful for testing with different ENV values).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#rust_backend_available%3F-class_method" title="rust_backend_available? (class method)">.<strong>rust_backend_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if tree_stump gem is available (Rust backend).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#selected_backend-class_method" title="selected_backend (class method)">.<strong>selected_backend</strong>  &#x21d2; Symbol </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the selected backend from TREE_HAVER_BACKEND.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#summary-class_method" title="summary (class method)">.<strong>summary</strong>  &#x21d2; Hash{Symbol =&gt; Boolean} </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get a summary of available dependencies (for debugging).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#toml_grammar_available%3F-class_method" title="toml_grammar_available? (class method)">.<strong>toml_grammar_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if a TOML grammar library is available via environment variable.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#toml_rb_gem_available%3F-class_method" title="toml_rb_gem_available? (class method)">.<strong>toml_rb_gem_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if toml-rb gem is available and functional (Citrus backend for TOML).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tree_sitter_bash_available%3F-class_method" title="tree_sitter_bash_available? (class method)">.<strong>tree_sitter_bash_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if tree-sitter-bash grammar is available and working.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tree_sitter_json_available%3F-class_method" title="tree_sitter_json_available? (class method)">.<strong>tree_sitter_json_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if tree-sitter-json grammar is available and working.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tree_sitter_jsonc_available%3F-class_method" title="tree_sitter_jsonc_available? (class method)">.<strong>tree_sitter_jsonc_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if tree-sitter-jsonc grammar is available and working.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tree_sitter_rbs_available%3F-class_method" title="tree_sitter_rbs_available? (class method)">.<strong>tree_sitter_rbs_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if tree-sitter-rbs grammar is available and working.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tree_sitter_toml_available%3F-class_method" title="tree_sitter_toml_available? (class method)">.<strong>tree_sitter_toml_available?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if tree-sitter-toml grammar is available and working via TreeHaver.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#truffleruby%3F-class_method" title="truffleruby? (class method)">.<strong>truffleruby?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if running on TruffleRuby.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="allowed_native_backends-class_method">
+  
+    .<strong>allowed_native_backends</strong>  &#x21d2; <tt>Array&lt;Symbol&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get allowed native backends from TREE_HAVER_NATIVE_BACKEND</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Symbol&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>list of allowed native backends, or [:all] or [:none]</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+250
+251
+252
+253</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 250</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_allowed_native_backends'>allowed_native_backends</span>
+  <span class='kw'>return</span> <span class='ivar'>@allowed_native_backends</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@allowed_native_backends</span><span class='rparen'>)</span>
+  <span class='ivar'>@allowed_native_backends</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_allowed_native_backends'><span class='object_link'><a href="../../TreeHaver.html#allowed_native_backends-class_method" title="TreeHaver.allowed_native_backends (method)">allowed_native_backends</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="allowed_ruby_backends-class_method">
+  
+    .<strong>allowed_ruby_backends</strong>  &#x21d2; <tt>Array&lt;Symbol&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get allowed Ruby backends from TREE_HAVER_RUBY_BACKEND</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Symbol&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>list of allowed Ruby backends, or [:all] or [:none]</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+258
+259
+260
+261</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 258</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_allowed_ruby_backends'>allowed_ruby_backends</span>
+  <span class='kw'>return</span> <span class='ivar'>@allowed_ruby_backends</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@allowed_ruby_backends</span><span class='rparen'>)</span>
+  <span class='ivar'>@allowed_ruby_backends</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_allowed_ruby_backends'><span class='object_link'><a href="../../TreeHaver.html#allowed_ruby_backends-class_method" title="TreeHaver.allowed_ruby_backends (method)">allowed_ruby_backends</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="any_markdown_backend_available?-class_method">
+  
+    .<strong>any_markdown_backend_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if at least one markdown backend is available</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if any markdown backend works</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+704
+705
+706</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 704</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_any_markdown_backend_available?'>any_markdown_backend_available?</span>
+  <span class='id identifier rubyid_markly_available?'>markly_available?</span> <span class='op'>||</span> <span class='id identifier rubyid_commonmarker_available?'>commonmarker_available?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="any_native_grammar_available?-class_method">
+  
+    .<strong>any_native_grammar_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+708
+709
+710
+711
+712
+713
+714
+715</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 708</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_any_native_grammar_available?'>any_native_grammar_available?</span>
+  <span class='id identifier rubyid_libtree_sitter_available?'>libtree_sitter_available?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span>
+    <span class='id identifier rubyid_tree_sitter_bash_available?'>tree_sitter_bash_available?</span> <span class='op'>||</span>
+      <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span> <span class='op'>||</span>
+      <span class='id identifier rubyid_tree_sitter_json_available?'>tree_sitter_json_available?</span> <span class='op'>||</span>
+      <span class='id identifier rubyid_tree_sitter_jsonc_available?'>tree_sitter_jsonc_available?</span>
+  <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="any_rbs_backend_available?-class_method">
+  
+    .<strong>any_rbs_backend_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if at least one RBS backend is available</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if any RBS backend works</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+673
+674
+675</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 673</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_any_rbs_backend_available?'>any_rbs_backend_available?</span>
+  <span class='id identifier rubyid_rbs_gem_available?'>rbs_gem_available?</span> <span class='op'>||</span> <span class='id identifier rubyid_tree_sitter_rbs_available?'>tree_sitter_rbs_available?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="any_toml_backend_available?-class_method">
+  
+    .<strong>any_toml_backend_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if at least one TOML backend is available</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if any TOML backend works</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+697
+698
+699</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 697</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_any_toml_backend_available?'>any_toml_backend_available?</span>
+  <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span> <span class='op'>||</span> <span class='id identifier rubyid_toml_rb_gem_available?'>toml_rb_gem_available?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="backend_allowed?-class_method">
+  
+    .<strong>backend_allowed?</strong>(backend)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if a specific backend is allowed based on environment variables</p>
+
+<p>Delegates to TreeHaver.backend_allowed? which handles both<br />
+TREE_HAVER_NATIVE_BACKEND and TREE_HAVER_RUBY_BACKEND.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>backend</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the backend to check (:mri, :ffi, :citrus, etc.)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if the backend is allowed</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+270
+271
+272</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 270</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_backend_allowed?'>backend_allowed?</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
+  <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_backend_allowed?'><span class='object_link'><a href="../../TreeHaver.html#backend_allowed%3F-class_method" title="TreeHaver.backend_allowed? (method)">backend_allowed?</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="citrus_available?-class_method">
+  
+    .<strong>citrus_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if Citrus backend is available</p>
+
+<p>This checks if the citrus gem is installed and the backend works.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if Citrus backend is available</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+569
+570
+571
+572</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 569</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_citrus_available?'>citrus_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@citrus_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@citrus_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@citrus_available</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/Citrus.html" title="TreeHaver::Backends::Citrus (module)">Citrus</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Backends/Citrus.html#available%3F-class_method" title="TreeHaver::Backends::Citrus.available? (method)">available?</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="commonmarker_available?-class_method">
+  
+    .<strong>commonmarker_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if commonmarker gem is available</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if commonmarker gem is available</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+535
+536
+537
+538</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 535</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_commonmarker_available?'>commonmarker_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@commonmarker_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@commonmarker_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@commonmarker_available</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/Commonmarker.html" title="TreeHaver::Backends::Commonmarker (module)">Commonmarker</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Backends/Commonmarker.html#available%3F-class_method" title="TreeHaver::Backends::Commonmarker.available? (method)">available?</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="env_summary-class_method">
+  
+    .<strong>env_summary</strong>  &#x21d2; <tt>Hash{String =&gt; String}</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get environment variable summary for debugging</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash{String =&gt; String}</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>relevant environment variables</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 767</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_env_summary'>env_summary</span>
+  <span class='lbrace'>{</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_BASH_PATH</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_BASH_PATH</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_TOML_PATH</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_TOML_PATH</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_JSON_PATH</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_JSON_PATH</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_JSONC_PATH</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_JSONC_PATH</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_RUNTIME_LIB</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_RUNTIME_LIB</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_HAVER_BACKEND</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_HAVER_BACKEND</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_HAVER_DEBUG</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_HAVER_DEBUG</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+  <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="ffi_available?-class_method">
+  
+    .<strong>ffi_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if FFI backend is actually usable (live check, not memoized)</p>
+
+<p>This method attempts to actually use the FFI backend by loading a language.<br />
+This provides “live” validation of backend availability because:</p>
+<ul>
+  <li>If FFI gem is missing, it will fail</li>
+  <li>If MRI backend was used first, BackendConflict will be raised</li>
+  <li>If libtree-sitter is missing, it will fail</li>
+</ul>
+
+<p>NOT MEMOIZED: Each call re-checks availability. This validates that<br />
+backend protection works correctly as tests run. FFI tests should run<br />
+first (via <code>rake spec</code> which runs ffi_specs then remaining_specs).</p>
+
+<p>For isolated FFI testing, use bin/rspec-ffi</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if FFI backend is usable</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 293</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_ffi_available?'>ffi_available?</span>
+  <span class='comment'># If TREE_HAVER_BACKEND explicitly selects a different native backend,
+</span>  <span class='comment'># FFI is not available for testing
+</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_backend_allowed?'>backend_allowed?</span><span class='lparen'>(</span><span class='symbol'>:ffi</span><span class='rparen'>)</span>
+
+  <span class='comment'># TruffleRuby&#39;s FFI doesn&#39;t support STRUCT_BY_VALUE return types
+</span>  <span class='comment'># (used by ts_tree_root_node, ts_node_child, ts_node_start_point, etc.)
+</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_truffleruby?'>truffleruby?</span>
+
+  <span class='comment'># Try to actually use the FFI backend
+</span>  <span class='id identifier rubyid_path'>path</span> <span class='op'>=</span> <span class='id identifier rubyid_find_toml_grammar_path'>find_toml_grammar_path</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_path'>path</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_with_backend'><span class='object_link'><a href="../../TreeHaver.html#with_backend-class_method" title="TreeHaver.with_backend (method)">with_backend</a></span></span><span class='lparen'>(</span><span class='symbol'>:ffi</span><span class='rparen'>)</span> <span class='kw'>do</span>
+    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="../Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter_toml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='kw'>true</span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendConflict.html" title="TreeHaver::BackendConflict (class)">BackendConflict</a></span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='const'>LoadError</span>
+  <span class='kw'>false</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span>
+  <span class='comment'># Catch any other FFI-related errors (e.g., Polyglot::ForeignException)
+</span>  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="ffi_backend_only_available?-class_method">
+  
+    .<strong>ffi_backend_only_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if FFI backend is available WITHOUT loading MRI first</p>
+
+<p>This is used for the :ffi_backend_only tag which runs FFI tests<br />
+in isolation before MRI can be loaded. Unlike ffi_available?,<br />
+this method does NOT check mri_backend_available?.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if FFI backend is usable in isolation</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 354</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_ffi_backend_only_available?'>ffi_backend_only_available?</span>
+  <span class='comment'># If TREE_HAVER_BACKEND explicitly selects a different native backend,
+</span>  <span class='comment'># FFI is not available for testing
+</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_backend_allowed?'>backend_allowed?</span><span class='lparen'>(</span><span class='symbol'>:ffi</span><span class='rparen'>)</span>
+
+  <span class='comment'># TruffleRuby&#39;s FFI doesn&#39;t support STRUCT_BY_VALUE return types
+</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_truffleruby?'>truffleruby?</span>
+
+  <span class='comment'># Check if FFI gem is available without loading tree_sitter
+</span>  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ffi</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='kw'>return</span> <span class='kw'>false</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Try to actually use the FFI backend
+</span>  <span class='id identifier rubyid_path'>path</span> <span class='op'>=</span> <span class='id identifier rubyid_find_toml_grammar_path'>find_toml_grammar_path</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_path'>path</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_with_backend'><span class='object_link'><a href="../../TreeHaver.html#with_backend-class_method" title="TreeHaver.with_backend (method)">with_backend</a></span></span><span class='lparen'>(</span><span class='symbol'>:ffi</span><span class='rparen'>)</span> <span class='kw'>do</span>
+    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="../Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter_toml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='kw'>true</span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendConflict.html" title="TreeHaver::BackendConflict (class)">BackendConflict</a></span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='const'>LoadError</span>
+  <span class='kw'>false</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span>
+  <span class='comment'># Catch any other FFI-related errors
+</span>  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="find_toml_grammar_path-class_method">
+  
+    .<strong>find_toml_grammar_path</strong>  &#x21d2; <tt>String</tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Find the path to a TOML grammar library from environment variable</p>
+
+<p>Grammar paths should be configured via TREE_SITTER_TOML_PATH environment variable.<br />
+This keeps configuration explicit and avoids magic path guessing.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>path to TOML grammar library, or nil if not found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 519</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_find_toml_grammar_path'>find_toml_grammar_path</span>
+  <span class='comment'># First check environment variable
+</span>  <span class='id identifier rubyid_env_path'>env_path</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_TOML_PATH</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>return</span> <span class='id identifier rubyid_env_path'>env_path</span> <span class='kw'>if</span> <span class='id identifier rubyid_env_path'>env_path</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_env_path'>env_path</span><span class='rparen'>)</span>
+
+  <span class='comment'># Use GrammarFinder to search standard paths
+</span>  <span class='id identifier rubyid_finder'>finder</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../GrammarFinder.html" title="TreeHaver::GrammarFinder (class)">GrammarFinder</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../GrammarFinder.html#initialize-instance_method" title="TreeHaver::GrammarFinder#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='comma'>,</span> <span class='label'>validate:</span> <span class='kw'>false</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_find_library_path'>find_library_path</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span>
+  <span class='comment'># GrammarFinder might not be available or might fail
+</span>  <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="java_backend_available?-class_method">
+  
+    .<strong>java_backend_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if Java backend is available AND can actually load grammars</p>
+
+<p>The Java backend requires:</p>
+<ol>
+  <li>Running on JRuby</li>
+  <li>java-tree-sitter (jtreesitter) JAR available</li>
+  <li>Grammars built for java-tree-sitter’s Foreign Function Memory API</li>
+</ol>
+
+<p>Note: Standard <code>.so</code> files built for MRI’s tree-sitter C bindings are NOT<br />
+compatible with java-tree-sitter. You need grammar JARs from Maven Central<br />
+or libraries specifically built for Java FFM API.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if Java backend is available and can load grammars</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 444</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_java_backend_available?'>java_backend_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@java_backend_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@java_backend_available</span><span class='rparen'>)</span>
+
+  <span class='comment'># If TREE_HAVER_BACKEND explicitly selects a different native backend,
+</span>  <span class='comment'># Java is not available for testing
+</span>  <span class='kw'>return</span> <span class='ivar'>@java_backend_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_backend_allowed?'>backend_allowed?</span><span class='lparen'>(</span><span class='symbol'>:java</span><span class='rparen'>)</span>
+
+  <span class='comment'># Must be on JRuby and have java-tree-sitter classes available
+</span>  <span class='kw'>return</span> <span class='ivar'>@java_backend_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_jruby?'>jruby?</span>
+  <span class='kw'>return</span> <span class='ivar'>@java_backend_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Backends/Java.html#available%3F-class_method" title="TreeHaver::Backends::Java.available? (method)">available?</a></span></span>
+
+  <span class='comment'># Try to actually load a grammar to verify the backend works end-to-end
+</span>  <span class='comment'># This catches the case where Java classes load but grammars fail
+</span>  <span class='comment'># (e.g., when using MRI-built .so files on JRuby)
+</span>  <span class='ivar'>@java_backend_available</span> <span class='op'>=</span> <span class='id identifier rubyid_java_grammar_loadable?'>java_grammar_loadable?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="java_grammar_loadable?-class_method">
+  
+    .<strong>java_grammar_loadable?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Check if Java backend can actually load a grammar</p>
+
+<p>This does a live test by trying to load a TOML grammar via the Java backend.<br />
+It catches the common failure case where java-tree-sitter is available but<br />
+the grammar .so files are incompatible (built for MRI, not java-tree-sitter).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if a grammar can be loaded via Java backend</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 469</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_java_grammar_loadable?'>java_grammar_loadable?</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_jruby?'>jruby?</span>
+
+  <span class='id identifier rubyid_path'>path</span> <span class='op'>=</span> <span class='id identifier rubyid_find_toml_grammar_path'>find_toml_grammar_path</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_path'>path</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_with_backend'><span class='object_link'><a href="../../TreeHaver.html#with_backend-class_method" title="TreeHaver.with_backend (method)">with_backend</a></span></span><span class='lparen'>(</span><span class='symbol'>:java</span><span class='rparen'>)</span> <span class='kw'>do</span>
+    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/Java/Language.html" title="TreeHaver::Backends::Java::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="../Backends/Java/Language.html#from_library-class_method" title="TreeHaver::Backends::Java::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter_toml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='kw'>true</span>
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Error.html" title="TreeHaver::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='const'>LoadError</span>
+  <span class='kw'>false</span>
+<span class='kw'>rescue</span> <span class='const'>StandardError</span>
+  <span class='comment'># Catch any other Java-related errors
+</span>  <span class='kw'>false</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="jruby?-class_method">
+  
+    .<strong>jruby?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if running on JRuby</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if running on JRuby</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+581
+582
+583</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 581</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_jruby?'>jruby?</span>
+  <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RUBY_ENGINE</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>jruby</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="libtree_sitter_available?-class_method">
+  
+    .<strong>libtree_sitter_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if libtree-sitter runtime library is loadable</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if libtree-sitter.so is loadable via FFI</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 489</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_libtree_sitter_available?'>libtree_sitter_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@libtree_sitter_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@libtree_sitter_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@libtree_sitter_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_ffi_available?'>ffi_available?</span>
+    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/FFI.html" title="TreeHaver::Backends::FFI (module)">FFI</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/FFI/Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_try_load!'><span class='object_link'><a href="../Backends/FFI/Native.html#try_load!-class_method" title="TreeHaver::Backends::FFI::Native.try_load! (method)">try_load!</a></span></span>
+    <span class='kw'>true</span>
+  <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='const'>LoadError</span>
+    <span class='kw'>false</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+    <span class='comment'># TruffleRuby raises Polyglot::ForeignException when FFI
+</span>    <span class='comment'># encounters unsupported types like STRUCT_BY_VALUE
+</span>    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="markly_available?-class_method">
+  
+    .<strong>markly_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if markly gem is available</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if markly gem is available</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+543
+544
+545
+546</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 543</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_markly_available?'>markly_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@markly_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@markly_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@markly_available</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/Markly.html" title="TreeHaver::Backends::Markly (module)">Markly</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Backends/Markly.html#available%3F-class_method" title="TreeHaver::Backends::Markly.available? (method)">available?</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="mri?-class_method">
+  
+    .<strong>mri?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if running on MRI (CRuby)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if running on MRI</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+595
+596
+597</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 595</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_mri?'>mri?</span>
+  <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RUBY_ENGINE</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ruby</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="mri_backend_available?-class_method">
+  
+    .<strong>mri_backend_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if ruby_tree_sitter gem is available (MRI backend)</p>
+
+<p>The MRI backend only works on MRI Ruby (C extension).<br />
+When this returns true, it also records MRI backend usage with<br />
+TreeHaver.record_backend_usage(:mri). This is critical for conflict<br />
+detection - without it, FFI would not know that MRI has been loaded.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if ruby_tree_sitter gem is available</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 325</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_mri_backend_available?'>mri_backend_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@mri_backend_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@mri_backend_available</span><span class='rparen'>)</span>
+
+  <span class='comment'># If TREE_HAVER_BACKEND explicitly selects a different native backend,
+</span>  <span class='comment'># MRI is not available for testing
+</span>  <span class='kw'>return</span> <span class='ivar'>@mri_backend_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_backend_allowed?'>backend_allowed?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span>
+
+  <span class='comment'># ruby_tree_sitter is a C extension that only works on MRI
+</span>  <span class='kw'>return</span> <span class='ivar'>@mri_backend_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_mri?'>mri?</span>
+
+  <span class='ivar'>@mri_backend_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='comment'># Note: gem is ruby_tree_sitter but requires tree_sitter
+</span>    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter</span><span class='tstring_end'>&quot;</span></span>
+    <span class='comment'># Record that MRI backend is now loaded - this is critical for
+</span>    <span class='comment'># conflict detection with FFI backend
+</span>    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_record_backend_usage'><span class='object_link'><a href="../../TreeHaver.html#record_backend_usage-class_method" title="TreeHaver.record_backend_usage (method)">record_backend_usage</a></span></span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span>
+    <span class='kw'>true</span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="mri_backend_only_available?-class_method">
+  
+    .<strong>mri_backend_only_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if MRI backend is available WITHOUT checking FFI availability</p>
+
+<p>This is used for the :mri_backend_only tag which runs MRI tests<br />
+without triggering any FFI availability checks.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if MRI backend is usable</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 390</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_mri_backend_only_available?'>mri_backend_only_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@mri_backend_only_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@mri_backend_only_available</span><span class='rparen'>)</span>
+
+  <span class='comment'># If TREE_HAVER_BACKEND explicitly selects a different native backend,
+</span>  <span class='comment'># MRI is not available for testing
+</span>  <span class='kw'>return</span> <span class='ivar'>@mri_backend_only_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_backend_allowed?'>backend_allowed?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span>
+
+  <span class='comment'># ruby_tree_sitter is a C extension that only works on MRI
+</span>  <span class='kw'>return</span> <span class='ivar'>@mri_backend_only_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_mri?'>mri?</span>
+
+  <span class='ivar'>@mri_backend_only_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter</span><span class='tstring_end'>&quot;</span></span>
+    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_record_backend_usage'><span class='object_link'><a href="../../TreeHaver.html#record_backend_usage-class_method" title="TreeHaver.record_backend_usage (method)">record_backend_usage</a></span></span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span>
+    <span class='kw'>true</span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="prism_available?-class_method">
+  
+    .<strong>prism_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if prism gem is available</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if Prism is available</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+551
+552
+553
+554</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 551</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_prism_available?'>prism_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@prism_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@prism_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@prism_available</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/Prism.html" title="TreeHaver::Backends::Prism (module)">Prism</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Backends/Prism.html#available%3F-class_method" title="TreeHaver::Backends::Prism.available? (method)">available?</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="psych_available?-class_method">
+  
+    .<strong>psych_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if psych is available (stdlib, should always be true)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if Psych is available</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+559
+560
+561
+562</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 559</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_psych_available?'>psych_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@psych_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@psych_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@psych_available</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Backends/Psych.html" title="TreeHaver::Backends::Psych (module)">Psych</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Backends/Psych.html#available%3F-class_method" title="TreeHaver::Backends::Psych.available? (method)">available?</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="rbs_gem_available?-class_method">
+  
+    .<strong>rbs_gem_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='rbs_backend_available?-class_method'>rbs_backend_available?</span></span>
+    </span>
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if the RBS gem is available and functional</p>
+
+<p>The RBS gem only works on MRI Ruby (C extension).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if rbs gem is available and can parse RBS</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 649</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_rbs_gem_available?'>rbs_gem_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@rbs_gem_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@rbs_gem_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@rbs_gem_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rbs</span><span class='tstring_end'>&quot;</span></span>
+    <span class='comment'># Verify it can actually parse - just requiring isn&#39;t enough
+</span>    <span class='id identifier rubyid_buffer'>buffer</span> <span class='op'>=</span> <span class='op'>::</span><span class='const'>RBS</span><span class='op'>::</span><span class='const'>Buffer</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>test.rbs</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>content:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>class Foo end</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='op'>::</span><span class='const'>RBS</span><span class='op'>::</span><span class='const'>Parser</span><span class='period'>.</span><span class='id identifier rubyid_parse_signature'>parse_signature</span><span class='lparen'>(</span><span class='id identifier rubyid_buffer'>buffer</span><span class='rparen'>)</span>
+    <span class='kw'>true</span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='kw'>false</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reset!-class_method">
+  
+    .<strong>reset!</strong>  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Reset all memoized availability checks</p>
+
+<p>Useful in tests that need to re-check availability after mocking.<br />
+Note: This does NOT undo backend usage recording.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+785
+786
+787
+788
+789
+790
+791</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 785</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
+  <span class='id identifier rubyid_instance_variables'>instance_variables</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ivar'>ivar</span><span class='op'>|</span>
+    <span class='comment'># Don&#39;t reset ENV-based values
+</span>    <span class='kw'>next</span> <span class='kw'>if</span> <span class='qsymbols_beg'>%i[</span><span class='tstring_content'>@selected_backend</span><span class='words_sep'> </span><span class='tstring_content'>@allowed_native_backends</span><span class='words_sep'> </span><span class='tstring_content'>@allowed_ruby_backends</span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_ivar'>ivar</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_remove_instance_variable'>remove_instance_variable</span><span class='lparen'>(</span><span class='id identifier rubyid_ivar'>ivar</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_ivar'>ivar</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_end_with?'>end_with?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>_available</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="reset_selected_backend!-class_method">
+  
+    .<strong>reset_selected_backend!</strong>  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Reset selected backend caches (useful for testing with different ENV values)</p>
+
+<p>Also resets TreeHaver’s backend caches.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+798
+799
+800
+801
+802
+803</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 798</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_reset_selected_backend!'>reset_selected_backend!</span>
+  <span class='id identifier rubyid_remove_instance_variable'>remove_instance_variable</span><span class='lparen'>(</span><span class='symbol'>:@selected_backend</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@selected_backend</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_remove_instance_variable'>remove_instance_variable</span><span class='lparen'>(</span><span class='symbol'>:@allowed_native_backends</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@allowed_native_backends</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_remove_instance_variable'>remove_instance_variable</span><span class='lparen'>(</span><span class='symbol'>:@allowed_ruby_backends</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@allowed_ruby_backends</span><span class='rparen'>)</span>
+  <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_reset_backend!'><span class='object_link'><a href="../../TreeHaver.html#reset_backend!-class_method" title="TreeHaver.reset_backend! (method)">reset_backend!</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="rust_backend_available?-class_method">
+  
+    .<strong>rust_backend_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if tree_stump gem is available (Rust backend)</p>
+
+<p>The Rust backend only works on MRI Ruby (magnus uses MRI’s C API).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if tree_stump gem is available</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 414</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_rust_backend_available?'>rust_backend_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@rust_backend_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@rust_backend_available</span><span class='rparen'>)</span>
+
+  <span class='comment'># If TREE_HAVER_BACKEND explicitly selects a different native backend,
+</span>  <span class='comment'># Rust is not available for testing
+</span>  <span class='kw'>return</span> <span class='ivar'>@rust_backend_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_backend_allowed?'>backend_allowed?</span><span class='lparen'>(</span><span class='symbol'>:rust</span><span class='rparen'>)</span>
+
+  <span class='comment'># tree_stump uses magnus which requires MRI&#39;s C API
+</span>  <span class='kw'>return</span> <span class='ivar'>@rust_backend_available</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_mri?'>mri?</span>
+
+  <span class='ivar'>@rust_backend_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_stump</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>true</span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="selected_backend-class_method">
+  
+    .<strong>selected_backend</strong>  &#x21d2; <tt>Symbol</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the selected backend from TREE_HAVER_BACKEND</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the selected backend (:auto if not set)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+242
+243
+244
+245</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 242</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_selected_backend'>selected_backend</span>
+  <span class='kw'>return</span> <span class='ivar'>@selected_backend</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@selected_backend</span><span class='rparen'>)</span>
+  <span class='ivar'>@selected_backend</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_backend'><span class='object_link'><a href="../../TreeHaver.html#backend-class_method" title="TreeHaver.backend (method)">backend</a></span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="summary-class_method">
+  
+    .<strong>summary</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Boolean}</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get a summary of available dependencies (for debugging)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash{Symbol =&gt; Boolean}</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>map of dependency name to availability</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760
+761
+762</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 724</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_summary'>summary</span>
+  <span class='lbrace'>{</span>
+    <span class='comment'># Backend selection from environment variables
+</span>    <span class='label'>selected_backend:</span> <span class='id identifier rubyid_selected_backend'>selected_backend</span><span class='comma'>,</span>
+    <span class='label'>allowed_native_backends:</span> <span class='id identifier rubyid_allowed_native_backends'>allowed_native_backends</span><span class='comma'>,</span>
+    <span class='label'>allowed_ruby_backends:</span> <span class='id identifier rubyid_allowed_ruby_backends'>allowed_ruby_backends</span><span class='comma'>,</span>
+    <span class='comment'># TreeHaver backends (*_backend)
+</span>    <span class='label'>ffi_backend:</span> <span class='id identifier rubyid_ffi_available?'>ffi_available?</span><span class='comma'>,</span>
+    <span class='label'>mri_backend:</span> <span class='id identifier rubyid_mri_backend_available?'>mri_backend_available?</span><span class='comma'>,</span>
+    <span class='label'>rust_backend:</span> <span class='id identifier rubyid_rust_backend_available?'>rust_backend_available?</span><span class='comma'>,</span>
+    <span class='label'>java_backend:</span> <span class='id identifier rubyid_java_backend_available?'>java_backend_available?</span><span class='comma'>,</span>
+    <span class='label'>prism_backend:</span> <span class='id identifier rubyid_prism_available?'>prism_available?</span><span class='comma'>,</span>
+    <span class='label'>psych_backend:</span> <span class='id identifier rubyid_psych_available?'>psych_available?</span><span class='comma'>,</span>
+    <span class='label'>commonmarker_backend:</span> <span class='id identifier rubyid_commonmarker_available?'>commonmarker_available?</span><span class='comma'>,</span>
+    <span class='label'>markly_backend:</span> <span class='id identifier rubyid_markly_available?'>markly_available?</span><span class='comma'>,</span>
+    <span class='label'>citrus_backend:</span> <span class='id identifier rubyid_citrus_available?'>citrus_available?</span><span class='comma'>,</span>
+    <span class='label'>rbs_backend:</span> <span class='id identifier rubyid_rbs_backend_available?'>rbs_backend_available?</span><span class='comma'>,</span>
+    <span class='comment'># Ruby engines (*_engine)
+</span>    <span class='label'>ruby_engine:</span> <span class='const'>RUBY_ENGINE</span><span class='comma'>,</span>
+    <span class='label'>mri_engine:</span> <span class='id identifier rubyid_mri?'>mri?</span><span class='comma'>,</span>
+    <span class='label'>jruby_engine:</span> <span class='id identifier rubyid_jruby?'>jruby?</span><span class='comma'>,</span>
+    <span class='label'>truffleruby_engine:</span> <span class='id identifier rubyid_truffleruby?'>truffleruby?</span><span class='comma'>,</span>
+    <span class='comment'># Tree-sitter grammars (*_grammar)
+</span>    <span class='label'>libtree_sitter:</span> <span class='id identifier rubyid_libtree_sitter_available?'>libtree_sitter_available?</span><span class='comma'>,</span>
+    <span class='label'>bash_grammar:</span> <span class='id identifier rubyid_tree_sitter_bash_available?'>tree_sitter_bash_available?</span><span class='comma'>,</span>
+    <span class='label'>toml_grammar:</span> <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span><span class='comma'>,</span>
+    <span class='label'>json_grammar:</span> <span class='id identifier rubyid_tree_sitter_json_available?'>tree_sitter_json_available?</span><span class='comma'>,</span>
+    <span class='label'>jsonc_grammar:</span> <span class='id identifier rubyid_tree_sitter_jsonc_available?'>tree_sitter_jsonc_available?</span><span class='comma'>,</span>
+    <span class='label'>rbs_grammar:</span> <span class='id identifier rubyid_tree_sitter_rbs_available?'>tree_sitter_rbs_available?</span><span class='comma'>,</span>
+    <span class='label'>any_native_grammar:</span> <span class='id identifier rubyid_any_native_grammar_available?'>any_native_grammar_available?</span><span class='comma'>,</span>
+    <span class='comment'># Language parsing capabilities (*_parsing)
+</span>    <span class='label'>toml_parsing:</span> <span class='id identifier rubyid_any_toml_backend_available?'>any_toml_backend_available?</span><span class='comma'>,</span>
+    <span class='label'>markdown_parsing:</span> <span class='id identifier rubyid_any_markdown_backend_available?'>any_markdown_backend_available?</span><span class='comma'>,</span>
+    <span class='label'>rbs_parsing:</span> <span class='id identifier rubyid_any_rbs_backend_available?'>any_rbs_backend_available?</span><span class='comma'>,</span>
+    <span class='comment'># Specific libraries (*_gem)
+</span>    <span class='label'>toml_rb_gem:</span> <span class='id identifier rubyid_toml_rb_gem_available?'>toml_rb_gem_available?</span><span class='comma'>,</span>
+    <span class='label'>rbs_gem:</span> <span class='id identifier rubyid_rbs_gem_available?'>rbs_gem_available?</span><span class='comma'>,</span>
+  <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="toml_grammar_available?-class_method">
+  
+    .<strong>toml_grammar_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if a TOML grammar library is available via environment variable</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if TREE_SITTER_TOML_PATH points to an existing file</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+507
+508
+509
+510
+511</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 507</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_toml_grammar_available?'>toml_grammar_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@toml_grammar_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@toml_grammar_available</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_path'>path</span> <span class='op'>=</span> <span class='id identifier rubyid_find_toml_grammar_path'>find_toml_grammar_path</span>
+  <span class='ivar'>@toml_grammar_available</span> <span class='op'>=</span> <span class='id identifier rubyid_path'>path</span> <span class='op'>&amp;&amp;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_exist?'>exist?</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="toml_rb_gem_available?-class_method">
+  
+    .<strong>toml_rb_gem_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if toml-rb gem is available and functional (Citrus backend for TOML)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if toml-rb gem is available and can parse TOML</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 680</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_toml_rb_gem_available?'>toml_rb_gem_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@toml_rb_gem_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@toml_rb_gem_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@toml_rb_gem_available</span> <span class='op'>=</span> <span class='kw'>begin</span>
+    <span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>toml-rb</span><span class='tstring_end'>&quot;</span></span>
+    <span class='comment'># Verify it can actually parse - just requiring isn&#39;t enough
+</span>    <span class='const'>TomlRB</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>key = &quot;value&quot;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='kw'>true</span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+    <span class='kw'>false</span>
+  <span class='kw'>rescue</span> <span class='const'>StandardError</span>
+    <span class='kw'>false</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tree_sitter_bash_available?-class_method">
+  
+    .<strong>tree_sitter_bash_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if tree-sitter-bash grammar is available and working</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if bash grammar works</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+607
+608
+609
+610</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 607</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_bash_available?'>tree_sitter_bash_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@tree_sitter_bash_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_bash_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@tree_sitter_bash_available</span> <span class='op'>=</span> <span class='id identifier rubyid_grammar_works?'>grammar_works?</span><span class='lparen'>(</span><span class='symbol'>:bash</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>echo hello</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tree_sitter_json_available?-class_method">
+  
+    .<strong>tree_sitter_json_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if tree-sitter-json grammar is available and working</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if json grammar works</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+623
+624
+625
+626</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 623</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_json_available?'>tree_sitter_json_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@tree_sitter_json_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_json_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@tree_sitter_json_available</span> <span class='op'>=</span> <span class='id identifier rubyid_grammar_works?'>grammar_works?</span><span class='lparen'>(</span><span class='symbol'>:json</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>{&quot;key&quot;: &quot;value&quot;}</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tree_sitter_jsonc_available?-class_method">
+  
+    .<strong>tree_sitter_jsonc_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if tree-sitter-jsonc grammar is available and working</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if jsonc grammar works</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+631
+632
+633
+634</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 631</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_jsonc_available?'>tree_sitter_jsonc_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@tree_sitter_jsonc_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_jsonc_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@tree_sitter_jsonc_available</span> <span class='op'>=</span> <span class='id identifier rubyid_grammar_works?'>grammar_works?</span><span class='lparen'>(</span><span class='symbol'>:jsonc</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>{&quot;key&quot;: &quot;value&quot; /* comment */}</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tree_sitter_rbs_available?-class_method">
+  
+    .<strong>tree_sitter_rbs_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if tree-sitter-rbs grammar is available and working</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if rbs grammar works</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+639
+640
+641
+642</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 639</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_rbs_available?'>tree_sitter_rbs_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@tree_sitter_rbs_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_rbs_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@tree_sitter_rbs_available</span> <span class='op'>=</span> <span class='id identifier rubyid_grammar_works?'>grammar_works?</span><span class='lparen'>(</span><span class='symbol'>:rbs</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>class Foo end</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tree_sitter_toml_available?-class_method">
+  
+    .<strong>tree_sitter_toml_available?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if tree-sitter-toml grammar is available and working via TreeHaver</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if toml grammar works</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+615
+616
+617
+618</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 615</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span>
+  <span class='kw'>return</span> <span class='ivar'>@tree_sitter_toml_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_toml_available</span><span class='rparen'>)</span>
+  <span class='ivar'>@tree_sitter_toml_available</span> <span class='op'>=</span> <span class='id identifier rubyid_grammar_works?'>grammar_works?</span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>key = &quot;value&quot;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="truffleruby?-class_method">
+  
+    .<strong>truffleruby?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if running on TruffleRuby</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if running on TruffleRuby</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+588
+589
+590</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 588</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_truffleruby?'>truffleruby?</span>
+  <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RUBY_ENGINE</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>truffleruby</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Sun Jan  4 06:23:40 2026 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-4.0.0).
+</div>
+
+    </div>
+  </body>
+</html>

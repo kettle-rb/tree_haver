@@ -85,12 +85,14 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Java backend for JRuby using java-tree-sitter (jtreesitter)</p>
+    <p>Java backend for JRuby using jtreesitter (java-tree-sitter)</p>
 
-<p>This backend integrates with java-tree-sitter JARs on JRuby,<br />
+<p>This backend integrates with jtreesitter JARs on JRuby,<br />
 leveraging JRuby’s native Java integration for optimal performance.</p>
 
-<p>java-tree-sitter provides Java bindings to tree-sitter and supports:</p>
+<p>== Features</p>
+
+<p>jtreesitter (java-tree-sitter) provides Java bindings to tree-sitter and supports:</p>
 <ul>
   <li>Parsing source code into syntax trees</li>
   <li>Incremental parsing via Parser.parse(Tree, String)</li>
@@ -98,19 +100,28 @@ leveraging JRuby’s native Java integration for optimal performance.</p>
   <li>Tree editing for incremental re-parsing</li>
 </ul>
 
+<p>== Version Requirements</p>
+
+<ul>
+  <li>jtreesitter &gt;= 0.26.0 (required)</li>
+  <li>tree-sitter runtime library &gt;= 0.26.0 (must match jtreesitter version)</li>
+</ul>
+
+<p>Older versions of jtreesitter are NOT supported due to API changes.</p>
+
 <p>== Platform Compatibility</p>
 
 <ul>
   <li>MRI Ruby: ✗ Not available (no JVM)</li>
   <li>JRuby: ✓ Full support (native Java integration)</li>
-  <li>TruffleRuby: ✗ Not available (java-tree-sitter requires JRuby’s Java interop)</li>
+  <li>TruffleRuby: ✗ Not available (jtreesitter requires JRuby’s Java interop)</li>
 </ul>
 
 <p>== Installation</p>
 
 <ol>
   <li>
-    <p>Download the JAR from Maven Central:<br />
+    <p>Download jtreesitter 0.26.0+ JAR from Maven Central:<br />
 https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter</p>
   </li>
   <li>
@@ -134,7 +145,7 @@ jruby -e “require ‘tree_haver’; puts TreeHaver::Backends::Java.available?�
     
       <li><a href="https://github.com/tree-sitter/java-tree-sitter" target="_parent" title="source">source</a></li>
     
-      <li><a href="https://tree-sitter.github.io/java-tree-sitter" target="_parent" title="java-tree-sitter documentation">java-tree-sitter documentation</a></li>
+      <li><a href="https://tree-sitter.github.io/java-tree-sitter" target="_parent" title="jtreesitter documentation">jtreesitter documentation</a></li>
     
       <li><a href="https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter" target="_parent" title="Maven Central">Maven Central</a></li>
     
@@ -445,15 +456,6 @@ in that directory (recursively) are added to the JRuby classpath.</p>
       <pre class="lines">
 
 
-71
-72
-73
-74
-75
-76
-77
-78
-79
 80
 81
 82
@@ -466,10 +468,19 @@ in that directory (recursively) are added to the JRuby classpath.</p>
 89
 90
 91
-92</pre>
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 71</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 80</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_jars_from_env!'>add_jars_from_env!</span>
   <span class='comment'># :nocov:
@@ -553,15 +564,6 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
       <pre class="lines">
 
 
-129
-130
-131
-132
-133
-134
-135
-136
-137
 138
 139
 140
@@ -605,10 +607,19 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
 178
 179
 180
-181</pre>
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 129</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 138</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_available?'>available?</span>
   <span class='kw'>return</span> <span class='ivar'>@loaded</span> <span class='kw'>if</span> <span class='ivar'>@load_attempted</span>
@@ -719,22 +730,22 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
       <pre class="lines">
 
 
-215
-216
-217
-218
-219
-220
-221
-222
-223
 224
 225
 226
-227</pre>
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 215</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 224</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='comment'># :nocov:
@@ -783,15 +794,6 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
       <pre class="lines">
 
 
-98
-99
-100
-101
-102
-103
-104
-105
-106
 107
 108
 109
@@ -802,10 +804,19 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
 114
 115
 116
-117</pre>
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 98</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 107</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_configure_native_library_path!'>configure_native_library_path!</span>
   <span class='comment'># :nocov:
@@ -878,12 +889,12 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
       <pre class="lines">
 
 
-205
-206
-207</pre>
+214
+215
+216</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 205</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 214</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_java_classes'>java_classes</span>
   <span class='ivar'>@java_classes</span>
@@ -935,12 +946,12 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
       <pre class="lines">
 
 
-186
-187
-188</pre>
+195
+196
+197</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 186</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 195</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_load_error'>load_error</span>
   <span class='ivar'>@load_error</span>
@@ -979,15 +990,15 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
       <pre class="lines">
 
 
-194
-195
-196
-197
-198
-199</pre>
+203
+204
+205
+206
+207
+208</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 194</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 203</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
   <span class='ivar'>@load_attempted</span> <span class='op'>=</span> <span class='kw'>false</span>
@@ -1046,12 +1057,12 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
       <pre class="lines">
 
 
-50
-51
-52</pre>
+59
+60
+61</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 50</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 59</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_runtime_lookup'>runtime_lookup</span>
   <span class='ivar'>@runtime_lookup</span>
@@ -1109,12 +1120,12 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
       <pre class="lines">
 
 
-57
-58
-59</pre>
+66
+67
+68</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 57</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 66</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_runtime_lookup='>runtime_lookup=</span><span class='lparen'>(</span><span class='id identifier rubyid_lookup'>lookup</span><span class='rparen'>)</span>
   <span class='ivar'>@runtime_lookup</span> <span class='op'>=</span> <span class='id identifier rubyid_lookup'>lookup</span>
@@ -1129,7 +1140,7 @@ Automatically attempts to load JARs from ENV[“TREE_SITTER_JAVA_JARS_DIR”] if
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  2 05:34:04 2026 by
+  Generated on Sun Jan  4 06:23:40 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
