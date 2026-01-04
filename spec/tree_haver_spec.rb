@@ -122,6 +122,20 @@ RSpec.describe TreeHaver do
 
   describe "::backend_module" do
     context "with explicit backend selection" do
+      # Disable backend conflict protection for these tests.
+      # These tests verify the case statement mapping (backend name -> module),
+      # not the runtime conflict detection behavior. Without this, the FFI test
+      # would fail if MRI was used earlier in the test suite (since FFI is blocked
+      # after MRI is loaded to prevent segfaults).
+      before do
+        @original_backend_protect = described_class.backend_protect?
+        described_class.backend_protect = false
+      end
+
+      after do
+        described_class.backend_protect = @original_backend_protect
+      end
+
       it "returns MRI backend when backend is :mri" do
         described_class.backend = :mri
         expect(described_class.backend_module).to eq(described_class::Backends::MRI)
