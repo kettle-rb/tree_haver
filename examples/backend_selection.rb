@@ -21,9 +21,15 @@
 #   # Combine: select MRI, but only allow citrus for Ruby
 #   TREE_HAVER_BACKEND=mri TREE_HAVER_RUBY_BACKEND=citrus bundle exec ruby examples/backend_selection.rb
 
-require "bundler/setup"
-require "rspec"
-require_relative "../lib/tree_haver/rspec/dependency_tags"
+require "bundler/inline"
+
+gemfile do
+  source "https://gem.coop"
+  gem "tree_haver", path: File.expand_path("..", __dir__)
+  require "rspec"
+end
+
+require "tree_haver/rspec/dependency_tags"
 
 deps = TreeHaver::RSpec::DependencyTags
 

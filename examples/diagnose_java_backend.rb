@@ -6,6 +6,14 @@
 # Usage (from tree_haver root directory):
 #   jruby examples/diagnose_java_backend.rb
 
+require "bundler/inline"
+
+gemfile do
+  source "https://gem.coop"
+  gem "tree_haver", path: File.expand_path("..", __dir__)
+  gem "rspec"
+end
+
 puts "=" * 70
 puts "Java Backend Diagnostics"
 puts "=" * 70
@@ -50,13 +58,6 @@ else
   puts "  ✗ TREE_SITTER_JAVA_JARS_DIR not set or directory doesn't exist"
   puts "    Run: bin/setup-jtreesitter"
 end
-puts
-
-# Try loading tree_haver
-puts "Loading tree_haver..."
-require "bundler/setup"
-require "tree_haver"
-puts "  ✓ tree_haver loaded"
 puts
 
 # Check Java backend
@@ -123,7 +124,7 @@ puts
 # Also test the dependency tag check directly
 puts "Dependency Tag Check:"
 require "rspec"
-require_relative "../lib/tree_haver/rspec/dependency_tags"
+require_relative "tree_haver/rspec/dependency_tags"
 deps = TreeHaver::RSpec::DependencyTags
 puts "  jruby?: #{deps.jruby?}"
 puts "  backend_allowed?(:java): #{deps.backend_allowed?(:java)}"
