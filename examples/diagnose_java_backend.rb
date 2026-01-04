@@ -16,10 +16,10 @@ puts "Ruby Version: #{RUBY_VERSION}"
 puts
 
 puts "Environment Variables:"
-puts "  TREE_SITTER_JAVA_JARS_DIR: #{ENV['TREE_SITTER_JAVA_JARS_DIR'].inspect}"
-puts "  TREE_SITTER_RUNTIME_LIB:   #{ENV['TREE_SITTER_RUNTIME_LIB'].inspect}"
-puts "  TREE_SITTER_TOML_PATH:     #{ENV['TREE_SITTER_TOML_PATH'].inspect}"
-puts "  CLASSPATH:                 #{ENV['CLASSPATH']&.split(':')&.first(3)&.join(':')}..."
+puts "  TREE_SITTER_JAVA_JARS_DIR: #{ENV["TREE_SITTER_JAVA_JARS_DIR"].inspect}"
+puts "  TREE_SITTER_RUNTIME_LIB:   #{ENV["TREE_SITTER_RUNTIME_LIB"].inspect}"
+puts "  TREE_SITTER_TOML_PATH:     #{ENV["TREE_SITTER_TOML_PATH"].inspect}"
+puts "  CLASSPATH:                 #{ENV["CLASSPATH"]&.split(":")&.first(3)&.join(":")}..."
 puts
 
 unless RUBY_ENGINE == "jruby"
@@ -37,7 +37,7 @@ begin
   puts "  ✓ Java bridge available"
 rescue LoadError => e
   puts "  ✗ Java bridge NOT available: #{e.message}"
-  exit 1
+  exit(1)
 end
 
 # Check for jtreesitter JAR
@@ -45,7 +45,7 @@ jars_dir = ENV["TREE_SITTER_JAVA_JARS_DIR"]
 if jars_dir && Dir.exist?(jars_dir)
   jars = Dir[File.join(jars_dir, "**", "*.jar")]
   puts "  ✓ TREE_SITTER_JAVA_JARS_DIR exists: #{jars_dir}"
-  puts "    JARs found: #{jars.map { |j| File.basename(j) }.join(', ')}"
+  puts "    JARs found: #{jars.map { |j| File.basename(j) }.join(", ")}"
 else
   puts "  ✗ TREE_SITTER_JAVA_JARS_DIR not set or directory doesn't exist"
   puts "    Run: bin/setup-jtreesitter"
@@ -92,8 +92,12 @@ if toml_path && File.exist?(toml_path)
   # Check the file with nm to see exported symbols
   puts ""
   puts "  Checking exported symbols:"
-  symbols = `nm -D "#{toml_path}" 2>/dev/null | grep tree_sitter`.strip rescue "nm not available"
-  puts "    #{symbols.empty? ? 'No tree_sitter symbols found' : symbols.split("\n").first(3).join("\n    ")}"
+  symbols = begin
+    %x(nm -D "#{toml_path}" 2>/dev/null | grep tree_sitter).strip
+  rescue
+    "nm not available"
+  end
+  puts "    #{symbols.empty? ? "No tree_sitter symbols found" : symbols.split("\n").first(3).join("\n    ")}"
   puts ""
 
   begin
@@ -145,4 +149,3 @@ puts
 puts "4. Ensure grammar .so files are available:"
 puts "   export TREE_SITTER_TOML_PATH=\"/usr/local/lib/libtree-sitter-toml.so\""
 puts
-

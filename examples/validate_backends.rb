@@ -46,7 +46,7 @@ BACKENDS.each do |name, backend_module|
   # Check availability first
   unless backend_module.available?
     puts "  Status: NOT AVAILABLE"
-    puts "  Reason: #{backend_module.respond_to?(:load_error) ? backend_module.load_error : 'Unknown'}"
+    puts "  Reason: #{backend_module.respond_to?(:load_error) ? backend_module.load_error : "Unknown"}"
     results_summary[:unavailable] << name
     puts
     next
@@ -78,8 +78,8 @@ BACKENDS.each do |name, backend_module|
 
   if results[:capabilities][:node]
     puts "  Node methods:"
-    puts "    Required: #{results[:capabilities][:node][:required].join(', ')}"
-    puts "    Optional: #{results[:capabilities][:node][:optional].join(', ')}"
+    puts "    Required: #{results[:capabilities][:node][:required].join(", ")}"
+    puts "    Optional: #{results[:capabilities][:node][:optional].join(", ")}"
   end
 
   puts
@@ -89,11 +89,10 @@ puts "=" * 70
 puts "Summary"
 puts "=" * 70
 puts
-puts "Valid backends:       #{results_summary[:valid].empty? ? 'None' : results_summary[:valid].join(', ')}"
-puts "Invalid backends:     #{results_summary[:invalid].empty? ? 'None' : results_summary[:invalid].join(', ')}"
-puts "Unavailable backends: #{results_summary[:unavailable].empty? ? 'None' : results_summary[:unavailable].join(', ')}"
+puts "Valid backends:       #{results_summary[:valid].empty? ? "None" : results_summary[:valid].join(", ")}"
+puts "Invalid backends:     #{results_summary[:invalid].empty? ? "None" : results_summary[:invalid].join(", ")}"
+puts "Unavailable backends: #{results_summary[:unavailable].empty? ? "None" : results_summary[:unavailable].join(", ")}"
 puts
 puts "Total: #{results_summary[:valid].size} valid, " \
-     "#{results_summary[:invalid].size} invalid, " \
-     "#{results_summary[:unavailable].size} unavailable"
-
+  "#{results_summary[:invalid].size} invalid, " \
+  "#{results_summary[:unavailable].size} unavailable"

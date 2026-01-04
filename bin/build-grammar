@@ -18,6 +18,13 @@ INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/lib/tree-sitter}"
 
 # Grammar repositories (matching ts-grammar-action)
 # Format: "url|branch|type" where type is optional (default: github, alternative: direct)
+# markdown, typescript are not working, with the same error:
+#   Regenerating parser with tree-sitter CLI for ABI compatibility...
+#     tree-sitter version: tree-sitter 0.26.3
+#     Warning: No grammar.js found, using existing parser.c
+#     The grammar may not be compatible with tree-sitter 0.24+
+#   ERROR: Cannot find src directory
+#
 declare -A GRAMMAR_REPOS=(
   ["bash"]="https://github.com/tree-sitter/tree-sitter-bash|master|github"
   ["json"]="https://github.com/tree-sitter/tree-sitter-json|master|github"
@@ -28,6 +35,9 @@ declare -A GRAMMAR_REPOS=(
   ["javascript"]="https://github.com/tree-sitter/tree-sitter-javascript|master|github"
   ["typescript"]="https://github.com/tree-sitter/tree-sitter-typescript|master|github"
   ["python"]="https://github.com/tree-sitter/tree-sitter-python|master|github"
+  ["rbs"]="https://github.com/joker1007/tree-sitter-rbs|main|github"
+  ["yaml"]="https://github.com/tree-sitter-grammars/tree-sitter-yaml|master|github"
+  ["css"]="https://github.com/tree-sitter/tree-sitter-css|master|github"
 )
 
 # Symbol names (usually tree_sitter_<lang>)
@@ -41,6 +51,9 @@ declare -A GRAMMAR_SYMBOLS=(
   ["javascript"]="tree_sitter_javascript"
   ["typescript"]="tree_sitter_typescript"
   ["python"]="tree_sitter_python"
+  ["rbs"]="tree_sitter_rbs"
+  ["yaml"]="tree_sitter_yaml"
+  ["css"]="tree_sitter_css"
 )
 
 if [[ -z "${GRAMMAR_REPOS[$GRAMMAR]:-}" ]]; then

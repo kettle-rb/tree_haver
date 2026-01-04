@@ -10,12 +10,39 @@ module TreeHaver
   # The registry supports multiple backends for the same language, allowing runtime
   # switching, benchmarking, and fallback scenarios.
   #
+  # == Supported Backend Types
+  #
+  # The registry is extensible and supports any backend type. Common types include:
+  #
+  # - `:tree_sitter` - Native tree-sitter grammars (.so files)
+  # - `:citrus` - Citrus PEG parser grammars (pure Ruby)
+  # - `:prism` - Ruby's Prism parser (Ruby source only)
+  # - `:psych` - Ruby's Psych parser (YAML only)
+  # - `:commonmarker` - Commonmarker gem (Markdown)
+  # - `:markly` - Markly gem (Markdown/GFM)
+  # - `:rbs` - RBS gem (RBS type signatures) - registered externally by rbs-merge
+  #
+  # External gems can register their own backend types using the same API.
+  #
   # Registration structure:
   # ```ruby
   # @registrations = {
   #   toml: {
   #     tree_sitter: { path: "/path/to/lib.so", symbol: "tree_sitter_toml" },
   #     citrus: { grammar_module: TomlRB::Document, gem_name: "toml-rb" }
+  #   },
+  #   ruby: {
+  #     prism: { backend_module: TreeHaver::Backends::Prism }
+  #   },
+  #   yaml: {
+  #     psych: { backend_module: TreeHaver::Backends::Psych }
+  #   },
+  #   markdown: {
+  #     commonmarker: { backend_module: TreeHaver::Backends::Commonmarker },
+  #     markly: { backend_module: TreeHaver::Backends::Markly }
+  #   },
+  #   rbs: {
+  #     rbs: { backend_module: Rbs::Merge::Backends::RbsBackend }  # External
   #   }
   # }
   # ```
@@ -32,6 +59,13 @@ module TreeHaver
   #     grammar_module: TomlRB::Document, gem_name: "toml-rb")
   # ```
   #
+  # @example Register a pure Ruby backend (internal or external)
+  # ```ruby
+  #   TreeHaver::LanguageRegistry.register(:rbs, :rbs,
+  #     backend_module: Rbs::Merge::Backends::RbsBackend,
+  #     gem_name: "rbs")
+  # ```
+  #
   # @api private
   module LanguageRegistry
     @mutex = Mutex.new
@@ -45,13 +79,14 @@ module TreeHaver
     # Stores backend-specific configuration for a language. Multiple backends
     # can be registered for the same language without conflict.
     #
-    # @param name [Symbol, String] language identifier (e.g., :toml, :json)
-    # @param backend_type [Symbol] backend type (:tree_sitter, :citrus, :mri, :rust, :ffi, :java)
+    # @param name [Symbol, String] language identifier (e.g., :toml, :json, :ruby, :yaml, :rbs)
+    # @param backend_type [Symbol] backend type (:tree_sitter, :citrus, :prism, :psych, :commonmarker, :markly, or custom)
     # @param config [Hash] backend-specific configuration
     # @option config [String] :path tree-sitter library path (for tree-sitter backends)
     # @option config [String] :symbol exported symbol name (for tree-sitter backends)
     # @option config [Module] :grammar_module Citrus grammar module (for Citrus backend)
-    # @option config [String] :gem_name gem name for error messages (for Citrus backend)
+    # @option config [Module] :backend_module backend module with Language/Parser classes (for pure Ruby backends)
+    # @option config [String] :gem_name gem name for error messages and availability checks
     # @return [void]
     # @example Register tree-sitter grammar
     #   LanguageRegistry.register(:toml, :tree_sitter,
@@ -59,6 +94,9 @@ module TreeHaver
     # @example Register Citrus grammar
     #   LanguageRegistry.register(:toml, :citrus,
     #     grammar_module: TomlRB::Document, gem_name: "toml-rb")
+    # @example Register pure Ruby backend (external gem)
+    #   LanguageRegistry.register(:rbs, :rbs,
+    #     backend_module: Rbs::Merge::Backends::RbsBackend, gem_name: "rbs")
     def register(name, backend_type, **config)
       key = name.to_sym
       backend_key = backend_type.to_sym
@@ -130,6 +168,22 @@ module TreeHaver
     #   LanguageRegistry.clear_cache!
     def clear_cache!
       @mutex.synchronize { @cache.clear }
+      nil
+    end
+
+    # Clear all registrations and cache
+    #
+    # Removes all language registrations and cached Language objects.
+    # Primarily used in tests to reset state between test cases.
+    #
+    # @return [void]
+    # @example
+    #   LanguageRegistry.clear
+    def clear
+      @mutex.synchronize do
+        @registrations.clear
+        @cache.clear
+      end
       nil
     end
   end

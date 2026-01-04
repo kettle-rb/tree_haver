@@ -113,10 +113,40 @@ RSpec.describe TreeHaver::Backends::Citrus do
     end
 
     describe ".from_library" do
-      it "raises NotAvailable" do
-        expect {
-          backend::Language.from_library("/path/to/lib.so")
-        }.to raise_error(TreeHaver::NotAvailable, /doesn't use shared libraries/)
+      context "when no grammar is registered" do
+        before do
+          # Clear any existing registrations for test_lang
+          begin
+            TreeHaver.instance_variable_get(:@language_registry)&.clear
+          rescue
+            nil
+          end
+          TreeHaver::LanguageRegistry.clear
+        end
+
+        it "raises NotAvailable with helpful message" do
+          expect {
+            backend::Language.from_library("/path/to/lib.so", name: :test_unregistered_lang)
+          }.to raise_error(TreeHaver::NotAvailable, /No Citrus grammar registered/)
+        end
+      end
+
+      context "when grammar is registered" do
+        let(:grammar_module) { double("grammar", parse: nil) }
+
+        before do
+          TreeHaver::LanguageRegistry.clear
+          TreeHaver::LanguageRegistry.register(:test_citrus_lang, :citrus, grammar_module: grammar_module)
+        end
+
+        after do
+          TreeHaver::LanguageRegistry.clear
+        end
+
+        it "returns Language wrapping the registered grammar" do
+          lang = backend::Language.from_library(nil, name: :test_citrus_lang)
+          expect(lang).to be_a(backend::Language)
+        end
       end
     end
 

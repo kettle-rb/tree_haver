@@ -10,16 +10,16 @@
 #
 # Usage (from tree_haver root directory):
 #   # Test single backend selection
-#   TREE_HAVER_BACKEND=mri bundle exec ruby examples/test_backend_selection.rb
+#   TREE_HAVER_BACKEND=mri bundle exec ruby examples/backend_selection.rb
 #
 #   # Test native backend restriction
-#   TREE_HAVER_NATIVE_BACKEND=mri,ffi bundle exec ruby examples/test_backend_selection.rb
+#   TREE_HAVER_NATIVE_BACKEND=mri,ffi bundle exec ruby examples/backend_selection.rb
 #
 #   # Test pure Ruby only (no native backends)
-#   TREE_HAVER_NATIVE_BACKEND=none bundle exec ruby examples/test_backend_selection.rb
+#   TREE_HAVER_NATIVE_BACKEND=none bundle exec ruby examples/backend_selection.rb
 #
 #   # Combine: select MRI, but only allow citrus for Ruby
-#   TREE_HAVER_BACKEND=mri TREE_HAVER_RUBY_BACKEND=citrus bundle exec ruby examples/test_backend_selection.rb
+#   TREE_HAVER_BACKEND=mri TREE_HAVER_RUBY_BACKEND=citrus bundle exec ruby examples/backend_selection.rb
 
 require "bundler/setup"
 require "rspec"
@@ -59,16 +59,52 @@ puts
 
 puts "Backend availability (actual checks):"
 puts "  Native backends:"
-puts "    ffi_backend:  #{deps.ffi_available? rescue $!.class}"
-puts "    mri_backend:  #{deps.mri_backend_available? rescue $!.class}"
-puts "    rust_backend: #{deps.rust_backend_available? rescue $!.class}"
-puts "    java_backend: #{deps.java_backend_available? rescue $!.class}"
+puts "    ffi_backend:  #{begin
+  deps.ffi_available?
+rescue
+  $!.class
+end}"
+puts "    mri_backend:  #{begin
+  deps.mri_backend_available?
+rescue
+  $!.class
+end}"
+puts "    rust_backend: #{begin
+  deps.rust_backend_available?
+rescue
+  $!.class
+end}"
+puts "    java_backend: #{begin
+  deps.java_backend_available?
+rescue
+  $!.class
+end}"
 puts "  Ruby backends:"
-puts "    citrus_backend:      #{deps.citrus_available? rescue $!.class}"
-puts "    prism_backend:       #{deps.prism_available? rescue $!.class}"
-puts "    psych_backend:       #{deps.psych_available? rescue $!.class}"
-puts "    commonmarker_backend: #{deps.commonmarker_available? rescue $!.class}"
-puts "    markly_backend:      #{deps.markly_available? rescue $!.class}"
+puts "    citrus_backend:      #{begin
+  deps.citrus_available?
+rescue
+  $!.class
+end}"
+puts "    prism_backend:       #{begin
+  deps.prism_available?
+rescue
+  $!.class
+end}"
+puts "    psych_backend:       #{begin
+  deps.psych_available?
+rescue
+  $!.class
+end}"
+puts "    commonmarker_backend: #{begin
+  deps.commonmarker_available?
+rescue
+  $!.class
+end}"
+puts "    markly_backend:      #{begin
+  deps.markly_available?
+rescue
+  $!.class
+end}"
 puts
 
 puts "=" * 70

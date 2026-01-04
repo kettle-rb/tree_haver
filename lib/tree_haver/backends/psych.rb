@@ -114,12 +114,12 @@ module TreeHaver
           # @raise [TreeHaver::NotAvailable] if requested language is not YAML
           def from_library(_path = nil, symbol: nil, name: nil)
             # Derive language name from symbol if provided
-            lang_name = name || (symbol && symbol.to_s.sub(/^tree_sitter_/, ""))&.to_sym || :yaml
+            lang_name = name || symbol&.to_s&.sub(/^tree_sitter_/, "")&.to_sym || :yaml
 
             unless lang_name == :yaml
               raise TreeHaver::NotAvailable,
                 "Psych backend only supports YAML, not #{lang_name}. " \
-                "Use a tree-sitter backend for #{lang_name} support."
+                  "Use a tree-sitter backend for #{lang_name} support."
             end
 
             yaml

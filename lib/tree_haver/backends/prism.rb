@@ -93,6 +93,7 @@ module TreeHaver
         # The language name (always :ruby for Prism)
         # @return [Symbol]
         attr_reader :name
+        alias_method :language_name, :name
 
         # The backend this language is for
         # @return [Symbol]
@@ -166,12 +167,12 @@ module TreeHaver
           # @raise [TreeHaver::NotAvailable] if requested language is not Ruby
           def from_library(_path = nil, symbol: nil, name: nil)
             # Derive language name from symbol if provided
-            lang_name = name || (symbol && symbol.to_s.sub(/^tree_sitter_/, ""))&.to_sym || :ruby
+            lang_name = name || symbol&.to_s&.sub(/^tree_sitter_/, "")&.to_sym || :ruby
 
             unless lang_name == :ruby
               raise TreeHaver::NotAvailable,
                 "Prism backend only supports Ruby, not #{lang_name}. " \
-                "Use a tree-sitter backend for #{lang_name} support."
+                  "Use a tree-sitter backend for #{lang_name} support."
             end
 
             ruby

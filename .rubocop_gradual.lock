@@ -1,5 +1,0 @@
-{
-  "lib/tree_haver/rspec/dependency_tags.rb:3259362617": [
-    [797, 5, 81, "Style/SafeNavigation: Use safe navigation (`&.`) instead of checking if an object exists before calling the method.", 4174806157]
-  ]
-}

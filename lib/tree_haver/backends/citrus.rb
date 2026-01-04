@@ -151,13 +151,13 @@ module TreeHaver
           def from_library(path = nil, symbol: nil, name: nil)
             # Derive language name from path, symbol, or explicit name
             lang_name = name&.to_sym ||
-                        (symbol && symbol.to_s.sub(/^tree_sitter_/, ""))&.to_sym ||
-                        (path && TreeHaver::LibraryPathUtils.derive_language_name_from_path(path))&.to_sym
+              symbol&.to_s&.sub(/^tree_sitter_/, "")&.to_sym ||
+              path && TreeHaver::LibraryPathUtils.derive_language_name_from_path(path)&.to_sym
 
             unless lang_name
               raise TreeHaver::NotAvailable,
                 "Citrus backend requires a language name. " \
-                "Provide name: parameter or register a grammar with TreeHaver.register_language."
+                  "Provide name: parameter or register a grammar with TreeHaver.register_language."
             end
 
             # Look up registered Citrus grammar
@@ -166,7 +166,7 @@ module TreeHaver
             unless registration
               raise TreeHaver::NotAvailable,
                 "No Citrus grammar registered for #{lang_name.inspect}. " \
-                "Register one with: TreeHaver.register_language(:#{lang_name}, grammar_module: YourGrammar)"
+                  "Register one with: TreeHaver.register_language(:#{lang_name}, grammar_module: YourGrammar)"
             end
 
             grammar_module = registration[:grammar_module]

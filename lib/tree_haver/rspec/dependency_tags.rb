@@ -125,6 +125,9 @@ require "set"
 # [:citrus_backend]
 #   Citrus gem is available.
 #
+# [:rbs_backend]
+#   RBS gem is available (official RBS parser, MRI only).
+#
 # ==== Ruby Engine Tags (*_engine)
 #
 # [:mri_engine]
@@ -153,6 +156,9 @@ require "set"
 # [:jsonc_grammar]
 #   tree-sitter-jsonc grammar is available and parsing works.
 #
+# [:rbs_grammar]
+#   tree-sitter-rbs grammar is available and parsing works.
+#
 # ==== Language Parsing Capability Tags (*_parsing)
 #
 # [:toml_parsing]
@@ -161,21 +167,29 @@ require "set"
 # [:markdown_parsing]
 #   At least one markdown parser (commonmarker OR markly) is available.
 #
+# [:rbs_parsing]
+#   At least one RBS parser (rbs gem OR tree-sitter-rbs) is available.
+#
 # [:native_parsing]
 #   A native tree-sitter backend and grammar are available.
 #
-# ==== Specific Library Tags
+# ==== Specific Library Tags (*_gem)
 #
-# [:toml_rb]
+# [:toml_rb_gem]
 #   toml-rb gem is available (Citrus backend for TOML).
+#
+# [:rbs_gem]
+#   rbs gem is available (official RBS parser, MRI only).
+#   Note: Also available as :rbs_backend for consistency with other parser backends.
 #
 # === Negated Tags (run when dependency is NOT available)
 #
 # All positive tags have negated versions prefixed with `not_`:
-# - :not_mri_backend, :not_rust_backend, :not_java_backend, etc.
+# - :not_mri_backend, :not_rust_backend, :not_java_backend, :not_rbs_backend, etc.
 # - :not_mri_engine, :not_jruby_engine, :not_truffleruby_engine
-# - :not_libtree_sitter, :not_bash_grammar, :not_toml_grammar, etc.
-# - :not_toml_parsing, :not_markdown_parsing
+# - :not_libtree_sitter, :not_bash_grammar, :not_toml_grammar, :not_rbs_grammar, etc.
+# - :not_toml_parsing, :not_markdown_parsing, :not_rbs_parsing
+# - :not_toml_rb_gem, :not_rbs_gem
 #
 # == Backend Conflict Protection
 #
@@ -619,12 +633,53 @@ module TreeHaver
           @tree_sitter_jsonc_available = grammar_works?(:jsonc, '{"key": "value" /* comment */}')
         end
 
+        # Check if tree-sitter-rbs grammar is available and working
+        #
+        # @return [Boolean] true if rbs grammar works
+        def tree_sitter_rbs_available?
+          return @tree_sitter_rbs_available if defined?(@tree_sitter_rbs_available)
+          @tree_sitter_rbs_available = grammar_works?(:rbs, "class Foo end")
+        end
+
+        # Check if the RBS gem is available and functional
+        #
+        # The RBS gem only works on MRI Ruby (C extension).
+        #
+        # @return [Boolean] true if rbs gem is available and can parse RBS
+        def rbs_gem_available?
+          return @rbs_gem_available if defined?(@rbs_gem_available)
+          @rbs_gem_available = begin
+            require "rbs"
+            # Verify it can actually parse - just requiring isn't enough
+            buffer = ::RBS::Buffer.new(name: "test.rbs", content: "class Foo end")
+            ::RBS::Parser.parse_signature(buffer)
+            true
+          rescue LoadError
+            false
+          rescue StandardError
+            false
+          end
+        end
+
+        # Alias for rbs_gem_available? - for consistency with other backends
+        # Use :rbs_backend tag in specs for consistency with :prism_backend, :psych_backend, etc.
+        #
+        # @return [Boolean] true if rbs gem is available
+        alias_method :rbs_backend_available?, :rbs_gem_available?
+
+        # Check if at least one RBS backend is available
+        #
+        # @return [Boolean] true if any RBS backend works
+        def any_rbs_backend_available?
+          rbs_gem_available? || tree_sitter_rbs_available?
+        end
+
         # Check if toml-rb gem is available and functional (Citrus backend for TOML)
         #
         # @return [Boolean] true if toml-rb gem is available and can parse TOML
-        def toml_rb_available?
-          return @toml_rb_available if defined?(@toml_rb_available)
-          @toml_rb_available = begin
+        def toml_rb_gem_available?
+          return @toml_rb_gem_available if defined?(@toml_rb_gem_available)
+          @toml_rb_gem_available = begin
             require "toml-rb"
             # Verify it can actually parse - just requiring isn't enough
             TomlRB.parse('key = "value"')
@@ -640,7 +695,7 @@ module TreeHaver
         #
         # @return [Boolean] true if any TOML backend works
         def any_toml_backend_available?
-          tree_sitter_toml_available? || toml_rb_available?
+          tree_sitter_toml_available? || toml_rb_gem_available?
         end
 
         # Check if at least one markdown backend is available
@@ -682,6 +737,7 @@ module TreeHaver
             commonmarker_backend: commonmarker_available?,
             markly_backend: markly_available?,
             citrus_backend: citrus_available?,
+            rbs_backend: rbs_backend_available?,
             # Ruby engines (*_engine)
             ruby_engine: RUBY_ENGINE,
             mri_engine: mri?,
@@ -693,12 +749,15 @@ module TreeHaver
             toml_grammar: tree_sitter_toml_available?,
             json_grammar: tree_sitter_json_available?,
             jsonc_grammar: tree_sitter_jsonc_available?,
+            rbs_grammar: tree_sitter_rbs_available?,
             any_native_grammar: any_native_grammar_available?,
             # Language parsing capabilities (*_parsing)
             toml_parsing: any_toml_backend_available?,
             markdown_parsing: any_markdown_backend_available?,
-            # Specific libraries
-            toml_rb: toml_rb_available?,
+            rbs_parsing: any_rbs_backend_available?,
+            # Specific libraries (*_gem)
+            toml_rb_gem: toml_rb_gem_available?,
+            rbs_gem: rbs_gem_available?,
           }
         end
 
@@ -795,6 +854,24 @@ RSpec.configure do |config|
 
   # Define exclusion filters for optional dependencies
   # Tests tagged with these will be skipped when the dependency is not available
+
+  # ============================================================
+  # Backend Protection for Test Suites
+  # ============================================================
+  #
+  # TreeHaver protects against backend conflicts by default (e.g., FFI cannot
+  # be used after MRI has been loaded because it would cause a segfault).
+  # This protection remains enabled in test suites to prevent crashes.
+  #
+  # If you need to test multiple incompatible backends in the same process
+  # (accepting the risk of segfaults), you can disable protection:
+  #   TREE_HAVER_BACKEND_PROTECT=false bundle exec rspec
+  #
+  # Note: The recommended approach is to run separate test processes for
+  # incompatible backends using RSpec tags or separate CI jobs.
+  if ENV["TREE_HAVER_BACKEND_PROTECT"] == "false"
+    TreeHaver.backend_protect = false
+  end
 
   config.before(:suite) do
     # Print dependency summary if TREE_HAVER_DEBUG is set
@@ -900,6 +977,7 @@ RSpec.configure do |config|
     commonmarker: :commonmarker_available?,
     markly: :markly_available?,
     citrus: :citrus_available?,
+    rbs: :rbs_backend_available?,
   }
 
   # Map of backend symbols to their RSpec tag names
@@ -913,6 +991,7 @@ RSpec.configure do |config|
     commonmarker: :commonmarker_backend,
     markly: :markly_backend,
     citrus: :citrus_backend,
+    rbs: :rbs_backend,
   }
 
   # Determine which backends should NOT have availability checked
@@ -934,10 +1013,7 @@ RSpec.configure do |config|
   env_backend = ENV["TREE_HAVER_BACKEND"]
   if env_backend && !env_backend.empty? && env_backend != "auto"
     backend_sym = env_backend.to_sym
-    blockers = TreeHaver::Backends::BLOCKED_BY[backend_sym]
-    if blockers
-      blockers.each { |blocker| blocked_backends << blocker }
-    end
+    TreeHaver::Backends::BLOCKED_BY[backend_sym]&.each { |blocker| blocked_backends << blocker }
   end
 
   # Check which *_backend_only tags are being run and block their conflicting backends
@@ -1003,7 +1079,7 @@ RSpec.configure do |config|
   # Tree-Sitter Grammar Tags
   # ============================================================
   # Tags: *_grammar - require a specific tree-sitter grammar (.so file)
-  #   :bash_grammar, :toml_grammar, :json_grammar, :jsonc_grammar
+  #   :bash_grammar, :toml_grammar, :json_grammar, :jsonc_grammar, :rbs_grammar
   #
   # Also: :libtree_sitter - requires the libtree-sitter runtime library
   #
@@ -1020,6 +1096,7 @@ RSpec.configure do |config|
     config.filter_run_excluding(toml_grammar: true) unless deps.tree_sitter_toml_available?
     config.filter_run_excluding(json_grammar: true) unless deps.tree_sitter_json_available?
     config.filter_run_excluding(jsonc_grammar: true) unless deps.tree_sitter_jsonc_available?
+    config.filter_run_excluding(rbs_grammar: true) unless deps.tree_sitter_rbs_available?
   end
 
   # ============================================================
@@ -1028,6 +1105,7 @@ RSpec.configure do |config|
   # Tags: *_parsing - require ANY parser for a language (any backend that can parse it)
   #   :toml_parsing   - any TOML parser (tree-sitter-toml OR toml-rb/Citrus)
   #   :markdown_parsing - any Markdown parser (commonmarker OR markly)
+  #   :rbs_parsing    - any RBS parser (rbs gem OR tree-sitter-rbs)
   #   :native_parsing - any native tree-sitter backend + grammar
   #
   # NOTE: any_toml_backend_available? calls tree_sitter_toml_available? which
@@ -1036,16 +1114,20 @@ RSpec.configure do |config|
   unless isolated_test_mode
     config.filter_run_excluding(toml_parsing: true) unless deps.any_toml_backend_available?
     config.filter_run_excluding(markdown_parsing: true) unless deps.any_markdown_backend_available?
+    config.filter_run_excluding(rbs_parsing: true) unless deps.any_rbs_backend_available?
     config.filter_run_excluding(native_parsing: true) unless deps.any_native_grammar_available?
   end
 
   # ============================================================
   # Specific Library Tags
   # ============================================================
-  # Tags for specific gems/libraries (not backends, but dependencies)
-  #   :toml_rb - the toml-rb gem (Citrus-based TOML parser)
+  # Tags for specific gems/libraries (*_gem suffix)
+  #   :toml_rb_gem - the toml-rb gem (Citrus-based TOML parser)
+  #   :rbs_gem - the rbs gem (official RBS parser, MRI only)
+  #   Note: :rbs_backend is also available as an alias for :rbs_gem
 
-  config.filter_run_excluding(toml_rb: true) unless deps.toml_rb_available?
+  config.filter_run_excluding(toml_rb_gem: true) unless deps.toml_rb_gem_available?
+  config.filter_run_excluding(rbs_gem: true) unless deps.rbs_gem_available?
 
   # ============================================================
   # Negated Tags (run when dependency is NOT available)
@@ -1078,12 +1160,15 @@ RSpec.configure do |config|
     config.filter_run_excluding(not_toml_grammar: true) if deps.tree_sitter_toml_available?
     config.filter_run_excluding(not_json_grammar: true) if deps.tree_sitter_json_available?
     config.filter_run_excluding(not_jsonc_grammar: true) if deps.tree_sitter_jsonc_available?
+    config.filter_run_excluding(not_rbs_grammar: true) if deps.tree_sitter_rbs_available?
 
     # Language parsing capabilities
     config.filter_run_excluding(not_toml_parsing: true) if deps.any_toml_backend_available?
     config.filter_run_excluding(not_markdown_parsing: true) if deps.any_markdown_backend_available?
+    config.filter_run_excluding(not_rbs_parsing: true) if deps.any_rbs_backend_available?
   end
 
   # Specific libraries
-  config.filter_run_excluding(not_toml_rb: true) if deps.toml_rb_available?
+  config.filter_run_excluding(not_toml_rb_gem: true) if deps.toml_rb_gem_available?
+  config.filter_run_excluding(not_rbs_gem: true) if deps.rbs_gem_available?
 end

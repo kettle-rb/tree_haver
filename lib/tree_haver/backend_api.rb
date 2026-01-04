@@ -188,9 +188,9 @@ module TreeHaver
         results = validate(backend_module, strict: strict)
         unless results[:valid]
           raise TreeHaver::Error,
-            "Backend #{backend_module.name} API validation failed:\n" \
-            "  Errors: #{results[:errors].join(', ')}\n" \
-            "  Warnings: #{results[:warnings].join(', ')}"
+            "Backend #{backend_module.name} API validation failed:\n  " \
+              "Errors: #{results[:errors].join(", ")}\n  " \
+              "Warnings: #{results[:warnings].join(", ")}"
         end
         results
       end
@@ -261,7 +261,7 @@ module TreeHaver
 
         results[:capabilities][:language] = {
           class_methods: LANGUAGE_CLASS_METHODS.select { |m| klass.respond_to?(m) } +
-                         optional_methods,
+            optional_methods,
         }
       end
 
@@ -347,4 +347,3 @@ module TreeHaver
     end
   end
 end
-

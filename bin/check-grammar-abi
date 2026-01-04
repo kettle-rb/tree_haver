@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+# Check tree-sitter grammar ABI version
+#
+# Usage:
+#   ./bin/check-grammar-abi /path/to/grammar.so
+#
+# Or for common grammars:
+#   ./bin/check-grammar-abi toml
+
+set -euo pipefail
+
+GRAMMAR_OR_PATH="${1:-toml}"
+
+# If it's a grammar name, find the path
+if [[ ! -f "$GRAMMAR_OR_PATH" ]]; then
+  # Try environment variable first
+  ENV_VAR="TREE_SITTER_$(echo "$GRAMMAR_OR_PATH" | tr '[:lower:]' '[:upper:]')_PATH"
+  GRAMMAR_PATH="${!ENV_VAR:-}"
+
+  if [[ -z "$GRAMMAR_PATH" || ! -f "$GRAMMAR_PATH" ]]; then
+    # Try common locations
+    GRAMMAR_PATH="$HOME/.local/lib/tree-sitter/libtree-sitter-${GRAMMAR_OR_PATH}.so"
+  fi
+
+  if [[ ! -f "$GRAMMAR_PATH" ]]; then
+    echo "ERROR: Could not find grammar file for '${GRAMMAR_OR_PATH}'"
+    echo "Checked:"
+    echo "  - ENV[$ENV_VAR]"
+    echo "  - $HOME/.local/lib/tree-sitter/libtree-sitter-${GRAMMAR_OR_PATH}.so"
+    exit 1
+  fi
+else
+  GRAMMAR_PATH="$GRAMMAR_OR_PATH"
+fi
+
+echo "========================================"
+echo "Checking Tree-Sitter Grammar ABI"
+echo "========================================"
+echo ""
+echo "Grammar file: $GRAMMAR_PATH"
+echo "File size: $(stat -c%s "$GRAMMAR_PATH" 2>/dev/null || stat -f%z "$GRAMMAR_PATH" 2>/dev/null) bytes"
+echo ""
+
+# Check exported symbols
+echo "Exported symbols:"
+nm -D "$GRAMMAR_PATH" 2>/dev/null | grep -E "tree_sitter" | head -20 || echo "  (nm failed or no symbols found)"
+echo ""
+
+# Check for ABI version symbols
+echo "Checking ABI version indicators..."
+
+# The LANGUAGE_VERSION is embedded in the compiled grammar as an integer constant.
+# We can extract it by looking at the data section or by loading the grammar.
+# Method 1: Check for the language version by examining parser.c if available in build dir
+BUILD_DIR="${BUILD_DIR:-/tmp/tree-sitter-grammars}"
+GRAMMAR_NAME=$(basename "$GRAMMAR_PATH" | sed 's/libtree-sitter-//' | sed 's/\.so$//')
+PARSER_C="${BUILD_DIR}/tree-sitter-${GRAMMAR_NAME}-master/src/parser.c"
+
+ABI="unknown"
+if [[ -f "$PARSER_C" ]]; then
+  echo "  Found parser.c at: $PARSER_C"
+  LANG_VERSION=$(grep -E "^#define LANGUAGE_VERSION" "$PARSER_C" 2>/dev/null | awk '{print $3}')
+  if [[ -n "$LANG_VERSION" ]]; then
+    echo "  LANGUAGE_VERSION from parser.c: $LANG_VERSION"
+    if [[ "$LANG_VERSION" -ge 14 ]]; then
+      ABI="0.24+ (LANGUAGE_VERSION=$LANG_VERSION)"
+    else
+      ABI="<0.24 (LANGUAGE_VERSION=$LANG_VERSION)"
+    fi
+  fi
+else
+  echo "  parser.c not found at: $PARSER_C"
+  echo "  (Build the grammar first with: ./bin/build-grammar $GRAMMAR_NAME)"
+fi
+
+# Method 2: Try to extract version from the binary using objdump/readelf
+# The LANGUAGE_VERSION is typically in a static variable or constant
+if [[ "$ABI" == "unknown" ]]; then
+  echo ""
+  echo "Trying to detect version from binary..."
+  # Look for common patterns in the rodata section
+  if command -v objdump &> /dev/null; then
+    # The tree_sitter_<lang> function typically references a TSLanguage struct
+    # which contains the version as the first field
+    echo "  (Binary version detection not yet implemented)"
+  fi
+fi
+
+# Method 2: Check the actual binary for the string
+echo ""
+echo "Checking binary content for ABI markers..."
+if strings "$GRAMMAR_PATH" 2>/dev/null | grep -qi "language_version\|language_abi"; then
+  strings "$GRAMMAR_PATH" 2>/dev/null | grep -i "language_version\|language_abi" | head -5 | while read line; do
+    echo "  Found: $line"
+  done
+else
+  echo "  No version strings found in binary"
+fi
+
+# Check what tree-sitter CLI version is available
+echo ""
+echo "Tree-sitter CLI version:"
+if command -v tree-sitter &> /dev/null; then
+  tree-sitter --version 2>&1 | head -1
+else
+  echo "  tree-sitter CLI not installed"
+fi
+
+# Check ruby_tree_sitter version if available
+echo ""
+echo "ruby_tree_sitter info:"
+if command -v ruby &> /dev/null; then
+  ruby -e '
+    begin
+      require "tree_sitter"
+      puts "  TreeSitter::VERSION: #{TreeSitter::VERSION rescue "N/A"}"
+
+      # Try to get language version constants
+      if defined?(TreeSitter::LANGUAGE_VERSION)
+        puts "  LANGUAGE_VERSION: #{TreeSitter::LANGUAGE_VERSION}"
+      end
+      if defined?(TreeSitter::MIN_COMPATIBLE_LANGUAGE_VERSION)
+        puts "  MIN_COMPATIBLE_LANGUAGE_VERSION: #{TreeSitter::MIN_COMPATIBLE_LANGUAGE_VERSION}"
+      end
+    rescue LoadError
+      puts "  ruby_tree_sitter not available"
+    end
+  ' 2>/dev/null || echo "  Failed to check"
+fi
+
+echo ""
+echo "========================================"
+echo "Summary"
+echo "========================================"
+echo ""
+echo "Grammar ABI: $ABI"
+echo ""
+
+# Get ruby_tree_sitter LANGUAGE_VERSION for compatibility check
+RTS_LANG_VERSION=$(ruby -e 'require "tree_sitter"; puts TreeSitter::LANGUAGE_VERSION' 2>/dev/null || echo "")
+RTS_MIN_VERSION=$(ruby -e 'require "tree_sitter"; puts TreeSitter::MIN_COMPATIBLE_LANGUAGE_VERSION' 2>/dev/null || echo "")
+
+if [[ -n "$LANG_VERSION" && -n "$RTS_LANG_VERSION" ]]; then
+  echo "Compatibility Analysis:"
+  echo "  Grammar LANGUAGE_VERSION: $LANG_VERSION"
+  echo "  ruby_tree_sitter LANGUAGE_VERSION: $RTS_LANG_VERSION"
+  echo "  ruby_tree_sitter MIN_COMPATIBLE: $RTS_MIN_VERSION"
+  echo ""
+
+  if [[ "$LANG_VERSION" -le "$RTS_LANG_VERSION" ]]; then
+    echo "  ✓ COMPATIBLE: Grammar version ($LANG_VERSION) <= ruby_tree_sitter version ($RTS_LANG_VERSION)"
+  else
+    echo "  ✗ INCOMPATIBLE: Grammar version ($LANG_VERSION) > ruby_tree_sitter version ($RTS_LANG_VERSION)"
+    echo ""
+    echo "  To fix this, rebuild ruby_tree_sitter against tree-sitter 0.26+:"
+    echo "    cd /path/to/ruby-tree-sitter"
+    echo "    # Update TREESITTER_VERSION in lib/tree_sitter/version.rb to '0.26.3'"
+    echo "    bundle exec rake clean clobber"
+    echo "    rm -rf tree-sitter-*"
+    echo "    bundle exec rake compile"
+  fi
+elif [[ "$ABI" == *"0.24+"* ]]; then
+  echo "This grammar was built with tree-sitter 0.24+ (LANGUAGE_VERSION >= 14)."
+  echo ""
+  echo "Compatibility:"
+  echo "  ✓ jtreesitter (Java) 0.24+"
+  echo "  ? ruby_tree_sitter - check LANGUAGE_VERSION matches"
+  echo "  ? tree_stump (Rust) - depends on version"
+elif [[ "$ABI" == *"<0.24"* ]]; then
+  echo "This grammar was built with tree-sitter < 0.24 (LANGUAGE_VERSION < 14)."
+  echo ""
+  echo "Compatibility:"
+  echo "  ✓ ruby_tree_sitter (if built against tree-sitter < 0.24)"
+  echo "  ✗ jtreesitter (Java) 0.24+ - INCOMPATIBLE"
+fi
+

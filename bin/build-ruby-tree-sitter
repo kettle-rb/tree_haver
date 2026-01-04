@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# Build ruby-tree-sitter native extension without full bundle setup
+# This script builds the extension directly using extconf.rb
+#
+# Usage:
+#   ./bin/build-ruby-tree-sitter
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TREE_HAVER_DIR="$(dirname "$SCRIPT_DIR")"
+RTS_DIR="${TREE_HAVER_DIR}/../ruby-tree-sitter"
+
+if [[ ! -d "$RTS_DIR" ]]; then
+  echo "ERROR: ruby-tree-sitter not found at $RTS_DIR"
+  exit 1
+fi
+
+cd "$RTS_DIR"
+
+echo "========================================"
+echo "Building ruby-tree-sitter"
+echo "========================================"
+echo ""
+echo "Directory: $RTS_DIR"
+echo "Ruby: $(ruby --version)"
+echo ""
+
+# Check current version
+TREESITTER_VERSION=$(ruby -e 'require_relative "lib/tree_sitter/version"; puts TreeSitter::TREESITTER_VERSION')
+echo "Target tree-sitter version: $TREESITTER_VERSION"
+echo ""
+
+# Clean previous builds
+echo "Cleaning previous builds..."
+rm -rf tree-sitter-* 2>/dev/null || true
+rm -rf tmp/ 2>/dev/null || true
+rm -f ext/tree_sitter/*.o ext/tree_sitter/*.so 2>/dev/null || true
+rm -f lib/tree_sitter/*.so lib/tree_sitter/*.bundle 2>/dev/null || true
+# IMPORTANT: Remove old tree-sitter source directories from ext/tree_sitter/
+# The repo.rb skips download if the directory exists!
+rm -rf ext/tree_sitter/tree-sitter-* 2>/dev/null || true
+
+# Build the extension
+echo ""
+echo "Building native extension..."
+cd ext/tree_sitter
+
+# Run extconf.rb to generate Makefile
+echo "Running extconf.rb..."
+ruby extconf.rb
+
+# Compile
+echo ""
+echo "Compiling..."
+make clean 2>/dev/null || true
+make -j$(nproc 2>/dev/null || echo 4)
+
+# Copy to lib directory
+echo ""
+echo "Installing..."
+mkdir -p ../../lib/tree_sitter
+cp tree_sitter.so ../../lib/tree_sitter/ 2>/dev/null || \
+cp tree_sitter.bundle ../../lib/tree_sitter/ 2>/dev/null || \
+echo "Warning: Could not find compiled extension"
+
+# Verify
+echo ""
+echo "Verifying..."
+cd "$RTS_DIR"
+ruby -I lib -e '
+require "tree_sitter"
+puts "TreeSitter::VERSION: #{TreeSitter::VERSION}"
+puts "LANGUAGE_VERSION: #{TreeSitter::LANGUAGE_VERSION}"
+puts "MIN_COMPATIBLE_LANGUAGE_VERSION: #{TreeSitter::MIN_COMPATIBLE_LANGUAGE_VERSION}"
+puts ""
+puts "SUCCESS: ruby-tree-sitter rebuilt!"
+'
+
+echo ""
+echo "========================================"
+echo "Done!"
+echo "========================================"
+

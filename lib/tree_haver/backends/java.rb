@@ -431,13 +431,11 @@ module TreeHaver
               # Try each library name
               grammar_lookup = nil
               lib_names.each do |lib_name|
-                begin
-                  grammar_lookup = symbol_lookup_class.libraryLookup(lib_name, arena)
-                  break
-                rescue ::Java::JavaLang::IllegalArgumentException
-                  # Library not found in search path, try next name
-                  next
-                end
+                grammar_lookup = symbol_lookup_class.libraryLookup(lib_name, arena)
+                break
+              rescue ::Java::JavaLang::IllegalArgumentException
+                # Library not found in search path, try next name
+                next
               end
 
               unless grammar_lookup
@@ -523,11 +521,11 @@ module TreeHaver
               unwrap_optional(old_tree)
             end
 
-            if java_old_tree
+            java_result = if java_old_tree
               # jtreesitter 0.26.0 API: parse(String source, Tree oldTree)
-              java_result = @parser.parse(source, java_old_tree)
+              @parser.parse(source, java_old_tree)
             else
-              java_result = @parser.parse(source)
+              @parser.parse(source)
             end
           else
             java_result = @parser.parse(source)
@@ -642,7 +640,7 @@ module TreeHaver
         def child(index)
           # jtreesitter 0.26.0: getChild returns Optional<Node> or throws IndexOutOfBoundsException
           result = @impl.getChild(index)
-          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          return unless result.respond_to?(:isPresent) ? result.isPresent : result
           java_node = result.respond_to?(:get) ? result.get : result
           Node.new(java_node)
         rescue ::Java::JavaLang::IndexOutOfBoundsException
@@ -656,7 +654,7 @@ module TreeHaver
         def child_by_field_name(name)
           # jtreesitter 0.26.0: getChildByFieldName returns Optional<Node>
           result = @impl.getChildByFieldName(name)
-          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          return unless result.respond_to?(:isPresent) ? result.isPresent : result
           java_node = result.respond_to?(:get) ? result.get : result
           Node.new(java_node)
         end
@@ -729,7 +727,7 @@ module TreeHaver
         def parent
           # jtreesitter 0.26.0: getParent returns Optional<Node>
           result = @impl.getParent
-          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          return unless result.respond_to?(:isPresent) ? result.isPresent : result
           java_node = result.respond_to?(:get) ? result.get : result
           Node.new(java_node)
         end
@@ -740,7 +738,7 @@ module TreeHaver
         def next_sibling
           # jtreesitter 0.26.0: getNextSibling returns Optional<Node>
           result = @impl.getNextSibling
-          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          return unless result.respond_to?(:isPresent) ? result.isPresent : result
           java_node = result.respond_to?(:get) ? result.get : result
           Node.new(java_node)
         end
@@ -751,7 +749,7 @@ module TreeHaver
         def prev_sibling
           # jtreesitter 0.26.0: getPrevSibling returns Optional<Node>
           result = @impl.getPrevSibling
-          return nil unless result.respond_to?(:isPresent) ? result.isPresent : result
+          return unless result.respond_to?(:isPresent) ? result.isPresent : result
           java_node = result.respond_to?(:get) ? result.get : result
           Node.new(java_node)
         end

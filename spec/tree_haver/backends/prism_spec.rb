@@ -128,10 +128,18 @@ RSpec.describe TreeHaver::Backends::Prism do
     end
 
     describe ".from_library" do
-      it "raises NotAvailable" do
+      it "returns Ruby language for API compatibility (ignores path)" do
+        # from_library now works for API consistency with tree-sitter backends
+        # Path is ignored since Prism doesn't load external grammars
+        lang = backend::Language.from_library("/path/to/lib.so")
+        expect(lang).to be_a(backend::Language)
+        expect(lang.language_name).to eq(:ruby)
+      end
+
+      it "raises NotAvailable when non-Ruby language requested" do
         expect {
-          backend::Language.from_library("/path/to/lib.so")
-        }.to raise_error(TreeHaver::NotAvailable, /doesn't use shared libraries/)
+          backend::Language.from_library("/path/to/lib.so", name: :toml)
+        }.to raise_error(TreeHaver::NotAvailable, /only supports Ruby/)
       end
     end
 

@@ -65,8 +65,10 @@ RSpec.describe TreeHaver::BackendAPI do
     context "with invalid backend" do
       let(:fake_backend) do
         Module.new do
-          def self.name
-            "FakeBackend"
+          class << self
+            def name
+              "FakeBackend"
+            end
           end
         end
       end
@@ -109,7 +111,7 @@ RSpec.describe TreeHaver::BackendAPI do
         :child_count,
         :child,
         :start_byte,
-        :end_byte
+        :end_byte,
       )
     end
   end
@@ -119,14 +121,14 @@ RSpec.describe TreeHaver::BackendAPI do
       expect(described_class::NODE_OPTIONAL_METHODS).to include(
         :parent,
         :next_sibling,
-        :prev_sibling
+        :prev_sibling,
       )
     end
 
     it "includes position methods" do
       expect(described_class::NODE_OPTIONAL_METHODS).to include(
         :start_point,
-        :end_point
+        :end_point,
       )
     end
   end
@@ -141,4 +143,3 @@ RSpec.describe TreeHaver::BackendAPI do
     end
   end
 end
-

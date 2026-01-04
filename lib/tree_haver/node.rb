@@ -227,7 +227,21 @@ module TreeHaver
     # @return [String]
     def text
       if @inner_node.respond_to?(:text)
-        @inner_node.text
+        # Some backends (like TreeStump) require source as argument
+        # Check arity to determine how to call
+        arity = @inner_node.method(:text).arity
+        if arity == 0 || arity == -1
+          # No required arguments, or optional arguments only
+          @inner_node.text
+        elsif arity >= 1 && @source
+          # Has required argument(s) - pass source
+          @inner_node.text(@source)
+        elsif @source
+          # Fallback to byte extraction
+          @source[start_byte...end_byte] || ""
+        else
+          raise TreeHaver::Error, "Cannot extract text: backend requires source but none provided"
+        end
       elsif @source
         # Fallback: extract from source using byte positions
         @source[start_byte...end_byte] || ""

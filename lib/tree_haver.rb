@@ -180,6 +180,9 @@ module TreeHaver
   # - {Backends::Java} - Uses JRuby's Java integration
   # - {Backends::Citrus} - Uses Citrus PEG parser (pure Ruby, portable)
   # - {Backends::Prism} - Uses Ruby's built-in Prism parser (Ruby-only, stdlib in 3.4+)
+  # - {Backends::Psych} - Uses Ruby's built-in Psych parser (YAML-only, stdlib)
+  # - {Backends::Commonmarker} - Uses commonmarker gem (Markdown)
+  # - {Backends::Markly} - Uses markly gem (Markdown/GFM)
   module Backends
     autoload :MRI, File.join(__dir__, "tree_haver", "backends", "mri")
     autoload :Rust, File.join(__dir__, "tree_haver", "backends", "rust")
@@ -208,6 +211,17 @@ module TreeHaver
       psych: [],        # Psych has no conflicts with other backends
       commonmarker: [], # Commonmarker has no conflicts with other backends
       markly: [],       # Markly has no conflicts with other backends
+    }.freeze
+
+    # Pure Ruby backends that parse specific languages
+    # These are language-specific and register themselves via LanguageRegistry
+    #
+    # @return [Hash{Symbol => Hash}] Maps backend name to language and module info
+    PURE_RUBY_BACKENDS = {
+      prism: {language: :ruby, module_name: "Prism"},
+      psych: {language: :yaml, module_name: "Psych"},
+      commonmarker: {language: :markdown, module_name: "Commonmarker"},
+      markly: {language: :markdown, module_name: "Markly"},
     }.freeze
   end
 
@@ -467,6 +481,55 @@ module TreeHaver
       @allowed_ruby_backends = nil # rubocop:disable ThreadSafety/ClassInstanceVariable
     end
 
+    # Register built-in pure Ruby backends in the LanguageRegistry
+    #
+    # This registers Prism, Psych, Commonmarker, and Markly using the same
+    # registration API that external backends use. This ensures consistent
+    # behavior whether a backend is built-in or provided by an external gem.
+    #
+    # Called automatically when TreeHaver is first used, but can be called
+    # manually in tests or when reset! has cleared the registry.
+    #
+    # @return [void]
+    # @example Manual registration (usually not needed)
+    #   TreeHaver.register_builtin_backends!
+    def register_builtin_backends!
+      Backends::PURE_RUBY_BACKENDS.each do |backend_type, info|
+        language = info[:language]
+        module_name = info[:module_name]
+
+        # Get the backend module
+        backend_mod = Backends.const_get(module_name)
+        next unless backend_mod
+
+        # Register if available (lazy check - doesn't require the gem yet)
+        LanguageRegistry.register(
+          language,
+          backend_type,
+          backend_module: backend_mod,
+          gem_name: module_name.downcase,
+        )
+      end
+    end
+
+    # Check if built-in backends have been registered
+    #
+    # @return [Boolean]
+    # @api private
+    def builtin_backends_registered?
+      @builtin_backends_registered ||= false # rubocop:disable ThreadSafety/ClassInstanceVariable
+    end
+
+    # Ensure built-in backends are registered (idempotent)
+    #
+    # @return [void]
+    # @api private
+    def ensure_builtin_backends_registered!
+      return if builtin_backends_registered?
+      register_builtin_backends!
+      @builtin_backends_registered = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+    end
+
     # Parse TREE_HAVER_BACKEND environment variable (single backend)
     #
     # @return [Symbol] the backend symbol (:auto if not set or invalid)
@@ -695,7 +758,11 @@ module TreeHaver
       # Return nil if the module doesn't exist
       return unless mod
 
-      # Check for backend conflicts FIRST, before checking availability
+      # Check if the backend is allowed by environment variables FIRST
+      # This enforces TREE_HAVER_NATIVE_BACKEND and TREE_HAVER_RUBY_BACKEND as hard restrictions
+      return if requested && requested != :auto && !backend_allowed?(requested)
+
+      # Check for backend conflicts, before checking availability
       # This is critical because the conflict causes the backend to report unavailable
       # We want to raise a clear error explaining WHY it's unavailable
       # Use the requested backend name directly (not capabilities) because
@@ -764,8 +831,14 @@ module TreeHaver
       end
 
       native_priority.each do |backend|
+        # Rescue BackendConflict to allow iteration to continue
+        # This enables graceful fallback when a backend is blocked
+
         mod = resolve_backend_module(backend)
         return mod if mod
+      rescue BackendConflict
+        # This backend is blocked by a previously used backend, try the next one
+        next
       end
 
       nil # No native backend available
@@ -785,7 +858,19 @@ module TreeHaver
     #     puts "Using #{mod.capabilities[:backend]} backend"
     #   end
     def backend_module
-      case effective_backend  # Changed from: backend
+      requested = effective_backend  # Changed from: backend
+
+      # For explicit backends (not :auto), check for conflicts first
+      # If the backend is blocked, fall through to auto-select
+      if requested != :auto && backend_protect?
+        conflicts = conflicting_backends_for(requested)
+        unless conflicts.empty?
+          # The explicitly requested backend is blocked - fall through to auto-select
+          requested = :auto
+        end
+      end
+
+      case requested
       when :mri
         Backends::MRI
       when :rust
@@ -806,15 +891,16 @@ module TreeHaver
         Backends::Markly
       else
         # auto-select: prefer native/fast backends, fall back to pure Ruby (Citrus)
-        if defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby" && Backends::Java.available?
+        # Each backend must be both allowed (by ENV) and available (gem installed)
+        if defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby" && backend_allowed?(:java) && Backends::Java.available?
           Backends::Java
-        elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ruby" && Backends::MRI.available?
+        elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ruby" && backend_allowed?(:mri) && Backends::MRI.available?
           Backends::MRI
-        elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ruby" && Backends::Rust.available?
+        elsif defined?(RUBY_ENGINE) && RUBY_ENGINE == "ruby" && backend_allowed?(:rust) && Backends::Rust.available?
           Backends::Rust
-        elsif Backends::FFI.available?
+        elsif backend_allowed?(:ffi) && Backends::FFI.available?
           Backends::FFI
-        elsif Backends::Citrus.available?
+        elsif backend_allowed?(:citrus) && Backends::Citrus.available?
           Backends::Citrus  # Pure Ruby fallback
         else
           # No backend available
@@ -882,6 +968,8 @@ module TreeHaver
     # @param path [String, nil] absolute path to the language shared library (for tree-sitter)
     # @param symbol [String, nil] optional exported factory symbol (e.g., "tree_sitter_toml")
     # @param grammar_module [Module, nil] Citrus grammar module that responds to .parse(source)
+    # @param backend_module [Module, nil] pure Ruby backend module with Language/Parser classes
+    # @param backend_type [Symbol, nil] backend type for backend_module (defaults to module name)
     # @param gem_name [String, nil] optional gem name for error messages
     # @return [void]
     # @example Register tree-sitter grammar only
@@ -895,6 +983,13 @@ module TreeHaver
     #     :toml,
     #     grammar_module: TomlRB::Document,
     #     gem_name: "toml-rb"
+    #   )
+    # @example Register pure Ruby backend (external gem like rbs-merge)
+    #   TreeHaver.register_language(
+    #     :rbs,
+    #     backend_module: Rbs::Merge::Backends::RbsBackend,
+    #     backend_type: :rbs,
+    #     gem_name: "rbs"
     #   )
     # @example Register BOTH backends in separate calls
     #   TreeHaver.register_language(
@@ -916,7 +1011,7 @@ module TreeHaver
     #     gem_name: "toml-rb"
     #   )
     #   # Now TreeHaver::Language.toml works with ANY backend!
-    def register_language(name, path: nil, symbol: nil, grammar_module: nil, gem_name: nil)
+    def register_language(name, path: nil, symbol: nil, grammar_module: nil, backend_module: nil, backend_type: nil, gem_name: nil)
       # Register tree-sitter backend if path provided
       # Note: Uses `if` not `elsif` so both backends can be registered in one call
       if path
@@ -934,9 +1029,17 @@ module TreeHaver
         LanguageRegistry.register(name, :citrus, grammar_module: grammar_module, gem_name: gem_name)
       end
 
+      # Register pure Ruby backend if backend_module provided
+      # This is used by external gems (like rbs-merge) to register their own backends
+      if backend_module
+        # Derive backend_type from module name if not provided
+        type = backend_type || backend_module.name.split("::").last.downcase.to_sym
+        LanguageRegistry.register(name, type, backend_module: backend_module, gem_name: gem_name)
+      end
+
       # Require at least one backend to be registered
-      if path.nil? && grammar_module.nil?
-        raise ArgumentError, "Must provide at least one of: path (tree-sitter) or grammar_module (Citrus)"
+      if path.nil? && grammar_module.nil? && backend_module.nil?
+        raise ArgumentError, "Must provide at least one of: path (tree-sitter), grammar_module (Citrus), or backend_module (pure Ruby)"
       end
 
       # Note: No early return! This method intentionally processes both `if` blocks
@@ -960,7 +1063,12 @@ module TreeHaver
     # Respects the effective backend setting (via TREE_HAVER_BACKEND env var,
     # TreeHaver.backend=, or with_backend block).
     #
-    # @param language_name [Symbol, String] the language to parse (e.g., :toml, :json, :bash)
+    # Supports three types of backends:
+    # 1. Tree-sitter native backends (auto-discovered or explicit path)
+    # 2. Citrus grammars (pure Ruby, via CITRUS_DEFAULTS or explicit config)
+    # 3. Pure Ruby backends (registered via backend_module, e.g., Prism, Psych, RBS)
+    #
+    # @param language_name [Symbol, String] the language to parse (e.g., :toml, :json, :ruby, :yaml, :rbs)
     # @param library_path [String, nil] optional explicit path to tree-sitter grammar library
     # @param symbol [String, nil] optional tree-sitter symbol name (defaults to "tree_sitter_<name>")
     # @param citrus_config [Hash, nil] optional Citrus fallback configuration
@@ -972,7 +1080,15 @@ module TreeHaver
     #
     # @example Force Citrus backend
     #   TreeHaver.with_backend(:citrus) { TreeHaver.parser_for(:toml) }
+    #
+    # @example Use registered pure Ruby backend (e.g., RBS)
+    #   # First, rbs-merge registers its backend:
+    #   # TreeHaver.register_language(:rbs, backend_module: Rbs::Merge::RbsBackend, backend_type: :rbs)
+    #   parser = TreeHaver.parser_for(:rbs)
     def parser_for(language_name, library_path: nil, symbol: nil, citrus_config: nil)
+      # Ensure built-in pure Ruby backends are registered
+      ensure_builtin_backends_registered!
+
       name = language_name.to_sym
       symbol ||= "tree_sitter_#{name}"
       requested = effective_backend
@@ -982,6 +1098,38 @@ module TreeHaver
       try_citrus = (requested == :auto) || (requested == :citrus)
 
       language = nil
+      parser = nil
+
+      # First, check for registered pure Ruby backends
+      # These take precedence when explicitly requested or when no other backend is available
+      registration = registered_language(name)
+      # Find any registered backend_module (not tree_sitter or citrus)
+      registration&.each do |backend_type, config|
+        next if %i[tree_sitter citrus].include?(backend_type)
+        next unless config[:backend_module]
+
+        backend_mod = config[:backend_module]
+        # Check if this backend is available
+        next unless backend_mod.respond_to?(:available?) && backend_mod.available?
+
+        # If a specific backend was requested, only use if it matches
+        next if requested != :auto && requested != backend_type
+
+        # Create parser from the backend module
+        if backend_mod.const_defined?(:Parser)
+          parser = backend_mod::Parser.new
+          if backend_mod.const_defined?(:Language)
+            lang_class = backend_mod::Language
+            # Try to get language by name (e.g., Language.ruby, Language.yaml, Language.rbs)
+            if lang_class.respond_to?(name)
+              parser.language = lang_class.public_send(name)
+            elsif lang_class.respond_to?(:from_library)
+              parser.language = lang_class.from_library(nil, name: name)
+            end
+          end
+          return parser
+        end
+      end
 
       # Try tree-sitter if applicable
       if try_tree_sitter && !language

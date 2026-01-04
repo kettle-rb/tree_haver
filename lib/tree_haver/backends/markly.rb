@@ -131,12 +131,12 @@ module TreeHaver
           # @raise [TreeHaver::NotAvailable] if requested language is not Markdown
           def from_library(_path = nil, symbol: nil, name: nil)
             # Derive language name from symbol if provided
-            lang_name = name || (symbol && symbol.to_s.sub(/^tree_sitter_/, ""))&.to_sym || :markdown
+            lang_name = name || symbol&.to_s&.sub(/^tree_sitter_/, "")&.to_sym || :markdown
 
             unless lang_name == :markdown
               raise TreeHaver::NotAvailable,
                 "Markly backend only supports Markdown, not #{lang_name}. " \
-                "Use a tree-sitter backend for #{lang_name} support."
+                  "Use a tree-sitter backend for #{lang_name} support."
             end
 
             markdown
