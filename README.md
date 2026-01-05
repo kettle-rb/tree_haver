@@ -142,7 +142,6 @@ The Rust backend uses [tree\_stump](https://github.com/joker1007/tree_stump), wh
   - **JRuby**: Cannot load native `.so` extensions (runs on JVM)
   - **TruffleRuby**: magnus/rb-sys are incompatible with TruffleRuby's C API emulation
     NOTE: `tree_stump` currently requires unreleased fixes in the `main` branch.
-
 <!-- end list -->
 ``` ruby
 # Add to your Gemfile for Rust backend (MRI only)
@@ -248,8 +247,8 @@ dnf install tree-sitter tree-sitter-devel
   - `Tree.getRootNode()` returns `Node` directly (not `Optional<Node>`)
   - `Node.getChild()`, `getParent()`, `getNextSibling()`, `getPrevSibling()` return `Optional<Node>`
   - `Language.load(name)` was removed; use `SymbolLookup` API instead
-Older versions of jtreesitter are **NOT supported**.
-
+    Older versions of jtreesitter are **NOT supported**.
+<!-- end list -->
 ``` bash
 # Download jtreesitter 0.26.0 from Maven Central
 curl -L -o jtreesitter-0.26.0.jar \
@@ -273,7 +272,6 @@ Tree-sitter 0.24+ changed how language ABI versions are reported (from `ts_langu
 
     Failed to load tree_sitter_toml
     Version mismatch detected: The grammar was built against tree-sitter < 0.26
-
 You need to rebuild the grammar from source:
 
 ``` bash
@@ -311,10 +309,9 @@ JRuby runs on the JVM and **cannot load native `.so` extensions via Ruby's C API
   - **FFI**: Works\! JRuby has excellent FFI support
   - **Java**: Works\! The Java backend uses jtreesitter (requires \>= 0.26.0)
     JRuby users should use: **Java backend** (best performance, full API) or **FFI backend** for tree-sitter, plus **Prism**, **Psych**, **Citrus** for other formats.
-[ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
-[tree_stump]: https://github.com/joker1007/tree_stump
-[jtreesitter]: https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter
-
+    [ruby\_tree\_sitter](https://github.com/Faveod/ruby-tree-sitter): https://github.com/Faveod/ruby-tree-sitter
+    [tree\_stump](https://github.com/joker1007/tree_stump): https://github.com/joker1007/tree\_stump
+    \[jtreesitter\]: https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter
 ### Why TreeHaver?
 
 tree-sitter is a powerful parser generator that creates incremental parsers for many programming languages. However, integrating it into Ruby applications can be challenging:
@@ -379,7 +376,6 @@ The `*-merge` gem family provides intelligent, AST-based merging for various fil
 
 [ts-jsonc]: https://gitlab.com/WhyNotHugo/tree-sitter-jsonc
 [dotenv]: https://github.com/bkeepers/dotenv
-
 
 ### Comparison with Other Ruby AST / Parser Bindings
 
@@ -597,7 +593,6 @@ TreeHaver supports 10 parsing backends, each with different trade-offs. The `aut
   - \*MRI + Bash: ABI incompatibility (use FFI instead)
   - \*Rust + Bash: Version mismatch (use FFI instead)
     **Backend Requirements:**
-
 <!-- end list -->
 ``` ruby
 # Tree-sitter backends
@@ -742,8 +737,8 @@ The `find_library_path_safe` method only returns paths in trusted directories.
   - `/usr/local/lib`
   - `/opt/homebrew/lib`, `/opt/local/lib`
     **Adding custom trusted directories:**
-For non-standard installations (Homebrew on Linux, luarocks, mise, asdf, etc.), register additional trusted directories:
-
+    For non-standard installations (Homebrew on Linux, luarocks, mise, asdf, etc.), register additional trusted directories:
+<!-- end list -->
 ``` ruby
 # Programmatically at application startup
 TreeHaver::PathValidator.add_trusted_directory("/home/linuxbrew/.linuxbrew/Cellar")
@@ -858,7 +853,6 @@ For the Java backend on JRuby, you need:
 1.  **jtreesitter \>= 0.26.0** JAR from Maven Central
 2.  **Tree-sitter runtime library** (`libtree-sitter.so`) version 0.26+
 3.  **Grammar `.so` files** built against tree-sitter 0.26+
-
 <!-- end list -->
 ``` bash
 # Download jtreesitter JAR (or use bin/setup-jtreesitter)
@@ -1095,7 +1089,8 @@ end
 
 2.  **Never rely on `rescue => e`** to catch TreeHaver errors (it won't work)
     **Why inherit from Exception?**
-Following ruby\_tree\_sitter's reasoning:
+    Following ruby\_tree\_sitter's reasoning:
+<!-- end list -->
   - **Thread safety**: Prevents accidental catching in thread cleanup code
   - **Signal handling**: Ensures parsing errors don't interfere with SIGTERM/SIGINT
   - **Intentional handling**: Forces developers to explicitly handle parsing errors
@@ -1514,7 +1509,6 @@ The Java backend will work with:
   - Grammar JARs built specifically for java-tree-sitter / jtreesitter (self-contained, [docs](https://tree-sitter.github.io/java-tree-sitter/), [maven](https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter), [source](https://github.com/tree-sitter/java-tree-sitter))
   - Grammar `.so` files that statically link tree-sitter
     **Option 3: Citrus Backend (pure Ruby, portable)**
-
 <!-- end list -->
 ``` ruby
 # Gemfile

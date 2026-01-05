@@ -28,6 +28,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **Markly backend**: `Node#text` now correctly handles container nodes (headings, paragraphs, etc.)
+  - Previously returned empty string because `string_content` was checked first (responds but returns empty for containers)
+  - Now falls through to `to_plaintext` or children concatenation when `string_content` is empty
+- **Commonmarker backend**: `Node#text` now correctly handles container nodes
+  - Previously could return empty string in edge cases
+  - Now consistently falls through to children concatenation when `string_content` is empty or raises TypeError
+
 ### Security
 
 ## [3.2.4] - 2026-01-04

@@ -288,11 +288,17 @@ module TreeHaver
         #
         # @return [String] Node text
         def text
-          # Markly nodes have string_content for leaf nodes
+          # Markly nodes have string_content for leaf nodes (text, code, etc.)
+          # Container nodes (heading, paragraph, etc.) have empty string_content
+          # and need to use to_plaintext or concatenate children's text.
           if @inner_node.respond_to?(:string_content)
-            @inner_node.string_content.to_s
-          elsif @inner_node.respond_to?(:to_plaintext)
-            # For container nodes, use to_plaintext or concatenate
+            content = @inner_node.string_content.to_s
+            # If string_content is non-empty, use it (leaf node)
+            return content unless content.empty?
+          end
+
+          # For container nodes, use to_plaintext or concatenate children
+          if @inner_node.respond_to?(:to_plaintext)
             begin
               @inner_node.to_plaintext
             rescue

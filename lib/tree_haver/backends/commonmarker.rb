@@ -231,15 +231,16 @@ module TreeHaver
           # Container nodes don't have string_content and will raise TypeError
           if @inner_node.respond_to?(:string_content)
             begin
-              @inner_node.string_content.to_s
+              content = @inner_node.string_content.to_s
+              # If string_content is non-empty, use it (leaf node)
+              return content unless content.empty?
             rescue TypeError
-              # Container node - concatenate children's text
-              children.map(&:text).join
+              # Container node - fall through to concatenate children
             end
-          else
-            # For container nodes, concatenate children's text
-            children.map(&:text).join
           end
+
+          # For container nodes, concatenate children's text
+          children.map(&:text).join
         end
 
         # Get child nodes
