@@ -805,12 +805,12 @@ TreeHaver recognizes several environment variables for configuration:
 #### Security Configuration
 
   - **`TREE_HAVER_TRUSTED_DIRS`**: Comma-separated list of additional trusted directories for grammar libraries
-    
+
     ``` bash
     # For Homebrew on Linux and luarocks
     export TREE_HAVER_TRUSTED_DIRS="/home/linuxbrew/.linuxbrew/Cellar,~/.local/share/mise/installs/lua"
     ```
-    
+
     Tilde (`~`) is expanded to the user's home directory. Directories listed here are considered safe for `find_library_path_safe`.
 #### Core Runtime Library
 
@@ -1075,7 +1075,7 @@ end
 **Best Practices:**
 
 1.  **Always use explicit rescue** for TreeHaver errors:
-    
+
     ``` ruby
     begin
       finder = TreeHaver::GrammarFinder.new(:toml)
