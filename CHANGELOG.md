@@ -28,6 +28,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **Java backend**: Fixed Optional handling in Node methods that could return nil incorrectly
+  - `child(index)`, `child_by_field_name(name)`, `parent`, `next_sibling`, `prev_sibling` now properly check for nil before attempting to unwrap Java Optional
+  - Previously, the ternary-based Optional check could fail when jtreesitter returned null directly instead of Optional.empty()
+  - This fixes JRuby test failures where `key_name` returned nil and object keys were not extracted
+
 ### Security
 
 ## [3.2.5] - 2026-01-05

@@ -640,8 +640,17 @@ module TreeHaver
         def child(index)
           # jtreesitter 0.26.0: getChild returns Optional<Node> or throws IndexOutOfBoundsException
           result = @impl.getChild(index)
-          return unless result.respond_to?(:isPresent) ? result.isPresent : result
-          java_node = result.respond_to?(:get) ? result.get : result
+          return if result.nil?
+
+          # Handle Java Optional
+          if result.respond_to?(:isPresent)
+            return unless result.isPresent
+            java_node = result.get
+          else
+            # Direct Node return (some jtreesitter versions)
+            java_node = result
+          end
+
           Node.new(java_node)
         rescue ::Java::JavaLang::IndexOutOfBoundsException
           nil
@@ -653,9 +662,19 @@ module TreeHaver
         # @return [Node, nil] the child node or nil if not found
         def child_by_field_name(name)
           # jtreesitter 0.26.0: getChildByFieldName returns Optional<Node>
+          # However, some versions or scenarios may return null directly
           result = @impl.getChildByFieldName(name)
-          return unless result.respond_to?(:isPresent) ? result.isPresent : result
-          java_node = result.respond_to?(:get) ? result.get : result
+          return if result.nil?
+
+          # Handle Java Optional
+          if result.respond_to?(:isPresent)
+            return unless result.isPresent
+            java_node = result.get
+          else
+            # Direct Node return (some jtreesitter versions)
+            java_node = result
+          end
+
           Node.new(java_node)
         end
 
@@ -727,8 +746,16 @@ module TreeHaver
         def parent
           # jtreesitter 0.26.0: getParent returns Optional<Node>
           result = @impl.getParent
-          return unless result.respond_to?(:isPresent) ? result.isPresent : result
-          java_node = result.respond_to?(:get) ? result.get : result
+          return if result.nil?
+
+          # Handle Java Optional
+          if result.respond_to?(:isPresent)
+            return unless result.isPresent
+            java_node = result.get
+          else
+            java_node = result
+          end
+
           Node.new(java_node)
         end
 
@@ -738,8 +765,16 @@ module TreeHaver
         def next_sibling
           # jtreesitter 0.26.0: getNextSibling returns Optional<Node>
           result = @impl.getNextSibling
-          return unless result.respond_to?(:isPresent) ? result.isPresent : result
-          java_node = result.respond_to?(:get) ? result.get : result
+          return if result.nil?
+
+          # Handle Java Optional
+          if result.respond_to?(:isPresent)
+            return unless result.isPresent
+            java_node = result.get
+          else
+            java_node = result
+          end
+
           Node.new(java_node)
         end
 
@@ -749,8 +784,16 @@ module TreeHaver
         def prev_sibling
           # jtreesitter 0.26.0: getPrevSibling returns Optional<Node>
           result = @impl.getPrevSibling
-          return unless result.respond_to?(:isPresent) ? result.isPresent : result
-          java_node = result.respond_to?(:get) ? result.get : result
+          return if result.nil?
+
+          # Handle Java Optional
+          if result.respond_to?(:isPresent)
+            return unless result.isPresent
+            java_node = result.get
+          else
+            java_node = result
+          end
+
           Node.new(java_node)
         end
 
