@@ -730,7 +730,16 @@
 645
 646
 647
-648</pre>
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 640</span>
@@ -738,8 +747,17 @@
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
   <span class='comment'># jtreesitter 0.26.0: getChild returns Optional&lt;Node&gt; or throws IndexOutOfBoundsException
 </span>  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_getChild'>getChild</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
-  <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:get</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='comment'># Handle Java Optional
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span>
+    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span>
+  <span class='kw'>else</span>
+    <span class='comment'># Direct Node return (some jtreesitter versions)
+</span>    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>end</span>
+
   <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Java::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_java_node'>java_node</span><span class='rparen'>)</span>
 <span class='kw'>rescue</span> <span class='op'>::</span><span class='const'>Java</span><span class='op'>::</span><span class='const'>JavaLang</span><span class='op'>::</span><span class='const'>IndexOutOfBoundsException</span>
   <span class='kw'>nil</span>
@@ -810,22 +828,42 @@
       <pre class="lines">
 
 
-654
-655
-656
-657
-658
-659
-660</pre>
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 654</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 663</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='comment'># jtreesitter 0.26.0: getChildByFieldName returns Optional&lt;Node&gt;
+</span>  <span class='comment'># However, some versions or scenarios may return null directly
 </span>  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_getChildByFieldName'>getChildByFieldName</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
-  <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:get</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='comment'># Handle Java Optional
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span>
+    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span>
+  <span class='kw'>else</span>
+    <span class='comment'># Direct Node return (some jtreesitter versions)
+</span>    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>end</span>
+
   <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Java::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_java_node'>java_node</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -932,15 +970,15 @@
       <pre class="lines">
 
 
-666
-667
-668
-669
-670
-671</pre>
+685
+686
+687
+688
+689
+690</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 666</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 685</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_enum_for'>enum_for</span><span class='lparen'>(</span><span class='symbol'>:each</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
@@ -995,12 +1033,12 @@
       <pre class="lines">
 
 
-683
-684
-685</pre>
+702
+703
+704</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 683</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 702</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_endByte'>endByte</span>
@@ -1052,13 +1090,13 @@
       <pre class="lines">
 
 
-698
-699
-700
-701</pre>
+717
+718
+719
+720</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 698</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 717</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
   <span class='id identifier rubyid_pt'>pt</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_endPoint'>endPoint</span>
@@ -1111,12 +1149,12 @@
       <pre class="lines">
 
 
-706
-707
-708</pre>
+725
+726
+727</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 706</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 725</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_hasError'>hasError</span>
@@ -1168,12 +1206,12 @@
       <pre class="lines">
 
 
-713
-714
-715</pre>
+732
+733
+734</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 713</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 732</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_isMissing'>isMissing</span>
@@ -1225,12 +1263,12 @@
       <pre class="lines">
 
 
-720
-721
-722</pre>
+739
+740
+741</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 720</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 739</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_isNamed'>isNamed</span>
@@ -1282,22 +1320,38 @@
       <pre class="lines">
 
 
-738
-739
-740
-741
-742
-743
-744</pre>
+765
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 738</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 765</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
   <span class='comment'># jtreesitter 0.26.0: getNextSibling returns Optional&lt;Node&gt;
 </span>  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_getNextSibling'>getNextSibling</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
-  <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:get</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='comment'># Handle Java Optional
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span>
+    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>end</span>
+
   <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Java::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_java_node'>java_node</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1347,22 +1401,38 @@
       <pre class="lines">
 
 
-727
-728
-729
-730
-731
-732
-733</pre>
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 727</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 746</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
   <span class='comment'># jtreesitter 0.26.0: getParent returns Optional&lt;Node&gt;
 </span>  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_getParent'>getParent</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
-  <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:get</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='comment'># Handle Java Optional
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span>
+    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>end</span>
+
   <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Java::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_java_node'>java_node</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1412,22 +1482,38 @@
       <pre class="lines">
 
 
-749
-750
-751
-752
-753
-754
-755</pre>
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 749</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 784</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
   <span class='comment'># jtreesitter 0.26.0: getPrevSibling returns Optional&lt;Node&gt;
 </span>  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_getPrevSibling'>getPrevSibling</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
-  <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:get</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span> <span class='op'>:</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='comment'># Handle Java Optional
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:isPresent</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_isPresent'>isPresent</span>
+    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_get'>get</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_java_node'>java_node</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span>
+  <span class='kw'>end</span>
+
   <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Java::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_java_node'>java_node</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1477,12 +1563,12 @@
       <pre class="lines">
 
 
-676
-677
-678</pre>
+695
+696
+697</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 676</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 695</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_startByte'>startByte</span>
@@ -1534,13 +1620,13 @@
       <pre class="lines">
 
 
-690
-691
-692
-693</pre>
+709
+710
+711
+712</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 690</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 709</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
   <span class='id identifier rubyid_pt'>pt</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_startPoint'>startPoint</span>
@@ -1593,12 +1679,12 @@
       <pre class="lines">
 
 
-760
-761
-762</pre>
+803
+804
+805</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 760</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 803</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_text'>text</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -1670,7 +1756,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jan  5 21:45:26 2026 by
+  Generated on Tue Jan  6 04:46:44 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -28,12 +28,21 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.2.6] - 2026-01-06
+
+- TAG: [v3.2.6][3.2.6t]
+- COVERAGE: 92.07% -- 2230/2422 lines in 23 files
+- BRANCH COVERAGE: 74.69% -- 788/1055 branches in 23 files
+- 90.37% documented
+
+### Fixed
+
 - **Java backend**: Fixed Optional handling in Node methods that could return nil incorrectly
   - `child(index)`, `child_by_field_name(name)`, `parent`, `next_sibling`, `prev_sibling` now properly check for nil before attempting to unwrap Java Optional
   - Previously, the ternary-based Optional check could fail when jtreesitter returned null directly instead of Optional.empty()
   - This fixes JRuby test failures where `key_name` returned nil and object keys were not extracted
-
-### Security
 
 ## [3.2.5] - 2026-01-05
 
@@ -906,7 +915,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.5...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.6...HEAD
+[3.2.6]: https://github.com/kettle-rb/tree_haver/compare/v3.2.5...v3.2.6
+[3.2.6t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.6
 [3.2.5]: https://github.com/kettle-rb/tree_haver/compare/v3.2.4...v3.2.5
 [3.2.5t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.5
 [3.2.4]: https://github.com/kettle-rb/tree_haver/compare/v3.2.3...v3.2.4
