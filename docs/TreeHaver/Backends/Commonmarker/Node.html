@@ -982,15 +982,15 @@
       <pre class="lines">
 
 
-392
 393
 394
 395
 396
-397</pre>
+397
+398</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 392</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 393</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:start_byte</span><span class='rparen'>)</span>
@@ -1018,12 +1018,12 @@
       <pre class="lines">
 
 
-265
 266
-267</pre>
+267
+268</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 265</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 266</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_children'>children</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span>
@@ -1048,12 +1048,12 @@
       <pre class="lines">
 
 
-261
 262
-263</pre>
+263
+264</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 261</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 262</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_count'>child_count</span>
   <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
@@ -1105,16 +1105,16 @@
       <pre class="lines">
 
 
-248
 249
 250
 251
 252
 253
-254</pre>
+254
+255</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 248</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 249</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_children'>children</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:each</span><span class='rparen'>)</span>
@@ -1143,13 +1143,13 @@
       <pre class="lines">
 
 
-256
 257
 258
-259</pre>
+259
+260</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 256</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 257</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_to_enum'>to_enum</span><span class='lparen'>(</span><span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block'>block</span>
@@ -1175,13 +1175,13 @@
       <pre class="lines">
 
 
-277
 278
 279
-280</pre>
+280
+281</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 277</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 278</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
   <span class='id identifier rubyid_ep'>ep</span> <span class='op'>=</span> <span class='id identifier rubyid_end_point'>end_point</span>
@@ -1207,7 +1207,6 @@
       <pre class="lines">
 
 
-339
 340
 341
 342
@@ -1222,10 +1221,11 @@
 351
 352
 353
-354</pre>
+354
+355</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 339</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 340</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_line'>end_line</span>
   <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:source_position</span><span class='rparen'>)</span>
@@ -1263,7 +1263,6 @@
       <pre class="lines">
 
 
-302
 303
 304
 305
@@ -1281,10 +1280,11 @@
 317
 318
 319
-320</pre>
+320
+321</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 302</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 303</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
   <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:source_position</span><span class='rparen'>)</span>
@@ -1348,17 +1348,17 @@
       <pre class="lines">
 
 
-418
 419
 420
 421
 422
 423
 424
-425</pre>
+425
+426</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 418</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 419</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fence_info'>fence_info</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_type'>type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>code_block</span><span class='tstring_end'>&quot;</span></span>
@@ -1415,12 +1415,12 @@
       <pre class="lines">
 
 
-374
 375
-376</pre>
+376
+377</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 374</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 375</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_first_child'>first_child</span>
   <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
@@ -1468,12 +1468,12 @@
       <pre class="lines">
 
 
-384
 385
-386</pre>
+386
+387</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 384</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 385</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
   <span class='kw'>false</span>
@@ -1521,17 +1521,17 @@
       <pre class="lines">
 
 
-407
 408
 409
 410
 411
 412
 413
-414</pre>
+414
+415</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 407</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 408</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_header_level'>header_level</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_type'>type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>heading</span><span class='tstring_end'>&quot;</span></span>
@@ -1561,12 +1561,12 @@
       <pre class="lines">
 
 
-399
 400
-401</pre>
+401
+402</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 399</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 400</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#&lt;TreeHaver::Backends::Commonmarker::Node type=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type'>type</span><span class='embexpr_end'>}</span><span class='tstring_content'>&gt;</span><span class='tstring_end'>&quot;</span></span>
@@ -1614,12 +1614,12 @@
       <pre class="lines">
 
 
-388
 389
-390</pre>
+390
+391</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 388</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 389</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
   <span class='kw'>false</span>
@@ -1671,12 +1671,12 @@
       <pre class="lines">
 
 
-378
 379
-380</pre>
+380
+381</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 378</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 379</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
   <span class='kw'>true</span>
@@ -1724,17 +1724,17 @@
       <pre class="lines">
 
 
-445
 446
 447
 448
 449
 450
 451
-452</pre>
+452
+453</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 445</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 446</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
   <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='kw'>begin</span>
@@ -1787,17 +1787,17 @@
       <pre class="lines">
 
 
-467
 468
 469
 470
 471
 472
 473
-474</pre>
+474
+475</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 467</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 468</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
   <span class='id identifier rubyid_p'>p</span> <span class='op'>=</span> <span class='kw'>begin</span>
@@ -1850,17 +1850,17 @@
       <pre class="lines">
 
 
-456
 457
 458
 459
 460
 461
 462
-463</pre>
+463
+464</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 456</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 457</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
   <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='kw'>begin</span>
@@ -1920,17 +1920,17 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-362
 363
 364
 365
 366
 367
 368
-369</pre>
+369
+370</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 362</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 363</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_source_position'>source_position</span>
   <span class='lbrace'>{</span>
@@ -1971,13 +1971,13 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
       <pre class="lines">
 
 
-272
 273
 274
-275</pre>
+275
+276</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 272</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 273</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
   <span class='id identifier rubyid_sp'>sp</span> <span class='op'>=</span> <span class='id identifier rubyid_start_point'>start_point</span>
@@ -2003,7 +2003,6 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
       <pre class="lines">
 
 
-322
 323
 324
 325
@@ -2018,10 +2017,11 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
 334
 335
 336
-337</pre>
+337
+338</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 322</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 323</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_line'>start_line</span>
   <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:source_position</span><span class='rparen'>)</span>
@@ -2059,7 +2059,6 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
       <pre class="lines">
 
 
-282
 283
 284
 285
@@ -2077,10 +2076,11 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
 297
 298
 299
-300</pre>
+300
+301</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 282</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 283</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
   <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:source_position</span><span class='rparen'>)</span>
@@ -2162,7 +2162,8 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
 240
 241
 242
-243</pre>
+243
+244</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 229</span>
@@ -2172,15 +2173,16 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
 </span>  <span class='comment'># Container nodes don&#39;t have string_content and will raise TypeError
 </span>  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:string_content</span><span class='rparen'>)</span>
     <span class='kw'>begin</span>
-      <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_string_content'>string_content</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+      <span class='id identifier rubyid_content'>content</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_string_content'>string_content</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
+      <span class='comment'># If string_content is non-empty, use it (leaf node)
+</span>      <span class='kw'>return</span> <span class='id identifier rubyid_content'>content</span> <span class='kw'>unless</span> <span class='id identifier rubyid_content'>content</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
     <span class='kw'>rescue</span> <span class='const'>TypeError</span>
-      <span class='comment'># Container node - concatenate children&#39;s text
-</span>      <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:text</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span>
-    <span class='kw'>end</span>
-  <span class='kw'>else</span>
-    <span class='comment'># For container nodes, concatenate children&#39;s text
-</span>    <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:text</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span>
+      <span class='comment'># Container node - fall through to concatenate children
+</span>    <span class='kw'>end</span>
   <span class='kw'>end</span>
+
+  <span class='comment'># For container nodes, concatenate children&#39;s text
+</span>  <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:text</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2225,14 +2227,14 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
       <pre class="lines">
 
 
-437
 438
 439
 440
-441</pre>
+441
+442</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 437</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 438</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_title'>title</span>
   <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span>
@@ -2345,14 +2347,14 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
       <pre class="lines">
 
 
-429
 430
 431
 432
-433</pre>
+433
+434</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 429</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/commonmarker.rb', line 430</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_url'>url</span>
   <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_url'>url</span>
@@ -2369,7 +2371,7 @@ Commonmarker 2.x provides source_position as a hash with start_line, start_colum
 </div>
 
       <div id="footer">
-  Generated on Sun Jan  4 06:23:41 2026 by
+  Generated on Mon Jan  5 21:45:27 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

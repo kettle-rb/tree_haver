@@ -28,14 +28,23 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [3.2.5] - 2026-01-05
+
+- TAG: [v3.2.5][3.2.5t]
+- COVERAGE: 92.07% -- 2230/2422 lines in 23 files
+- BRANCH COVERAGE: 74.69% -- 788/1055 branches in 23 files
+- 90.37% documented
+
+### Fixed
+
 - **Markly backend**: `Node#text` now correctly handles container nodes (headings, paragraphs, etc.)
   - Previously returned empty string because `string_content` was checked first (responds but returns empty for containers)
   - Now falls through to `to_plaintext` or children concatenation when `string_content` is empty
 - **Commonmarker backend**: `Node#text` now correctly handles container nodes
   - Previously could return empty string in edge cases
   - Now consistently falls through to children concatenation when `string_content` is empty or raises TypeError
-
-### Security
 
 ## [3.2.4] - 2026-01-04
 
@@ -892,7 +901,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.4...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.5...HEAD
+[3.2.5]: https://github.com/kettle-rb/tree_haver/compare/v3.2.4...v3.2.5
+[3.2.5t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.5
 [3.2.4]: https://github.com/kettle-rb/tree_haver/compare/v3.2.3...v3.2.4
 [3.2.4t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.4
 [3.2.3]: https://github.com/kettle-rb/tree_haver/compare/v3.2.2...v3.2.3
