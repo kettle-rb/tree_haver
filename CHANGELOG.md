@@ -1,4 +1,4 @@
-**# Changelog
+# Changelog
 
 [![SemVer 2.0.0][📌semver-img]][📌semver] [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]][📗keep-changelog]
 
@@ -941,4 +941,4 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 [2.0.0]: https://github.com/kettle-rb/tree_haver/compare/v1.0.0...v2.0.0
 [2.0.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v2.0.0
 [1.0.0]: https://github.com/kettle-rb/tree_haver/compare/a89211bff10f4440b96758a8ac9d7d539001b0c8...v1.0.0
-[1.0.0t]: https://github.com/kettle-rb/tree_haver/tags/v1.0.0**
+[1.0.0t]: https://github.com/kettle-rb/tree_haver/tags/v1.0.0
