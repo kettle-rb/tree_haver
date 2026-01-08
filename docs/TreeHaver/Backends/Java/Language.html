@@ -421,15 +421,15 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-263
-264
-265
-266
-267
-268</pre>
+256
+257
+258
+259
+260
+261</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 263</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 256</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_impl'>impl</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@impl</span> <span class='op'>=</span> <span class='id identifier rubyid_impl'>impl</span>
@@ -487,12 +487,12 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-252
-253
-254</pre>
+245
+246
+247</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 252</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 245</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend'>backend</span>
   <span class='ivar'>@backend</span>
@@ -529,12 +529,12 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-248
-249
-250</pre>
+241
+242
+243</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 248</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 241</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_impl'>impl</span>
   <span class='ivar'>@impl</span>
@@ -584,12 +584,12 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-256
-257
-258</pre>
+249
+250
+251</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 256</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 249</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_path'>path</span>
   <span class='ivar'>@path</span>
@@ -639,12 +639,12 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-260
-261
-262</pre>
+253
+254
+255</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 260</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 253</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_symbol'>symbol</span>
   <span class='ivar'>@symbol</span>
@@ -703,6 +703,13 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
+318
+319
+320
+321
+322
+323
+324
 325
 326
 327
@@ -766,17 +773,10 @@ JRuby-specific CI jobs would test this code.</p>
 385
 386
 387
-388
-389
-390
-391
-392
-393
-394
-395</pre>
+388</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 325</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 318</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Java backend not available</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Java.html#available%3F-class_method" title="TreeHaver::Backends::Java.available? (method)">available?</a></span></span>
@@ -946,6 +946,13 @@ pre-built for Java’s Foreign Function API.</p>
       <pre class="lines">
 
 
+404
+405
+406
+407
+408
+409
+410
 411
 412
 413
@@ -986,17 +993,10 @@ pre-built for Java’s Foreign Function API.</p>
 448
 449
 450
-451
-452
-453
-454
-455
-456
-457
-458</pre>
+451</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 411</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 404</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_load_by_name'>load_by_name</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Java backend not available</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Java.html#available%3F-class_method" title="TreeHaver::Backends::Java.available? (method)">available?</a></span></span>
@@ -1121,19 +1121,19 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
+270
+271
+272
+273
+274
+275
+276
 277
 278
-279
-280
-281
-282
-283
-284
-285
-286</pre>
+279</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 277</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 270</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java::Language (class)">Language</a></span></span><span class='rparen'>)</span>
@@ -1188,12 +1188,12 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-290
-291
-292</pre>
+283
+284
+285</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 290</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 283</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_hash'>hash</span>
   <span class='lbracket'>[</span><span class='ivar'>@backend</span><span class='comma'>,</span> <span class='ivar'>@path</span><span class='comma'>,</span> <span class='ivar'>@symbol</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span>
@@ -1208,7 +1208,7 @@ Path and symbol uniquely identify a loaded language.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Jan  6 04:46:43 2026 by
+  Generated on Thu Jan  8 04:04:25 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

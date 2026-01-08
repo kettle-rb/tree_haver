@@ -69,10 +69,12 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">Object</span>
+      <span class="inheritName">Base::Tree</span>
       
         <ul class="fullTree">
           <li>Object</li>
+          
+            <li class="next">Base::Tree</li>
           
             <li class="next">TreeHaver::Tree</li>
           
@@ -182,67 +184,6 @@ It stores the source text to enable text extraction from nodes.</p>
 </div>
 
 
-
-  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
-  <ul class="summary">
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#inner_tree-instance_method" title="#inner_tree (instance method)">#<strong>inner_tree</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>The wrapped backend-specific tree object.</p>
-</div></span>
-  
-</li>
-
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#source-instance_method" title="#source (instance method)">#<strong>source</strong>  &#x21d2; String </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>The source text.</p>
-</div></span>
-  
-</li>
-
-    
-  </ul>
 
 
 
@@ -421,7 +362,8 @@ It stores the source text to enable text extraction from nodes.</p>
     </ul>
   
 
-<div id="constructor_details" class="method_details_list">
+
+  <div id="constructor_details" class="method_details_list">
   <h2>Constructor Details</h2>
   
     <div class="method_details first">
@@ -487,15 +429,13 @@ It stores the source text to enable text extraction from nodes.</p>
 
 80
 81
-82
-83</pre>
+82</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 80</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_tree'>tree</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='ivar'>@inner_tree</span> <span class='op'>=</span> <span class='id identifier rubyid_tree'>tree</span>
-  <span class='ivar'>@source</span> <span class='op'>=</span> <span class='id identifier rubyid_source'>source</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_tree'>tree</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -645,16 +585,16 @@ underlying tree implementation.</p>
       <pre class="lines">
 
 
+250
 251
 252
 253
 254
 255
-256
-257</pre>
+256</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 251</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 250</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_method_missing'>method_missing</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@inner_tree</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
@@ -669,150 +609,6 @@ underlying tree implementation.</p>
 </div>
   
 </div>
-
-  <div id="instance_attr_details" class="attr_details">
-    <h2>Instance Attribute Details</h2>
-    
-      
-      <span id=""></span>
-      <div class="method_details first">
-  <h3 class="signature first" id="inner_tree-instance_method">
-  
-    #<strong>inner_tree</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>The wrapped backend-specific tree object</p>
-
-<p>This provides direct access to the underlying backend tree for advanced usage<br />
-when you need backend-specific features not exposed by the unified API.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-  <div class="examples">
-    <h4 class="tag_title">Examples:</h4>
-    
-      
-        <h5 class="example_title"><div class='inline'><p>Accessing backend-specific methods</p>
-</div></h5>
-      
-      <pre class="example code"><code><span class='comment'># Print DOT graph (TreeStump-specific)
-</span><span class='kw'>if</span> <span class='id identifier rubyid_tree'>tree</span><span class='period'>.</span><span class='id identifier rubyid_inner_tree'>inner_tree</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:print_dot_graph</span><span class='rparen'>)</span>
-  <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree.dot</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>w</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span>
-    <span class='id identifier rubyid_tree'>tree</span><span class='period'>.</span><span class='id identifier rubyid_inner_tree'>inner_tree</span><span class='period'>.</span><span class='id identifier rubyid_print_dot_graph'>print_dot_graph</span><span class='lparen'>(</span><span class='id identifier rubyid_f'>f</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></code></pre>
-    
-  </div>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Object</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The underlying tree (TreeSitter::Tree, TreeStump::Tree, etc.)</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-69
-70
-71</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 69</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_inner_tree'>inner_tree</span>
-  <span class='ivar'>@inner_tree</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="source-instance_method">
-  
-    #<strong>source</strong>  &#x21d2; <tt>String</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>The source text</p>
-
-<p>Stored to enable text extraction from nodes via byte offsets.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>The original source code</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-76
-77
-78</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 76</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_source'>source</span>
-  <span class='ivar'>@source</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
 
 
   <div id="instance_method_details" class="method_details_list">
@@ -994,6 +790,7 @@ to check before calling this method.</p>
       <pre class="lines">
 
 
+128
 129
 130
 131
@@ -1024,11 +821,10 @@ to check before calling this method.</p>
 156
 157
 158
-159
-160</pre>
+159</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 129</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 128</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_edit'>edit</span><span class='lparen'>(</span><span class='label'>start_byte:</span><span class='comma'>,</span> <span class='label'>old_end_byte:</span><span class='comma'>,</span> <span class='label'>new_end_byte:</span><span class='comma'>,</span> <span class='label'>start_point:</span><span class='comma'>,</span> <span class='label'>old_end_point:</span><span class='comma'>,</span> <span class='label'>new_end_point:</span><span class='rparen'>)</span>
   <span class='comment'># MRI backend (ruby_tree_sitter) requires an InputEdit object
@@ -1105,13 +901,13 @@ to check before calling this method.</p>
       <pre class="lines">
 
 
+205
 206
 207
-208
-209</pre>
+208</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 206</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 205</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
   <span class='id identifier rubyid_inner_class'>inner_class</span> <span class='op'>=</span> <span class='ivar'>@inner_tree</span> <span class='op'>?</span> <span class='ivar'>@inner_tree</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>nil</span><span class='tstring_end'>&quot;</span></span>
@@ -1196,12 +992,12 @@ to check before calling this method.</p>
       <pre class="lines">
 
 
+215
 216
-217
-218</pre>
+217</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 216</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 215</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_respond_to_missing?'>respond_to_missing?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='ivar'>@inner_tree</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='kw'>super</span>
@@ -1253,14 +1049,14 @@ to check before calling this method.</p>
       <pre class="lines">
 
 
+87
 88
 89
 90
-91
-92</pre>
+91</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 88</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 87</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_root_node'>root_node</span>
   <span class='id identifier rubyid_root'><span class='object_link'><a href="../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='ivar'>@inner_tree</span><span class='period'>.</span><span class='id identifier rubyid_root_node'>root_node</span>
@@ -1332,6 +1128,7 @@ end</code></pre>
       <pre class="lines">
 
 
+193
 194
 195
 196
@@ -1339,11 +1136,10 @@ end</code></pre>
 198
 199
 200
-201
-202</pre>
+201</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 194</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/tree.rb', line 193</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_supports_editing?'>supports_editing?</span>
   <span class='comment'># Try to get the edit method to verify it exists
@@ -1364,7 +1160,7 @@ end</code></pre>
 </div>
 
       <div id="footer">
-  Generated on Tue Jan  6 04:46:43 2026 by
+  Generated on Thu Jan  8 04:04:24 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

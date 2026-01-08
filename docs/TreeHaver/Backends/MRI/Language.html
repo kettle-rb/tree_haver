@@ -466,15 +466,15 @@ API across all backends.</p>
       <pre class="lines">
 
 
-116
-117
-118
-119
-120
-121</pre>
+138
+139
+140
+141
+142
+143</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 116</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 138</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_lang'>lang</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@inner_language</span> <span class='op'>=</span> <span class='id identifier rubyid_lang'>lang</span>
@@ -532,12 +532,12 @@ API across all backends.</p>
       <pre class="lines">
 
 
-102
-103
-104</pre>
+124
+125
+126</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 102</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 124</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend'>backend</span>
   <span class='ivar'>@backend</span>
@@ -587,12 +587,12 @@ API across all backends.</p>
       <pre class="lines">
 
 
-98
-99
-100</pre>
+120
+121
+122</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 98</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 120</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inner_language'>inner_language</span>
   <span class='ivar'>@inner_language</span>
@@ -642,12 +642,12 @@ API across all backends.</p>
       <pre class="lines">
 
 
-106
-107
-108</pre>
+128
+129
+130</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 106</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 128</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_path'>path</span>
   <span class='ivar'>@path</span>
@@ -697,12 +697,12 @@ API across all backends.</p>
       <pre class="lines">
 
 
-110
-111
-112</pre>
+132
+133
+134</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 110</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 132</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_symbol'>symbol</span>
   <span class='ivar'>@symbol</span>
@@ -734,14 +734,14 @@ API across all backends.</p>
       <pre class="lines">
 
 
-168
-169
-170
-171
-172</pre>
+190
+191
+192
+193
+194</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 168</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 190</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Derive symbol from path if not provided using shared utility
@@ -823,19 +823,19 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139</pre>
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 130</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 152</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::MRI::Language (class)">Language</a></span></span><span class='rparen'>)</span>
@@ -890,12 +890,12 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-143
-144
-145</pre>
+165
+166
+167</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 143</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 165</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_hash'>hash</span>
   <span class='lbracket'>[</span><span class='ivar'>@backend</span><span class='comma'>,</span> <span class='ivar'>@path</span><span class='comma'>,</span> <span class='ivar'>@symbol</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span>
@@ -947,12 +947,12 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-153
-154
-155</pre>
+175
+176
+177</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 153</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 175</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_language'>to_language</span>
   <span class='ivar'>@inner_language</span>
@@ -967,7 +967,7 @@ Path and symbol uniquely identify a loaded language.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Jan  6 04:46:43 2026 by
+  Generated on Thu Jan  8 04:04:25 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

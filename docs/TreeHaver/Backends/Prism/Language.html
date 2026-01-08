@@ -69,10 +69,12 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">Object</span>
+      <span class="inheritName"><span class='object_link'><a href="../../Base/Language.html" title="TreeHaver::Base::Language (class)">TreeHaver::Base::Language</a></span></span>
       
         <ul class="fullTree">
           <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="../../Base/Language.html" title="TreeHaver::Base::Language (class)">TreeHaver::Base::Language</a></span></li>
           
             <li class="next">TreeHaver::Backends::Prism::Language</li>
           
@@ -86,11 +88,6 @@
   
   
   
-  
-  <dl>
-      <dt>Includes:</dt>
-      <dd>Comparable</dd>
-  </dl>
   
   
 
@@ -131,98 +128,12 @@ other tree_haver backends.</p>
 
 
 
-  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
-  <ul class="summary">
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#backend-instance_method" title="#backend (instance method)">#<strong>backend</strong>  &#x21d2; Symbol </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>The backend this language is for.</p>
-</div></span>
-  
-</li>
-
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#name-instance_method" title="#name (instance method)">#<strong>name</strong>  &#x21d2; Symbol </a>
-    
-
-    
-      (also: #language_name)
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>The language name (always :ruby for Prism).</p>
-</div></span>
-  
-</li>
-
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#options-instance_method" title="#options (instance method)">#<strong>options</strong>  &#x21d2; Hash </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Prism parsing options.</p>
-</div></span>
-  
-</li>
-
-    
-  </ul>
 
 
+  <h2>Instance Attribute Summary</h2>
+  
+  <h3 class="inherited">Attributes inherited from <span class='object_link'><a href="../../Base/Language.html" title="TreeHaver::Base::Language (class)">TreeHaver::Base::Language</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Language.html#backend-instance_method" title="TreeHaver::Base::Language#backend (method)">#backend</a></span>, <span class='object_link'><a href="../../Base/Language.html#name-instance_method" title="TreeHaver::Base::Language#name (method)">#name</a></span>, <span class='object_link'><a href="../../Base/Language.html#options-instance_method" title="TreeHaver::Base::Language#options (method)">#options</a></span></p>
 
 
   
@@ -307,30 +218,7 @@ other tree_haver backends.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Compare languages for equality.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#hash-instance_method" title="#hash (instance method)">#<strong>hash</strong>  &#x21d2; Integer </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Hash value for this language (for use in Sets/Hashes).</p>
+    <span class="summary_desc"><div class='inline'><p>Compare languages for equality by options (since name is always :ruby).</p>
 </div></span>
   
 </li>
@@ -364,6 +252,17 @@ other tree_haver backends.</p>
     </ul>
   
 
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="../../Base/Language.html" title="TreeHaver::Base::Language (class)">TreeHaver::Base::Language</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Language.html#eql%3F-instance_method" title="TreeHaver::Base::Language#eql? (method)">#eql?</a></span>, <span class='object_link'><a href="../../Base/Language.html#hash-instance_method" title="TreeHaver::Base::Language#hash (method)">#hash</a></span>, <span class='object_link'><a href="../../Base/Language.html#inspect-instance_method" title="TreeHaver::Base::Language#inspect (method)">#inspect</a></span></p>
 
   <div id="constructor_details" class="method_details_list">
   <h2>Constructor Details</h2>
@@ -431,27 +330,23 @@ other tree_haver backends.</p>
       <pre class="lines">
 
 
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118</pre>
+96
+97
+98
+99
+100
+101
+102
+103
+104</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 108</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 96</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='symbol'>:ruby</span><span class='comma'>,</span> <span class='label'>options:</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
-  <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='symbol'>:prism</span>
-  <span class='ivar'>@options</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>backend:</span> <span class='symbol'>:prism</span><span class='comma'>,</span> <span class='label'>options:</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
 
-  <span class='kw'>unless</span> <span class='ivar'>@name</span> <span class='op'>==</span> <span class='symbol'>:ruby</span>
+  <span class='kw'>unless</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='symbol'>:ruby</span>
     <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span>
       <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Prism only supports Ruby parsing. </span><span class='tstring_end'>&quot;</span></span> \
         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Got language: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
@@ -463,180 +358,6 @@ other tree_haver backends.</p>
 </div>
   
 </div>
-
-  <div id="instance_attr_details" class="attr_details">
-    <h2>Instance Attribute Details</h2>
-    
-      
-      <span id=""></span>
-      <div class="method_details first">
-  <h3 class="signature first" id="backend-instance_method">
-  
-    #<strong>backend</strong>  &#x21d2; <tt>Symbol</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>The backend this language is for</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Symbol</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-100
-101
-102</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 100</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_backend'>backend</span>
-  <span class='ivar'>@backend</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="name-instance_method">
-  
-    #<strong>name</strong>  &#x21d2; <tt>Symbol</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-    <span class="aliases">Also known as:
-    <span class="names"><span id='language_name-instance_method'>language_name</span></span>
-    </span>
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>The language name (always :ruby for Prism)</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Symbol</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-95
-96
-97</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 95</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
-  <span class='ivar'>@name</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="options-instance_method">
-  
-    #<strong>options</strong>  &#x21d2; <tt>Hash</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Prism parsing options</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Hash</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-104
-105
-106</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 104</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_options'>options</span>
-  <span class='ivar'>@options</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
 
 
   <div id="class_method_details" class="method_details_list">
@@ -660,9 +381,7 @@ other tree_haver backends.</p>
   <div class="discussion">
     <p>Load language from library path (API compatibility)</p>
 
-<p>Prism only supports Ruby, so path and symbol parameters are ignored.<br />
-This method exists for API consistency with tree-sitter backends,<br />
-allowing <code>TreeHaver.parser_for(:ruby)</code> to work regardless of backend.</p>
+<p>Prism only supports Ruby, so path and symbol parameters are ignored.</p>
 
 
   </div>
@@ -700,7 +419,7 @@ allowing <code>TreeHaver.parser_for(:ruby)</code> to work regardless of backend.
       
       
         &mdash;
-        <div class='inline'><p>Ignored</p>
+        <div class='inline'><p>Ignored - Prism only supports Ruby</p>
 </div>
       
     </li>
@@ -765,25 +484,23 @@ allowing <code>TreeHaver.parser_for(:ruby)</code> to work regardless of backend.
       <pre class="lines">
 
 
-168
-169
-170
-171
-172
-173
-174
-175
-176
-177
-178
-179</pre>
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 168</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 141</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid__path'>_path</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='comment'># Derive language name from symbol if provided
-</span>  <span class='id identifier rubyid_lang_name'>lang_name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span> <span class='op'>||</span> <span class='id identifier rubyid_symbol'>symbol</span><span class='op'>&amp;.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='op'>&amp;.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^tree_sitter_</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='op'>&amp;.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='op'>||</span> <span class='symbol'>:ruby</span>
+  <span class='id identifier rubyid_lang_name'>lang_name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span> <span class='op'>||</span> <span class='symbol'>:ruby</span>
 
   <span class='kw'>unless</span> <span class='id identifier rubyid_lang_name'>lang_name</span> <span class='op'>==</span> <span class='symbol'>:ruby</span>
     <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span>
@@ -911,12 +628,12 @@ allowing <code>TreeHaver.parser_for(:ruby)</code> to work regardless of backend.
       <pre class="lines">
 
 
-153
-154
-155</pre>
+128
+129
+130</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 153</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 128</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ruby'>ruby</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='symbol'>:ruby</span><span class='comma'>,</span> <span class='label'>options:</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
@@ -943,9 +660,7 @@ allowing <code>TreeHaver.parser_for(:ruby)</code> to work regardless of backend.
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Compare languages for equality</p>
-
-<p>Prism languages are equal if they have the same backend and options.</p>
+    <p>Compare languages for equality by options (since name is always :ruby)</p>
 
 
   </div>
@@ -995,74 +710,21 @@ allowing <code>TreeHaver.parser_for(:ruby)</code> to work regardless of backend.
       <pre class="lines">
 
 
-126
-127
-128
-129
-130
-131</pre>
+110
+111
+112
+113
+114
+115</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 126</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 110</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Language (class)">Language</a></span></span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_backend'>backend</span> <span class='op'>==</span> <span class='ivar'>@backend</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Base.html" title="TreeHaver::Base (module)">Base</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Base/Language.html" title="TreeHaver::Base::Language (class)">Language</a></span></span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_backend'>backend</span> <span class='op'>==</span> <span class='id identifier rubyid_backend'>backend</span>
 
-  <span class='ivar'>@options</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span><span class='period'>.</span><span class='id identifier rubyid_sort'>sort</span> <span class='op'>&lt;=&gt;</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span><span class='period'>.</span><span class='id identifier rubyid_sort'>sort</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="hash-instance_method">
-  
-    #<strong>hash</strong>  &#x21d2; <tt>Integer</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Hash value for this language (for use in Sets/Hashes)</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-135
-136
-137</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 135</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_hash'>hash</span>
-  <span class='lbracket'>[</span><span class='ivar'>@backend</span><span class='comma'>,</span> <span class='ivar'>@name</span><span class='comma'>,</span> <span class='ivar'>@options</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span><span class='period'>.</span><span class='id identifier rubyid_sort'>sort</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span>
+  <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span><span class='period'>.</span><span class='id identifier rubyid_sort'>sort</span> <span class='op'>&lt;=&gt;</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span><span class='period'>.</span><span class='id identifier rubyid_sort'>sort</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1074,7 +736,7 @@ allowing <code>TreeHaver.parser_for(:ruby)</code> to work regardless of backend.
 </div>
 
       <div id="footer">
-  Generated on Tue Jan  6 04:46:44 2026 by
+  Generated on Thu Jan  8 04:04:25 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

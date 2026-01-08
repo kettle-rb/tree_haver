@@ -693,7 +693,8 @@ TreeHaver solves these problems by providing a unified API that automatically se
     <tr>
       <td><a href="https://github.com/kettle-rb/rbs-merge">rbs-merge</a></td>
       <td>RBS</td>
-      <td>[tree-sitter-bash][ts-rbs] (via tree_haver), <a href="https://github.com/ruby/rbs">RBS</a> (<code>rbs</code> std lib gem)</td>
+      <td>
+<a href="https://github.com/joker1007/tree-sitter-rbs">tree-sitter-bash</a> (via tree_haver), <a href="https://github.com/ruby/rbs">RBS</a> (<code>rbs</code> std lib gem)</td>
       <td>Smart merge for Ruby type signatures</td>
     </tr>
     <tr>
@@ -705,6 +706,104 @@ TreeHaver solves these problems by providing a unified API that automatically se
     </tr>
   </tbody>
 </table>
+
+<h4 id="backend-platform-compatibility-1">Backend Platform Compatibility</h4>
+
+<p>tree_haver supports multiple parsing backends, but not all backends work on all Ruby platforms:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Platform 👉️<br> TreeHaver Backend 👇️</th>
+      <th style="text-align: center">MRI</th>
+      <th style="text-align: center">JRuby</th>
+      <th style="text-align: center">TruffleRuby</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<strong>MRI</strong> (<a href="https://github.com/Faveod/ruby-tree-sitter">ruby_tree_sitter</a>)</td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">❌</td>
+      <td style="text-align: center">❌</td>
+      <td>C extension, MRI only</td>
+    </tr>
+    <tr>
+      <td>
+<strong>Rust</strong> (<a href="https://github.com/joker1007/tree_stump">tree_stump</a>)</td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">❌</td>
+      <td style="text-align: center">❌</td>
+      <td>Rust extension via magnus/rb-sys, MRI only</td>
+    </tr>
+    <tr>
+      <td><strong>FFI</strong></td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">❌</td>
+      <td>TruffleRuby’s FFI doesn’t support <code>STRUCT_BY_VALUE</code>
+</td>
+    </tr>
+    <tr>
+      <td>
+<strong>Java</strong> (<a href="https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter">jtreesitter</a>)</td>
+      <td style="text-align: center">❌</td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">❌</td>
+      <td>JRuby only, requires grammar JARs</td>
+    </tr>
+    <tr>
+      <td><strong>Prism</strong></td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">✅</td>
+      <td>Ruby parsing, stdlib in Ruby 3.4+</td>
+    </tr>
+    <tr>
+      <td><strong>Psych</strong></td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">✅</td>
+      <td>YAML parsing, stdlib</td>
+    </tr>
+    <tr>
+      <td><strong>Citrus</strong></td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">✅</td>
+      <td>Pure Ruby, no native dependencies</td>
+    </tr>
+    <tr>
+      <td><strong>Commonmarker</strong></td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">❌</td>
+      <td style="text-align: center">❓</td>
+      <td>Rust extension for Markdown</td>
+    </tr>
+    <tr>
+      <td><strong>Markly</strong></td>
+      <td style="text-align: center">✅</td>
+      <td style="text-align: center">❌</td>
+      <td style="text-align: center">❓</td>
+      <td>C extension for Markdown</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Legend</strong>: ✅ = Works, ❌ = Does not work, ❓ = Untested</p>
+
+<p><strong>Why some backends don’t work on certain platforms</strong>:</p>
+
+<ul>
+  <li>
+<strong>JRuby</strong>: Runs on the JVM; cannot load native C/Rust extensions (<code>.so</code> files)</li>
+  <li>
+<strong>TruffleRuby</strong>: Has C API emulation via Sulong/LLVM, but it doesn’t expose all MRI internals that native extensions require (e.g., <code>RBasic.flags</code>, <code>rb_gc_writebarrier</code>)</li>
+  <li>
+<strong>FFI on TruffleRuby</strong>: TruffleRuby’s FFI implementation doesn’t support returning structs by value, which tree-sitter’s C API requires</li>
+</ul>
 
 <p><strong>Example implementations</strong> for the gem templating use case:</p>
 
@@ -1506,6 +1605,65 @@ TreeHaver.backend = :citrus  # Use Citrus pure Ruby parser
 <p>You can also set the backend via environment variable:</p>
 
 <pre class="code language-bash"><code class="language-bash">export TREE_HAVER_BACKEND=rust
+</code></pre>
+
+<h3 id="backend-registry">Backend Registry</h3>
+
+<p>TreeHaver provides a <code>BackendRegistry</code> module that allows external gems to register their backend availability checkers. This enables dynamic backend detection without hardcoding dependencies.</p>
+
+<h4 id="registering-a-backend-availability-checker">Registering a Backend Availability Checker</h4>
+
+<p>External gems (like <code>commonmarker-merge</code>, <code>markly-merge</code>, <code>rbs-merge</code>) can register their availability checker when loaded:</p>
+
+<pre class="code language-ruby"><code class="language-ruby"># In your gem&#39;s backend module
+TreeHaver::BackendRegistry.register_availability_checker(:my_backend) do
+  # Return true if backend is available
+  require &quot;my_backend_gem&quot;
+  true
+rescue LoadError
+  false
+end
+</code></pre>
+
+<h4 id="checking-backend-availability">Checking Backend Availability</h4>
+
+<pre class="code language-ruby"><code class="language-ruby"># Check if a backend is available
+TreeHaver::BackendRegistry.available?(:commonmarker)  # =&gt; true/false
+TreeHaver::BackendRegistry.available?(:markly)        # =&gt; true/false
+TreeHaver::BackendRegistry.available?(:rbs)           # =&gt; true/false
+
+# Check if a checker is registered
+TreeHaver::BackendRegistry.registered?(:my_backend)   # =&gt; true/false
+
+# Get all registered backend names
+TreeHaver::BackendRegistry.registered_backends        # =&gt; [:mri, :rust, :ffi, ...]
+</code></pre>
+
+<h4 id="how-it-works">How It Works</h4>
+
+<ol>
+  <li>Built-in backends (MRI, Rust, FFI, Java, Prism, Psych, Citrus) automatically register their checkers when loaded</li>
+  <li>External gems register their checkers when their backend module is loaded</li>
+  <li>
+<code>TreeHaver::RSpec::DependencyTags</code> uses the registry to dynamically detect available backends</li>
+  <li>Results are cached for performance (use <code>clear_cache!</code> to reset)</li>
+</ol>
+
+<h4 id="rspec-integration">RSpec Integration</h4>
+
+<p>The <code>BackendRegistry</code> is used by <code>TreeHaver::RSpec::DependencyTags</code> to configure RSpec exclusion filters:</p>
+
+<pre class="code language-ruby"><code class="language-ruby"># In your spec_helper.rb
+require &quot;tree_haver/rspec/dependency_tags&quot;
+
+# Then in specs, use tags to skip tests when backends aren&#39;t available
+it &quot;requires commonmarker&quot;, :commonmarker_backend do
+  # This test only runs when commonmarker is available
+end
+
+it &quot;requires markly&quot;, :markly_backend do
+  # This test only runs when markly is available
+end
 </code></pre>
 
 <h3 id="environment-variables">Environment Variables</h3>
@@ -2763,7 +2921,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Tue Jan  6 04:46:42 2026 by
+  Generated on Thu Jan  8 04:04:23 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -69,10 +69,12 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">Object</span>
+      <span class="inheritName"><span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></span>
       
         <ul class="fullTree">
           <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></li>
           
             <li class="next">TreeHaver::Backends::Prism::Node</li>
           
@@ -86,11 +88,6 @@
   
   
   
-  
-  <dl>
-      <dt>Includes:</dt>
-      <dd>Enumerable</dd>
-  </dl>
   
   
 
@@ -132,68 +129,12 @@
 
 
 
-  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
-  <ul class="summary">
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#inner_node-instance_method" title="#inner_node (instance method)">#<strong>inner_node</strong>  &#x21d2; ::Prism::Node </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>The underlying Prism node.</p>
-</div></span>
-  
-</li>
-
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#source-instance_method" title="#source (instance method)">#<strong>source</strong>  &#x21d2; String </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>The source code.</p>
-</div></span>
-  
-</li>
-
-    
-  </ul>
 
 
+  <h2>Instance Attribute Summary</h2>
+  
+  <h3 class="inherited">Attributes inherited from <span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Node.html#inner_node-instance_method" title="TreeHaver::Base::Node#inner_node (method)">#inner_node</a></span>, <span class='object_link'><a href="../../Base/Node.html#lines-instance_method" title="TreeHaver::Base::Node#lines (method)">#lines</a></span>, <span class='object_link'><a href="../../Base/Node.html#source-instance_method" title="TreeHaver::Base::Node#source (method)">#source</a></span></p>
 
 
   
@@ -203,29 +144,6 @@
     </h2>
 
     <ul class="summary">
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#child-instance_method" title="#child (instance method)">#<strong>child</strong>(index)  &#x21d2; Node<sup>?</sup> </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get a child node by index.</p>
-</div></span>
-  
-</li>
-
       
         <li class="public ">
   <span class="summary_signature">
@@ -247,29 +165,6 @@
 
   
     <span class="summary_desc"><div class='inline'><p>Get a child by field name (Prism node accessor).</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#child_count-instance_method" title="#child_count (instance method)">#<strong>child_count</strong>  &#x21d2; Integer </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get the number of child nodes.</p>
 </div></span>
   
 </li>
@@ -301,29 +196,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#each-instance_method" title="#each (instance method)">#<strong>each</strong> {|Node| ... } &#x21d2; Enumerator<sup>?</sup> </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Iterate over child nodes.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#end_byte-instance_method" title="#end_byte (instance method)">#<strong>end_byte</strong>  &#x21d2; Integer </a>
     
 
@@ -347,29 +219,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#end_line-instance_method" title="#end_line (instance method)">#<strong>end_line</strong>  &#x21d2; Integer </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get the 1-based line number where this node ends.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#end_point-instance_method" title="#end_point (instance method)">#<strong>end_point</strong>  &#x21d2; Hash{Symbol =&gt; Integer} </a>
     
 
@@ -384,30 +233,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Get the end position as row/column.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#first_child-instance_method" title="#first_child (instance method)">#<strong>first_child</strong>  &#x21d2; Node<sup>?</sup> </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get the first child node.</p>
+    <span class="summary_desc"><div class='inline'><p>Get the end position as row/column (0-based).</p>
 </div></span>
   
 </li>
@@ -464,7 +290,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#inspect-instance_method" title="#inspect (instance method)">#<strong>inspect</strong>  &#x21d2; String </a>
+      <a href="#kind-instance_method" title="#kind (instance method)">#<strong>kind</strong>  &#x21d2; String </a>
     
 
     
@@ -478,7 +304,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>String representation for debugging.</p>
+    <span class="summary_desc"><div class='inline'><p>Alias for type (API compatibility).</p>
 </div></span>
   
 </li>
@@ -533,98 +359,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#named%3F-instance_method" title="#named? (instance method)">#<strong>named?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Check if this is a “named” node (structural vs punctuation).</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#next_sibling-instance_method" title="#next_sibling (instance method)">#<strong>next_sibling</strong>  &#x21d2; void </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get next sibling.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#parent-instance_method" title="#parent (instance method)">#<strong>parent</strong>  &#x21d2; void </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get the parent node.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#prev_sibling-instance_method" title="#prev_sibling (instance method)">#<strong>prev_sibling</strong>  &#x21d2; void </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get previous sibling.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#respond_to_missing%3F-instance_method" title="#respond_to_missing? (instance method)">#<strong>respond_to_missing?</strong>(method_name, include_private = false)  &#x21d2; Boolean </a>
     
 
@@ -640,29 +374,6 @@
 
   
     <span class="summary_desc"><div class='inline'><p>Check if node responds to a method (includes delegation to inner_node).</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#source_position-instance_method" title="#source_position (instance method)">#<strong>source_position</strong>  &#x21d2; Hash{Symbol =&gt; Integer} </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get position information as a hash.</p>
 </div></span>
   
 </li>
@@ -694,29 +405,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#start_line-instance_method" title="#start_line (instance method)">#<strong>start_line</strong>  &#x21d2; Integer </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get the 1-based line number where this node starts.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#start_point-instance_method" title="#start_point (instance method)">#<strong>start_point</strong>  &#x21d2; Hash{Symbol =&gt; Integer} </a>
     
 
@@ -731,30 +419,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Get the start position as row/column.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#structural%3F-instance_method" title="#structural? (instance method)">#<strong>structural?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Check if this is a structural node.</p>
+    <span class="summary_desc"><div class='inline'><p>Get the start position as row/column (0-based).</p>
 </div></span>
   
 </li>
@@ -815,8 +480,6 @@
     
 
     
-      (also: #kind)
-    
   </span>
   
   
@@ -837,6 +500,18 @@
   
 
 
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Node.html#<=>-instance_method" title="TreeHaver::Base::Node#&lt;=&gt; (method)">#<=></a></span>, <span class='object_link'><a href="../../Base/Node.html#==-instance_method" title="TreeHaver::Base::Node#== (method)">#==</a></span>, <span class='object_link'><a href="../../Base/Node.html#child-instance_method" title="TreeHaver::Base::Node#child (method)">#child</a></span>, <span class='object_link'><a href="../../Base/Node.html#child_count-instance_method" title="TreeHaver::Base::Node#child_count (method)">#child_count</a></span>, <span class='object_link'><a href="../../Base/Node.html#each-instance_method" title="TreeHaver::Base::Node#each (method)">#each</a></span>, <span class='object_link'><a href="../../Base/Node.html#end_line-instance_method" title="TreeHaver::Base::Node#end_line (method)">#end_line</a></span>, <span class='object_link'><a href="../../Base/Node.html#first_child-instance_method" title="TreeHaver::Base::Node#first_child (method)">#first_child</a></span>, <span class='object_link'><a href="../../Base/Node.html#inspect-instance_method" title="TreeHaver::Base::Node#inspect (method)">#inspect</a></span>, <span class='object_link'><a href="../../Base/Node.html#last_child-instance_method" title="TreeHaver::Base::Node#last_child (method)">#last_child</a></span>, <span class='object_link'><a href="../../Base/Node.html#named%3F-instance_method" title="TreeHaver::Base::Node#named? (method)">#named?</a></span>, <span class='object_link'><a href="../../Base/Node.html#next_sibling-instance_method" title="TreeHaver::Base::Node#next_sibling (method)">#next_sibling</a></span>, <span class='object_link'><a href="../../Base/Node.html#parent-instance_method" title="TreeHaver::Base::Node#parent (method)">#parent</a></span>, <span class='object_link'><a href="../../Base/Node.html#prev_sibling-instance_method" title="TreeHaver::Base::Node#prev_sibling (method)">#prev_sibling</a></span>, <span class='object_link'><a href="../../Base/Node.html#source_position-instance_method" title="TreeHaver::Base::Node#source_position (method)">#source_position</a></span>, <span class='object_link'><a href="../../Base/Node.html#start_line-instance_method" title="TreeHaver::Base::Node#start_line (method)">#start_line</a></span></p>
+
+  
   <div id="constructor_details" class="method_details_list">
   <h2>Constructor Details</h2>
   
@@ -869,17 +544,15 @@
       <pre class="lines">
 
 
-343
-344
-345
-346</pre>
+297
+298
+299</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 343</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 297</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
-  <span class='ivar'>@inner_node</span> <span class='op'>=</span> <span class='id identifier rubyid_node'>node</span>
-  <span class='ivar'>@source</span> <span class='op'>=</span> <span class='id identifier rubyid_source'>source</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1007,20 +680,20 @@ like <code>receiver</code>, <code>message</code>, <code>arguments</code>, etc.</
       <pre class="lines">
 
 
-627
-628
-629
-630
-631
-632
-633</pre>
+455
+456
+457
+458
+459
+460
+461</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 627</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 455</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_method_missing'>method_missing</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='op'>&amp;.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
-    <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='op'>&amp;.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>else</span>
     <span class='kw'>super</span>
   <span class='kw'>end</span>
@@ -1032,236 +705,13 @@ like <code>receiver</code>, <code>message</code>, <code>arguments</code>, etc.</
   
 </div>
 
-  <div id="instance_attr_details" class="attr_details">
-    <h2>Instance Attribute Details</h2>
-    
-      
-      <span id=""></span>
-      <div class="method_details first">
-  <h3 class="signature first" id="inner_node-instance_method">
-  
-    #<strong>inner_node</strong>  &#x21d2; <tt>::Prism::Node</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Returns the underlying Prism node.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>::Prism::Node</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>the underlying Prism node</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-338
-339
-340</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 338</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_inner_node'>inner_node</span>
-  <span class='ivar'>@inner_node</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="source-instance_method">
-  
-    #<strong>source</strong>  &#x21d2; <tt>String</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Returns the source code.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>String</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>the source code</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-341
-342
-343</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 341</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_source'>source</span>
-  <span class='ivar'>@source</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-  </div>
-
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="child-instance_method">
-  
-    #<strong>child</strong>(index)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></tt><sup>?</sup> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get a child node by index</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>index</span>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>child index</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>wrapped child node</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-479
-480
-481
-482
-483
-484
-485
-486
-487</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 479</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:child_nodes</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_children_array'>children_array</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child_nodes'>child_nodes</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span>
-  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_children_array'>children_array</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
-
-  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Prism::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_children_array'>children_array</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='ivar'>@source</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="child_by_field_name-instance_method">
+  <h3 class="signature first" id="child_by_field_name-instance_method">
   
     #<strong>child_by_field_name</strong>(name)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></tt><sup>?</sup> 
   
@@ -1281,8 +731,7 @@ like <code>receiver</code>, <code>message</code>, <code>arguments</code>, etc.</
 </p>
 <p>Get a child by field name (Prism node accessor)</p>
 
-<p>Prism nodes have specific accessors for their children.<br />
-This method tries to call that accessor.</p>
+<p>Prism nodes have specific accessors for their children.</p>
 
 
   </div>
@@ -1332,94 +781,29 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
-554
-555
-556
-557
-558
-559
-560
-561
-562
-563
-564
-565</pre>
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 554</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 415</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 
-  <span class='comment'># Wrap if it&#39;s a node, otherwise return nil
-</span>  <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='op'>::</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>Node</span><span class='rparen'>)</span>
-    <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Prism::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_result'>result</span><span class='comma'>,</span> <span class='ivar'>@source</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="child_count-instance_method">
-  
-    #<strong>child_count</strong>  &#x21d2; <tt>Integer</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get the number of child nodes</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-469
-470
-471
-472
-473</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 469</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_child_count'>child_count</span>
-  <span class='kw'>return</span> <span class='int'>0</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-  <span class='kw'>return</span> <span class='int'>0</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:child_nodes</span><span class='rparen'>)</span>
-  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child_nodes'>child_nodes</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
+  <span class='comment'># Wrap if it&#39;s a node
+</span>  <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='op'>::</span><span class='const'>Prism</span><span class='op'>::</span><span class='const'>Node</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Prism::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_result'>result</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1472,97 +856,21 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
-492
-493
-494
-495
-496
-497</pre>
+364
+365
+366
+367
+368
+369</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 492</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 364</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_children'>children</span>
-  <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-  <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:child_nodes</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:child_nodes</span><span class='rparen'>)</span>
 
-  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child_nodes'>child_nodes</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Prism::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_n'>n</span><span class='comma'>,</span> <span class='ivar'>@source</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="each-instance_method">
-  
-    #<strong>each</strong> {|Node| ... } &#x21d2; <tt>Enumerator</tt><sup>?</sup> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Iterate over child nodes</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Yields:</p>
-<ul class="yield">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>each child node</p>
-</div>
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Enumerator</tt>, <tt>nil</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-503
-504
-505
-506</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 503</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_to_enum'>to_enum</span><span class='lparen'>(</span><span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
-  <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child_nodes'>child_nodes</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Prism::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_n'>n</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1611,84 +919,19 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
-378
-379
-380
-381
-382</pre>
+333
+334
+335
+336
+337</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 378</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 333</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
-  <span class='kw'>return</span> <span class='int'>0</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
+  <span class='kw'>return</span> <span class='int'>0</span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
   <span class='id identifier rubyid_loc'>loc</span><span class='op'>&amp;.</span><span class='id identifier rubyid_end_offset'>end_offset</span> <span class='op'>||</span> <span class='int'>0</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="end_line-instance_method">
-  
-    #<strong>end_line</strong>  &#x21d2; <tt>Integer</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get the 1-based line number where this node ends</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>1-based line number</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-420
-421
-422
-423
-424</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 420</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_end_line'>end_line</span>
-  <span class='kw'>return</span> <span class='int'>1</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
-  <span class='id identifier rubyid_loc'>loc</span><span class='op'>&amp;.</span><span class='id identifier rubyid_end_line'>end_line</span> <span class='op'>||</span> <span class='int'>1</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1710,7 +953,7 @@ This method tries to call that accessor.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-<p>Get the end position as row/column</p>
+<p>Get the end position as row/column (0-based)</p>
 
 
   </div>
@@ -1727,10 +970,6 @@ This method tries to call that accessor.</p>
       
       
       
-        &mdash;
-        <div class='inline'><p>with :row and :column keys</p>
-</div>
-      
     </li>
   
 </ul>
@@ -1741,86 +980,23 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
-399
-400
-401
-402
-403
-404
-405
-406</pre>
+353
+354
+355
+356
+357
+358
+359</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 399</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 353</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
-  <span class='kw'>return</span> <span class='lbrace'>{</span><span class='label'>row:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='int'>0</span><span class='rbrace'>}</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
+  <span class='kw'>return</span> <span class='lbrace'>{</span><span class='label'>row:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='int'>0</span><span class='rbrace'>}</span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
   <span class='kw'>return</span> <span class='lbrace'>{</span><span class='label'>row:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='int'>0</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_loc'>loc</span>
 
-  <span class='comment'># Prism uses 1-based lines internally but we need 0-based for tree-sitter compat
-</span>  <span class='lbrace'>{</span><span class='label'>row:</span> <span class='lparen'>(</span><span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_end_line'>end_line</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_end_column'>end_column</span><span class='rbrace'>}</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="first_child-instance_method">
-  
-    #<strong>first_child</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></tt><sup>?</sup> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get the first child node</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::Prism::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>First child or nil</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-444
-445
-446</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 444</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_first_child'>first_child</span>
-  <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span>
+  <span class='lbrace'>{</span><span class='label'>row:</span> <span class='lparen'>(</span><span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_end_line'>end_line</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_end_column'>end_column</span><span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1869,29 +1045,29 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
-511
-512
-513
-514
-515
-516
-517
-518
-519
-520</pre>
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 511</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 390</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
-  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 
   <span class='comment'># Check if this is an error node type
 </span>  <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>missing</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>error</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 
   <span class='comment'># Check children recursively (Prism error nodes are usually children)
-</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:child_nodes</span><span class='rparen'>)</span>
-  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child_nodes'>child_nodes</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Missing</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+</span>  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:child_nodes</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_child_nodes'>child_nodes</span><span class='period'>.</span><span class='id identifier rubyid_compact'>compact</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Missing</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1899,9 +1075,9 @@ This method tries to call that accessor.</p>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="inspect-instance_method">
+  <h3 class="signature " id="kind-instance_method">
   
-    #<strong>inspect</strong>  &#x21d2; <tt>String</tt> 
+    #<strong>kind</strong>  &#x21d2; <tt>String</tt> 
   
 
   
@@ -1913,7 +1089,7 @@ This method tries to call that accessor.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-<p>String representation for debugging</p>
+<p>Alias for type (API compatibility)</p>
 
 
   </div>
@@ -1930,6 +1106,10 @@ This method tries to call that accessor.</p>
       
       
       
+        &mdash;
+        <div class='inline'><p>node type</p>
+</div>
+      
     </li>
   
 </ul>
@@ -1940,15 +1120,15 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
-596
-597
-598</pre>
+317
+318
+319</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 596</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 317</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
-  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#&lt;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'> type=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type'>type</span><span class='embexpr_end'>}</span><span class='tstring_content'> bytes=</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='embexpr_end'>}</span><span class='tstring_content'>..</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_end_byte'>end_byte</span><span class='embexpr_end'>}</span><span class='tstring_content'>&gt;</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>def</span> <span class='id identifier rubyid_kind'>kind</span>
+  <span class='id identifier rubyid_type'>type</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1997,260 +1177,17 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
-525
-526
-527
-528</pre>
+404
+405
+406
+407</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 525</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 404</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
-  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
   <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>missing</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="named?-instance_method">
-  
-    #<strong>named?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Check if this is a “named” node (structural vs punctuation)</p>
-
-<p>In Prism, all nodes are “named” in tree-sitter terminology<br />
-(there’s no distinction between named and anonymous nodes).</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-536
-537
-538</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 536</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
-  <span class='kw'>true</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="next_sibling-instance_method">
-  
-    #<strong>next_sibling</strong>  &#x21d2; <tt>void</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p class="note returns_void">This method returns an undefined value.</p><p>Get next sibling</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Raises:</p>
-<ul class="raise">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>NotImplementedError</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Prism nodes don’t have sibling references</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-581
-582
-583</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 581</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Prism backend does not support sibling navigation</span><span class='tstring_end'>&quot;</span></span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="parent-instance_method">
-  
-    #<strong>parent</strong>  &#x21d2; <tt>void</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p class="note returns_void">This method returns an undefined value.</p><p>Get the parent node</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Raises:</p>
-<ul class="raise">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>NotImplementedError</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Prism nodes don’t have parent references</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-573
-574
-575</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 573</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Prism backend does not support parent navigation</span><span class='tstring_end'>&quot;</span></span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="prev_sibling-instance_method">
-  
-    #<strong>prev_sibling</strong>  &#x21d2; <tt>void</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p class="note returns_void">This method returns an undefined value.</p><p>Get previous sibling</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Raises:</p>
-<ul class="raise">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>NotImplementedError</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Prism nodes don’t have sibling references</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-589
-590
-591</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 589</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Prism backend does not support sibling navigation</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2335,91 +1272,17 @@ This method tries to call that accessor.</p>
       <pre class="lines">
 
 
-612
-613
-614
-615</pre>
+440
+441
+442
+443</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 612</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 440</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_respond_to_missing?'>respond_to_missing?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-  <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='kw'>super</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="source_position-instance_method">
-  
-    #<strong>source_position</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Integer}</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get position information as a hash</p>
-
-<p>Returns a hash with 1-based line numbers and 0-based columns.<br />
-Compatible with *-merge gems’ FileAnalysisBase.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Hash{Symbol =&gt; Integer}</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Position hash</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-432
-433
-434
-435
-436
-437
-438
-439</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 432</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_source_position'>source_position</span>
-  <span class='lbrace'>{</span>
-    <span class='label'>start_line:</span> <span class='id identifier rubyid_start_line'>start_line</span><span class='comma'>,</span>
-    <span class='label'>end_line:</span> <span class='id identifier rubyid_end_line'>end_line</span><span class='comma'>,</span>
-    <span class='label'>start_column:</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>end_column:</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='comma'>,</span>
-  <span class='rbrace'>}</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='kw'>super</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2468,84 +1331,19 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-369
-370
-371
-372
-373</pre>
+324
+325
+326
+327
+328</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 369</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 324</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
-  <span class='kw'>return</span> <span class='int'>0</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
+  <span class='kw'>return</span> <span class='int'>0</span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
   <span class='id identifier rubyid_loc'>loc</span><span class='op'>&amp;.</span><span class='id identifier rubyid_start_offset'>start_offset</span> <span class='op'>||</span> <span class='int'>0</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="start_line-instance_method">
-  
-    #<strong>start_line</strong>  &#x21d2; <tt>Integer</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get the 1-based line number where this node starts</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>1-based line number</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-411
-412
-413
-414
-415</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 411</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_start_line'>start_line</span>
-  <span class='kw'>return</span> <span class='int'>1</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
-  <span class='id identifier rubyid_loc'>loc</span><span class='op'>&amp;.</span><span class='id identifier rubyid_start_line'>start_line</span> <span class='op'>||</span> <span class='int'>1</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2567,7 +1365,7 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-<p>Get the start position as row/column</p>
+<p>Get the start position as row/column (0-based)</p>
 
 
   </div>
@@ -2584,10 +1382,6 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       
       
       
-        &mdash;
-        <div class='inline'><p>with :row and :column keys</p>
-</div>
-      
     </li>
   
 </ul>
@@ -2598,82 +1392,23 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-387
-388
-389
-390
-391
-392
-393
-394</pre>
+342
+343
+344
+345
+346
+347
+348</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 387</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 342</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
-  <span class='kw'>return</span> <span class='lbrace'>{</span><span class='label'>row:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='int'>0</span><span class='rbrace'>}</span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
+  <span class='kw'>return</span> <span class='lbrace'>{</span><span class='label'>row:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='int'>0</span><span class='rbrace'>}</span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:location</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_loc'>loc</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span>
   <span class='kw'>return</span> <span class='lbrace'>{</span><span class='label'>row:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='int'>0</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_loc'>loc</span>
 
-  <span class='comment'># Prism uses 1-based lines internally but we need 0-based for tree-sitter compat
-</span>  <span class='lbrace'>{</span><span class='label'>row:</span> <span class='lparen'>(</span><span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_start_line'>start_line</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_start_column'>start_column</span><span class='rbrace'>}</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="structural?-instance_method">
-  
-    #<strong>structural?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Check if this is a structural node</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-543
-544
-545</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 543</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_structural?'>structural?</span>
-  <span class='kw'>true</span>
+  <span class='lbrace'>{</span><span class='label'>row:</span> <span class='lparen'>(</span><span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_start_line'>start_line</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='id identifier rubyid_loc'>loc</span><span class='period'>.</span><span class='id identifier rubyid_start_column'>start_column</span><span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2726,30 +1461,26 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-451
-452
-453
-454
-455
-456
-457
-458
-459
-460
-461</pre>
+374
+375
+376
+377
+378
+379
+380
+381
+382</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 451</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 374</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_text'>text</span>
-  <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 
-  <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:slice</span><span class='rparen'>)</span>
-    <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span>
-  <span class='kw'>elsif</span> <span class='ivar'>@source</span>
-    <span class='ivar'>@source</span><span class='lbracket'>[</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='op'>...</span><span class='id identifier rubyid_end_byte'>end_byte</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:slice</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span>
   <span class='kw'>else</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>super</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -2799,12 +1530,12 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-603
-604
-605</pre>
+431
+432
+433</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 603</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 431</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='id identifier rubyid_text'>text</span>
@@ -2820,10 +1551,6 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
     #<strong>type</strong>  &#x21d2; <tt>String</tt> 
   
 
-  
-    <span class="aliases">Also known as:
-    <span class="names"><span id='kind-instance_method'>kind</span></span>
-    </span>
   
 
   
@@ -2867,24 +1594,22 @@ Example: CallNode → “call_node”, ProgramNode → “program_node”</p>
       <pre class="lines">
 
 
-354
-355
-356
-357
-358
-359
-360
-361</pre>
+307
+308
+309
+310
+311
+312
+313</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 354</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/prism.rb', line 307</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
-  <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>nil</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>nil</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 
   <span class='comment'># Convert class name to snake_case type
-</span>  <span class='comment'># ProgramNode → program_node, CallNode → call_node
-</span>  <span class='id identifier rubyid_class_name'>class_name</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>::</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span>
+</span>  <span class='id identifier rubyid_class_name'>class_name</span> <span class='op'>=</span> <span class='id identifier rubyid_inner_node'>inner_node</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_split'>split</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>::</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span>
   <span class='id identifier rubyid_class_name'>class_name</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>([A-Z])</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>_\1</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_downcase'>downcase</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^_</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -2897,7 +1622,7 @@ Example: CallNode → “call_node”, ProgramNode → “program_node”</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Jan  6 04:46:44 2026 by
+  Generated on Thu Jan  8 04:04:25 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

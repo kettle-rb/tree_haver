@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [4.0.0] - 2026-01-08
+
+- TAG: [v4.0.0][4.0.0t]
+- COVERAGE: 95.31% -- 2031/2131 lines in 28 files
+- BRANCH COVERAGE: 84.21% -- 805/956 branches in 28 files
+- 95.48% documented
+
+### Added
+
 - **BackendRegistry**: New `TreeHaver::BackendRegistry` module for registering backend availability checkers
   - Allows external gems (like `commonmarker-merge`, `markly-merge`, `rbs-merge`) to register their availability checkers
   - `register_availability_checker(backend_name, &block)` - Register a callable that returns true if backend is available
@@ -46,10 +65,6 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Removed
 
 - **TreeHaver**: Removed `TreeHaver::Backends::Commonmarker` and `TreeHaver::Backends::Markly` modules. These implementations have moved to their respective gems.
-
-### Fixed
-
-### Security
 
 ## [3.2.6] - 2026-01-06
 
@@ -936,7 +951,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v3.2.6...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/kettle-rb/tree_haver/compare/v3.2.6...v4.0.0
+[4.0.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.0
 [3.2.6]: https://github.com/kettle-rb/tree_haver/compare/v3.2.5...v3.2.6
 [3.2.6t]: https://github.com/kettle-rb/tree_haver/releases/tag/v3.2.6
 [3.2.5]: https://github.com/kettle-rb/tree_haver/compare/v3.2.4...v3.2.5
