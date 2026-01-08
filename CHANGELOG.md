@@ -28,12 +28,21 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [4.0.1] - 2026-01-08
+
+- TAG: [v4.0.1][4.0.1t]
+- COVERAGE: 95.31% -- 2032/2132 lines in 28 files
+- BRANCH COVERAGE: 84.10% -- 804/956 branches in 28 files
+- 95.48% documented
+
+### Fixed
+
 - **FFI Backend**: Implemented `has_error?` method on `TreeHaver::Backends::FFI::Node`
   - Previously was a stub that always returned `false`, causing parse errors to go undetected
   - Now properly calls `ts_node_has_error` FFI function to detect syntax errors in parsed trees
   - This fixes error detection on JRuby when using the FFI backend with tree-sitter grammars
-
-### Security
 
 ## [4.0.0] - 2026-01-08
 
@@ -956,7 +965,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.1...HEAD
+[4.0.1]: https://github.com/kettle-rb/tree_haver/compare/v4.0.0...v4.0.1
+[4.0.1t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.1
 [4.0.0]: https://github.com/kettle-rb/tree_haver/compare/v3.2.6...v4.0.0
 [4.0.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.0
 [3.2.6]: https://github.com/kettle-rb/tree_haver/compare/v3.2.5...v3.2.6

@@ -632,12 +632,12 @@ If TREE_SITTER_RUNTIME_LIB is set, it is tried first.</p>
       <pre class="lines">
 
 
-281
 282
-283</pre>
+283
+284</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 281</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 282</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_loaded?'>loaded?</span>
   <span class='op'>!</span><span class='op'>!</span><span class='ivar'>@loaded</span>
@@ -756,7 +756,8 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 276
 277
 278
-279</pre>
+279
+280</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 219</span>
@@ -818,6 +819,7 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
   <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_node_end_point</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:ts_node</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:ts_point</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_node_is_null</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:ts_node</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:bool</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_node_is_named</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:ts_node</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:bool</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_attach_function'>attach_function</span><span class='lparen'>(</span><span class='symbol'>:ts_node_has_error</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:ts_node</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='symbol'>:bool</span><span class='rparen'>)</span>
 
   <span class='comment'># Only mark as fully loaded after all attach_function calls succeed
 </span>  <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>true</span>
@@ -895,7 +897,7 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 </div>
 
       <div id="footer">
-  Generated on Thu Jan  8 04:04:24 2026 by
+  Generated on Thu Jan  8 16:40:30 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
