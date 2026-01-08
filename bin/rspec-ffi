@@ -39,13 +39,19 @@ cmd = [
   "bundle",
   "exec",
   "rspec",
-  "--options", "/dev/null",           # Bypass .rspec file entirely
-  "--tag", "ffi_backend_only",        # MUST be before requires - triggers isolated_test_mode
-  "--require", "spec_thin_helper",    # Load thin helper (sets up TreeHaver + dependency_tags)
-  "--require", "spec_ffi_helper",     # Then FFI helper (configures FFI backend)
-  "--format", "progress",
+  "--options",
+  "/dev/null",           # Bypass .rspec file entirely
+  "--tag",
+  "ffi_backend_only",        # MUST be before requires - triggers isolated_test_mode
+  "--require",
+  "spec_thin_helper",    # Load thin helper (sets up TreeHaver + dependency_tags)
+  "--require",
+  "spec_ffi_helper",     # Then FFI helper (configures FFI backend)
+  "--format",
+  "progress",
   "--color",
-  "--order", "random",
+  "--order",
+  "random",
   *spec_files,
 ]
 
