@@ -280,8 +280,13 @@ RSpec.describe TreeHaver::Base::Node do
 
     it "returns false when other lacks type method" do
       other = Object.new
-      def other.start_byte = 0
-      def other.end_byte = 10
+      def other.start_byte
+        0
+      end
+
+      def other.end_byte
+        10
+      end
       # No type method
 
       expect(node == other).to be false
@@ -289,8 +294,13 @@ RSpec.describe TreeHaver::Base::Node do
 
     it "returns false when other lacks start_byte method" do
       other = Object.new
-      def other.type = "test"
-      def other.end_byte = 10
+      def other.type
+        "test"
+      end
+
+      def other.end_byte
+        10
+      end
       # No start_byte method
 
       expect(node == other).to be false
