@@ -6,8 +6,19 @@
 # Usage:
 #   bin/rspec-ffi                           # Run all FFI specs
 #   bin/rspec-ffi spec/tree_haver/backends/ffi_spec.rb  # Run specific spec
+#
+# NOTE: This script uses --options /dev/null to bypass the .rspec file,
+# which would otherwise load spec_thin_helper before spec_ffi_helper.
+# The MRI backend must NOT be loaded before FFI tests run.
 
 ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+
+# CRITICAL: Set TREE_HAVER_BACKEND before exec!
+# This env var is inherited by the exec'd process (rspec).
+# dependency_tags.rb checks this env var FIRST to determine which backends to block.
+# With TREE_HAVER_BACKEND=ffi, it blocks [:mri] (from BLOCKED_BY hash) before
+# any availability checks run, preventing MRI from being loaded.
+ENV["TREE_HAVER_BACKEND"] = "ffi"
 
 require "rubygems"
 require "bundler/setup"
@@ -20,13 +31,21 @@ if defined?(TreeSitter)
 end
 
 # Build the rspec command with FFI helper
+# CRITICAL: Use --options /dev/null to ignore .rspec which has --require spec_thin_helper
+# CRITICAL: Use --tag ffi_backend_only BEFORE requires - this goes into ARGV which
+# dependency_tags.rb checks to determine isolated_test_mode BEFORE calling mri_backend_available?
 spec_files = ARGV.empty? ? ["spec/tree_haver/backends/ffi_spec.rb"] : ARGV
 cmd = [
   "bundle",
   "exec",
   "rspec",
-  "--require",
-  "support/spec_ffi_helper",
+  "--options", "/dev/null",           # Bypass .rspec file entirely
+  "--tag", "ffi_backend_only",        # MUST be before requires - triggers isolated_test_mode
+  "--require", "spec_thin_helper",    # Load thin helper (sets up TreeHaver + dependency_tags)
+  "--require", "spec_ffi_helper",     # Then FFI helper (configures FFI backend)
+  "--format", "progress",
+  "--color",
+  "--order", "random",
   *spec_files,
 ]
 
