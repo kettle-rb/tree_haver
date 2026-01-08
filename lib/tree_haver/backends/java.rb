@@ -15,6 +15,23 @@ module TreeHaver
     # - The Query API for pattern matching
     # - Tree editing for incremental re-parsing
     #
+    # == Tree/Node Architecture
+    #
+    # This backend (like all tree-sitter backends: MRI, Rust, FFI, Java) does NOT
+    # define its own Tree or Node classes at the Ruby level. Instead:
+    #
+    # - Parser#parse returns raw Java tree objects (via JRuby interop)
+    # - These are wrapped by `TreeHaver::Tree` (inherits from `Base::Tree`)
+    # - `TreeHaver::Tree#root_node` wraps raw nodes in `TreeHaver::Node`
+    #
+    # This differs from pure-Ruby backends (Citrus, Prism, Psych) which define
+    # their own `Backend::X::Tree` and `Backend::X::Node` classes.
+    #
+    # @see TreeHaver::Tree The wrapper class for tree-sitter Tree objects
+    # @see TreeHaver::Node The wrapper class for tree-sitter Node objects
+    # @see TreeHaver::Base::Tree Base class documenting the Tree API contract
+    # @see TreeHaver::Base::Node Base class documenting the Node API contract
+    #
     # == Version Requirements
     #
     # - jtreesitter >= 0.26.0 (required)
@@ -127,66 +144,53 @@ module TreeHaver
 
       # Check if the Java backend is available
       #
-      # Returns true if running on JRuby and java-tree-sitter classes can be loaded.
-      # Automatically attempts to load JARs from ENV["TREE_SITTER_JAVA_JARS_DIR"] if set.
+      # Checks if:
+      # 1. We're running on JRuby
+      # 2. Environment variable TREE_SITTER_JAVA_JARS_DIR is set
+      # 3. Required JARs (jtreesitter, tree-sitter) are present in that directory
       #
       # @return [Boolean] true if Java backend is available
       # @example
       #   if TreeHaver::Backends::Java.available?
-      #     puts "Java backend is ready"
+      #     puts "Java backend ready"
       #   end
-      def available?
-        return @loaded if @load_attempted
-        @load_attempted = true
-        @loaded = false
-        @load_error = nil
-
-        return false unless defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby"
-
-        # :nocov:
-        # Everything below requires JRuby and cannot be tested on MRI/CRuby.
-        # JRuby-specific CI jobs would test this code.
-        begin
-          require "java"
-        rescue LoadError
-          @load_error = "JRuby java bridge not available"
-          return false
+      class << self
+        def available?
+          return @loaded if @load_attempted # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @loaded = check_availability # rubocop:disable ThreadSafety/ClassInstanceVariable
         end
 
-        # Optionally augment classpath and configure native library path
-        add_jars_from_env!
+        # Reset the load state (primarily for testing)
+        #
+        # @return [void]
+        # @api private
+        def reset!
+          @load_attempted = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @load_error = nil # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @loader = nil # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @java_classes = {} # rubocop:disable ThreadSafety/ClassInstanceVariable
+        end
 
-        # Try to load the java-tree-sitter classes
-        # Load Parser first as it doesn't trigger native library loading
-        # Language class triggers native lib loading in its static initializer
-        begin
-          # These classes don't require native library initialization
-          @java_classes[:Parser] = ::Java::IoGithubTreesitterJtreesitter::Parser
-          @java_classes[:Tree] = ::Java::IoGithubTreesitterJtreesitter::Tree
-          @java_classes[:Node] = ::Java::IoGithubTreesitterJtreesitter::Node
-          @java_classes[:InputEdit] = ::Java::IoGithubTreesitterJtreesitter::InputEdit
-          @java_classes[:Point] = ::Java::IoGithubTreesitterJtreesitter::Point
+        private
 
-          # Language class may fail if native library isn't found - try it last
-          # and provide a helpful error message
+        def check_availability
+          # 1. Check Ruby engine
+          return false unless RUBY_ENGINE == "jruby"
+
+          # 2. Check for required JARs via environment variable
+          jars_dir = ENV["TREE_SITTER_JAVA_JARS_DIR"]
+          return false unless jars_dir && Dir.exist?(jars_dir)
+
+          # 3. Check if we can load the classes
           begin
-            @java_classes[:Language] = ::Java::IoGithubTreesitterJtreesitter::Language
-          rescue NameError => e
-            # Language failed but other classes loaded - native lib issue
-            @load_error = "Language class failed to initialize (native library issue): #{e.message}"
-            # Clear loaded classes since we can't fully function without Language
-            @java_classes.clear
-            return false
+            ensure_loader_initialized!
+            true
+          rescue LoadError, NameError
+            false
           end
-
-          @loaded = true
-        rescue NameError => e
-          @load_error = "java-tree-sitter classes not found: #{e.message}"
-          @loaded = false
         end
-
-        @loaded
-        # :nocov:
       end
 
       # Get the last load error message (for debugging)
@@ -196,16 +200,6 @@ module TreeHaver
         @load_error
       end
 
-      # Reset the load state (primarily for testing)
-      #
-      # @return [void]
-      # @api private
-      def reset!
-        @load_attempted = false
-        @loaded = false
-        @load_error = nil
-        @java_classes = {}
-      end
 
       # Get the loaded Java classes
       #
@@ -805,6 +799,11 @@ module TreeHaver
         end
       end
       # :nocov:
+
+      # Register availability checker for RSpec dependency tags
+      TreeHaver::BackendRegistry.register_availability_checker(:java) do
+        available?
+      end
     end
   end
 end

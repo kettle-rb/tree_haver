@@ -52,7 +52,7 @@ module TreeHaver
   #
   #   # Or explicitly via inner_tree
   #   tree.inner_tree.some_backend_specific_method
-  class Tree
+  class Tree < Base::Tree
     # The wrapped backend-specific tree object
     #
     # This provides direct access to the underlying backend tree for advanced usage
@@ -66,20 +66,19 @@ module TreeHaver
     #       tree.inner_tree.print_dot_graph(f)
     #     end
     #   end
-    attr_reader :inner_tree
+    # NOTE: inner_tree is inherited from Base::Tree
 
     # The source text
     #
     # Stored to enable text extraction from nodes via byte offsets.
     #
     # @return [String] The original source code
-    attr_reader :source
+    # NOTE: source is inherited from Base::Tree
 
     # @param tree [Object] Backend-specific tree object
     # @param source [String] Source text for node text extraction
     def initialize(tree, source: nil)
-      @inner_tree = tree
-      @source = source
+      super(tree, source: source)
     end
 
     # Get the root node of the tree

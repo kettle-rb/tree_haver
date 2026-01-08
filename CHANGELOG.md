@@ -20,11 +20,32 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- **BackendRegistry**: New `TreeHaver::BackendRegistry` module for registering backend availability checkers
+  - Allows external gems (like `commonmarker-merge`, `markly-merge`, `rbs-merge`) to register their availability checkers
+  - `register_availability_checker(backend_name, &block)` - Register a callable that returns true if backend is available
+  - `available?(backend_name)` - Check if a backend is available (results are cached)
+  - `registered?(backend_name)` - Check if a checker is registered
+  - `registered_backends` - Get all registered backend names
+  - Used by `TreeHaver::RSpec::DependencyTags` for dynamic backend detection
+- **Plugin System**: `commonmarker-merge` and `markly-merge` now provide their own backends via `TreeHaver`'s registry system, removing them from `TreeHaver` core.
+- **Backend Architecture Documentation**: Added comprehensive documentation to base classes and all tree-sitter backends explaining the two backend categories:
+  - Tree-sitter backends (MRI, Rust, FFI, Java): Use `TreeHaver::Tree` and `TreeHaver::Node` wrappers for raw tree-sitter objects
+  - Pure-Ruby/Plugin backends (Citrus, Prism, Psych, Commonmarker, Markly): Define own `Backend::X::Tree` and `Backend::X::Node` classes
+
 ### Changed
 
-### Deprecated
+- **Base Class Inheritance**: `TreeHaver::Tree` and `TreeHaver::Node` now properly inherit from their respective `Base::` classes
+  - `TreeHaver::Tree < Base::Tree` - inherits `inner_tree`, `source`, `lines` attributes and default implementations
+  - `TreeHaver::Node < Base::Node` - inherits `inner_node`, `source`, `lines` attributes and API contract
+  - Base classes document the API contract; subclasses document divergence
+- **Base::Node#initialize**: Now accepts keyword arguments `source:` and `lines:` instead of positional for consistency with subclasses
+- **DependencyTags**: Now uses `BackendRegistry.available?(:backend_name)` instead of hardcoded `TreeHaver::Backends::*` checks
+- **TreeHaver**: `commonmarker` and `markly` backends are no longer built-in. Use `commonmarker-merge` and `markly-merge` gems which register themselves.
+- **All backends**: Now register their availability checkers with `BackendRegistry` when loaded (MRI, Rust, FFI, Java, Prism, Psych, Citrus)
 
 ### Removed
+
+- **TreeHaver**: Removed `TreeHaver::Backends::Commonmarker` and `TreeHaver::Backends::Markly` modules. These implementations have moved to their respective gems.
 
 ### Fixed
 

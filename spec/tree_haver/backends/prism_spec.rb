@@ -230,6 +230,18 @@ RSpec.describe TreeHaver::Backends::Prism do
           parser.language = :javascript
         }.to raise_error(ArgumentError, /only supports Ruby/)
       end
+
+      it "raises ArgumentError for invalid type" do
+        expect {
+          parser.language = 12345
+        }.to raise_error(ArgumentError, /Expected Prism::Language or :ruby/)
+      end
+
+      it "raises ArgumentError for hash" do
+        expect {
+          parser.language = {name: :ruby}
+        }.to raise_error(ArgumentError, /Expected Prism::Language or :ruby/)
+      end
     end
 
     describe "#language", :prism_backend do
@@ -556,21 +568,21 @@ RSpec.describe TreeHaver::Backends::Prism do
       let(:root) { tree.root_node }
 
       describe "#parent" do
-        it "raises NotImplementedError" do
-          expect { root.parent }.to raise_error(NotImplementedError, /parent navigation/)
+        it "returns nil (not implemented for Prism)" do
+          expect(root.parent).to be_nil
         end
       end
 
       describe "#next_sibling" do
-        it "raises NotImplementedError" do
-          expect { root.next_sibling }.to raise_error(NotImplementedError, /sibling navigation/)
+        it "returns nil (not implemented for Prism)" do
+          expect(root.next_sibling).to be_nil
         end
       end
 
       describe "#prev_sibling" do
-        it "raises NotImplementedError" do
+        it "returns nil (not implemented for Prism)" do
           if root.child_count > 0
-            expect { root.child(0).prev_sibling }.to raise_error(NotImplementedError, /sibling navigation/)
+            expect(root.child(0).prev_sibling).to be_nil
           end
         end
       end
@@ -615,6 +627,75 @@ RSpec.describe TreeHaver::Backends::Prism do
         end
       end
 
+      describe "edge cases with nil inner node" do
+        it "#type returns 'nil' for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.type).to eq("nil")
+        end
+
+        it "#start_byte returns 0 for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.start_byte).to eq(0)
+        end
+
+        it "#end_byte returns 0 for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.end_byte).to eq(0)
+        end
+
+        it "#start_point returns zero position for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.start_point).to eq({row: 0, column: 0})
+        end
+
+        it "#end_point returns zero position for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.end_point).to eq({row: 0, column: 0})
+        end
+
+        it "#children returns empty array for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.children).to eq([])
+        end
+
+        it "#text returns empty string for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.text).to eq("")
+        end
+
+        it "#has_error? returns false for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.has_error?).to be false
+        end
+
+        it "#missing? returns false for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.missing?).to be false
+        end
+
+        it "#child_by_field_name returns nil for nil inner node" do
+          node = backend::Node.new(nil, nil)
+          expect(node.child_by_field_name(:name)).to be_nil
+        end
+      end
+
+      describe "edge cases with node lacking location" do
+        let(:mock_node) do
+          # Node without location method
+          double("NodeWithoutLocation", class: Class.new { def name; "TestNode"; end })
+        end
+
+        it "#start_byte returns 0 when node lacks location" do
+          node = backend::Node.new(mock_node, nil)
+          expect(node.start_byte).to eq(0)
+        end
+
+        it "#end_byte returns 0 when node lacks location" do
+          node = backend::Node.new(mock_node, nil)
+          expect(node.end_byte).to eq(0)
+        end
+      end
+
       describe "node type specific accessors" do
         context "with def node" do
           let(:source) { "def hello(name)\n  puts name\nend" }
@@ -625,6 +706,48 @@ RSpec.describe TreeHaver::Backends::Prism do
             statements = tree.root_node.child(0)
             def_node = statements.child(0)
             expect(def_node.type).to include("def")
+          end
+
+          it "#child_by_field_name returns wrapped node for valid field" do
+            statements = tree.root_node.child(0)
+            def_node = statements.child(0)
+            # def nodes have a 'body' field
+            body = def_node.child_by_field_name(:body)
+            if body
+              expect(body).to be_a(backend::Node)
+            end
+          end
+
+          it "#child_by_field_name returns nil for invalid field" do
+            statements = tree.root_node.child(0)
+            def_node = statements.child(0)
+            expect(def_node.child_by_field_name(:nonexistent_field)).to be_nil
+          end
+
+          it "#field is aliased to child_by_field_name" do
+            statements = tree.root_node.child(0)
+            def_node = statements.child(0)
+            expect(def_node.method(:field)).to eq(def_node.method(:child_by_field_name))
+          end
+        end
+
+        context "with call node" do
+          let(:source) { "object.method_name(arg1, arg2)" }
+          let(:tree) { parser.parse(source) }
+
+          it "#respond_to_missing? returns true for inner node methods" do
+            statements = tree.root_node.child(0)
+            call_node = statements.child(0)
+            # Prism call nodes have a 'receiver' method
+            expect(call_node.respond_to?(:receiver)).to be true
+          end
+
+          it "#method_missing delegates to inner node" do
+            statements = tree.root_node.child(0)
+            call_node = statements.child(0)
+            # Access the receiver via method_missing delegation
+            receiver = call_node.receiver
+            expect(receiver).not_to be_nil
           end
         end
 

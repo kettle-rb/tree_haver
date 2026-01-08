@@ -531,18 +531,22 @@ module TreeHaver
 
         # Check if commonmarker gem is available
         #
+        # Uses BackendRegistry which allows commonmarker-merge to register its checker.
+        #
         # @return [Boolean] true if commonmarker gem is available
         def commonmarker_available?
           return @commonmarker_available if defined?(@commonmarker_available)
-          @commonmarker_available = TreeHaver::Backends::Commonmarker.available?
+          @commonmarker_available = TreeHaver::BackendRegistry.available?(:commonmarker)
         end
 
         # Check if markly gem is available
         #
+        # Uses BackendRegistry which allows markly-merge to register its checker.
+        #
         # @return [Boolean] true if markly gem is available
         def markly_available?
           return @markly_available if defined?(@markly_available)
-          @markly_available = TreeHaver::Backends::Markly.available?
+          @markly_available = TreeHaver::BackendRegistry.available?(:markly)
         end
 
         # Check if prism gem is available
@@ -550,7 +554,7 @@ module TreeHaver
         # @return [Boolean] true if Prism is available
         def prism_available?
           return @prism_available if defined?(@prism_available)
-          @prism_available = TreeHaver::Backends::Prism.available?
+          @prism_available = TreeHaver::BackendRegistry.available?(:prism)
         end
 
         # Check if psych is available (stdlib, should always be true)
@@ -558,7 +562,7 @@ module TreeHaver
         # @return [Boolean] true if Psych is available
         def psych_available?
           return @psych_available if defined?(@psych_available)
-          @psych_available = TreeHaver::Backends::Psych.available?
+          @psych_available = TreeHaver::BackendRegistry.available?(:psych)
         end
 
         # Check if Citrus backend is available
@@ -568,7 +572,7 @@ module TreeHaver
         # @return [Boolean] true if Citrus backend is available
         def citrus_available?
           return @citrus_available if defined?(@citrus_available)
-          @citrus_available = TreeHaver::Backends::Citrus.available?
+          @citrus_available = TreeHaver::BackendRegistry.available?(:citrus)
         end
 
         # ============================================================

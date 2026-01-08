@@ -8,6 +8,23 @@ module TreeHaver
     # for MRI Ruby. It provides the most feature-complete tree-sitter integration
     # on MRI, including support for the Query API.
     #
+    # == Tree/Node Architecture
+    #
+    # This backend (like all tree-sitter backends: MRI, Rust, FFI, Java) does NOT
+    # define its own Tree or Node classes. Instead:
+    #
+    # - Parser#parse returns raw `::TreeSitter::Tree` objects
+    # - These are wrapped by `TreeHaver::Tree` (inherits from `Base::Tree`)
+    # - `TreeHaver::Tree#root_node` wraps raw nodes in `TreeHaver::Node`
+    #
+    # This differs from pure-Ruby backends (Citrus, Prism, Psych) which define
+    # their own `Backend::X::Tree` and `Backend::X::Node` classes.
+    #
+    # @see TreeHaver::Tree The wrapper class for tree-sitter Tree objects
+    # @see TreeHaver::Node The wrapper class for tree-sitter Node objects
+    # @see TreeHaver::Base::Tree Base class documenting the Tree API contract
+    # @see TreeHaver::Base::Node Base class documenting the Node API contract
+    #
     # == Platform Compatibility
     #
     # - MRI Ruby: ✓ Full support (fastest tree-sitter backend on MRI)
@@ -42,20 +59,25 @@ module TreeHaver
         def available?
           return @loaded if @load_attempted # rubocop:disable ThreadSafety/ClassInstanceVariable
           @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
-
-          # ruby_tree_sitter is a C extension that only works on MRI
-          # It doesn't work on JRuby or TruffleRuby
-          unless RUBY_ENGINE == "ruby"
-            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
-            return @loaded
-          end
-
           begin
-            require "tree_sitter" # Note: gem is ruby_tree_sitter but requires tree_sitter
-
-            @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+            # ruby_tree_sitter is a C extension that only works on MRI
+            # It doesn't work on JRuby or TruffleRuby
+            if RUBY_ENGINE == "ruby"
+              require "tree_sitter"
+              @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+            else
+              # :nocov: only runs on non-MRI engines (JRuby, TruffleRuby)
+              @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+              # :nocov:
+            end
           rescue LoadError
+            # :nocov: only runs when ruby_tree_sitter gem is not installed
             @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+            # :nocov:
+          rescue StandardError
+            # :nocov: defensive code - StandardError during require is extremely rare
+            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+            # :nocov:
           end
           @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
         end
@@ -305,6 +327,11 @@ module TreeHaver
             raise # Re-raise if it's not a TreeSitter error
           end
         end
+      end
+
+      # Register availability checker for RSpec dependency tags
+      TreeHaver::BackendRegistry.register_availability_checker(:mri) do
+        available?
       end
     end
   end

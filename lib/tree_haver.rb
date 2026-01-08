@@ -109,6 +109,10 @@ module TreeHaver
   autoload :LibraryPathUtils, File.join(__dir__, "tree_haver", "library_path_utils")
   autoload :LanguageRegistry, File.join(__dir__, "tree_haver", "language_registry")
   autoload :BackendAPI, File.join(__dir__, "tree_haver", "backend_api")
+  autoload :BackendRegistry, File.join(__dir__, "tree_haver", "backend_registry")
+
+  # Base classes for backend implementations
+  autoload :Base, File.join(__dir__, "tree_haver", "base")
 
   # Base error class for TreeHaver exceptions
   # @see https://github.com/Faveod/ruby-tree-sitter/pull/83 for inherit from Exception reasoning
@@ -181,8 +185,6 @@ module TreeHaver
   # - {Backends::Citrus} - Uses Citrus PEG parser (pure Ruby, portable)
   # - {Backends::Prism} - Uses Ruby's built-in Prism parser (Ruby-only, stdlib in 3.4+)
   # - {Backends::Psych} - Uses Ruby's built-in Psych parser (YAML-only, stdlib)
-  # - {Backends::Commonmarker} - Uses commonmarker gem (Markdown)
-  # - {Backends::Markly} - Uses markly gem (Markdown/GFM)
   module Backends
     autoload :MRI, File.join(__dir__, "tree_haver", "backends", "mri")
     autoload :Rust, File.join(__dir__, "tree_haver", "backends", "rust")
@@ -191,11 +193,7 @@ module TreeHaver
     autoload :Citrus, File.join(__dir__, "tree_haver", "backends", "citrus")
     autoload :Prism, File.join(__dir__, "tree_haver", "backends", "prism")
     autoload :Psych, File.join(__dir__, "tree_haver", "backends", "psych")
-    autoload :Commonmarker, File.join(__dir__, "tree_haver", "backends", "commonmarker")
-    autoload :Markly, File.join(__dir__, "tree_haver", "backends", "markly")
 
-    # Known backend conflicts
-    #
     # Maps each backend to an array of backends that block it from working.
     # For example, :ffi is blocked by :mri because once ruby_tree_sitter loads,
     # FFI calls to ts_parser_set_language will segfault.
@@ -209,8 +207,6 @@ module TreeHaver
       citrus: [],
       prism: [],        # Prism has no conflicts with other backends
       psych: [],        # Psych has no conflicts with other backends
-      commonmarker: [], # Commonmarker has no conflicts with other backends
-      markly: [],       # Markly has no conflicts with other backends
     }.freeze
 
     # Pure Ruby backends that parse specific languages
@@ -220,8 +216,6 @@ module TreeHaver
     PURE_RUBY_BACKENDS = {
       prism: {language: :ruby, module_name: "Prism"},
       psych: {language: :yaml, module_name: "Psych"},
-      commonmarker: {language: :markdown, module_name: "Commonmarker"},
-      markly: {language: :markdown, module_name: "Markly"},
     }.freeze
   end
 
@@ -744,13 +738,13 @@ module TreeHaver
         Backends::Prism
       when :psych
         Backends::Psych
-      when :commonmarker
-        Backends::Commonmarker
-      when :markly
-        Backends::Markly
       when :auto
         backend_module  # Fall back to normal resolution for :auto
       else
+        # Check if this is a registered plugin backend
+        registered = registered_backend(requested)
+        return registered if registered
+
         # Unknown backend name - return nil to trigger error in caller
         nil
       end
@@ -885,10 +879,6 @@ module TreeHaver
         Backends::Prism
       when :psych
         Backends::Psych
-      when :commonmarker
-        Backends::Commonmarker
-      when :markly
-        Backends::Markly
       else
         # auto-select: prefer native/fast backends, fall back to pure Ruby (Citrus)
         # Each backend must be both allowed (by ENV) and available (gem installed)
@@ -1047,6 +1037,28 @@ module TreeHaver
       # Both tree-sitter and Citrus can be registered simultaneously for maximum
       # flexibility. See method documentation for rationale.
       nil
+    end
+
+    # Register a backend module
+    #
+    # Allows external gems to register their backend implementation so it can be
+    # found by TreeHaver.backend = :name and other lookup methods.
+    #
+    # @param name [Symbol] backend name (e.g. :rbs, :commonmarker)
+    # @param mod [Module] the backend module
+    # @return [void]
+    def register_backend(name, mod)
+      @backend_registry ||= {}
+      @backend_registry[name.to_sym] = mod
+    end
+
+    # Get a registered backend module
+    #
+    # @param name [Symbol] backend name
+    # @return [Module, nil] registered backend module
+    def registered_backend(name)
+      @backend_registry ||= {}
+      @backend_registry[name.to_sym]
     end
 
     # Fetch a registered language entry

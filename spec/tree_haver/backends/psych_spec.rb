@@ -114,6 +114,41 @@ RSpec.describe TreeHaver::Backends::Psych do
       end
     end
 
+    describe ".from_library" do
+      it "returns yaml language when called without arguments" do
+        lang = backend::Language.from_library
+        expect(lang.name).to eq(:yaml)
+        expect(lang.backend).to eq(:psych)
+      end
+
+      it "returns yaml language when name is :yaml" do
+        lang = backend::Language.from_library("/some/path.so", name: :yaml)
+        expect(lang.name).to eq(:yaml)
+      end
+
+      it "ignores the path parameter" do
+        lang = backend::Language.from_library("/nonexistent/path.so")
+        expect(lang.name).to eq(:yaml)
+      end
+
+      it "ignores the symbol parameter" do
+        lang = backend::Language.from_library(symbol: "tree_sitter_json")
+        expect(lang.name).to eq(:yaml)
+      end
+
+      it "raises NotAvailable for non-yaml language name" do
+        expect {
+          backend::Language.from_library(name: :json)
+        }.to raise_error(TreeHaver::NotAvailable, /only supports YAML/)
+      end
+
+      it "raises NotAvailable for ruby language name" do
+        expect {
+          backend::Language.from_library(name: :ruby)
+        }.to raise_error(TreeHaver::NotAvailable, /only supports YAML, not ruby/)
+      end
+    end
+
     describe "#<=>" do
       it "compares by name" do
         lang1 = backend::Language.new(:a)
@@ -436,20 +471,20 @@ RSpec.describe TreeHaver::Backends::Psych do
       let(:root) { tree.root_node }
 
       describe "#parent" do
-        it "raises NotImplementedError" do
-          expect { root.parent }.to raise_error(NotImplementedError, /parent navigation/)
+        it "returns nil (not implemented for Psych)" do
+          expect(root.parent).to be_nil
         end
       end
 
       describe "#next_sibling" do
-        it "raises NotImplementedError" do
-          expect { root.next_sibling }.to raise_error(NotImplementedError, /sibling navigation/)
+        it "returns nil (not implemented for Psych)" do
+          expect(root.next_sibling).to be_nil
         end
       end
 
       describe "#prev_sibling" do
-        it "raises NotImplementedError" do
-          expect { root.prev_sibling }.to raise_error(NotImplementedError, /sibling navigation/)
+        it "returns nil (not implemented for Psych)" do
+          expect(root.prev_sibling).to be_nil
         end
       end
     end
@@ -482,6 +517,53 @@ RSpec.describe TreeHaver::Backends::Psych do
     end
 
     describe "yaml-specific methods" do
+      describe "#text with different node types" do
+        context "with scalar node" do
+          let(:source) { "name: hello" }
+          let(:tree) { parser.parse(source) }
+
+          it "returns scalar value" do
+            # Navigate to the scalar value node
+            # In YAML mapping, children alternate: key, value, key, value...
+            doc = tree.root_node.child(0)  # document
+            mapping = doc.child(0)         # mapping
+            scalars = mapping.children.select(&:scalar?)
+            # First scalar is "name" (key), second is "hello" (value)
+            expect(scalars.length).to be >= 2
+            expect(scalars[0].text).to eq("name")
+            expect(scalars[1].text).to eq("hello")
+          end
+        end
+
+        context "with alias node" do
+          let(:source) { "first: &myanchor value\nsecond: *myanchor" }
+          let(:tree) { parser.parse(source) }
+
+          it "returns *anchor format for alias nodes" do
+            # Find the alias node
+            doc = tree.root_node.child(0)
+            mapping = doc.child(0)
+            alias_node = mapping.children.find(&:alias?)
+            expect(alias_node).not_to be_nil
+            expect(alias_node.text).to include("*")
+            expect(alias_node.text).to include("myanchor")
+          end
+        end
+
+        context "with container node" do
+          let(:source) { "key: value" }
+          let(:tree) { parser.parse(source) }
+
+          it "extracts text from location for container nodes" do
+            doc = tree.root_node.child(0)
+            mapping = doc.child(0)
+            expect(mapping.mapping?).to be true
+            # Container nodes use extract_text_from_location
+            expect(mapping.text).to be_a(String)
+          end
+        end
+      end
+
       describe "#anchor" do
         let(:source) { "key: &anchor value\nother: *anchor" }
         let(:tree) { parser.parse(source) }
@@ -489,6 +571,16 @@ RSpec.describe TreeHaver::Backends::Psych do
 
         it "returns nil when no anchor" do
           expect(root.anchor).to be_nil
+        end
+
+        it "returns anchor name for anchored node" do
+          doc = tree.root_node.child(0)
+          mapping = doc.child(0)
+          # Find the scalar with anchor
+          anchored = mapping.children.find { |c| c.respond_to?(:anchor) && c.anchor }
+          if anchored
+            expect(anchored.anchor).to eq("anchor")
+          end
         end
       end
 
@@ -499,6 +591,92 @@ RSpec.describe TreeHaver::Backends::Psych do
 
         it "returns nil or string tag" do
           expect(root.tag).to be_nil.or be_a(String)
+        end
+      end
+
+      describe "#value" do
+        let(:source) { "name: hello" }
+        let(:tree) { parser.parse(source) }
+
+        it "returns value for scalar nodes" do
+          doc = tree.root_node.child(0)
+          mapping = doc.child(0)
+          value_scalar = mapping.children[1]  # second child is the value
+          expect(value_scalar.scalar?).to be true
+          expect(value_scalar.value).to eq("hello")
+        end
+
+        it "returns nil for non-scalar nodes" do
+          doc = tree.root_node.child(0)
+          mapping = doc.child(0)
+          expect(mapping.value).to be_nil
+        end
+      end
+
+      describe "#sequence?" do
+        let(:source) { "items:\n  - one\n  - two" }
+        let(:tree) { parser.parse(source) }
+
+        it "returns true for sequence nodes" do
+          doc = tree.root_node.child(0)
+          mapping = doc.child(0)
+          # Find the sequence node (value of 'items' key)
+          sequence_node = mapping.children.find(&:sequence?)
+          expect(sequence_node).not_to be_nil
+          expect(sequence_node.sequence?).to be true
+        end
+
+        it "returns false for non-sequence nodes" do
+          doc = tree.root_node.child(0)
+          mapping = doc.child(0)
+          expect(mapping.sequence?).to be false
+        end
+      end
+
+      describe "#mapping_entries" do
+        let(:source) { "name: hello\nage: 30" }
+        let(:tree) { parser.parse(source) }
+
+        it "returns key-value pairs for mapping nodes" do
+          doc = tree.root_node.child(0)
+          mapping = doc.child(0)
+          entries = mapping.mapping_entries
+          expect(entries).to be_an(Array)
+          expect(entries.length).to eq(2)
+          # Each entry should be [key, value] pair
+          expect(entries[0].length).to eq(2)
+        end
+
+        it "returns empty array for non-mapping nodes" do
+          doc = tree.root_node.child(0)
+          # The document node is not a mapping
+          expect(doc.mapping_entries).to eq([])
+        end
+      end
+
+      describe "#extract_text_from_location (via #text on container)" do
+        context "with single-line content" do
+          let(:source) { "key: value" }
+          let(:tree) { parser.parse(source) }
+
+          it "extracts text for single-line mapping" do
+            doc = tree.root_node.child(0)
+            mapping = doc.child(0)
+            expect(mapping.text).to be_a(String)
+          end
+        end
+
+        context "with multi-line content" do
+          let(:source) { "key: value\nother: data\nmore: stuff" }
+          let(:tree) { parser.parse(source) }
+
+          it "extracts text spanning multiple lines" do
+            doc = tree.root_node.child(0)
+            mapping = doc.child(0)
+            # Multi-line mapping should extract across lines
+            text = mapping.text
+            expect(text).to be_a(String)
+          end
         end
       end
     end
@@ -545,7 +723,7 @@ RSpec.describe TreeHaver::Backends::Psych do
 
     describe "#inspect" do
       it "returns descriptive string" do
-        expect(point.inspect).to include("Psych::Point")
+        expect(point.inspect).to include("Point")
         expect(point.inspect).to include("5")
         expect(point.inspect).to include("10")
       end

@@ -277,7 +277,7 @@ if @show_lines
   if line_results.empty?
     puts "All files fully covered (lines)!"
   else
-    puts "Files with uncovered (-d to expand) lines (-n=#{max_details}; use n=0 for unlimited):"
+    puts "Files with uncovered (-d to expand) lines (-n #{max_details}; use n 0 for unlimited):"
     puts "-" * 70
     line_results.each do |r|
       puts format("%3d uncovered | %5.1f%% | %s", r[:uncovered], r[:pct], r[:path])
@@ -317,7 +317,7 @@ if @show_branches
   if branch_results.empty?
     puts "All files fully covered (branches)!"
   else
-    puts "Files with uncovered (-d to expand) branches (-n=#{max_details}; use n=0 for unlimited):"
+    puts "Files with uncovered (-d to expand) branches (-n #{max_details}; use n 0 for unlimited):"
     puts "-" * 70
     branch_results.each do |r|
       puts format("%3d uncovered | %5.1f%% | %s", r[:uncovered], r[:pct], r[:path])

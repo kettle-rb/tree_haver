@@ -59,10 +59,7 @@ module TreeHaver
   #   end
   #
   # @note This is the key to tree_haver's "write once, run anywhere" promise
-  class Node
-    include Comparable
-    include Enumerable
-
+  class Node < Base::Node
     # The wrapped backend-specific node object
     #
     # This provides direct access to the underlying backend node for advanced usage
@@ -83,17 +80,16 @@ module TreeHaver
     #   when /TreeSitter/
     #     # ruby_tree_sitter-specific code
     #   end
-    attr_reader :inner_node
+    # NOTE: inner_node is inherited from Base::Node
 
     # The source text for text extraction
     # @return [String]
-    attr_reader :source
+    # NOTE: source is inherited from Base::Node
 
     # @param node [Object] Backend-specific node object
     # @param source [String] Source text for text extraction
     def initialize(node, source: nil)
-      @inner_node = node
-      @source = source
+      super(node, source: source)
     end
 
     # Get the node's type/kind as a string
@@ -114,8 +110,16 @@ module TreeHaver
       end
     end
 
-    # Get the node's start byte offset
-    # @return [Integer]
+    # Alias for type (tree_stump compatibility)
+    #
+    # tree_stump uses `kind` instead of `type` for node types.
+    # This method delegates to `type` so either can be used.
+    #
+    # @return [String] The node type
+    def kind
+      type
+    end
+
     def start_byte
       @inner_node.start_byte
     end

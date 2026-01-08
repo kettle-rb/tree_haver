@@ -15,6 +15,23 @@ module TreeHaver
     # Not yet supported:
     # - Query API (tree-sitter queries/patterns)
     #
+    # == Tree/Node Architecture
+    #
+    # This backend (like all tree-sitter backends: MRI, Rust, FFI, Java) does NOT
+    # define its own Tree or Node classes. Instead:
+    #
+    # - Parser#parse returns raw FFI-wrapped tree objects
+    # - These are wrapped by `TreeHaver::Tree` (inherits from `Base::Tree`)
+    # - `TreeHaver::Tree#root_node` wraps raw nodes in `TreeHaver::Node`
+    #
+    # This differs from pure-Ruby backends (Citrus, Prism, Psych) which define
+    # their own `Backend::X::Tree` and `Backend::X::Node` classes.
+    #
+    # @see TreeHaver::Tree The wrapper class for tree-sitter Tree objects
+    # @see TreeHaver::Node The wrapper class for tree-sitter Node objects
+    # @see TreeHaver::Base::Tree Base class documenting the Tree API contract
+    # @see TreeHaver::Base::Node Base class documenting the Node API contract
+    #
     # == Platform Compatibility
     #
     # - MRI Ruby: ✓ Full support
@@ -56,19 +73,24 @@ module TreeHaver
         # @note Returns false on TruffleRuby because TruffleRuby's FFI doesn't support
         #   STRUCT_BY_VALUE return types (used by ts_tree_root_node, ts_node_child, etc.)
         def ffi_gem_available?
-          return @loaded if @load_attempted
+          return @loaded if @load_attempted # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
 
-          @load_attempted = true
-          @loaded = begin
+          @loaded = begin # rubocop:disable ThreadSafety/ClassInstanceVariable
             # TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types
             # which tree-sitter uses extensively (ts_tree_root_node, ts_node_child, etc.)
-            return false if RUBY_ENGINE == "truffleruby"
-
-            require "ffi"
-            true
+            if RUBY_ENGINE == "truffleruby"
+              false
+            else
+              require "ffi"
+              true
+            end
           rescue LoadError
             false
+          rescue StandardError
+            false
           end
+          @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
         end
 
         # Reset the load state (primarily for testing)
@@ -76,8 +98,8 @@ module TreeHaver
         # @return [void]
         # @api private
         def reset!
-          @load_attempted = false
-          @loaded = false
+          @load_attempted = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
         end
 
         # Get capabilities supported by this backend
@@ -716,6 +738,11 @@ module TreeHaver
 
           type <=> other.type
         end
+      end
+
+      # Register availability checker for RSpec dependency tags
+      TreeHaver::BackendRegistry.register_availability_checker(:ffi) do
+        available?
       end
     end
   end

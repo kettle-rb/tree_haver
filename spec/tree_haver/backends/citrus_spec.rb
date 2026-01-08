@@ -155,6 +155,47 @@ RSpec.describe TreeHaver::Backends::Citrus do
         expect(backend::Language.method(:from_path)).to eq(backend::Language.method(:from_library))
       end
     end
+
+    describe "#<=>" do
+      let(:grammar1) { Module.new { def self.name; "Grammar1"; end; def self.parse(s); end; } }
+      let(:grammar2) { Module.new { def self.name; "Grammar2"; end; def self.parse(s); end; } }
+
+      it "returns nil for non-Language objects" do
+        lang = backend::Language.new(grammar1)
+        expect(lang <=> "not a language").to be_nil
+      end
+
+      it "returns nil for Language with different backend" do
+        lang = backend::Language.new(grammar1)
+        other = double("other_lang", is_a?: true, backend: :other)
+        allow(other).to receive(:is_a?).with(backend::Language).and_return(true)
+        allow(other).to receive(:backend).and_return(:other)
+        expect(lang <=> other).to be_nil
+      end
+
+      it "compares by grammar_module name when backends match" do
+        lang1 = backend::Language.new(grammar1)
+        lang2 = backend::Language.new(grammar2)
+        # Grammar1 < Grammar2 alphabetically
+        expect(lang1 <=> lang2).to be < 0
+      end
+
+      it "returns 0 for languages with same grammar_module" do
+        lang1 = backend::Language.new(grammar1)
+        lang2 = backend::Language.new(grammar1)
+        expect(lang1 <=> lang2).to eq(0)
+      end
+    end
+
+    describe "#hash" do
+      let(:grammar1) { Module.new { def self.name; "TestGrammar"; end; def self.parse(s); end; } }
+
+      it "returns consistent hash for same grammar" do
+        lang1 = backend::Language.new(grammar1)
+        lang2 = backend::Language.new(grammar1)
+        expect(lang1.hash).to eq(lang2.hash)
+      end
+    end
   end
 
   describe "Parser" do

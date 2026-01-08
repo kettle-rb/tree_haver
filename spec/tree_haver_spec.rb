@@ -166,15 +166,10 @@ RSpec.describe TreeHaver do
         expect(described_class.backend_module).to eq(described_class::Backends::Psych)
       end
 
-      it "returns Commonmarker backend when backend is :commonmarker" do
-        described_class.backend = :commonmarker
-        expect(described_class.backend_module).to eq(described_class::Backends::Commonmarker)
-      end
-
-      it "returns Markly backend when backend is :markly" do
-        described_class.backend = :markly
-        expect(described_class.backend_module).to eq(described_class::Backends::Markly)
-      end
+      # NOTE: Commonmarker and Markly backends have been migrated to their respective gems:
+      # - commonmarker-merge gem provides Commonmarker::Merge::Backend
+      # - markly-merge gem provides Markly::Merge::Backend
+      # These backends register with TreeHaver::BackendRegistry when loaded.
     end
 
     context "with auto-selection" do
@@ -395,15 +390,10 @@ RSpec.describe TreeHaver do
         expect(result).to eq(described_class::Backends::Psych)
       end
 
-      it "returns Commonmarker backend for :commonmarker", :commonmarker_backend do
-        result = described_class.resolve_backend_module(:commonmarker)
-        expect(result).to eq(described_class::Backends::Commonmarker)
-      end
-
-      it "returns Markly backend for :markly", :markly_backend do
-        result = described_class.resolve_backend_module(:markly)
-        expect(result).to eq(described_class::Backends::Markly)
-      end
+      # NOTE: Commonmarker and Markly backends have been migrated to their respective gems:
+      # - commonmarker-merge gem provides the :commonmarker backend
+      # - markly-merge gem provides the :markly backend
+      # These register with TreeHaver::BackendRegistry when loaded.
 
       it "returns nil for unknown backend" do
         result = described_class.resolve_backend_module(:nonexistent)
@@ -703,6 +693,375 @@ RSpec.describe TreeHaver do
         parser.language = citrus_lang
         expect(parser.backend).to eq(:citrus)
       end
+    end
+  end
+
+  describe "::allowed_native_backends" do
+    after do
+      described_class.instance_variable_set(:@allowed_native_backends, nil)
+    end
+
+    context "when ENV is not set" do
+      before do
+        hide_env("TREE_HAVER_NATIVE_BACKEND")
+      end
+
+      it "defaults to :auto" do
+        described_class.instance_variable_set(:@allowed_native_backends, nil)
+        expect(described_class.allowed_native_backends).to eq([:auto])
+      end
+    end
+
+    context "when ENV is set to comma-separated list" do
+      before do
+        stub_env("TREE_HAVER_NATIVE_BACKEND" => "mri,rust")
+      end
+
+      it "parses comma-separated list from ENV" do
+        described_class.instance_variable_set(:@allowed_native_backends, nil)
+        result = described_class.allowed_native_backends
+        expect(result).to include(:mri)
+        expect(result).to include(:rust)
+      end
+    end
+
+    context "when ENV is 'none'" do
+      before do
+        stub_env("TREE_HAVER_NATIVE_BACKEND" => "none")
+      end
+
+      it "returns [:none]" do
+        described_class.instance_variable_set(:@allowed_native_backends, nil)
+        expect(described_class.allowed_native_backends).to eq([:none])
+      end
+    end
+
+    context "when ENV is 'auto'" do
+      before do
+        stub_env("TREE_HAVER_NATIVE_BACKEND" => "auto")
+      end
+
+      it "returns [:auto]" do
+        described_class.instance_variable_set(:@allowed_native_backends, nil)
+        expect(described_class.allowed_native_backends).to eq([:auto])
+      end
+    end
+
+    context "when ENV contains invalid backend names" do
+      before do
+        stub_env("TREE_HAVER_NATIVE_BACKEND" => "mri,invalid_backend,rust")
+      end
+
+      it "filters out invalid backend names" do
+        described_class.instance_variable_set(:@allowed_native_backends, nil)
+        result = described_class.allowed_native_backends
+        expect(result).to include(:mri)
+        expect(result).to include(:rust)
+        expect(result).not_to include(:invalid_backend)
+      end
+    end
+
+    context "when all ENV values are invalid" do
+      before do
+        stub_env("TREE_HAVER_NATIVE_BACKEND" => "fake1,fake2,fake3")
+      end
+
+      it "returns [:auto]" do
+        described_class.instance_variable_set(:@allowed_native_backends, nil)
+        expect(described_class.allowed_native_backends).to eq([:auto])
+      end
+    end
+  end
+
+  describe "::allowed_ruby_backends" do
+    after do
+      described_class.instance_variable_set(:@allowed_ruby_backends, nil)
+    end
+
+    context "when ENV is not set" do
+      before do
+        hide_env("TREE_HAVER_RUBY_BACKEND")
+      end
+
+      it "defaults to :auto" do
+        described_class.instance_variable_set(:@allowed_ruby_backends, nil)
+        expect(described_class.allowed_ruby_backends).to eq([:auto])
+      end
+    end
+
+    context "when ENV is set to comma-separated list" do
+      before do
+        stub_env("TREE_HAVER_RUBY_BACKEND" => "citrus,prism")
+      end
+
+      it "parses comma-separated list from ENV" do
+        described_class.instance_variable_set(:@allowed_ruby_backends, nil)
+        result = described_class.allowed_ruby_backends
+        expect(result).to include(:citrus)
+        expect(result).to include(:prism)
+      end
+    end
+
+    context "when ENV is 'none'" do
+      before do
+        stub_env("TREE_HAVER_RUBY_BACKEND" => "none")
+      end
+
+      it "returns [:none]" do
+        described_class.instance_variable_set(:@allowed_ruby_backends, nil)
+        expect(described_class.allowed_ruby_backends).to eq([:none])
+      end
+    end
+  end
+
+  describe "::backend_allowed?" do
+    after do
+      described_class.instance_variable_set(:@allowed_native_backends, nil)
+      described_class.instance_variable_set(:@allowed_ruby_backends, nil)
+    end
+
+    context "when allowed_native_backends is :auto" do
+      before do
+        stub_env("TREE_HAVER_NATIVE_BACKEND" => "auto")
+        described_class.instance_variable_set(:@allowed_native_backends, nil)
+      end
+
+      it "allows any native backend" do
+        expect(described_class.backend_allowed?(:mri)).to be true
+        expect(described_class.backend_allowed?(:rust)).to be true
+        expect(described_class.backend_allowed?(:ffi)).to be true
+      end
+    end
+
+    context "when allowed_native_backends is :none" do
+      before do
+        stub_env("TREE_HAVER_NATIVE_BACKEND" => "none")
+        described_class.instance_variable_set(:@allowed_native_backends, nil)
+      end
+
+      it "disallows all native backends" do
+        expect(described_class.backend_allowed?(:mri)).to be false
+        expect(described_class.backend_allowed?(:rust)).to be false
+        expect(described_class.backend_allowed?(:ffi)).to be false
+      end
+    end
+
+    context "when specific native backends are allowed" do
+      before do
+        stub_env("TREE_HAVER_NATIVE_BACKEND" => "mri,rust")
+        described_class.instance_variable_set(:@allowed_native_backends, nil)
+      end
+
+      it "allows listed backends" do
+        expect(described_class.backend_allowed?(:mri)).to be true
+        expect(described_class.backend_allowed?(:rust)).to be true
+      end
+
+      it "disallows non-listed backends" do
+        expect(described_class.backend_allowed?(:ffi)).to be false
+      end
+    end
+
+    context "when allowed_ruby_backends is :none" do
+      before do
+        stub_env("TREE_HAVER_RUBY_BACKEND" => "none")
+        described_class.instance_variable_set(:@allowed_ruby_backends, nil)
+      end
+
+      it "disallows all ruby backends" do
+        expect(described_class.backend_allowed?(:citrus)).to be false
+        expect(described_class.backend_allowed?(:prism)).to be false
+        expect(described_class.backend_allowed?(:psych)).to be false
+      end
+    end
+
+    context "when allowed_ruby_backends is :auto" do
+      before do
+        stub_env("TREE_HAVER_RUBY_BACKEND" => "auto")
+        described_class.instance_variable_set(:@allowed_ruby_backends, nil)
+      end
+
+      it "allows any ruby backend" do
+        expect(described_class.backend_allowed?(:citrus)).to be true
+        expect(described_class.backend_allowed?(:prism)).to be true
+      end
+    end
+
+    context "when specific ruby backends are allowed" do
+      before do
+        stub_env("TREE_HAVER_RUBY_BACKEND" => "citrus,prism")
+        described_class.instance_variable_set(:@allowed_ruby_backends, nil)
+      end
+
+      it "allows listed ruby backends" do
+        expect(described_class.backend_allowed?(:citrus)).to be true
+        expect(described_class.backend_allowed?(:prism)).to be true
+      end
+
+      it "disallows non-listed ruby backends" do
+        expect(described_class.backend_allowed?(:psych)).to be false
+      end
+    end
+
+    context "with unknown backend" do
+      it "allows unknown backends (permissive default)" do
+        expect(described_class.backend_allowed?(:unknown_backend_xyz)).to be true
+      end
+    end
+
+    context "with :auto backend" do
+      it "allows :auto" do
+        expect(described_class.backend_allowed?(:auto)).to be true
+      end
+    end
+  end
+
+  describe "::register_backend and ::registered_backend" do
+    after do
+      described_class.instance_variable_set(:@backend_registry, nil)
+    end
+
+    it "registers a backend module" do
+      mock_backend = Module.new
+      described_class.register_backend(:test_backend, mock_backend)
+      expect(described_class.registered_backend(:test_backend)).to eq(mock_backend)
+    end
+
+    it "returns nil for unregistered backend" do
+      expect(described_class.registered_backend(:never_registered_xyz)).to be_nil
+    end
+
+    it "overwrites existing registration" do
+      mock_backend1 = Module.new
+      mock_backend2 = Module.new
+      described_class.register_backend(:overwrite_test, mock_backend1)
+      described_class.register_backend(:overwrite_test, mock_backend2)
+      expect(described_class.registered_backend(:overwrite_test)).to eq(mock_backend2)
+    end
+  end
+
+  describe "::register_language with backend_module" do
+    after do
+      described_class::LanguageRegistry.clear_cache!
+    end
+
+    it "derives backend_type from module name when not provided" do
+      mock_backend_module = Module.new do
+        def self.name
+          "Test::CustomBackend"
+        end
+
+        def self.available?
+          true
+        end
+      end
+
+      described_class.register_language(:custom_lang_test, backend_module: mock_backend_module)
+      registration = described_class.registered_language(:custom_lang_test)
+
+      # Backend type should be derived from module name (custombackend)
+      expect(registration).to have_key(:custombackend)
+    end
+
+    it "uses explicit backend_type when provided" do
+      mock_backend_module = Module.new do
+        def self.name
+          "SomeModule"
+        end
+
+        def self.available?
+          true
+        end
+      end
+
+      described_class.register_language(
+        :explicit_type_test,
+        backend_module: mock_backend_module,
+        backend_type: :my_custom_type,
+      )
+      registration = described_class.registered_language(:explicit_type_test)
+
+      expect(registration).to have_key(:my_custom_type)
+    end
+
+    it "raises ArgumentError when no path, grammar_module, or backend_module provided" do
+      expect {
+        described_class.register_language(:no_backend_test)
+      }.to raise_error(ArgumentError, /Must provide at least one of/)
+    end
+  end
+
+  describe "::parser_for with custom backends" do
+    let(:mock_parser_class) do
+      Class.new do
+        attr_accessor :language
+
+        def initialize
+          @language = nil
+        end
+
+        def parse(_source)
+          # Return something tree-like
+          Object.new
+        end
+      end
+    end
+
+    let(:mock_language_class) do
+      Class.new do
+        def self.test_lang
+          new
+        end
+
+        def self.from_library(_path, name: nil)
+          new
+        end
+      end
+    end
+
+    let(:mock_backend_module) do
+      parser_class = mock_parser_class
+      language_class = mock_language_class
+
+      Module.new do
+        define_singleton_method(:name) { "MockBackend" }
+        define_singleton_method(:available?) { true }
+        const_set(:Parser, parser_class)
+        const_set(:Language, language_class)
+      end
+    end
+
+    after do
+      described_class::LanguageRegistry.clear_cache!
+      described_class.reset_backend!(to: :auto)
+    end
+
+    it "creates parser from custom backend module" do
+      described_class.register_language(
+        :test_lang,
+        backend_module: mock_backend_module,
+        backend_type: :mock,
+      )
+
+      # Set effective backend to :mock so parser_for uses our custom backend
+      described_class.backend = :mock
+
+      parser = described_class.parser_for(:test_lang)
+      expect(parser).to be_a(mock_parser_class)
+    end
+
+    it "sets language from Language class when it responds to language name" do
+      described_class.register_language(
+        :test_lang,
+        backend_module: mock_backend_module,
+        backend_type: :mock,
+      )
+
+      # Set effective backend to :mock so parser_for uses our custom backend
+      described_class.backend = :mock
+
+      parser = described_class.parser_for(:test_lang)
+      expect(parser.language).to be_a(mock_language_class)
     end
   end
 end

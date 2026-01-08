@@ -41,10 +41,13 @@ module TreeHaver
           @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
           begin
             require "prism"
-
             @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
           rescue LoadError
             @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          rescue StandardError
+            # :nocov: defensive code - StandardError during require is extremely rare
+            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+            # :nocov:
           end
           @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
         end
@@ -87,57 +90,29 @@ module TreeHaver
       # @example
       #   language = TreeHaver::Backends::Prism::Language.ruby
       #   parser.language = language
-      class Language
-        include Comparable
-
-        # The language name (always :ruby for Prism)
-        # @return [Symbol]
-        attr_reader :name
-        alias_method :language_name, :name
-
-        # The backend this language is for
-        # @return [Symbol]
-        attr_reader :backend
-
-        # Prism parsing options
-        # @return [Hash]
-        attr_reader :options
-
+      class Language < TreeHaver::Base::Language
         # @param name [Symbol] language name (should be :ruby)
         # @param options [Hash] Prism parsing options (e.g., frozen_string_literal, version)
         def initialize(name = :ruby, options: {})
-          @name = name.to_sym
-          @backend = :prism
-          @options = options
+          super(name, backend: :prism, options: options)
 
-          unless @name == :ruby
+          unless self.name == :ruby
             raise TreeHaver::NotAvailable,
               "Prism only supports Ruby parsing. " \
                 "Got language: #{name.inspect}"
           end
         end
 
-        # Compare languages for equality
-        #
-        # Prism languages are equal if they have the same backend and options.
+        # Compare languages for equality by options (since name is always :ruby)
         #
         # @param other [Object] object to compare with
         # @return [Integer, nil] -1, 0, 1, or nil if not comparable
         def <=>(other)
-          return unless other.is_a?(Language)
-          return unless other.backend == @backend
+          return unless other.is_a?(TreeHaver::Base::Language)
+          return unless other.backend == backend
 
-          @options.to_a.sort <=> other.options.to_a.sort
+          options.to_a.sort <=> other.options.to_a.sort
         end
-
-        # Hash value for this language (for use in Sets/Hashes)
-        # @return [Integer]
-        def hash
-          [@backend, @name, @options.to_a.sort].hash
-        end
-
-        # Alias eql? to ==
-        alias_method :eql?, :==
 
         class << self
           # Create a Ruby language instance (convenience method)
@@ -157,17 +132,14 @@ module TreeHaver
           # Load language from library path (API compatibility)
           #
           # Prism only supports Ruby, so path and symbol parameters are ignored.
-          # This method exists for API consistency with tree-sitter backends,
-          # allowing `TreeHaver.parser_for(:ruby)` to work regardless of backend.
           #
           # @param _path [String] Ignored - Prism doesn't load external grammars
-          # @param symbol [String, nil] Ignored
+          # @param symbol [String, nil] Ignored - Prism only supports Ruby
           # @param name [String, nil] Language name hint (defaults to :ruby)
           # @return [Language] Ruby language
           # @raise [TreeHaver::NotAvailable] if requested language is not Ruby
           def from_library(_path = nil, symbol: nil, name: nil)
-            # Derive language name from symbol if provided
-            lang_name = name || symbol&.to_s&.sub(/^tree_sitter_/, "")&.to_sym || :ruby
+            lang_name = name || :ruby
 
             unless lang_name == :ruby
               raise TreeHaver::NotAvailable,
@@ -185,13 +157,13 @@ module TreeHaver
       # Prism parser wrapper
       #
       # Wraps Prism to provide a tree-sitter-like API for parsing Ruby code.
-      class Parser
+      class Parser < TreeHaver::Base::Parser
         # Create a new Prism parser instance
         #
         # @raise [TreeHaver::NotAvailable] if prism is not available
         def initialize
+          super
           raise TreeHaver::NotAvailable, "prism not available" unless Prism.available?
-          @language = nil
           @options = {}
         end
 
@@ -251,23 +223,20 @@ module TreeHaver
       # Wraps a Prism::ParseResult to provide tree-sitter-compatible API.
       #
       # @api private
-      class Tree
+      class Tree < TreeHaver::Base::Tree
         # @return [::Prism::ParseResult] the underlying Prism parse result
         attr_reader :parse_result
 
-        # @return [String] the source code
-        attr_reader :source
-
         def initialize(parse_result, source)
+          super(parse_result, source: source)
           @parse_result = parse_result
-          @source = source
         end
 
         # Get the root node of the parse tree
         #
         # @return [Node] wrapped root node
         def root_node
-          Node.new(@parse_result.value, @source)
+          Node.new(@parse_result.value, source)
         end
 
         # Check if the parse had errors
@@ -311,13 +280,6 @@ module TreeHaver
         def data_loc
           @parse_result.data_loc
         end
-
-        # Access the underlying Prism result (passthrough)
-        #
-        # @return [::Prism::ParseResult]
-        def inner_tree
-          @parse_result
-        end
       end
 
       # Prism node wrapper
@@ -331,18 +293,9 @@ module TreeHaver
       # - Various node-specific accessors
       #
       # @api private
-      class Node
-        include Enumerable
-
-        # @return [::Prism::Node] the underlying Prism node
-        attr_reader :inner_node
-
-        # @return [String] the source code
-        attr_reader :source
-
+      class Node < TreeHaver::Base::Node
         def initialize(node, source)
-          @inner_node = node
-          @source = source
+          super(node, source: source)
         end
 
         # Get node type from Prism class name
@@ -352,23 +305,25 @@ module TreeHaver
         #
         # @return [String] node type in snake_case
         def type
-          return "nil" if @inner_node.nil?
+          return "nil" if inner_node.nil?
 
           # Convert class name to snake_case type
-          # ProgramNode → program_node, CallNode → call_node
-          class_name = @inner_node.class.name.split("::").last
+          class_name = inner_node.class.name.split("::").last
           class_name.gsub(/([A-Z])/, '_\1').downcase.sub(/^_/, "")
         end
 
-        # Alias for tree-sitter compatibility
-        alias_method :kind, :type
+        # Alias for type (API compatibility)
+        # @return [String] node type
+        def kind
+          type
+        end
 
         # Get byte offset where the node starts
         #
         # @return [Integer]
         def start_byte
-          return 0 if @inner_node.nil? || !@inner_node.respond_to?(:location)
-          loc = @inner_node.location
+          return 0 if inner_node.nil? || !inner_node.respond_to?(:location)
+          loc = inner_node.location
           loc&.start_offset || 0
         end
 
@@ -376,226 +331,100 @@ module TreeHaver
         #
         # @return [Integer]
         def end_byte
-          return 0 if @inner_node.nil? || !@inner_node.respond_to?(:location)
-          loc = @inner_node.location
+          return 0 if inner_node.nil? || !inner_node.respond_to?(:location)
+          loc = inner_node.location
           loc&.end_offset || 0
         end
 
-        # Get the start position as row/column
+        # Get the start position as row/column (0-based)
         #
-        # @return [Hash{Symbol => Integer}] with :row and :column keys
+        # @return [Hash{Symbol => Integer}]
         def start_point
-          return {row: 0, column: 0} if @inner_node.nil? || !@inner_node.respond_to?(:location)
-          loc = @inner_node.location
+          return {row: 0, column: 0} if inner_node.nil? || !inner_node.respond_to?(:location)
+          loc = inner_node.location
           return {row: 0, column: 0} unless loc
 
-          # Prism uses 1-based lines internally but we need 0-based for tree-sitter compat
           {row: (loc.start_line - 1), column: loc.start_column}
         end
 
-        # Get the end position as row/column
+        # Get the end position as row/column (0-based)
         #
-        # @return [Hash{Symbol => Integer}] with :row and :column keys
+        # @return [Hash{Symbol => Integer}]
         def end_point
-          return {row: 0, column: 0} if @inner_node.nil? || !@inner_node.respond_to?(:location)
-          loc = @inner_node.location
+          return {row: 0, column: 0} if inner_node.nil? || !inner_node.respond_to?(:location)
+          loc = inner_node.location
           return {row: 0, column: 0} unless loc
 
-          # Prism uses 1-based lines internally but we need 0-based for tree-sitter compat
           {row: (loc.end_line - 1), column: loc.end_column}
-        end
-
-        # Get the 1-based line number where this node starts
-        #
-        # @return [Integer] 1-based line number
-        def start_line
-          return 1 if @inner_node.nil? || !@inner_node.respond_to?(:location)
-          loc = @inner_node.location
-          loc&.start_line || 1
-        end
-
-        # Get the 1-based line number where this node ends
-        #
-        # @return [Integer] 1-based line number
-        def end_line
-          return 1 if @inner_node.nil? || !@inner_node.respond_to?(:location)
-          loc = @inner_node.location
-          loc&.end_line || 1
-        end
-
-        # Get position information as a hash
-        #
-        # Returns a hash with 1-based line numbers and 0-based columns.
-        # Compatible with *-merge gems' FileAnalysisBase.
-        #
-        # @return [Hash{Symbol => Integer}] Position hash
-        def source_position
-          {
-            start_line: start_line,
-            end_line: end_line,
-            start_column: start_point[:column],
-            end_column: end_point[:column],
-          }
-        end
-
-        # Get the first child node
-        #
-        # @return [Node, nil] First child or nil
-        def first_child
-          child(0)
-        end
-
-        # Get the text content of this node
-        #
-        # @return [String]
-        def text
-          return "" if @inner_node.nil?
-
-          if @inner_node.respond_to?(:slice)
-            @inner_node.slice
-          elsif @source
-            @source[start_byte...end_byte] || ""
-          else
-            ""
-          end
-        end
-
-        # Alias for Prism compatibility
-        alias_method :slice, :text
-
-        # Get the number of child nodes
-        #
-        # @return [Integer]
-        def child_count
-          return 0 if @inner_node.nil?
-          return 0 unless @inner_node.respond_to?(:child_nodes)
-          @inner_node.child_nodes.compact.size
-        end
-
-        # Get a child node by index
-        #
-        # @param index [Integer] child index
-        # @return [Node, nil] wrapped child node
-        def child(index)
-          return if @inner_node.nil?
-          return unless @inner_node.respond_to?(:child_nodes)
-
-          children_array = @inner_node.child_nodes.compact
-          return if index >= children_array.size
-
-          Node.new(children_array[index], @source)
         end
 
         # Get all child nodes
         #
         # @return [Array<Node>] array of wrapped child nodes
         def children
-          return [] if @inner_node.nil?
-          return [] unless @inner_node.respond_to?(:child_nodes)
+          return [] if inner_node.nil?
+          return [] unless inner_node.respond_to?(:child_nodes)
 
-          @inner_node.child_nodes.compact.map { |n| Node.new(n, @source) }
+          inner_node.child_nodes.compact.map { |n| Node.new(n, source) }
         end
 
-        # Iterate over child nodes
+        # Get the text content of this node
         #
-        # @yield [Node] each child node
-        # @return [Enumerator, nil]
-        def each(&block)
-          return to_enum(__method__) unless block_given?
-          children.each(&block)
+        # @return [String]
+        def text
+          return "" if inner_node.nil?
+
+          if inner_node.respond_to?(:slice)
+            inner_node.slice
+          else
+            super
+          end
         end
+
+        # Alias for Prism compatibility
+        alias_method :slice, :text
 
         # Check if this node has errors
         #
         # @return [Boolean]
         def has_error?
-          return false if @inner_node.nil?
+          return false if inner_node.nil?
 
           # Check if this is an error node type
           return true if type.include?("missing") || type.include?("error")
 
           # Check children recursively (Prism error nodes are usually children)
-          return false unless @inner_node.respond_to?(:child_nodes)
-          @inner_node.child_nodes.compact.any? { |n| n.class.name.to_s.include?("Missing") }
+          return false unless inner_node.respond_to?(:child_nodes)
+          inner_node.child_nodes.compact.any? { |n| n.class.name.to_s.include?("Missing") }
         end
 
         # Check if this node is a "missing" node (error recovery)
         #
         # @return [Boolean]
         def missing?
-          return false if @inner_node.nil?
+          return false if inner_node.nil?
           type.include?("missing")
         end
 
-        # Check if this is a "named" node (structural vs punctuation)
-        #
-        # In Prism, all nodes are "named" in tree-sitter terminology
-        # (there's no distinction between named and anonymous nodes).
-        #
-        # @return [Boolean]
-        def named?
-          true
-        end
-
-        # Check if this is a structural node
-        #
-        # @return [Boolean]
-        def structural?
-          true
-        end
 
         # Get a child by field name (Prism node accessor)
         #
         # Prism nodes have specific accessors for their children.
-        # This method tries to call that accessor.
         #
         # @param name [String, Symbol] field/accessor name
         # @return [Node, nil] wrapped child node
         def child_by_field_name(name)
-          return if @inner_node.nil?
-          return unless @inner_node.respond_to?(name)
+          return nil if inner_node.nil?
+          return nil unless inner_node.respond_to?(name)
 
-          result = @inner_node.public_send(name)
-          return if result.nil?
+          result = inner_node.public_send(name)
+          return nil if result.nil?
 
-          # Wrap if it's a node, otherwise return nil
-          if result.is_a?(::Prism::Node)
-            Node.new(result, @source)
-          end
+          # Wrap if it's a node
+          result.is_a?(::Prism::Node) ? Node.new(result, source) : nil
         end
 
         alias_method :field, :child_by_field_name
-
-        # Get the parent node
-        #
-        # @raise [NotImplementedError] Prism nodes don't have parent references
-        # @return [void]
-        def parent
-          raise NotImplementedError, "Prism backend does not support parent navigation"
-        end
-
-        # Get next sibling
-        #
-        # @raise [NotImplementedError] Prism nodes don't have sibling references
-        # @return [void]
-        def next_sibling
-          raise NotImplementedError, "Prism backend does not support sibling navigation"
-        end
-
-        # Get previous sibling
-        #
-        # @raise [NotImplementedError] Prism nodes don't have sibling references
-        # @return [void]
-        def prev_sibling
-          raise NotImplementedError, "Prism backend does not support sibling navigation"
-        end
-
-        # String representation for debugging
-        #
-        # @return [String]
-        def inspect
-          "#<#{self.class} type=#{type} bytes=#{start_byte}..#{end_byte}>"
-        end
 
         # String representation
         #
@@ -610,8 +439,8 @@ module TreeHaver
         # @param include_private [Boolean] include private methods
         # @return [Boolean]
         def respond_to_missing?(method_name, include_private = false)
-          return false if @inner_node.nil?
-          @inner_node.respond_to?(method_name, include_private) || super
+          return false if inner_node.nil?
+          inner_node.respond_to?(method_name, include_private) || super
         end
 
         # Delegate unknown methods to the underlying Prism node
@@ -625,12 +454,17 @@ module TreeHaver
         # @param block [Proc] block to pass
         # @return [Object] result from the underlying node
         def method_missing(method_name, *args, **kwargs, &block)
-          if @inner_node&.respond_to?(method_name)
-            @inner_node.public_send(method_name, *args, **kwargs, &block)
+          if inner_node&.respond_to?(method_name)
+            inner_node.public_send(method_name, *args, **kwargs, &block)
           else
             super
           end
         end
+      end
+
+      # Register availability checker for RSpec dependency tags
+      TreeHaver::BackendRegistry.register_availability_checker(:prism) do
+        available?
       end
     end
   end

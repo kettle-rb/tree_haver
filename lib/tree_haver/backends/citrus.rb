@@ -42,9 +42,10 @@ module TreeHaver
           @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
           begin
             require "citrus"
-
             @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
           rescue LoadError
+            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          rescue StandardError
             @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
           end
           @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -491,6 +492,11 @@ module TreeHaver
           column = offset - line_start - 1
           {row: lines_before, column: column}
         end
+      end
+
+      # Register availability checker for RSpec dependency tags
+      TreeHaver::BackendRegistry.register_availability_checker(:citrus) do
+        available?
       end
     end
   end

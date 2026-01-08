@@ -11,6 +11,23 @@ module TreeHaver
     # tree_stump supports incremental parsing and the Query API, making it
     # suitable for editor/IDE use cases where performance is critical.
     #
+    # == Tree/Node Architecture
+    #
+    # This backend (like all tree-sitter backends: MRI, Rust, FFI, Java) does NOT
+    # define its own Tree or Node classes. Instead:
+    #
+    # - Parser#parse returns raw `::TreeStump::Tree` objects
+    # - These are wrapped by `TreeHaver::Tree` (inherits from `Base::Tree`)
+    # - `TreeHaver::Tree#root_node` wraps raw nodes in `TreeHaver::Node`
+    #
+    # This differs from pure-Ruby backends (Citrus, Prism, Psych) which define
+    # their own `Backend::X::Tree` and `Backend::X::Node` classes.
+    #
+    # @see TreeHaver::Tree The wrapper class for tree-sitter Tree objects
+    # @see TreeHaver::Node The wrapper class for tree-sitter Node objects
+    # @see TreeHaver::Base::Tree Base class documenting the Tree API contract
+    # @see TreeHaver::Base::Node Base class documenting the Node API contract
+    #
     # == Platform Compatibility
     #
     # - MRI Ruby: ✓ Full support
@@ -35,19 +52,18 @@ module TreeHaver
         def available?
           return @loaded if @load_attempted # rubocop:disable ThreadSafety/ClassInstanceVariable
           @load_attempted = true # rubocop:disable ThreadSafety/ClassInstanceVariable
-
-          # tree_stump uses magnus which requires MRI's C API
-          # It doesn't work on JRuby or TruffleRuby
-          unless RUBY_ENGINE == "ruby"
-            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
-            return @loaded
-          end
-
           begin
-            require "tree_stump"
-
-            @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+            # tree_stump uses magnus which requires MRI's C API
+            # It doesn't work on JRuby or TruffleRuby
+            if RUBY_ENGINE == "ruby"
+              require "tree_stump"
+              @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
+            else
+              @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+            end
           rescue LoadError
+            @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          rescue StandardError
             @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
           end
           @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -212,6 +228,11 @@ module TreeHaver
           # and internally always passes None for the old tree (no incremental parsing support)
           @parser.parse(source)
         end
+      end
+
+      # Register availability checker for RSpec dependency tags
+      TreeHaver::BackendRegistry.register_availability_checker(:rust) do
+        available?
       end
     end
   end

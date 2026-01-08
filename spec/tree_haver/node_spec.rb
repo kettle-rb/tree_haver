@@ -279,6 +279,49 @@ RSpec.describe TreeHaver::Node do
         }.to raise_error(TreeHaver::Error, /Cannot extract text/)
       end
     end
+
+    context "when backend text method requires source argument (arity >= 1)" do
+      let(:text_with_source_node) do
+        node = Object.new
+        node.define_singleton_method(:start_byte) { 0 }
+        node.define_singleton_method(:end_byte) { 5 }
+        node.define_singleton_method(:text) { |src| src[0...5] }
+        node
+      end
+
+      it "passes source to text method" do
+        node = described_class.new(text_with_source_node, source: "hello world")
+        expect(node.text).to eq("hello")
+      end
+
+
+      it "raises error when arity requires source but source not provided" do
+        node_needing_source = Object.new
+        node_needing_source.define_singleton_method(:start_byte) { 0 }
+        node_needing_source.define_singleton_method(:end_byte) { 5 }
+        node_needing_source.define_singleton_method(:text) { |src| src[0...5] }
+
+        node = described_class.new(node_needing_source, source: nil)
+        expect {
+          node.text
+        }.to raise_error(TreeHaver::Error, /Cannot extract text/)
+      end
+    end
+
+    context "when backend text method has optional arguments (arity == -1)" do
+      let(:optional_args_node) do
+        node = Object.new
+        node.define_singleton_method(:start_byte) { 0 }
+        node.define_singleton_method(:end_byte) { 5 }
+        node.define_singleton_method(:text) { |*_args| "optional" }
+        node
+      end
+
+      it "calls text with no arguments" do
+        node = described_class.new(optional_args_node, source: "hello world")
+        expect(node.text).to eq("optional")
+      end
+    end
   end
 
   describe "#has_error?" do

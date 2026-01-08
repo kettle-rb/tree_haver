@@ -341,12 +341,36 @@ The `*-merge` gem family provides intelligent, AST-based merging for various fil
 | [rbs-merge][rbs-merge]                   | RBS                  | [tree-sitter-bash][ts-rbs] (via tree_haver), [RBS][rbs] (`rbs` std lib gem)                         | Smart merge for Ruby type signatures                                             |
 | [toml-merge][toml-merge]                 | TOML                 | [Citrus + toml-rb][toml-rb] (default, via tree_haver), [tree-sitter-toml][ts-toml] (via tree_haver) | Smart merge for TOML files                                                       |
 
+#### Backend Platform Compatibility
+
+tree_haver supports multiple parsing backends, but not all backends work on all Ruby platforms:
+
+| Platform 👉️<br> TreeHaver Backend 👇️         | MRI | JRuby | TruffleRuby | Notes                                               |
+|------------------------------------------------|:---:|:-----:|:-----------:|-----------------------------------------------------|
+| **MRI** ([ruby_tree_sitter][ruby_tree_sitter]) |  ✅  |   ❌   |      ❌      | C extension, MRI only                               |
+| **Rust** ([tree_stump][tree_stump])            |  ✅  |   ❌   |      ❌      | Rust extension via magnus/rb-sys, MRI only          |
+| **FFI**                                        |  ✅  |   ✅   |      ❌      | TruffleRuby's FFI doesn't support `STRUCT_BY_VALUE` |
+| **Java** ([jtreesitter][jtreesitter])          |  ❌  |   ✅   |      ❌      | JRuby only, requires grammar JARs                   |
+| **Prism**                                      |  ✅  |   ✅   |      ✅      | Ruby parsing, stdlib in Ruby 3.4+                   |
+| **Psych**                                      |  ✅  |   ✅   |      ✅      | YAML parsing, stdlib                                |
+| **Citrus**                                     |  ✅  |   ✅   |      ✅      | Pure Ruby, no native dependencies                   |
+| **Commonmarker**                               |  ✅  |   ❌   |      ❓      | Rust extension for Markdown                         |
+| **Markly**                                     |  ✅  |   ❌   |      ❓      | C extension for Markdown                            |
+
+**Legend**: ✅ = Works, ❌ = Does not work, ❓ = Untested
+
+**Why some backends don't work on certain platforms**:
+
+- **JRuby**: Runs on the JVM; cannot load native C/Rust extensions (`.so` files)
+- **TruffleRuby**: Has C API emulation via Sulong/LLVM, but it doesn't expose all MRI internals that native extensions require (e.g., `RBasic.flags`, `rb_gc_writebarrier`)
+- **FFI on TruffleRuby**: TruffleRuby's FFI implementation doesn't support returning structs by value, which tree-sitter's C API requires
+
 **Example implementations** for the gem templating use case:
 
-| Gem | Purpose | Description |
-| --- | --- | --- |
-| [kettle-dev](https://github.com/kettle-rb/kettle-dev) | Gem Development | Gem templating tool using `*-merge` gems |
-| [kettle-jem](https://github.com/kettle-rb/kettle-jem) | Gem Templating | Gem template library with smart merge support |
+| Gem                      | Purpose         | Description                                   |
+|--------------------------|-----------------|-----------------------------------------------|
+| [kettle-dev][kettle-dev] | Gem Development | Gem templating tool using `*-merge` gems      |
+| [kettle-jem][kettle-jem] | Gem Templating  | Gem template library with smart merge support |
 
 [tree_haver]: https://github.com/kettle-rb/tree_haver
 [ast-merge]: https://github.com/kettle-rb/ast-merge
@@ -366,16 +390,18 @@ The `*-merge` gem family provides intelligent, AST-based merging for various fil
 [prism]: https://github.com/ruby/prism
 [psych]: https://github.com/ruby/psych
 [ts-json]: https://github.com/tree-sitter/tree-sitter-json
+[ts-jsonc]: https://gitlab.com/WhyNotHugo/tree-sitter-jsonc
 [ts-bash]: https://github.com/tree-sitter/tree-sitter-bash
+[ts-rbs]: https://github.com/joker1007/tree-sitter-rbs
 [ts-toml]: https://github.com/tree-sitter-grammars/tree-sitter-toml
+[dotenv]: https://github.com/bkeepers/dotenv
 [rbs]: https://github.com/ruby/rbs
 [toml-rb]: https://github.com/emancu/toml-rb
 [markly]: https://github.com/ioquatix/markly
 [commonmarker]: https://github.com/gjtorikian/commonmarker
-
-
-[ts-jsonc]: https://gitlab.com/WhyNotHugo/tree-sitter-jsonc
-[dotenv]: https://github.com/bkeepers/dotenv
+[ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
+[tree_stump]: https://github.com/joker1007/tree_stump
+[jtreesitter]: https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter
 
 ### Comparison with Other Ruby AST / Parser Bindings
 
@@ -794,6 +820,65 @@ You can also set the backend via environment variable:
 
 ``` bash
 export TREE_HAVER_BACKEND=rust
+```
+
+### Backend Registry
+
+TreeHaver provides a `BackendRegistry` module that allows external gems to register their backend availability checkers. This enables dynamic backend detection without hardcoding dependencies.
+
+#### Registering a Backend Availability Checker
+
+External gems (like `commonmarker-merge`, `markly-merge`, `rbs-merge`) can register their availability checker when loaded:
+
+```ruby
+# In your gem's backend module
+TreeHaver::BackendRegistry.register_availability_checker(:my_backend) do
+  # Return true if backend is available
+  require "my_backend_gem"
+  true
+rescue LoadError
+  false
+end
+```
+
+#### Checking Backend Availability
+
+```ruby
+# Check if a backend is available
+TreeHaver::BackendRegistry.available?(:commonmarker)  # => true/false
+TreeHaver::BackendRegistry.available?(:markly)        # => true/false
+TreeHaver::BackendRegistry.available?(:rbs)           # => true/false
+
+# Check if a checker is registered
+TreeHaver::BackendRegistry.registered?(:my_backend)   # => true/false
+
+# Get all registered backend names
+TreeHaver::BackendRegistry.registered_backends        # => [:mri, :rust, :ffi, ...]
+```
+
+#### How It Works
+
+1. Built-in backends (MRI, Rust, FFI, Java, Prism, Psych, Citrus) automatically register their checkers when loaded
+2. External gems register their checkers when their backend module is loaded
+3. `TreeHaver::RSpec::DependencyTags` uses the registry to dynamically detect available backends
+4. Results are cached for performance (use `clear_cache!` to reset)
+
+#### RSpec Integration
+
+The `BackendRegistry` is used by `TreeHaver::RSpec::DependencyTags` to configure RSpec exclusion filters:
+
+```ruby
+# In your spec_helper.rb
+require "tree_haver/rspec/dependency_tags"
+
+# Then in specs, use tags to skip tests when backends aren't available
+it "requires commonmarker", :commonmarker_backend do
+  # This test only runs when commonmarker is available
+end
+
+it "requires markly", :markly_backend do
+  # This test only runs when markly is available
+end
 ```
 
 ### Environment Variables
@@ -2117,6 +2202,3 @@ Thanks for RTFM. ☺️
 [💎appraisal2]: https://github.com/appraisal-rb/appraisal2
 [💎appraisal2-img]: https://img.shields.io/badge/appraised_by-appraisal2-34495e.svg?plastic&logo=ruby&logoColor=white
 [💎d-in-dvcs]: https://railsbling.com/posts/dvcs/put_the_d_in_dvcs/
-
-[ts-jsonc]: https://gitlab.com/WhyNotHugo/tree-sitter-jsonc
-[dotenv]: https://github.com/bkeepers/dotenv
