@@ -273,6 +273,7 @@ module TreeHaver
             attach_function(:ts_node_end_point, [:ts_node], :ts_point)
             attach_function(:ts_node_is_null, [:ts_node], :bool)
             attach_function(:ts_node_is_named, [:ts_node], :bool)
+            attach_function(:ts_node_has_error, [:ts_node], :bool)
 
             # Only mark as fully loaded after all attach_function calls succeed
             @loaded = true
@@ -695,10 +696,12 @@ module TreeHaver
 
         # Check if node has error
         #
-        # @return [Boolean]
+        # Returns true if this node or any of its descendants have a syntax error.
+        # This is the FFI equivalent of tree-sitter's ts_node_has_error.
+        #
+        # @return [Boolean] true if node subtree contains errors
         def has_error?
-          # Would need ts_node_has_error implementation
-          false
+          Native.ts_node_has_error(@val)
         end
 
         # Iterate over child nodes

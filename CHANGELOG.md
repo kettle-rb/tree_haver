@@ -28,6 +28,11 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **FFI Backend**: Implemented `has_error?` method on `TreeHaver::Backends::FFI::Node`
+  - Previously was a stub that always returned `false`, causing parse errors to go undetected
+  - Now properly calls `ts_node_has_error` FFI function to detect syntax errors in parsed trees
+  - This fixes error detection on JRuby when using the FFI backend with tree-sitter grammars
+
 ### Security
 
 ## [4.0.0] - 2026-01-08

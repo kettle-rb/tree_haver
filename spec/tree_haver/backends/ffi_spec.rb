@@ -545,9 +545,42 @@ RSpec.describe TreeHaver::Backends::FFI, :check_output, :ffi_backend, :ffi_backe
     end
 
     describe "#has_error?" do
-      it "returns false (not yet implemented)" do
+      it "calls ts_node_has_error native function" do
+        allow(backend::Native).to receive(:ts_node_has_error).with(fake_val).and_return(false)
         node = backend::Node.new(fake_val)
         expect(node.has_error?).to be false
+        expect(backend::Native).to have_received(:ts_node_has_error).with(fake_val)
+      end
+
+      it "returns true when node has error" do
+        allow(backend::Native).to receive(:ts_node_has_error).with(fake_val).and_return(true)
+        node = backend::Node.new(fake_val)
+        expect(node.has_error?).to be true
+      end
+    end
+
+    describe "#has_error? integration", :libtree_sitter, :toml_grammar do
+      it "returns false for valid TOML" do
+        lang_path = TreeHaverDependencies.find_toml_grammar_path
+        lang = TreeHaver::Language.from_path(lang_path)
+        parser = TreeHaver::Parser.new
+        parser.language = lang
+        tree = parser.parse("key = \"value\"\n")
+        root = tree.root_node
+
+        expect(root.has_error?).to be false
+      end
+
+      it "returns true for invalid TOML with missing bracket" do
+        lang_path = TreeHaverDependencies.find_toml_grammar_path
+        lang = TreeHaver::Language.from_path(lang_path)
+        parser = TreeHaver::Parser.new
+        parser.language = lang
+        # Invalid TOML - missing closing bracket
+        tree = parser.parse("[server\nhost = \"localhost\"\n")
+        root = tree.root_node
+
+        expect(root.has_error?).to be true
       end
     end
 

@@ -246,4 +246,36 @@ RSpec.describe TreeHaver::Backends::Rust do
       end
     end
   end
+
+  describe "has_error? detection", :rust_backend, :toml_grammar do
+    let(:path) { TreeHaverDependencies.find_toml_grammar_path }
+    let(:lang) { backend::Language.from_library(path) }
+    let(:parser) do
+      p = backend::Parser.new
+      p.language = lang
+      p
+    end
+
+    it "returns false for valid TOML" do
+      tree = parser.parse("key = \"value\"\n")
+      root = tree.root_node
+
+      expect(root.has_error?).to be false
+    end
+
+    it "returns true for invalid TOML with missing bracket" do
+      # Invalid TOML - missing closing bracket
+      tree = parser.parse("[server\nhost = \"localhost\"\n")
+      root = tree.root_node
+
+      expect(root.has_error?).to be true
+    end
+
+    it "returns true for invalid TOML with unclosed string" do
+      tree = parser.parse("key = \"unclosed\n")
+      root = tree.root_node
+
+      expect(root.has_error?).to be true
+    end
+  end
 end
