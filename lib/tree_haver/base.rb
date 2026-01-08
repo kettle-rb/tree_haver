@@ -10,4 +10,3 @@ module TreeHaver
     autoload :Point, File.join(__dir__, "base", "point")
   end
 end
-

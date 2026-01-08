@@ -23,8 +23,6 @@ module TreeHaver
           row
         when :column, "column", 1
           column
-        else
-          nil
         end
       end
 
@@ -48,4 +46,3 @@ module TreeHaver
     end
   end
 end
-

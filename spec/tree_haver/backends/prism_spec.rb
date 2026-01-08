@@ -682,7 +682,7 @@ RSpec.describe TreeHaver::Backends::Prism do
       describe "edge cases with node lacking location" do
         let(:mock_node) do
           # Node without location method
-          double("NodeWithoutLocation", class: Class.new { def name; "TestNode"; end })
+          double("NodeWithoutLocation", class: Class.new { def name = "TestNode" })
         end
 
         it "#start_byte returns 0 when node lacks location" do

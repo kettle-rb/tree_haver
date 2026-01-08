@@ -406,7 +406,6 @@ module TreeHaver
           type.include?("missing")
         end
 
-
         # Get a child by field name (Prism node accessor)
         #
         # Prism nodes have specific accessors for their children.
@@ -414,11 +413,11 @@ module TreeHaver
         # @param name [String, Symbol] field/accessor name
         # @return [Node, nil] wrapped child node
         def child_by_field_name(name)
-          return nil if inner_node.nil?
-          return nil unless inner_node.respond_to?(name)
+          return if inner_node.nil?
+          return unless inner_node.respond_to?(name)
 
           result = inner_node.public_send(name)
-          return nil if result.nil?
+          return if result.nil?
 
           # Wrap if it's a node
           result.is_a?(::Prism::Node) ? Node.new(result, source) : nil

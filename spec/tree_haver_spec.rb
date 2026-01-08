@@ -947,12 +947,14 @@ RSpec.describe TreeHaver do
 
     it "derives backend_type from module name when not provided" do
       mock_backend_module = Module.new do
-        def self.name
-          "Test::CustomBackend"
-        end
+        class << self
+          def name
+            "Test::CustomBackend"
+          end
 
-        def self.available?
-          true
+          def available?
+            true
+          end
         end
       end
 
@@ -965,12 +967,14 @@ RSpec.describe TreeHaver do
 
     it "uses explicit backend_type when provided" do
       mock_backend_module = Module.new do
-        def self.name
-          "SomeModule"
-        end
+        class << self
+          def name
+            "SomeModule"
+          end
 
-        def self.available?
-          true
+          def available?
+            true
+          end
         end
       end
 
@@ -1009,12 +1013,14 @@ RSpec.describe TreeHaver do
 
     let(:mock_language_class) do
       Class.new do
-        def self.test_lang
-          new
-        end
+        class << self
+          def test_lang
+            new
+          end
 
-        def self.from_library(_path, name: nil)
-          new
+          def from_library(_path, name: nil)
+            new
+          end
         end
       end
     end
@@ -1023,12 +1029,14 @@ RSpec.describe TreeHaver do
       parser_class = mock_parser_class
       language_class = mock_language_class
 
+      # rubocop:disable Style/ClassMethodsDefinitions
       Module.new do
         define_singleton_method(:name) { "MockBackend" }
         define_singleton_method(:available?) { true }
         const_set(:Parser, parser_class)
         const_set(:Language, language_class)
       end
+      # rubocop:enable Style/ClassMethodsDefinitions
     end
 
     after do

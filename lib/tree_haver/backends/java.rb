@@ -200,7 +200,6 @@ module TreeHaver
         @load_error
       end
 
-
       # Get the loaded Java classes
       #
       # @return [Hash] the Java class references

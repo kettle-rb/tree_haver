@@ -232,4 +232,3 @@ module TreeHaver
     private_class_method :check_builtin_backend
   end
 end
-

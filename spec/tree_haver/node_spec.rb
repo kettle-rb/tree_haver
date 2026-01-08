@@ -294,7 +294,6 @@ RSpec.describe TreeHaver::Node do
         expect(node.text).to eq("hello")
       end
 
-
       it "raises error when arity requires source but source not provided" do
         node_needing_source = Object.new
         node_needing_source.define_singleton_method(:start_byte) { 0 }

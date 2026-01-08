@@ -5,8 +5,10 @@ require "spec_helper"
 RSpec.describe TreeHaver::Base::Language do
   let(:concrete_language_class) do
     Class.new(described_class) do
-      def self.from_library(path = nil, symbol: nil, name: nil)
-        new(name || :test, backend: :test_backend)
+      class << self
+        def from_library(path = nil, symbol: nil, name: nil)
+          new(name || :test, backend: :test_backend)
+        end
       end
     end
   end
@@ -157,4 +159,3 @@ RSpec.describe TreeHaver::Base::Language do
     end
   end
 end
-

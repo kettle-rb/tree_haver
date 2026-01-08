@@ -84,27 +84,27 @@ RSpec.describe TreeHaver::Backends::MRI do
     describe "#<=>" do
       context "when comparing languages", :mri_backend, :toml_grammar do
         let(:path) { TreeHaverDependencies.find_toml_grammar_path }
-        let(:lang1) { backend::Language.from_library(path) }
-        let(:lang2) { backend::Language.from_library(path) }
+        let(:first_language) { backend::Language.from_library(path) }
+        let(:second_language) { backend::Language.from_library(path) }
 
         it "returns nil for non-Language objects" do
-          expect(lang1 <=> "not a language").to be_nil
+          expect(first_language <=> "not a language").to be_nil
         end
 
         it "returns nil for Language with different backend" do
           other = double("other_lang", is_a?: true, backend: :other)
           allow(other).to receive(:is_a?).with(backend::Language).and_return(true)
           allow(other).to receive(:backend).and_return(:other)
-          expect(lang1 <=> other).to be_nil
+          expect(first_language <=> other).to be_nil
         end
 
         it "returns 0 for languages with same path and symbol" do
-          expect(lang1 <=> lang2).to eq(0)
+          expect(first_language <=> second_language).to eq(0)
         end
 
         it "compares by path when paths differ" do
-          allow(lang2).to receive(:path).and_return("/z/path.so")
-          expect(lang1 <=> lang2).to be < 0
+          allow(second_language).to receive(:path).and_return("/z/path.so")
+          expect(first_language <=> second_language).to be < 0
         end
       end
     end
@@ -158,17 +158,12 @@ RSpec.describe TreeHaver::Backends::MRI do
         end
       end
 
-      context "error handling", :mri_backend do
+      context "with error handling", :mri_backend do
         context "when TreeSitter::TreeSitterError is raised" do
           it "wraps the error in NotAvailable" do
-            error_class = if defined?(TreeSitter::TreeSitterError)
-              TreeSitter::TreeSitterError
-            else
-              stub_const("TreeSitter::TreeSitterError", Class.new(Exception))
-              TreeSitter::TreeSitterError
-            end
+            stub_const("TreeSitter::TreeSitterError", Class.new(RuntimeError)) unless defined?(TreeSitter::TreeSitterError)
 
-            allow(TreeSitter::Language).to receive(:load).and_raise(error_class.new("load error"))
+            allow(TreeSitter::Language).to receive(:load).and_raise(TreeSitter::TreeSitterError.new("load error"))
 
             expect {
               backend::Language.from_library("/some/path.so", symbol: "tree_sitter_test")
@@ -284,16 +279,10 @@ RSpec.describe TreeHaver::Backends::MRI do
       context "when TreeSitter::TreeSitterError is raised" do
         it "wraps the error in NotAvailable" do
           # Create a mock TreeSitterError class if it doesn't exist for testing
-          error_class = if defined?(TreeSitter::TreeSitterError)
-            TreeSitter::TreeSitterError
-          else
-            # Create a temporary error class for testing
-            stub_const("TreeSitter::TreeSitterError", Class.new(Exception))
-            TreeSitter::TreeSitterError
-          end
+          stub_const("TreeSitter::TreeSitterError", Class.new(RuntimeError)) unless defined?(TreeSitter::TreeSitterError)
 
           inner_parser = parser.instance_variable_get(:@parser)
-          allow(inner_parser).to receive(:parse_string).and_raise(error_class.new("test error"))
+          allow(inner_parser).to receive(:parse_string).and_raise(TreeSitter::TreeSitterError.new("test error"))
 
           expect {
             parser.parse("some source")
@@ -318,15 +307,10 @@ RSpec.describe TreeHaver::Backends::MRI do
 
       context "when TreeSitter::TreeSitterError is raised" do
         it "wraps the error in NotAvailable" do
-          error_class = if defined?(TreeSitter::TreeSitterError)
-            TreeSitter::TreeSitterError
-          else
-            stub_const("TreeSitter::TreeSitterError", Class.new(Exception))
-            TreeSitter::TreeSitterError
-          end
+          stub_const("TreeSitter::TreeSitterError", Class.new(RuntimeError)) unless defined?(TreeSitter::TreeSitterError)
 
           inner_parser = parser.instance_variable_get(:@parser)
-          allow(inner_parser).to receive(:parse_string).and_raise(error_class.new("parse_string error"))
+          allow(inner_parser).to receive(:parse_string).and_raise(TreeSitter::TreeSitterError.new("parse_string error"))
 
           expect {
             parser.parse_string(nil, "some source")
@@ -363,15 +347,10 @@ RSpec.describe TreeHaver::Backends::MRI do
 
       context "when TreeSitter::TreeSitterError is raised" do
         it "wraps the error in NotAvailable" do
-          error_class = if defined?(TreeSitter::TreeSitterError)
-            TreeSitter::TreeSitterError
-          else
-            stub_const("TreeSitter::TreeSitterError", Class.new(Exception))
-            TreeSitter::TreeSitterError
-          end
+          stub_const("TreeSitter::TreeSitterError", Class.new(RuntimeError)) unless defined?(TreeSitter::TreeSitterError)
 
           inner_parser = parser.instance_variable_get(:@parser)
-          allow(inner_parser).to receive(:language=).and_raise(error_class.new("language error"))
+          allow(inner_parser).to receive(:language=).and_raise(TreeSitter::TreeSitterError.new("language error"))
 
           expect {
             parser.language = double("lang", inner_language: double("inner"))
@@ -394,14 +373,9 @@ RSpec.describe TreeHaver::Backends::MRI do
     describe "Parser.new error handling", :mri_backend do
       context "when TreeSitter::TreeSitterError is raised during creation" do
         it "wraps the error in NotAvailable" do
-          error_class = if defined?(TreeSitter::TreeSitterError)
-            TreeSitter::TreeSitterError
-          else
-            stub_const("TreeSitter::TreeSitterError", Class.new(Exception))
-            TreeSitter::TreeSitterError
-          end
+          stub_const("TreeSitter::TreeSitterError", Class.new(RuntimeError)) unless defined?(TreeSitter::TreeSitterError)
 
-          allow(TreeSitter::Parser).to receive(:new).and_raise(error_class.new("creation error"))
+          allow(TreeSitter::Parser).to receive(:new).and_raise(TreeSitter::TreeSitterError.new("creation error"))
 
           expect {
             backend::Parser.new

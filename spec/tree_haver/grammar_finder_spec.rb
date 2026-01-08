@@ -506,7 +506,6 @@ RSpec.describe TreeHaver::GrammarFinder do
   describe "#not_found_message edge cases" do
     let(:finder) { described_class.new(:test_lang) }
 
-
     context "when env var file exists but runtime unavailable" do
       before do
         stub_env("TREE_SITTER_TEST_LANG_PATH" => "/valid/path.so")

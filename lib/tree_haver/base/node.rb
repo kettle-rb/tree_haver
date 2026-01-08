@@ -68,7 +68,6 @@ module TreeHaver
         raise NotImplementedError, "#{self.class}#type must be implemented"
       end
 
-
       # Get byte offset where the node starts
       # @return [Integer] Start byte offset
       def start_byte
@@ -192,7 +191,6 @@ module TreeHaver
 
       # -- Shared Implementation -----------------------------------------------
 
-
       # Comparison based on byte range
       # @param other [Object]
       # @return [Integer, nil]
@@ -209,7 +207,11 @@ module TreeHaver
       # @return [Integer]
       def start_line
         sp = start_point
-        row = sp.is_a?(Hash) ? sp[:row] : (sp.respond_to?(:row) ? sp.row : 0)
+        row = if sp.is_a?(Hash)
+          sp[:row]
+        else
+          (sp.respond_to?(:row) ? sp.row : 0)
+        end
         row + 1
       end
 
@@ -217,7 +219,11 @@ module TreeHaver
       # @return [Integer]
       def end_line
         ep = end_point
-        row = ep.is_a?(Hash) ? ep[:row] : (ep.respond_to?(:row) ? ep.row : 0)
+        row = if ep.is_a?(Hash)
+          ep[:row]
+        else
+          (ep.respond_to?(:row) ? ep.row : 0)
+        end
         row + 1
       end
 
@@ -227,10 +233,26 @@ module TreeHaver
         sp = start_point
         ep = end_point
 
-        sp_row = sp.is_a?(Hash) ? sp[:row] : (sp.respond_to?(:row) ? sp.row : 0)
-        sp_col = sp.is_a?(Hash) ? sp[:column] : (sp.respond_to?(:column) ? sp.column : 0)
-        ep_row = ep.is_a?(Hash) ? ep[:row] : (ep.respond_to?(:row) ? ep.row : 0)
-        ep_col = ep.is_a?(Hash) ? ep[:column] : (ep.respond_to?(:column) ? ep.column : 0)
+        sp_row = if sp.is_a?(Hash)
+          sp[:row]
+        else
+          (sp.respond_to?(:row) ? sp.row : 0)
+        end
+        sp_col = if sp.is_a?(Hash)
+          sp[:column]
+        else
+          (sp.respond_to?(:column) ? sp.column : 0)
+        end
+        ep_row = if ep.is_a?(Hash)
+          ep[:row]
+        else
+          (ep.respond_to?(:row) ? ep.row : 0)
+        end
+        ep_col = if ep.is_a?(Hash)
+          ep[:column]
+        else
+          (ep.respond_to?(:column) ? ep.column : 0)
+        end
 
         {
           start_line: sp_row + 1,
@@ -291,4 +313,3 @@ module TreeHaver
     end
   end
 end
-

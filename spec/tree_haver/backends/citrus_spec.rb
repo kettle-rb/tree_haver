@@ -157,16 +157,38 @@ RSpec.describe TreeHaver::Backends::Citrus do
     end
 
     describe "#<=>" do
-      let(:grammar1) { Module.new { def self.name; "Grammar1"; end; def self.parse(s); end; } }
-      let(:grammar2) { Module.new { def self.name; "Grammar2"; end; def self.parse(s); end; } }
+      let(:first_grammar) {
+        Module.new {
+          class << self
+            def name
+              "Grammar1"
+            end
+
+            def parse(s)
+            end
+          end
+        }
+      }
+      let(:second_grammar) {
+        Module.new {
+          class << self
+            def name
+              "Grammar2"
+            end
+
+            def parse(s)
+            end
+          end
+        }
+      }
 
       it "returns nil for non-Language objects" do
-        lang = backend::Language.new(grammar1)
+        lang = backend::Language.new(first_grammar)
         expect(lang <=> "not a language").to be_nil
       end
 
       it "returns nil for Language with different backend" do
-        lang = backend::Language.new(grammar1)
+        lang = backend::Language.new(first_grammar)
         other = double("other_lang", is_a?: true, backend: :other)
         allow(other).to receive(:is_a?).with(backend::Language).and_return(true)
         allow(other).to receive(:backend).and_return(:other)
@@ -174,26 +196,37 @@ RSpec.describe TreeHaver::Backends::Citrus do
       end
 
       it "compares by grammar_module name when backends match" do
-        lang1 = backend::Language.new(grammar1)
-        lang2 = backend::Language.new(grammar2)
+        lang_a = backend::Language.new(first_grammar)
+        lang_b = backend::Language.new(second_grammar)
         # Grammar1 < Grammar2 alphabetically
-        expect(lang1 <=> lang2).to be < 0
+        expect(lang_a <=> lang_b).to be < 0
       end
 
       it "returns 0 for languages with same grammar_module" do
-        lang1 = backend::Language.new(grammar1)
-        lang2 = backend::Language.new(grammar1)
-        expect(lang1 <=> lang2).to eq(0)
+        lang_a = backend::Language.new(first_grammar)
+        lang_b = backend::Language.new(first_grammar)
+        expect(lang_a <=> lang_b).to eq(0)
       end
     end
 
     describe "#hash" do
-      let(:grammar1) { Module.new { def self.name; "TestGrammar"; end; def self.parse(s); end; } }
+      let(:test_grammar) {
+        Module.new {
+          class << self
+            def name
+              "TestGrammar"
+            end
+
+            def parse(s)
+            end
+          end
+        }
+      }
 
       it "returns consistent hash for same grammar" do
-        lang1 = backend::Language.new(grammar1)
-        lang2 = backend::Language.new(grammar1)
-        expect(lang1.hash).to eq(lang2.hash)
+        lang_a = backend::Language.new(test_grammar)
+        lang_b = backend::Language.new(test_grammar)
+        expect(lang_a.hash).to eq(lang_b.hash)
       end
     end
   end

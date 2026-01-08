@@ -26,7 +26,7 @@ cmd = [
   "exec",
   "rspec",
   "--require",
-  "spec_ffi_helper",
+  "support/spec_ffi_helper",
   *spec_files,
 ]
 

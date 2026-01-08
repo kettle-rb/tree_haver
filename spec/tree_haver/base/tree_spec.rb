@@ -21,8 +21,7 @@ RSpec.describe TreeHaver::Base::Tree do
 
   let(:mock_node) do
     node = double("node")
-    allow(node).to receive(:has_error?).and_return(false)
-    allow(node).to receive(:missing?).and_return(false)
+    allow(node).to receive_messages(has_error?: false, missing?: false)
     allow(node).to receive(:each).and_yield(nil).and_return([])
     node
   end
@@ -109,8 +108,7 @@ RSpec.describe TreeHaver::Base::Tree do
     context "when child node has error" do
       let(:child_node) do
         child = double("child_node")
-        allow(child).to receive(:has_error?).and_return(true)
-        allow(child).to receive(:missing?).and_return(false)
+        allow(child).to receive_messages(has_error?: true, missing?: false)
         allow(child).to receive(:each).and_return([].each)
         child
       end
@@ -127,8 +125,7 @@ RSpec.describe TreeHaver::Base::Tree do
     context "when child node is missing" do
       let(:child_node) do
         child = double("child_node")
-        allow(child).to receive(:has_error?).and_return(false)
-        allow(child).to receive(:missing?).and_return(true)
+        allow(child).to receive_messages(has_error?: false, missing?: true)
         allow(child).to receive(:each).and_return([].each)
         child
       end
@@ -145,8 +142,7 @@ RSpec.describe TreeHaver::Base::Tree do
     context "when no errors" do
       let(:child_node) do
         child = double("child_node")
-        allow(child).to receive(:has_error?).and_return(false)
-        allow(child).to receive(:missing?).and_return(false)
+        allow(child).to receive_messages(has_error?: false, missing?: false)
         allow(child).to receive(:each).and_return([].each)
         child
       end
@@ -167,4 +163,3 @@ RSpec.describe TreeHaver::Base::Tree do
     end
   end
 end
-

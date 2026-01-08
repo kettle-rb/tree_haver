@@ -229,7 +229,6 @@ RSpec.describe TreeHaver::Base::Node do
     end
   end
 
-
   describe "#<=>" do
     it "compares by byte range" do
       node1 = concrete_node_class.new(nil, start_byte: 0, end_byte: 5)
@@ -276,13 +275,13 @@ RSpec.describe TreeHaver::Base::Node do
     it "returns false when other object lacks required methods" do
       expect(node == "not a node").to be false
       expect(node == 123).to be false
-      expect(node == nil).to be false
+      expect(node.nil?).to be false
     end
 
     it "returns false when other lacks type method" do
       other = Object.new
-      def other.start_byte; 0; end
-      def other.end_byte; 10; end
+      def other.start_byte = 0
+      def other.end_byte = 10
       # No type method
 
       expect(node == other).to be false
@@ -290,8 +289,8 @@ RSpec.describe TreeHaver::Base::Node do
 
     it "returns false when other lacks start_byte method" do
       other = Object.new
-      def other.type; "test"; end
-      def other.end_byte; 10; end
+      def other.type = "test"
+      def other.end_byte = 10
       # No start_byte method
 
       expect(node == other).to be false
@@ -490,4 +489,3 @@ RSpec.describe TreeHaver::Base::Node do
     end
   end
 end
-

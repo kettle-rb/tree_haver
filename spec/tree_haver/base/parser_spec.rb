@@ -52,4 +52,3 @@ RSpec.describe TreeHaver::Base::Parser do
     end
   end
 end
-

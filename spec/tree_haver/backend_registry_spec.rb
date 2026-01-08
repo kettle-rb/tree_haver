@@ -119,9 +119,7 @@ RSpec.describe TreeHaver::BackendRegistry do
     it "returns an array of symbols" do
       result = described_class.registered_backends
       expect(result).to be_an(Array)
-      result.each do |name|
-        expect(name).to be_a(Symbol)
-      end
+      expect(result).to all(be_a(Symbol))
     end
 
     it "includes registered backends" do
@@ -174,4 +172,3 @@ RSpec.describe TreeHaver::BackendRegistry do
     end
   end
 end
-

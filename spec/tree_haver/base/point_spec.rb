@@ -74,4 +74,3 @@ RSpec.describe TreeHaver::Base::Point do
     end
   end
 end
-

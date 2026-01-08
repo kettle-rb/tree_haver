@@ -284,12 +284,14 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
       end
 
       # Report results
-      puts "\n=== Backend Rotation Results ==="
+      # rubocop:disable RSpec/Output
+      warn("\n=== Backend Rotation Results ===")
       results.each do |backend, result|
         status = (result.is_a?(String) && !result.start_with?("FAILED", "ERROR")) ? "✓" : "✗"
-        puts "  #{status} #{backend}: #{result}"
+        warn("  #{status} #{backend}: #{result}")
       end
-      puts "================================\n"
+      warn("================================\n")
+      # rubocop:enable RSpec/Output
 
       # At least the first backend should work
       first_result = results[available.first]
@@ -330,15 +332,19 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
             end
 
             if error
-              puts "\n[.so CONFLICT] #{first} -> #{second}: #{error.message}"
+              # rubocop:disable RSpec/Output
+              warn("\n[.so CONFLICT] #{first} -> #{second}: #{error.message}")
+              # rubocop:enable RSpec/Output
               skip "#{first} -> #{second} has .so conflict: #{error.message}"
             else
               # Try to actually use the language
               begin
                 parse_with(second, lang2)
-                puts "\n[.so OK] #{first} -> #{second}: Compatible"
+                # rubocop:disable RSpec/Output
+                warn("\n[.so OK] #{first} -> #{second}: Compatible")
               rescue TreeHaver::NotAvailable, TreeHaver::BackendConflict => e
-                puts "\n[.so CONFLICT] #{first} -> #{second}: Load OK but parse failed: #{e.message}"
+                warn("\n[.so CONFLICT] #{first} -> #{second}: Load OK but parse failed: #{e.message}")
+                # rubocop:enable RSpec/Output
                 skip("#{first} -> #{second} loads but fails to parse: #{e.message}")
               end
             end
