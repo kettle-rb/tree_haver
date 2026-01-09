@@ -346,11 +346,13 @@ module TreeHaver
 
         # Check if FFI backend is available WITHOUT loading MRI first
         #
-        # This is used for the :ffi_backend_only tag which runs FFI tests
-        # in isolation before MRI can be loaded. Unlike ffi_available?,
-        # this method does NOT check mri_backend_available?.
+        # This method is primarily for backwards compatibility with the legacy
+        # :ffi_backend_only tag. The preferred approach is to use the standard
+        # :ffi_backend tag, which now also triggers isolated_test_mode when
+        # used with --tag ffi_backend.
         #
         # @return [Boolean] true if FFI backend is usable in isolation
+        # @deprecated Use :ffi_backend tag instead of :ffi_backend_only
         def ffi_backend_only_available?
           # If TREE_HAVER_BACKEND explicitly selects a different native backend,
           # FFI is not available for testing
@@ -1044,12 +1046,23 @@ RSpec.configure do |config|
     end
   end
 
+  # Check if we're running isolated backend tests using standard backend tags
+  # When running with --tag ffi_backend (or other native backend tags), we need
+  # to block conflicting backends to prevent them from loading first.
+  # This replaces the old *_backend_only pattern with the standard *_backend tags.
   TreeHaver::Backends::BLOCKED_BY.each do |backend, blockers|
-    # Check if we're running this backend's isolated tests
-    isolated_tag = :"#{backend}_backend_only"
-    if inclusion_rules[isolated_tag]
+    # Check if we're running this backend's tests using standard tag (e.g., :ffi_backend)
+    standard_tag = :"#{backend}_backend"
+    if inclusion_rules[standard_tag]
       isolated_test_mode = true
       # Add all backends that would block this one
+      blockers.each { |blocker| blocked_backends << blocker }
+    end
+
+    # Also support legacy *_backend_only tags for backwards compatibility
+    legacy_tag = :"#{backend}_backend_only"
+    if inclusion_rules[legacy_tag]
+      isolated_test_mode = true
       blockers.each { |blocker| blocked_backends << blocker }
     end
   end

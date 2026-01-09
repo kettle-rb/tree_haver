@@ -22,7 +22,15 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- **RSpec Dependency Tags**: Refactored FFI backend isolation to use standard `:ffi_backend` tag
+  - The `--tag ffi_backend` now triggers `isolated_test_mode` in `dependency_tags.rb`
+  - This prevents MRI backend from loading during availability checks
+  - Legacy `*_backend_only` tags are still supported for backwards compatibility
+  - Simplifies the testing pattern: one tag serves as both dependency tag and isolation trigger
+
 ### Deprecated
+
+- **`:ffi_backend_only` tag**: Use `:ffi_backend` instead. The `*_backend_only` tags are now redundant.
 
 ### Removed
 

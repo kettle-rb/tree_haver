@@ -11,11 +11,12 @@ require_relative "spec_matrix_helper"
 # - Safe and unsafe backend transition patterns
 #
 # Known issues:
-# - FFI and MRI both use tree-sitter .so files but resolve symbols differently
 # - MRI (ruby_tree_sitter) statically links tree-sitter
 # - FFI dynamically links libtree-sitter.so
-# - When MRI loads a grammar first, FFI gets incompatible pointers
-# - Rust (tree_stump) may have similar issues
+# - When MRI loads first, FFI gets incompatible pointers and segfaults
+# - For this reason, FFI tests MUST run in isolation BEFORE MRI loads
+# - FFI is NOT included in this matrix - see ffi_spec.rb instead
+# - Rust (tree_stump) may have similar issues to MRI
 # - Citrus backend uses toml-rb gem which is pure ruby and unrelated to tree-sitter
 # - TruffleRuby's FFI doesn't support STRUCT_BY_VALUE (used by tree-sitter)
 #
@@ -26,14 +27,10 @@ require_relative "spec_matrix_helper"
 
 RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
   # Define backends to test - only tree-sitter backends that share .so files
-  # Citrus is excluded because it's pure Ruby (no .so conflicts) and
-  # the only available Citrus TOML grammar (toml-rb)
-  BACKENDS = [:mri, :ffi, :rust].freeze # rubocop:disable RSpec/LeakyConstantDeclaration
-
-  # Detect TruffleRuby - FFI tree-sitter doesn't work due to STRUCT_BY_VALUE limitation
-  # rubocop:disable RSpec/LeakyConstantDeclaration
-  TRUFFLERUBY = RUBY_ENGINE == "truffleruby"
-  # rubocop:enable RSpec/LeakyConstantDeclaration
+  # FFI is excluded because it must run in isolation (before MRI loads)
+  # and cannot be tested in combination with other backends safely.
+  # Citrus is excluded because it's pure Ruby (no .so conflicts).
+  BACKENDS = [:mri, :rust].freeze # rubocop:disable RSpec/LeakyConstantDeclaration
 
   # Check if backend's required gems are INSTALLED without loading them
   # Uses Gem::Specification to avoid side effects from require
@@ -48,7 +45,6 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
 
   # rubocop:disable RSpec/LeakyConstantDeclaration
   MRI_GEM_INSTALLED = gem_installed?("ruby_tree_sitter")
-  FFI_GEM_INSTALLED = gem_installed?("ffi")
   RUST_GEM_INSTALLED = gem_installed?("tree_stump")
   CITRUS_GEM_INSTALLED = gem_installed?("citrus")
   # rubocop:enable RSpec/LeakyConstantDeclaration
@@ -57,7 +53,6 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
   def backend_gem_available?(backend)
     case backend
     when :mri then MRI_GEM_INSTALLED
-    when :ffi then FFI_GEM_INSTALLED
     when :rust then RUST_GEM_INSTALLED
     when :citrus then CITRUS_GEM_INSTALLED
     else false
@@ -65,21 +60,19 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
   end
 
   # Check if a backend is blocked at runtime due to platform incompatibility or conflicts
-  # Uses the same logic as the backend's available? method to prevent false positives
+  # Uses the backend's actual available? method for accurate detection
   def backend_blocked?(backend)
     case backend
-    when :ffi
-      # FFI is blocked on TruffleRuby due to STRUCT_BY_VALUE limitation
-      return true if TRUFFLERUBY
-      # FFI is blocked when MRI has been loaded (defines ::TreeSitter::Parser)
-      # This matches the logic in Backends::FFI.available? to avoid mismatches
-      defined?(TreeSitter::Parser)
     when :mri
       # MRI backend (ruby_tree_sitter) is a C extension, only works on MRI
-      RUBY_ENGINE != "ruby"
+      return true if RUBY_ENGINE != "ruby"
+      # Check actual availability
+      !TreeHaver::Backends::MRI.available?
     when :rust
       # Rust backend (tree_stump) uses magnus which requires MRI's C API
-      RUBY_ENGINE != "ruby"
+      return true if RUBY_ENGINE != "ruby"
+      # Check actual availability
+      !TreeHaver::Backends::Rust.available?
     else
       false
     end
@@ -88,13 +81,12 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
   # Get skip reason for a backend
   def skip_reason_for(backend)
     case backend
-    when :ffi
-      return "FFI not supported on TruffleRuby (STRUCT_BY_VALUE limitation)" if TRUFFLERUBY
-      return "FFI blocked by MRI (ruby_tree_sitter already loaded)" if backend_blocked?(:ffi)
     when :mri
       return "MRI backend only works on MRI Ruby (C extension)" if RUBY_ENGINE != "ruby"
+      return "MRI backend (ruby_tree_sitter) not available" unless TreeHaver::Backends::MRI.available?
     when :rust
       return "Rust backend only works on MRI Ruby (magnus requires MRI C API)" if RUBY_ENGINE != "ruby"
+      return "Rust backend (tree_stump) not available" unless TreeHaver::Backends::Rust.available?
     end
     "#{backend} gem not installed"
   end
@@ -108,7 +100,6 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
   def language_class_for(backend)
     case backend
     when :mri then TreeHaver::Backends::MRI::Language
-    when :ffi then TreeHaver::Backends::FFI::Language
     when :rust then TreeHaver::Backends::Rust::Language
     when :citrus then TreeHaver::Backends::Citrus::Language
     end
@@ -302,7 +293,8 @@ RSpec.describe("Backend Compatibility Matrix", :toml_grammar) do
 
   describe "Shared .so file detection" do
     # These backends share tree-sitter .so grammar files
-    TREE_SITTER_BACKENDS = [:mri, :ffi, :rust].freeze # rubocop:disable RSpec/LeakyConstantDeclaration
+    # FFI is excluded because it must run in isolation before MRI loads
+    TREE_SITTER_BACKENDS = [:mri, :rust].freeze # rubocop:disable RSpec/LeakyConstantDeclaration
 
     TREE_SITTER_BACKENDS.each do |first|
       TREE_SITTER_BACKENDS.each do |second|

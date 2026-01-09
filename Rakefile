@@ -80,11 +80,12 @@ begin
   require "rspec/core/rake_task"
 
   # FFI specs run first in a clean environment
-  # Uses :ffi_backend_only tag which does NOT trigger mri_backend_available? check
+  # Uses :ffi_backend tag which triggers isolated_test_mode in dependency_tags.rb
+  # This prevents MRI backend from being loaded during availability checks
   desc("Run FFI backend specs first (before MRI loads)")
   RSpec::Core::RakeTask.new(:ffi_specs) do |t|
     t.pattern = "./spec/**/*_spec.rb"
-    t.rspec_opts = "--tag ffi_backend_only"
+    t.rspec_opts = "--tag ffi_backend --format documentation"
   end
   # Set unique command name at execution time for SimpleCov merging
   desc("Set SimpleCov command name for FFI specs")
@@ -92,6 +93,9 @@ begin
     ENV["K_SOUP_COV_MIN_HARD"] = "false"
     ENV["MAX_ROWS"] = "0"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "FFI Specs"
+    # CRITICAL: Restrict native backends to FFI only
+    # This prevents MRI.available? from being called during backend auto-selection
+    ENV["TREE_HAVER_NATIVE_BACKEND"] = "ffi"
   end
   Rake::Task[:ffi_specs].enhance([:set_ffi_command_name])
 
@@ -105,21 +109,27 @@ begin
     ENV["K_SOUP_COV_MIN_HARD"] = "false"
     ENV["MAX_ROWS"] = "0"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "Backend Matrix Specs"
+    # CRITICAL: Clear the FFI-only restriction set by ffi_specs
+    # This allows matrix specs to test MRI and Rust backends
+    ENV.delete("TREE_HAVER_NATIVE_BACKEND")
   end
   Rake::Task[:backend_matrix_specs].enhance([:set_matrix_command_name])
 
   # All other specs run after FFI specs
-  # Excludes :ffi_backend_only tests (which already ran in ffi_specs)
+  # Excludes :ffi_backend tests (which already ran in ffi_specs)
   desc("Run non-FFI specs (after FFI specs have run)")
   RSpec::Core::RakeTask.new(:remaining_specs) do |t|
     t.pattern = "./spec/**/*_spec.rb"
-    t.rspec_opts = "--tag ~ffi_backend_only"
+    t.rspec_opts = "--tag ~ffi_backend"
   end
   desc("Set SimpleCov command name for remaining specs")
   task(:set_remaining_command_name) do
     ENV["K_SOUP_COV_MIN_HARD"] = "false"
     ENV["MAX_ROWS"] = "0"
     ENV["K_SOUP_COV_COMMAND_NAME"] = "Remaining Specs"
+    # CRITICAL: Clear the FFI-only restriction set by ffi_specs
+    # This allows remaining specs to use MRI and other backends
+    ENV.delete("TREE_HAVER_NATIVE_BACKEND")
   end
   Rake::Task[:remaining_specs].enhance([:set_remaining_command_name])
 
