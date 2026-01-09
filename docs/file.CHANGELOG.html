@@ -68,7 +68,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 and <a href="https://tom.preston-werner.com/2022/05/23/major-version-numbers-are-not-sacred.html">yes</a>, platform and engine support are part of the <a href="https://github.com/semver/semver/issues/716#issuecomment-869336139">public API</a>.<br>
 Please file a bug if you notice a violation of semantic versioning.</p>
 
-<h2 id="unreleased"><a href="https://github.com/kettle-rb/tree_haver/compare/v4.0.1...HEAD">Unreleased</a></h2>
+<h2 id="unreleased"><a href="https://github.com/kettle-rb/tree_haver/compare/v4.0.2...HEAD">Unreleased</a></h2>
 
 <h3 id="added">Added</h3>
 
@@ -82,6 +82,53 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="security">Security</h3>
 
+<h2 id="402---2026-01-08">
+<a href="https://github.com/kettle-rb/tree_haver/compare/v4.0.1...v4.0.2">4.0.2</a> - 2026-01-08</h2>
+
+<ul>
+  <li>TAG: <a href="https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.2">v4.0.2</a>
+</li>
+  <li>COVERAGE: 95.27% – 2033/2134 lines in 28 files</li>
+  <li>BRANCH COVERAGE: 84.07% – 802/954 branches in 28 files</li>
+  <li>95.49% documented</li>
+</ul>
+
+<h3 id="added-1">Added</h3>
+
+<ul>
+  <li>
+<strong>FFI Backend</strong>: Implemented <code>missing?</code> method on <code>TreeHaver::Backends::FFI::Node</code>
+    <ul>
+      <li>Added <code>ts_node_is_missing</code> FFI function attachment</li>
+      <li>This method was missing entirely, causing <code>NoMethodError</code> when checking for MISSING nodes</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="changed-1">Changed</h3>
+
+<ul>
+  <li>
+<strong>TreeHaver::Node</strong>: Removed defensive <code>respond_to?</code> checks from <code>has_error?</code> and <code>missing?</code> methods
+    <ul>
+      <li>All tree-sitter backends (MRI, Rust, FFI, Java) must implement these methods on their inner nodes</li>
+      <li>This enforces proper backend API compliance rather than silently masking missing implementations</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="fixed-1">Fixed</h3>
+
+<ul>
+  <li>
+<strong>FFI Backend</strong>: Added explicit boolean conversion (<code>!!</code>) to <code>has_error?</code> return value
+    <ul>
+      <li>FFI <code>:bool</code> return type may behave inconsistently across Ruby versions and platforms</li>
+      <li>Ensures <code>has_error?</code> always returns <code>true</code> or <code>false</code>, not truthy/falsy values</li>
+    </ul>
+  </li>
+</ul>
+
 <h2 id="401---2026-01-08">
 <a href="https://github.com/kettle-rb/tree_haver/compare/v4.0.0...v4.0.1">4.0.1</a> - 2026-01-08</h2>
 
@@ -93,7 +140,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>95.48% documented</li>
 </ul>
 
-<h3 id="fixed-1">Fixed</h3>
+<h3 id="fixed-2">Fixed</h3>
 
 <ul>
   <li>
@@ -117,7 +164,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>95.48% documented</li>
 </ul>
 
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 
 <ul>
   <li>
@@ -146,7 +193,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   </li>
 </ul>
 
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed-2">Changed</h3>
 
 <ul>
   <li>
@@ -187,7 +234,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>90.37% documented</li>
 </ul>
 
-<h3 id="fixed-2">Fixed</h3>
+<h3 id="fixed-3">Fixed</h3>
 
 <ul>
   <li>
@@ -212,7 +259,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>90.37% documented</li>
 </ul>
 
-<h3 id="fixed-3">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 
 <ul>
   <li>
@@ -242,7 +289,7 @@ Please file a bug if you notice a violation of semantic versioning.</p>
   <li>90.37% documented</li>
 </ul>
 
-<h3 id="added-2">Added</h3>
+<h3 id="added-3">Added</h3>
 
 <ul>
   <li>
@@ -397,7 +444,7 @@ incompatible native backends (e.g., FFI after MRI). Useful for testing scenarios
 where you understand the risks. Default behavior (protection enabled) unchanged.</li>
 </ul>
 
-<h3 id="changed-2">Changed</h3>
+<h3 id="changed-3">Changed</h3>
 
 <ul>
   <li>
@@ -446,7 +493,7 @@ pure Ruby backends. The module must provide <code>Language</code> and <code>Pars
 standard TreeHaver API (<code>available?</code>, <code>capabilities</code>, <code>from_library</code>, etc.).</li>
 </ul>
 
-<h3 id="fixed-4">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 
 <ul>
   <li>
@@ -502,7 +549,7 @@ the tag accurately reflects whether the Java backend is fully functional.</li>
   <li>90.14% documented</li>
 </ul>
 
-<h3 id="fixed-5">Fixed</h3>
+<h3 id="fixed-6">Fixed</h3>
 
 <ul>
   <li>
@@ -557,7 +604,7 @@ now easier to follow and maintain.</li>
   <li>90.14% documented</li>
 </ul>
 
-<h3 id="fixed-6">Fixed</h3>
+<h3 id="fixed-7">Fixed</h3>
 
 <ul>
   <li>RSpec dependency tags now respect <code>TREE_HAVER_BACKEND</code> environment variable
@@ -581,7 +628,7 @@ now easier to follow and maintain.</li>
   <li>90.14% documented</li>
 </ul>
 
-<h3 id="added-3">Added</h3>
+<h3 id="added-4">Added</h3>
 
 <ul>
   <li>
@@ -613,7 +660,7 @@ now easier to follow and maintain.</li>
 <code>DependencyTags.mri_backend_only_available?</code> - checks MRI availability without checking FFI</li>
 </ul>
 
-<h3 id="changed-3">Changed</h3>
+<h3 id="changed-4">Changed</h3>
 
 <ul>
   <li>All backends now use shared <code>LibraryPathUtils</code> for path parsing
@@ -650,7 +697,7 @@ now easier to follow and maintain.</li>
   </li>
 </ul>
 
-<h3 id="fixed-7">Fixed</h3>
+<h3 id="fixed-8">Fixed</h3>
 
 <ul>
   <li>Rakefile now uses correct RSpec tags for FFI isolation
@@ -741,7 +788,7 @@ now easier to follow and maintain.</li>
   <li>90.03% documented</li>
 </ul>
 
-<h3 id="added-4">Added</h3>
+<h3 id="added-5">Added</h3>
 
 <ul>
   <li>
@@ -796,7 +843,7 @@ now easier to follow and maintain.</li>
 <code>citrus_available?</code> method to check if Citrus backend is available</li>
 </ul>
 
-<h3 id="fixed-8">Fixed</h3>
+<h3 id="fixed-9">Fixed</h3>
 
 <ul>
   <li>
@@ -894,7 +941,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   </li>
 </ul>
 
-<h3 id="changed-4">Changed</h3>
+<h3 id="changed-5">Changed</h3>
 
 <ul>
   <li>
@@ -996,7 +1043,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>Use kettle-rb/ts-grammar-setup GHA in CI workflows</li>
 </ul>
 
-<h3 id="fixed-9">Fixed</h3>
+<h3 id="fixed-10">Fixed</h3>
 
 <ul>
   <li>Rakefile now properly overrides <code>test</code> task after <code>require "kettle/dev"</code>
@@ -1043,7 +1090,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>90.03% documented</li>
 </ul>
 
-<h3 id="added-5">Added</h3>
+<h3 id="added-6">Added</h3>
 
 <ul>
   <li>Enhanced <code>TreeHaver::RSpec::DependencyTags</code> debugging
@@ -1078,7 +1125,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>90.02% documented</li>
 </ul>
 
-<h3 id="added-6">Added</h3>
+<h3 id="added-7">Added</h3>
 
 <ul>
   <li>
@@ -1121,7 +1168,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   </li>
 </ul>
 
-<h3 id="changed-5">Changed</h3>
+<h3 id="changed-6">Changed</h3>
 
 <ul>
   <li>
@@ -1141,7 +1188,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   </li>
 </ul>
 
-<h3 id="fixed-10">Fixed</h3>
+<h3 id="fixed-11">Fixed</h3>
 
 <ul>
   <li>
@@ -1172,7 +1219,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>88.97% documented</li>
 </ul>
 
-<h3 id="added-7">Added</h3>
+<h3 id="added-8">Added</h3>
 
 <ul>
   <li>
@@ -1334,7 +1381,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   </li>
 </ul>
 
-<h3 id="fixed-11">Fixed</h3>
+<h3 id="fixed-12">Fixed</h3>
 
 <ul>
   <li>
@@ -1359,7 +1406,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>92.93% documented</li>
 </ul>
 
-<h3 id="added-8">Added</h3>
+<h3 id="added-9">Added</h3>
 
 <h4 id="backend-requirements">Backend Requirements</h4>
 
@@ -1445,7 +1492,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   </li>
 </ul>
 
-<h3 id="changed-6">Changed</h3>
+<h3 id="changed-7">Changed</h3>
 
 <ul>
   <li>
@@ -1532,7 +1579,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   </li>
 </ul>
 
-<h3 id="fixed-12">Fixed</h3>
+<h3 id="fixed-13">Fixed</h3>
 
 <h4 id="thread-safety-and-backend-selection">Thread-Safety and Backend Selection</h4>
 
@@ -1689,7 +1736,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>91.90% documented</li>
 </ul>
 
-<h3 id="added-9">Added</h3>
+<h3 id="added-10">Added</h3>
 
 <ul>
   <li>Added support for Citrus backend (<code>backends/citrus.rb</code>) - a pure Ruby grammar parser with its own distinct grammar structure</li>
@@ -1706,7 +1753,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>Enhanced <code>TreeHaver::Language</code> tests for dynamic language helpers</li>
 </ul>
 
-<h3 id="changed-7">Changed</h3>
+<h3 id="changed-8">Changed</h3>
 
 <ul>
   <li>
@@ -1724,7 +1771,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>Disabled old pass-through stub classes in <code>tree_haver.rb</code> (wrapped in <code>if false</code> for reference)</li>
 </ul>
 
-<h3 id="fixed-13">Fixed</h3>
+<h3 id="fixed-14">Fixed</h3>
 
 <ul>
   <li>Fixed <code>TreeHaver::Tree#supports_editing?</code> and <code>#edit</code> to handle Delegator wrappers correctly by using <code>.method(:edit)</code> check instead of <code>respond_to?</code>
@@ -1750,7 +1797,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
   <li>97.31% documented</li>
 </ul>
 
-<h3 id="added-10">Added</h3>
+<h3 id="added-11">Added</h3>
 
 <ul>
   <li>Initial release</li>
@@ -1759,7 +1806,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Thu Jan  8 16:40:29 2026 by
+  Generated on Thu Jan  8 18:28:40 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

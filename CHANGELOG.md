@@ -22,24 +22,38 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
-- **TreeHaver::Node**: Removed defensive `respond_to?` checks from `has_error?` and `missing?` methods
-  - All tree-sitter backends (MRI, Rust, FFI, Java) must implement these methods on their inner nodes
-  - This enforces proper backend API compliance rather than silently masking missing implementations
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
+### Security
+
+## [4.0.2] - 2026-01-08
+
+- TAG: [v4.0.2][4.0.2t]
+- COVERAGE: 95.27% -- 2033/2134 lines in 28 files
+- BRANCH COVERAGE: 84.07% -- 802/954 branches in 28 files
+- 95.49% documented
+
+### Added
+
 - **FFI Backend**: Implemented `missing?` method on `TreeHaver::Backends::FFI::Node`
   - Added `ts_node_is_missing` FFI function attachment
   - This method was missing entirely, causing `NoMethodError` when checking for MISSING nodes
+
+### Changed
+
+- **TreeHaver::Node**: Removed defensive `respond_to?` checks from `has_error?` and `missing?` methods
+  - All tree-sitter backends (MRI, Rust, FFI, Java) must implement these methods on their inner nodes
+  - This enforces proper backend API compliance rather than silently masking missing implementations
+
+### Fixed
+
 - **FFI Backend**: Added explicit boolean conversion (`!!`) to `has_error?` return value
   - FFI `:bool` return type may behave inconsistently across Ruby versions and platforms
   - Ensures `has_error?` always returns `true` or `false`, not truthy/falsy values
-
-### Security
 
 ## [4.0.1] - 2026-01-08
 
@@ -976,7 +990,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.1...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.2...HEAD
+[4.0.2]: https://github.com/kettle-rb/tree_haver/compare/v4.0.1...v4.0.2
+[4.0.2t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.2
 [4.0.1]: https://github.com/kettle-rb/tree_haver/compare/v4.0.0...v4.0.1
 [4.0.1t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.1
 [4.0.0]: https://github.com/kettle-rb/tree_haver/compare/v3.2.6...v4.0.0
