@@ -74,7 +74,25 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="changed">Changed</h3>
 
+<ul>
+  <li>
+<strong>RSpec Dependency Tags</strong>: Refactored FFI backend isolation to use standard <code>:ffi_backend</code> tag
+    <ul>
+      <li>The <code>--tag ffi_backend</code> now triggers <code>isolated_test_mode</code> in <code>dependency_tags.rb</code>
+</li>
+      <li>This prevents MRI backend from loading during availability checks</li>
+      <li>Legacy <code>*_backend_only</code> tags are still supported for backwards compatibility</li>
+      <li>Simplifies the testing pattern: one tag serves as both dependency tag and isolation trigger</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="deprecated">Deprecated</h3>
+
+<ul>
+  <li>
+<strong><code>:ffi_backend_only</code> tag</strong>: Use <code>:ffi_backend</code> instead. The <code>*_backend_only</code> tags are now redundant.</li>
+</ul>
 
 <h3 id="removed">Removed</h3>
 
@@ -1806,7 +1824,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Thu Jan  8 18:28:40 2026 by
+  Generated on Thu Jan  8 23:23:07 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

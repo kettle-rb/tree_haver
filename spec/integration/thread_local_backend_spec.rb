@@ -236,8 +236,8 @@ RSpec.describe "Thread-local backend selection" do
     end
   end
 
-  describe "TreeHaver.backend_module", :ffi_backend do
-    it "uses effective_backend instead of global backend" do
+  describe "TreeHaver.backend_module" do
+    it "uses effective_backend instead of global backend", :ffi_backend do
       # Set global to :auto but thread-local to specific backend
       TreeHaver.backend = :auto
 
@@ -248,7 +248,7 @@ RSpec.describe "Thread-local backend selection" do
       end
     end
 
-    it "respects thread-local context when selecting backend" do
+    it "respects thread-local context when selecting backend", :rust_backend do
       TreeHaver.with_backend(:rust) do
         mod = TreeHaver.backend_module
         expect(mod).not_to be_nil
@@ -258,7 +258,7 @@ RSpec.describe "Thread-local backend selection" do
   end
 
   describe "TreeHaver.resolve_effective_backend" do
-    it "returns explicit backend when provided" do
+    it "returns explicit backend when provided", :citrus_backend, :mri_backend, :rust_backend do
       TreeHaver.backend = :rust
       TreeHaver.with_backend(:mri) do
         result = TreeHaver.resolve_effective_backend(:citrus)
@@ -266,7 +266,7 @@ RSpec.describe "Thread-local backend selection" do
       end
     end
 
-    it "returns thread-local backend when no explicit backend" do
+    it "returns thread-local backend when no explicit backend", :mri_backend, :rust_backend do
       TreeHaver.backend = :rust
       TreeHaver.with_backend(:mri) do
         result = TreeHaver.resolve_effective_backend(nil)
@@ -274,7 +274,7 @@ RSpec.describe "Thread-local backend selection" do
       end
     end
 
-    it "returns global backend when no explicit or thread-local backend" do
+    it "returns global backend when no explicit or thread-local backend", :rust_backend do
       TreeHaver.backend = :rust
       result = TreeHaver.resolve_effective_backend(nil)
       expect(result).to eq(:rust)
@@ -286,12 +286,12 @@ RSpec.describe "Thread-local backend selection" do
       expect(result).to eq(:auto)
     end
 
-    it "converts string to symbol" do
+    it "converts string to symbol", :rust_backend do
       result = TreeHaver.resolve_effective_backend("rust")
       expect(result).to eq(:rust)
     end
 
-    it "demonstrates precedence: explicit > thread-local > global" do
+    it "demonstrates precedence: explicit > thread-local > global", :mri_backend, :rust_backend do
       TreeHaver.backend = :auto
 
       TreeHaver.with_backend(:rust) do
