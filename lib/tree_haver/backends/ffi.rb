@@ -273,6 +273,7 @@ module TreeHaver
             attach_function(:ts_node_end_point, [:ts_node], :ts_point)
             attach_function(:ts_node_is_null, [:ts_node], :bool)
             attach_function(:ts_node_is_named, [:ts_node], :bool)
+            attach_function(:ts_node_is_missing, [:ts_node], :bool)
             attach_function(:ts_node_has_error, [:ts_node], :bool)
 
             # Only mark as fully loaded after all attach_function calls succeed
@@ -704,6 +705,17 @@ module TreeHaver
           # Explicit boolean conversion ensures consistent behavior across Ruby versions
           # FFI :bool return type may behave differently on some platforms
           !!Native.ts_node_has_error(@val)
+        end
+
+        # Check if this is a MISSING node
+        #
+        # A MISSING node represents a token that was expected by the grammar
+        # but was not found in the source. Tree-sitter inserts MISSING nodes
+        # to allow parsing to continue despite syntax errors.
+        #
+        # @return [Boolean] true if this is a MISSING node
+        def missing?
+          !!Native.ts_node_is_missing(@val)
         end
 
         # Iterate over child nodes

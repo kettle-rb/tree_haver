@@ -32,6 +32,9 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **FFI Backend**: Implemented `missing?` method on `TreeHaver::Backends::FFI::Node`
+  - Added `ts_node_is_missing` FFI function attachment
+  - This method was missing entirely, causing `NoMethodError` when checking for MISSING nodes
 - **FFI Backend**: Added explicit boolean conversion (`!!`) to `has_error?` return value
   - FFI `:bool` return type may behave inconsistently across Ruby versions and platforms
   - Ensures `has_error?` always returns `true` or `false`, not truthy/falsy values
