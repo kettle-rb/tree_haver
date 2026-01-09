@@ -724,39 +724,92 @@ module TreeHaver
         # Summary and Reset
         # ============================================================
 
+        # Determine which backends are blocked based on environment and ARGV
+        #
+        # This replicates the logic from RSpec.configure to determine blocked
+        # backends BEFORE the RSpec.configure block has run. This is necessary
+        # because summary may be called in a before(:suite) hook that runs
+        # before the blocked_backends instance variable is set.
+        #
+        # @return [Set<Symbol>] set of blocked backend symbols
+        def compute_blocked_backends
+          blocked = Set.new
+
+          # Check TREE_HAVER_BACKEND environment variable
+          env_backend = ENV["TREE_HAVER_BACKEND"]
+          if env_backend && !env_backend.empty? && env_backend != "auto"
+            backend_sym = env_backend.to_sym
+            TreeHaver::Backends::BLOCKED_BY[backend_sym]&.each { |blocker| blocked << blocker }
+          end
+
+          # Check ARGV for --tag options that indicate isolated backend testing
+          ARGV.each_with_index do |arg, i|
+            tag_value = nil
+            if arg == "--tag" && ARGV[i + 1]
+              tag_str = ARGV[i + 1]
+              next if tag_str.start_with?("~")
+              tag_value = tag_str.to_sym
+            elsif arg.start_with?("--tag=")
+              tag_str = arg.sub("--tag=", "")
+              next if tag_str.start_with?("~")
+              tag_value = tag_str.to_sym
+            end
+
+            next unless tag_value
+
+            # Check for standard backend tags (e.g., :ffi_backend)
+            TreeHaver::Backends::BLOCKED_BY.each do |backend, blockers|
+              standard_tag = :"#{backend}_backend"
+              legacy_tag = :"#{backend}_backend_only"
+              if tag_value == standard_tag || tag_value == legacy_tag
+                blockers.each { |blocker| blocked << blocker }
+              end
+            end
+          end
+
+          blocked
+        end
+
         # Get a summary of available dependencies (for debugging)
+        #
+        # This method respects blocked_backends to avoid loading backends
+        # that would conflict with isolated test modes (e.g., FFI-only tests).
         #
         # @return [Hash{Symbol => Boolean}] map of dependency name to availability
         def summary
+          # Use stored blocked_backends if available, otherwise compute dynamically
+          blocked = @blocked_backends || compute_blocked_backends
+
           {
             # Backend selection from environment variables
             selected_backend: selected_backend,
             allowed_native_backends: allowed_native_backends,
             allowed_ruby_backends: allowed_ruby_backends,
-            # TreeHaver backends (*_backend)
-            ffi_backend: ffi_available?,
-            mri_backend: mri_backend_available?,
-            rust_backend: rust_backend_available?,
-            java_backend: java_backend_available?,
-            prism_backend: prism_available?,
-            psych_backend: psych_available?,
-            commonmarker_backend: commonmarker_available?,
-            markly_backend: markly_available?,
-            citrus_backend: citrus_available?,
-            rbs_backend: rbs_backend_available?,
+            # TreeHaver backends (*_backend) - skip blocked backends to avoid loading them
+            ffi_backend: blocked.include?(:ffi) ? :blocked : ffi_available?,
+            mri_backend: blocked.include?(:mri) ? :blocked : mri_backend_available?,
+            rust_backend: blocked.include?(:rust) ? :blocked : rust_backend_available?,
+            java_backend: blocked.include?(:java) ? :blocked : java_backend_available?,
+            prism_backend: blocked.include?(:prism) ? :blocked : prism_available?,
+            psych_backend: blocked.include?(:psych) ? :blocked : psych_available?,
+            commonmarker_backend: blocked.include?(:commonmarker) ? :blocked : commonmarker_available?,
+            markly_backend: blocked.include?(:markly) ? :blocked : markly_available?,
+            citrus_backend: blocked.include?(:citrus) ? :blocked : citrus_available?,
+            rbs_backend: blocked.include?(:rbs) ? :blocked : rbs_backend_available?,
             # Ruby engines (*_engine)
             ruby_engine: RUBY_ENGINE,
             mri_engine: mri?,
             jruby_engine: jruby?,
             truffleruby_engine: truffleruby?,
-            # Tree-sitter grammars (*_grammar)
+            # Tree-sitter grammars (*_grammar) - also respect blocked backends
+            # since grammar checks may load backends
             libtree_sitter: libtree_sitter_available?,
-            bash_grammar: tree_sitter_bash_available?,
-            toml_grammar: tree_sitter_toml_available?,
-            json_grammar: tree_sitter_json_available?,
-            jsonc_grammar: tree_sitter_jsonc_available?,
-            rbs_grammar: tree_sitter_rbs_available?,
-            any_native_grammar: any_native_grammar_available?,
+            bash_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_bash_available?,
+            toml_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_toml_available?,
+            json_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_json_available?,
+            jsonc_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_jsonc_available?,
+            rbs_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_rbs_available?,
+            any_native_grammar: blocked.include?(:mri) ? :blocked : any_native_grammar_available?,
             # Language parsing capabilities (*_parsing)
             toml_parsing: any_toml_backend_available?,
             markdown_parsing: any_markdown_backend_available?,
@@ -776,9 +829,13 @@ module TreeHaver
             "TREE_SITTER_TOML_PATH" => ENV["TREE_SITTER_TOML_PATH"],
             "TREE_SITTER_JSON_PATH" => ENV["TREE_SITTER_JSON_PATH"],
             "TREE_SITTER_JSONC_PATH" => ENV["TREE_SITTER_JSONC_PATH"],
+            "TREE_SITTER_RBS_PATH" => ENV["TREE_SITTER_RBS_PATH"],
             "TREE_SITTER_RUNTIME_LIB" => ENV["TREE_SITTER_RUNTIME_LIB"],
             "TREE_HAVER_BACKEND" => ENV["TREE_HAVER_BACKEND"],
             "TREE_HAVER_DEBUG" => ENV["TREE_HAVER_DEBUG"],
+            # Library paths used by tree-sitter shared libraries
+            "LD_LIBRARY_PATH" => ENV["LD_LIBRARY_PATH"],
+            "DYLD_LIBRARY_PATH" => ENV["DYLD_LIBRARY_PATH"],
           }
         end
 

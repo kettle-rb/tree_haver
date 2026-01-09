@@ -57,7 +57,7 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><div id='filecontents'><h1 id="changelog">Changelog</h1>
+      <div id="content"><div id='filecontents'><p>ed# Changelog</p>
 
 <p><a href="https://semver.org/spec/v2.0.0.html"><img src="https://img.shields.io/badge/semver-2.0.0-FFDD67.svg?style=flat" alt="SemVer 2.0.0"></a> <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-FFDD67.svg?style=flat" alt="Keep-A-Changelog 1.0.0"></a></p>
 
@@ -71,6 +71,36 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <h2 id="unreleased"><a href="https://github.com/kettle-rb/tree_haver/compare/v4.0.4...HEAD">Unreleased</a></h2>
 
 <h3 id="added">Added</h3>
+
+<ul>
+  <li>
+<strong>FFI Backend</strong>: Added <code>child_by_field_name</code> method to <code>TreeHaver::Backends::FFI::Node</code>
+    <ul>
+      <li>Enables field-based child access using tree-sitter’s <code>ts_node_child_by_field_name</code> C API</li>
+      <li>Works with all grammars (JSON, JSONC, TOML, Bash, etc.) that define field names</li>
+      <li>Fixes compatibility issues with json-merge, jsonc-merge, and other gems that use field access</li>
+      <li>Example: <code>pair.child_by_field_name("key")</code> returns the key node from a JSON pair</li>
+    </ul>
+  </li>
+  <li>
+<strong>RSpec Dependency Tags</strong>: Added <code>compute_blocked_backends</code> method
+    <ul>
+      <li>Determines blocked backends from <code>TREE_HAVER_BACKEND</code> env and ARGV <code>--tag</code> options</li>
+      <li>Called by <code>summary</code> when <code>@blocked_backends</code> isn’t set yet (before RSpec.configure runs)</li>
+      <li>Fixes issue where gem-specific <code>before(:suite)</code> hooks could load blocked backends</li>
+    </ul>
+  </li>
+  <li>
+<strong>RSpec Dependency Tags</strong>: Added <code>LD_LIBRARY_PATH</code> and <code>DYLD_LIBRARY_PATH</code> to <code>env_summary</code>
+    <ul>
+      <li>These library paths are relevant for tree-sitter shared library loading</li>
+      <li>Useful for debugging grammar loading issues</li>
+    </ul>
+  </li>
+  <li>
+<strong>RSpec Dependency Tags</strong>: Added <code>TREE_SITTER_RBS_PATH</code> to <code>env_summary</code>
+</li>
+</ul>
 
 <h3 id="changed">Changed</h3>
 
@@ -1864,7 +1894,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Fri Jan  9 02:19:32 2026 by
+  Generated on Fri Jan  9 15:41:48 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

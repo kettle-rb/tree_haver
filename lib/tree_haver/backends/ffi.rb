@@ -267,6 +267,7 @@ module TreeHaver
             attach_function(:ts_node_type, [:ts_node], :string)
             attach_function(:ts_node_child_count, [:ts_node], :uint32)
             attach_function(:ts_node_child, [:ts_node, :uint32], :ts_node)
+            attach_function(:ts_node_child_by_field_name, [:ts_node, :string, :uint32], :ts_node)
             attach_function(:ts_node_start_byte, [:ts_node], :uint32)
             attach_function(:ts_node_end_byte, [:ts_node], :uint32)
             attach_function(:ts_node_start_point, [:ts_node], :ts_point)
@@ -275,6 +276,21 @@ module TreeHaver
             attach_function(:ts_node_is_named, [:ts_node], :bool)
             attach_function(:ts_node_is_missing, [:ts_node], :bool)
             attach_function(:ts_node_has_error, [:ts_node], :bool)
+
+            # Node navigation functions
+            attach_function(:ts_node_parent, [:ts_node], :ts_node)
+            attach_function(:ts_node_next_sibling, [:ts_node], :ts_node)
+            attach_function(:ts_node_prev_sibling, [:ts_node], :ts_node)
+            attach_function(:ts_node_next_named_sibling, [:ts_node], :ts_node)
+            attach_function(:ts_node_prev_named_sibling, [:ts_node], :ts_node)
+            attach_function(:ts_node_named_child, [:ts_node, :uint32], :ts_node)
+            attach_function(:ts_node_named_child_count, [:ts_node], :uint32)
+
+            # Descendant lookup functions
+            attach_function(:ts_node_descendant_for_byte_range, [:ts_node, :uint32, :uint32], :ts_node)
+            attach_function(:ts_node_descendant_for_point_range, [:ts_node, :ts_point, :ts_point], :ts_node)
+            attach_function(:ts_node_named_descendant_for_byte_range, [:ts_node, :uint32, :uint32], :ts_node)
+            attach_function(:ts_node_named_descendant_for_point_range, [:ts_node, :ts_point, :ts_point], :ts_node)
 
             # Only mark as fully loaded after all attach_function calls succeed
             @loaded = true
@@ -663,6 +679,25 @@ module TreeHaver
           Node.new(child_node)
         end
 
+        # Get a child node by field name
+        #
+        # Tree-sitter grammars define named fields for certain child positions.
+        # For example, in JSON, a "pair" node has "key" and "value" fields.
+        #
+        # @param field_name [String] the field name to look up
+        # @return [Node, nil] the child node, or nil if no child has that field
+        # @example Get the key from a JSON pair
+        #   pair.child_by_field_name("key") #=> Node (type: "string")
+        #   pair.child_by_field_name("value") #=> Node (type: "string" or "number", etc.)
+        def child_by_field_name(field_name)
+          name = String(field_name)
+          child_node = Native.ts_node_child_by_field_name(@val, name, name.bytesize)
+          # ts_node_child_by_field_name returns a null node if field not found
+          return if Native.ts_node_is_null(child_node)
+
+          Node.new(child_node)
+        end
+
         # Get start byte offset
         #
         # @return [Integer]
@@ -716,6 +751,150 @@ module TreeHaver
         # @return [Boolean] true if this is a MISSING node
         def missing?
           !!Native.ts_node_is_missing(@val)
+        end
+
+        # Check if this is a named node
+        #
+        # Named nodes represent syntactic constructs (e.g., "pair", "object").
+        # Anonymous nodes represent syntax/punctuation (e.g., "{", ",").
+        #
+        # @return [Boolean] true if this is a named node
+        def named?
+          !!Native.ts_node_is_named(@val)
+        end
+
+        # Get the parent node
+        #
+        # @return [Node, nil] parent node or nil if this is the root
+        def parent
+          parent_node = Native.ts_node_parent(@val)
+          return if Native.ts_node_is_null(parent_node)
+
+          Node.new(parent_node)
+        end
+
+        # Get the next sibling node
+        #
+        # @return [Node, nil] next sibling or nil if none
+        def next_sibling
+          sibling = Native.ts_node_next_sibling(@val)
+          return if Native.ts_node_is_null(sibling)
+
+          Node.new(sibling)
+        end
+
+        # Get the previous sibling node
+        #
+        # @return [Node, nil] previous sibling or nil if none
+        def prev_sibling
+          sibling = Native.ts_node_prev_sibling(@val)
+          return if Native.ts_node_is_null(sibling)
+
+          Node.new(sibling)
+        end
+
+        # Get the next named sibling node
+        #
+        # @return [Node, nil] next named sibling or nil if none
+        def next_named_sibling
+          sibling = Native.ts_node_next_named_sibling(@val)
+          return if Native.ts_node_is_null(sibling)
+
+          Node.new(sibling)
+        end
+
+        # Get the previous named sibling node
+        #
+        # @return [Node, nil] previous named sibling or nil if none
+        def prev_named_sibling
+          sibling = Native.ts_node_prev_named_sibling(@val)
+          return if Native.ts_node_is_null(sibling)
+
+          Node.new(sibling)
+        end
+
+        # Get a named child by index
+        #
+        # @param index [Integer] named child index (0-based)
+        # @return [Node, nil] named child or nil if index out of bounds
+        def named_child(index)
+          return if index < 0 || index >= named_child_count
+
+          child_node = Native.ts_node_named_child(@val, index)
+          return if Native.ts_node_is_null(child_node)
+
+          Node.new(child_node)
+        end
+
+        # Get the count of named children
+        #
+        # @return [Integer] number of named children
+        def named_child_count
+          Native.ts_node_named_child_count(@val)
+        end
+
+        # Find the smallest descendant that spans the given byte range
+        #
+        # @param start_byte [Integer] start byte offset
+        # @param end_byte [Integer] end byte offset
+        # @return [Node, nil] descendant node or nil if not found
+        def descendant_for_byte_range(start_byte, end_byte)
+          node = Native.ts_node_descendant_for_byte_range(@val, start_byte, end_byte)
+          return if Native.ts_node_is_null(node)
+
+          Node.new(node)
+        end
+
+        # Find the smallest named descendant that spans the given byte range
+        #
+        # @param start_byte [Integer] start byte offset
+        # @param end_byte [Integer] end byte offset
+        # @return [Node, nil] named descendant node or nil if not found
+        def named_descendant_for_byte_range(start_byte, end_byte)
+          node = Native.ts_node_named_descendant_for_byte_range(@val, start_byte, end_byte)
+          return if Native.ts_node_is_null(node)
+
+          Node.new(node)
+        end
+
+        # Find the smallest descendant that spans the given point range
+        #
+        # @param start_point [TreeHaver::Point, Hash] start point with :row and :column
+        # @param end_point [TreeHaver::Point, Hash] end point with :row and :column
+        # @return [Node, nil] descendant node or nil if not found
+        def descendant_for_point_range(start_point, end_point)
+          start_pt = Native::TSPoint.new
+          start_pt[:row] = start_point.respond_to?(:row) ? start_point.row : start_point[:row]
+          start_pt[:column] = start_point.respond_to?(:column) ? start_point.column : start_point[:column]
+
+          end_pt = Native::TSPoint.new
+          end_pt[:row] = end_point.respond_to?(:row) ? end_point.row : end_point[:row]
+          end_pt[:column] = end_point.respond_to?(:column) ? end_point.column : end_point[:column]
+
+          node = Native.ts_node_descendant_for_point_range(@val, start_pt, end_pt)
+          return if Native.ts_node_is_null(node)
+
+          Node.new(node)
+        end
+
+        # Find the smallest named descendant that spans the given point range
+        #
+        # @param start_point [TreeHaver::Point, Hash] start point with :row and :column
+        # @param end_point [TreeHaver::Point, Hash] end point with :row and :column
+        # @return [Node, nil] named descendant node or nil if not found
+        def named_descendant_for_point_range(start_point, end_point)
+          start_pt = Native::TSPoint.new
+          start_pt[:row] = start_point.respond_to?(:row) ? start_point.row : start_point[:row]
+          start_pt[:column] = start_point.respond_to?(:column) ? start_point.column : start_point[:column]
+
+          end_pt = Native::TSPoint.new
+          end_pt[:row] = end_point.respond_to?(:row) ? end_point.row : end_point[:row]
+          end_pt[:column] = end_point.respond_to?(:column) ? end_point.column : end_point[:column]
+
+          node = Native.ts_node_named_descendant_for_point_range(@val, start_pt, end_pt)
+          return if Native.ts_node_is_null(node)
+
+          Node.new(node)
         end
 
         # Iterate over child nodes

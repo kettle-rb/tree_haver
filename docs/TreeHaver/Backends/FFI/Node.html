@@ -181,6 +181,29 @@ tree-sitter C API, so we store the struct value directly.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#child_by_field_name-instance_method" title="#child_by_field_name (instance method)">#<strong>child_by_field_name</strong>(field_name)  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get a child node by field name.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#child_count-instance_method" title="#child_count (instance method)">#<strong>child_count</strong>  &#x21d2; Integer </a>
     
 
@@ -196,6 +219,52 @@ tree-sitter C API, so we store the struct value directly.</p>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the number of children.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#descendant_for_byte_range-instance_method" title="#descendant_for_byte_range (instance method)">#<strong>descendant_for_byte_range</strong>(start_byte, end_byte)  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Find the smallest descendant that spans the given byte range.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#descendant_for_point_range-instance_method" title="#descendant_for_point_range (instance method)">#<strong>descendant_for_point_range</strong>(start_point, end_point)  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Find the smallest descendant that spans the given point range.</p>
 </div></span>
   
 </li>
@@ -344,6 +413,236 @@ tree-sitter C API, so we store the struct value directly.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#named%3F-instance_method" title="#named? (instance method)">#<strong>named?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if this is a named node.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#named_child-instance_method" title="#named_child (instance method)">#<strong>named_child</strong>(index)  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get a named child by index.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#named_child_count-instance_method" title="#named_child_count (instance method)">#<strong>named_child_count</strong>  &#x21d2; Integer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the count of named children.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#named_descendant_for_byte_range-instance_method" title="#named_descendant_for_byte_range (instance method)">#<strong>named_descendant_for_byte_range</strong>(start_byte, end_byte)  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Find the smallest named descendant that spans the given byte range.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#named_descendant_for_point_range-instance_method" title="#named_descendant_for_point_range (instance method)">#<strong>named_descendant_for_point_range</strong>(start_point, end_point)  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Find the smallest named descendant that spans the given point range.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#next_named_sibling-instance_method" title="#next_named_sibling (instance method)">#<strong>next_named_sibling</strong>  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the next named sibling node.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#next_sibling-instance_method" title="#next_sibling (instance method)">#<strong>next_sibling</strong>  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the next sibling node.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#parent-instance_method" title="#parent (instance method)">#<strong>parent</strong>  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the parent node.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#prev_named_sibling-instance_method" title="#prev_named_sibling (instance method)">#<strong>prev_named_sibling</strong>  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the previous named sibling node.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#prev_sibling-instance_method" title="#prev_sibling (instance method)">#<strong>prev_sibling</strong>  &#x21d2; Node<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the previous sibling node.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#start_byte-instance_method" title="#start_byte (instance method)">#<strong>start_byte</strong>  &#x21d2; Integer </a>
     
 
@@ -465,13 +764,13 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-637
-638
-639
-640</pre>
+653
+654
+655
+656</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 637</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 653</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_ts_node_value'>ts_node_value</span><span class='rparen'>)</span>
   <span class='comment'># Store by-value struct (FFI will copy); methods pass it back by value
@@ -557,20 +856,20 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-747
-748
-749
-750
-751
-752
-753
-754
-755
-756
-757</pre>
+926
+927
+928
+929
+930
+931
+932
+933
+934
+935
+936</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 747</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 926</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='rparen'>)</span>
@@ -649,18 +948,119 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-660
-661
-662
-663
-664</pre>
+676
+677
+678
+679
+680</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 660</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 676</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_child_count'>child_count</span> <span class='op'>||</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&lt;</span> <span class='int'>0</span>
   <span class='id identifier rubyid_child_node'>child_node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_child'>ts_node_child</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='comma'>,</span> <span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="child_by_field_name-instance_method">
+  
+    #<strong>child_by_field_name</strong>(field_name)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get a child node by field name</p>
+
+<p>Tree-sitter grammars define named fields for certain child positions.<br />
+For example, in JSON, a “pair” node has “key” and “value” fields.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Get the key from a JSON pair</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_pair'>pair</span><span class='period'>.</span><span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='comment'>#=&gt; Node (type: &quot;string&quot;)
+</span><span class='id identifier rubyid_pair'>pair</span><span class='period'>.</span><span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='comment'>#=&gt; Node (type: &quot;string&quot; or &quot;number&quot;, etc.)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>field_name</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the field name to look up</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the child node, or nil if no child has that field</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+692
+693
+694
+695
+696
+697
+698
+699</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 692</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='const'>String</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_child_node'>child_node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_child_by_field_name'>ts_node_child_by_field_name</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_bytesize'>bytesize</span><span class='rparen'>)</span>
+  <span class='comment'># ts_node_child_by_field_name returns a null node if field not found
+</span>  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='rparen'>)</span>
+
   <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -710,15 +1110,225 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-652
-653
-654</pre>
+668
+669
+670</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 652</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 668</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_count'>child_count</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_child_count'>ts_node_child_count</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="descendant_for_byte_range-instance_method">
+  
+    #<strong>descendant_for_byte_range</strong>(start_byte, end_byte)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Find the smallest descendant that spans the given byte range</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>start_byte</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>start byte offset</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>end_byte</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>end byte offset</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>descendant node or nil if not found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+841
+842
+843
+844
+845
+846</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 841</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_descendant_for_byte_range'>descendant_for_byte_range</span><span class='lparen'>(</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='comma'>,</span> <span class='id identifier rubyid_end_byte'>end_byte</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_node'>node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_descendant_for_byte_range'>ts_node_descendant_for_byte_range</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='comma'>,</span> <span class='id identifier rubyid_start_byte'>start_byte</span><span class='comma'>,</span> <span class='id identifier rubyid_end_byte'>end_byte</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="descendant_for_point_range-instance_method">
+  
+    #<strong>descendant_for_point_range</strong>(start_point, end_point)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Find the smallest descendant that spans the given point range</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>start_point</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>start point with :row and :column</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>end_point</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>end point with :row and :column</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>descendant node or nil if not found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876
+877
+878</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 865</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_descendant_for_point_range'>descendant_for_point_range</span><span class='lparen'>(</span><span class='id identifier rubyid_start_point'>start_point</span><span class='comma'>,</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_start_pt'>start_pt</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='op'>::</span><span class='const'>TSPoint</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='id identifier rubyid_start_pt'>start_pt</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:row</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span> <span class='op'>:</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_start_pt'>start_pt</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:column</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span> <span class='op'>:</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span>
+
+  <span class='id identifier rubyid_end_pt'>end_pt</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='op'>::</span><span class='const'>TSPoint</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='id identifier rubyid_end_pt'>end_pt</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:row</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span> <span class='op'>:</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_end_pt'>end_pt</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:column</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span> <span class='op'>:</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span>
+
+  <span class='id identifier rubyid_node'>node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_descendant_for_point_range'>ts_node_descendant_for_point_range</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='comma'>,</span> <span class='id identifier rubyid_start_pt'>start_pt</span><span class='comma'>,</span> <span class='id identifier rubyid_end_pt'>end_pt</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -786,21 +1396,21 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-725
-726
-727
-728
-729
-730
-731
-732
-733
-734
-735
-736</pre>
+904
+905
+906
+907
+908
+909
+910
+911
+912
+913
+914
+915</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 725</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 904</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_enum_for'>enum_for</span><span class='lparen'>(</span><span class='symbol'>:each</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
@@ -857,12 +1467,12 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-676
-677
-678</pre>
+711
+712
+713</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 676</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 711</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_end_byte'>ts_node_end_byte</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -914,14 +1524,14 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-692
-693
-694
-695
-696</pre>
+727
+728
+729
+730
+731</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 692</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 727</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
   <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_end_point'>ts_node_end_point</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -978,14 +1588,14 @@ This is the FFI equivalent of tree-sitter’s ts_node_has_error.</p>
       <pre class="lines">
 
 
-704
-705
-706
-707
-708</pre>
+739
+740
+741
+742
+743</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 704</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 739</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
   <span class='comment'># Explicit boolean conversion ensures consistent behavior across Ruby versions
@@ -1043,15 +1653,743 @@ to allow parsing to continue despite syntax errors.</p>
       <pre class="lines">
 
 
-717
-718
-719</pre>
+752
+753
+754</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 717</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 752</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
   <span class='op'>!</span><span class='op'>!</span><span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_missing'>ts_node_is_missing</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="named?-instance_method">
+  
+    #<strong>named?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if this is a named node</p>
+
+<p>Named nodes represent syntactic constructs (e.g., “pair”, “object”).<br />
+Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if this is a named node</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+762
+763
+764</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 762</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
+  <span class='op'>!</span><span class='op'>!</span><span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_named'>ts_node_is_named</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="named_child-instance_method">
+  
+    #<strong>named_child</strong>(index)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get a named child by index</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>index</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>named child index (0-based)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>named child or nil if index out of bounds</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+820
+821
+822
+823
+824
+825
+826
+827</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 820</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_named_child'>named_child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&lt;</span> <span class='int'>0</span> <span class='op'>||</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_named_child_count'>named_child_count</span>
+
+  <span class='id identifier rubyid_child_node'>child_node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_named_child'>ts_node_named_child</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='comma'>,</span> <span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_child_node'>child_node</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="named_child_count-instance_method">
+  
+    #<strong>named_child_count</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the count of named children</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>number of named children</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+832
+833
+834</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 832</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_named_child_count'>named_child_count</span>
+  <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_named_child_count'>ts_node_named_child_count</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="named_descendant_for_byte_range-instance_method">
+  
+    #<strong>named_descendant_for_byte_range</strong>(start_byte, end_byte)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Find the smallest named descendant that spans the given byte range</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>start_byte</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>start byte offset</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>end_byte</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>end byte offset</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>named descendant node or nil if not found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+853
+854
+855
+856
+857
+858</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 853</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_named_descendant_for_byte_range'>named_descendant_for_byte_range</span><span class='lparen'>(</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='comma'>,</span> <span class='id identifier rubyid_end_byte'>end_byte</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_node'>node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_named_descendant_for_byte_range'>ts_node_named_descendant_for_byte_range</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='comma'>,</span> <span class='id identifier rubyid_start_byte'>start_byte</span><span class='comma'>,</span> <span class='id identifier rubyid_end_byte'>end_byte</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="named_descendant_for_point_range-instance_method">
+  
+    #<strong>named_descendant_for_point_range</strong>(start_point, end_point)  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Find the smallest named descendant that spans the given point range</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>start_point</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>start point with :row and :column</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>end_point</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>end point with :row and :column</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>named descendant node or nil if not found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+885
+886
+887
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897
+898</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 885</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_named_descendant_for_point_range'>named_descendant_for_point_range</span><span class='lparen'>(</span><span class='id identifier rubyid_start_point'>start_point</span><span class='comma'>,</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_start_pt'>start_pt</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='op'>::</span><span class='const'>TSPoint</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='id identifier rubyid_start_pt'>start_pt</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:row</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span> <span class='op'>:</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_start_pt'>start_pt</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:column</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span> <span class='op'>:</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span>
+
+  <span class='id identifier rubyid_end_pt'>end_pt</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='op'>::</span><span class='const'>TSPoint</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='id identifier rubyid_end_pt'>end_pt</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:row</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span> <span class='op'>:</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_end_pt'>end_pt</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:column</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span> <span class='op'>:</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span>
+
+  <span class='id identifier rubyid_node'>node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_named_descendant_for_point_range'>ts_node_named_descendant_for_point_range</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='comma'>,</span> <span class='id identifier rubyid_start_pt'>start_pt</span><span class='comma'>,</span> <span class='id identifier rubyid_end_pt'>end_pt</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_node'>node</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="next_named_sibling-instance_method">
+  
+    #<strong>next_named_sibling</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the next named sibling node</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>next named sibling or nil if none</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+799
+800
+801
+802
+803
+804</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 799</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_next_named_sibling'>next_named_sibling</span>
+  <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_next_named_sibling'>ts_node_next_named_sibling</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="next_sibling-instance_method">
+  
+    #<strong>next_sibling</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the next sibling node</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>next sibling or nil if none</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+779
+780
+781
+782
+783
+784</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 779</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
+  <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_next_sibling'>ts_node_next_sibling</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="parent-instance_method">
+  
+    #<strong>parent</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the parent node</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>parent node or nil if this is the root</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+769
+770
+771
+772
+773
+774</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 769</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
+  <span class='id identifier rubyid_parent_node'>parent_node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_parent'>ts_node_parent</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_parent_node'>parent_node</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_parent_node'>parent_node</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="prev_named_sibling-instance_method">
+  
+    #<strong>prev_named_sibling</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the previous named sibling node</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>previous named sibling or nil if none</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+809
+810
+811
+812
+813
+814</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 809</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_prev_named_sibling'>prev_named_sibling</span>
+  <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_prev_named_sibling'>ts_node_prev_named_sibling</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="prev_sibling-instance_method">
+  
+    #<strong>prev_sibling</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the previous sibling node</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>previous sibling or nil if none</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+789
+790
+791
+792
+793
+794</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 789</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
+  <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_prev_sibling'>ts_node_prev_sibling</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_null'>ts_node_is_null</span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='rparen'>)</span>
+
+  <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::FFI::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_sibling'>sibling</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1096,12 +2434,12 @@ to allow parsing to continue despite syntax errors.</p>
       <pre class="lines">
 
 
-669
-670
-671</pre>
+704
+705
+706</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 669</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 704</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_start_byte'>ts_node_start_byte</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1153,14 +2491,14 @@ to allow parsing to continue despite syntax errors.</p>
       <pre class="lines">
 
 
-683
-684
-685
-686
-687</pre>
+718
+719
+720
+721
+722</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 683</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 718</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
   <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_start_point'>ts_node_start_point</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1214,12 +2552,12 @@ to allow parsing to continue despite syntax errors.</p>
       <pre class="lines">
 
 
-645
-646
-647</pre>
+661
+662
+663</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 645</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 661</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_type'>ts_node_type</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1234,7 +2572,7 @@ to allow parsing to continue despite syntax errors.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 02:19:33 2026 by
+  Generated on Fri Jan  9 15:41:50 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

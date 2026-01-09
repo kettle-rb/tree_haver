@@ -1,4 +1,4 @@
-# Changelog
+ed# Changelog
 
 [![SemVer 2.0.0][📌semver-img]][📌semver] [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]][📗keep-changelog]
 
@@ -19,6 +19,20 @@ Please file a bug if you notice a violation of semantic versioning.
 ## [Unreleased]
 
 ### Added
+
+- **FFI Backend**: Added `child_by_field_name` method to `TreeHaver::Backends::FFI::Node`
+  - Enables field-based child access using tree-sitter's `ts_node_child_by_field_name` C API
+  - Works with all grammars (JSON, JSONC, TOML, Bash, etc.) that define field names
+  - Fixes compatibility issues with json-merge, jsonc-merge, and other gems that use field access
+  - Example: `pair.child_by_field_name("key")` returns the key node from a JSON pair
+- **RSpec Dependency Tags**: Added `compute_blocked_backends` method
+  - Determines blocked backends from `TREE_HAVER_BACKEND` env and ARGV `--tag` options
+  - Called by `summary` when `@blocked_backends` isn't set yet (before RSpec.configure runs)
+  - Fixes issue where gem-specific `before(:suite)` hooks could load blocked backends
+- **RSpec Dependency Tags**: Added `LD_LIBRARY_PATH` and `DYLD_LIBRARY_PATH` to `env_summary`
+  - These library paths are relevant for tree-sitter shared library loading
+  - Useful for debugging grammar loading issues
+- **RSpec Dependency Tags**: Added `TREE_SITTER_RBS_PATH` to `env_summary`
 
 ### Changed
 
