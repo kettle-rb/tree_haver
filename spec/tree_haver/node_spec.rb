@@ -338,6 +338,7 @@ RSpec.describe TreeHaver::Node do
       let(:simple_node) do
         double(
           "node",
+          missing?: false,
           has_error?: false,
           child_count: 0,
           type: "test",
@@ -1021,12 +1022,6 @@ RSpec.describe TreeHaver::Node do
       end
 
       describe "#missing?" do
-        it "returns false when backend doesn't support missing?" do
-          allow(minimal_node).to receive(:respond_to?).with(:missing?).and_return(false)
-
-          expect(node.missing?).to be false
-        end
-
         it "delegates when backend supports missing?" do
           allow(minimal_node).to receive(:respond_to?).with(:missing?).and_return(true)
           allow(minimal_node).to receive(:missing?).and_return(true)

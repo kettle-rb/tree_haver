@@ -263,7 +263,6 @@ module TreeHaver
     # Check if the node is missing
     # @return [Boolean]
     def missing?
-      return false unless @inner_node.respond_to?(:missing?)
       @inner_node.missing?
     end
 

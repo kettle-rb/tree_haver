@@ -22,11 +22,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- **TreeHaver::Node**: Removed defensive `respond_to?` checks from `has_error?` and `missing?` methods
+  - All tree-sitter backends (MRI, Rust, FFI, Java) must implement these methods on their inner nodes
+  - This enforces proper backend API compliance rather than silently masking missing implementations
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- **FFI Backend**: Added explicit boolean conversion (`!!`) to `has_error?` return value
+  - FFI `:bool` return type may behave inconsistently across Ruby versions and platforms
+  - Ensures `has_error?` always returns `true` or `false`, not truthy/falsy values
 
 ### Security
 

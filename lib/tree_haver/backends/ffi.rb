@@ -701,7 +701,9 @@ module TreeHaver
         #
         # @return [Boolean] true if node subtree contains errors
         def has_error?
-          Native.ts_node_has_error(@val)
+          # Explicit boolean conversion ensures consistent behavior across Ruby versions
+          # FFI :bool return type may behave differently on some platforms
+          !!Native.ts_node_has_error(@val)
         end
 
         # Iterate over child nodes
