@@ -28,13 +28,22 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+### Security
+
+## [4.0.4] - 2026-01-09
+
+- TAG: [v4.0.4][4.0.4t]
+- COVERAGE: 95.27% -- 2033/2134 lines in 28 files
+- BRANCH COVERAGE: 84.07% -- 802/954 branches in 28 files
+- 95.49% documented
+
+### Fixed
+
 - **RSpec Dependency Tags**: Fixed blocked backend tests not being excluded on JRuby
   - When `TREE_HAVER_BACKEND=ffi` is set, MRI backend is blocked to prevent conflicts
   - Previously, this skipped BOTH the availability check AND the exclusion
   - Now blocked backends are excluded without checking availability
   - Tests tagged with `:mri_backend` now properly skip on JRuby when FFI is selected
-
-### Security
 
 ## [4.0.3] - 2026-01-08
 
@@ -1015,7 +1024,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.3...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.4...HEAD
+[4.0.4]: https://github.com/kettle-rb/tree_haver/compare/v4.0.3...v4.0.4
+[4.0.4t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.4
 [4.0.3]: https://github.com/kettle-rb/tree_haver/compare/v4.0.2...v4.0.3
 [4.0.3t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.3
 [4.0.2]: https://github.com/kettle-rb/tree_haver/compare/v4.0.1...v4.0.2
