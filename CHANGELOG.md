@@ -28,6 +28,12 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **RSpec Dependency Tags**: Fixed blocked backend tests not being excluded on JRuby
+  - When `TREE_HAVER_BACKEND=ffi` is set, MRI backend is blocked to prevent conflicts
+  - Previously, this skipped BOTH the availability check AND the exclusion
+  - Now blocked backends are excluded without checking availability
+  - Tests tagged with `:mri_backend` now properly skip on JRuby when FFI is selected
+
 ### Security
 
 ## [4.0.3] - 2026-01-08

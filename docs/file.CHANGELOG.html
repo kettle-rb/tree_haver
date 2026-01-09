@@ -80,6 +80,18 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="fixed">Fixed</h3>
 
+<ul>
+  <li>
+<strong>RSpec Dependency Tags</strong>: Fixed blocked backend tests not being excluded on JRuby
+    <ul>
+      <li>When <code>TREE_HAVER_BACKEND=ffi</code> is set, MRI backend is blocked to prevent conflicts</li>
+      <li>Previously, this skipped BOTH the availability check AND the exclusion</li>
+      <li>Now blocked backends are excluded without checking availability</li>
+      <li>Tests tagged with <code>:mri_backend</code> now properly skip on JRuby when FFI is selected</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="security">Security</h3>
 
 <h2 id="403---2026-01-08">
@@ -1839,7 +1851,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Thu Jan  8 23:32:51 2026 by
+  Generated on Fri Jan  9 02:07:38 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

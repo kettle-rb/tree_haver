@@ -1073,10 +1073,16 @@ RSpec.configure do |config|
 
   # Now configure exclusions, skipping availability checks for blocked backends
   backend_tags.each do |backend, tag|
-    next if blocked_backends.include?(backend)
-
     # FFI is handled specially with before(:each) hook above
     next if backend == :ffi
+
+    # If this backend is in blocked_backends, we exclude its tests WITHOUT checking
+    # availability. This prevents loading a conflicting backend while still ensuring
+    # tests for unavailable backends are skipped.
+    if blocked_backends.include?(backend)
+      config.filter_run_excluding(tag => true)
+      next
+    end
 
     availability_method = backend_availability_methods[backend]
     config.filter_run_excluding(tag => true) unless deps.public_send(availability_method)
