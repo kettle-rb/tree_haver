@@ -48,7 +48,7 @@ RSpec.describe "Thread-local backend selection" do
       expect(TreeHaver.effective_backend).to eq(:ffi)
     end
 
-    it "returns thread-local backend when set", :rust_backend, :mri_backend do
+    it "returns thread-local backend when set", :mri_backend, :rust_backend do
       TreeHaver.backend = :rust
       ctx = TreeHaver.current_backend_context
       ctx[:backend] = :mri
@@ -63,7 +63,7 @@ RSpec.describe "Thread-local backend selection" do
       expect(TreeHaver.effective_backend).to eq(:auto)
     end
 
-    it "prioritizes thread-local over global when both are set", :rust_backend, :mri_backend do
+    it "prioritizes thread-local over global when both are set", :mri_backend, :rust_backend do
       TreeHaver.backend = :rust
       ctx = TreeHaver.current_backend_context
       ctx[:backend] = :mri
@@ -96,7 +96,7 @@ RSpec.describe "Thread-local backend selection" do
       expect(result).to eq("test result")
     end
 
-    it "supports nested blocks (inner overrides outer)", :rust_backend, :mri_backend, :citrus_backend do
+    it "supports nested blocks (inner overrides outer)", :citrus_backend, :mri_backend, :rust_backend do
       TreeHaver.with_backend(:rust) do
         expect(TreeHaver.effective_backend).to eq(:rust)
 
@@ -169,7 +169,7 @@ RSpec.describe "Thread-local backend selection" do
 
   describe "Thread isolation" do
     # These tests use :mri and :rust backends which are only available on MRI
-    it "different threads can use different backends simultaneously", :rust_backend, :mri_backend do
+    it "different threads can use different backends simultaneously", :mri_backend, :rust_backend do
       results = {}
 
       thread1 = Thread.new do
@@ -197,7 +197,7 @@ RSpec.describe "Thread-local backend selection" do
       expect(results[:thread2_end]).to eq(:mri)
     end
 
-    it "main thread is unaffected by other threads", :rust_backend, :mri_backend do
+    it "main thread is unaffected by other threads", :mri_backend, :rust_backend do
       TreeHaver.backend = :rust
 
       thread = Thread.new do
