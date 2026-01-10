@@ -632,12 +632,12 @@ If TREE_SITTER_RUNTIME_LIB is set, it is tried first.</p>
       <pre class="lines">
 
 
-299
 300
-301</pre>
+301
+302</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 299</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 300</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_loaded?'>loaded?</span>
   <span class='op'>!</span><span class='op'>!</span><span class='ivar'>@loaded</span>
@@ -774,7 +774,8 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 294
 295
 296
-297</pre>
+297
+298</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 219</span>
@@ -799,8 +800,9 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
     <span class='id identifier rubyid_ffi_lib'>ffi_lib</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_lib_loaded'>lib_loaded</span> <span class='op'>=</span> <span class='kw'>true</span>
     <span class='kw'>break</span>
-  <span class='kw'>rescue</span> <span class='op'>::</span><span class='const'>FFI</span><span class='op'>::</span><span class='const'>NotFoundError</span><span class='comma'>,</span> <span class='const'>LoadError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_last_error'>last_error</span> <span class='op'>=</span> <span class='id identifier rubyid_e'>e</span>
+  <span class='kw'>rescue</span> <span class='const'>LoadError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='comment'># Note: FFI::NotFoundError inherits from LoadError, so it&#39;s caught here too
+</span>    <span class='id identifier rubyid_last_error'>last_error</span> <span class='op'>=</span> <span class='id identifier rubyid_e'>e</span>
   <span class='kw'>end</span>
 
   <span class='kw'>unless</span> <span class='id identifier rubyid_lib_loaded'>lib_loaded</span>
@@ -931,7 +933,7 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 15:41:48 2026 by
+  Generated on Fri Jan  9 16:34:48 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -198,14 +198,8 @@ module TreeHaver
             return from_library(path, symbol: symbol, name: name)
           rescue NotAvailable, ArgumentError, LoadError => e
             # Tree-sitter failed to load - check for Citrus fallback
+            # Note: FFI::NotFoundError inherits from LoadError, so it's caught here too
             handle_tree_sitter_load_failure(e, all_backends)
-          rescue => e
-            # Also catch FFI::NotFoundError if FFI is loaded (can't reference directly as FFI may not exist)
-            if defined?(::FFI::NotFoundError) && e.is_a?(::FFI::NotFoundError)
-              handle_tree_sitter_load_failure(e, all_backends)
-            else
-              raise
-            end
           end
         end
 
@@ -237,7 +231,7 @@ module TreeHaver
       #
       # This handles cases where:
       # - The .so file doesn't exist or can't be loaded (NotAvailable, LoadError)
-      # - FFI can't find required symbols like ts_parser_new (FFI::NotFoundError)
+      # - FFI can't find required symbols like ts_parser_new (FFI::NotFoundError inherits from LoadError)
       # - Invalid arguments were provided (ArgumentError)
       #
       # Fallback to Citrus ONLY happens when:

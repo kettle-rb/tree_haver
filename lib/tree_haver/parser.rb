@@ -62,14 +62,8 @@ module TreeHaver
         @impl = mod::Parser.new
         @explicit_backend = backend  # Remember for introspection (always a Symbol or nil)
       rescue NoMethodError, LoadError => e
+        # Note: FFI::NotFoundError inherits from LoadError, so it's caught here too
         handle_parser_creation_failure(e, backend)
-      rescue => e
-        # Also catch FFI::NotFoundError if FFI is loaded (can't reference directly as FFI may not exist)
-        if defined?(::FFI::NotFoundError) && e.is_a?(::FFI::NotFoundError)
-          handle_parser_creation_failure(e, backend)
-        else
-          raise
-        end
       end
     end
 

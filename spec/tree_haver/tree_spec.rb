@@ -128,14 +128,14 @@ RSpec.describe TreeHaver::Tree, :toml_parsing do
       end
     end
 
-    context "when MRI backend (TreeSitter) is available", :mri_backend do
+    context "when MRI backend (TreeSitter) is available", :mri_backend, :toml_grammar do
       # These tests cover the InputEdit code path when TreeSitter is available
       # The :mri_backend tag handles skipping when MRI backend is not available
+      # The :toml_grammar tag ensures TOML grammar is available
 
       it "uses InputEdit object when TreeSitter::InputEdit is defined" do
-        # Create a tree with MRI backend
-        mri_parser = TreeHaver::Parser.new(backend: :mri)
-        mri_parser.language = TreeHaver::Language.toml
+        # Create a tree with MRI backend using parser_for which handles registration
+        mri_parser = TreeHaver.with_backend(:mri) { TreeHaver.parser_for(:toml) }
         mri_tree = mri_parser.parse(source)
 
         # Skip if this backend doesn't support editing (runtime capability check)
@@ -155,8 +155,7 @@ RSpec.describe TreeHaver::Tree, :toml_parsing do
       end
 
       it "converts point hashes to TreeSitter::Point objects" do
-        mri_parser = TreeHaver::Parser.new(backend: :mri)
-        mri_parser.language = TreeHaver::Language.toml
+        mri_parser = TreeHaver.with_backend(:mri) { TreeHaver.parser_for(:toml) }
         mri_tree = mri_parser.parse(source)
 
         # Skip if this backend doesn't support editing (runtime capability check)

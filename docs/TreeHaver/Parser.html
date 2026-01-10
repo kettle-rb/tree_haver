@@ -420,13 +420,7 @@ set a language before parsing.</p>
 65
 66
 67
-68
-69
-70
-71
-72
-73
-74</pre>
+68</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 45</span>
@@ -451,14 +445,8 @@ set a language before parsing.</p>
     <span class='ivar'>@impl</span> <span class='op'>=</span> <span class='id identifier rubyid_mod'>mod</span><span class='op'>::</span><span class='const'>Parser</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
     <span class='ivar'>@explicit_backend</span> <span class='op'>=</span> <span class='id identifier rubyid_backend'>backend</span>  <span class='comment'># Remember for introspection (always a Symbol or nil)
 </span>  <span class='kw'>rescue</span> <span class='const'>NoMethodError</span><span class='comma'>,</span> <span class='const'>LoadError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_handle_parser_creation_failure'>handle_parser_creation_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='comment'># Also catch FFI::NotFoundError if FFI is loaded (can&#39;t reference directly as FFI may not exist)
-</span>    <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='op'>::</span><span class='const'>FFI</span><span class='op'>::</span><span class='const'>NotFoundError</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='op'>::</span><span class='const'>FFI</span><span class='op'>::</span><span class='const'>NotFoundError</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_handle_parser_creation_failure'>handle_parser_creation_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
-    <span class='kw'>else</span>
-      <span class='id identifier rubyid_raise'>raise</span>
-    <span class='kw'>end</span>
+    <span class='comment'># Note: FFI::NotFoundError inherits from LoadError, so it&#39;s caught here too
+</span>    <span class='id identifier rubyid_handle_parser_creation_failure'>handle_parser_creation_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -517,6 +505,12 @@ set a language before parsing.</p>
       <pre class="lines">
 
 
+99
+100
+101
+102
+103
+104
 105
 106
 107
@@ -532,16 +526,10 @@ set a language before parsing.</p>
 117
 118
 119
-120
-121
-122
-123
-124
-125
-126</pre>
+120</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 105</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 99</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend'>backend</span>
   <span class='kw'>if</span> <span class='ivar'>@explicit_backend</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@explicit_backend</span> <span class='op'>!=</span> <span class='symbol'>:auto</span>
@@ -650,6 +638,12 @@ set a language before parsing.</p>
       <pre class="lines">
 
 
+76
+77
+78
+79
+80
+81
 82
 83
 84
@@ -660,16 +654,10 @@ set a language before parsing.</p>
 89
 90
 91
-92
-93
-94
-95
-96
-97
-98</pre>
+92</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 82</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 76</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_handle_parser_creation_failure'>handle_parser_creation_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_error'>error</span><span class='comma'>,</span> <span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
   <span class='comment'># Tree-sitter backend failed (likely missing runtime library)
@@ -762,6 +750,12 @@ set a language before parsing.</p>
       <pre class="lines">
 
 
+128
+129
+130
+131
+132
+133
 134
 135
 136
@@ -774,16 +768,10 @@ set a language before parsing.</p>
 143
 144
 145
-146
-147
-148
-149
-150
-151
-152</pre>
+146</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 134</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 128</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_language='>language=</span><span class='lparen'>(</span><span class='id identifier rubyid_lang'>lang</span><span class='rparen'>)</span>
   <span class='comment'># Check if this is a Citrus language - if so, we need a Citrus parser
@@ -879,14 +867,14 @@ set a language before parsing.</p>
       <pre class="lines">
 
 
-161
-162
-163
-164
-165</pre>
+155
+156
+157
+158
+159</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 161</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 155</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_tree_impl'>tree_impl</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
@@ -1024,6 +1012,12 @@ new_tree = parser.parse_string(tree, &quot;x = 42&quot;)</code></pre>
       <pre class="lines">
 
 
+194
+195
+196
+197
+198
+199
 200
 201
 202
@@ -1041,16 +1035,10 @@ new_tree = parser.parse_string(tree, &quot;x = 42&quot;)</code></pre>
 214
 215
 216
-217
-218
-219
-220
-221
-222
-223</pre>
+217</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 200</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/parser.rb', line 194</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse_string'>parse_string</span><span class='lparen'>(</span><span class='id identifier rubyid_old_tree'>old_tree</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='comment'># Pass through to backend if it supports incremental parsing
@@ -1086,7 +1074,7 @@ new_tree = parser.parse_string(tree, &quot;x = 42&quot;)</code></pre>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 15:41:50 2026 by
+  Generated on Fri Jan  9 16:34:48 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

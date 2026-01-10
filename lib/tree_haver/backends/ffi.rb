@@ -236,7 +236,8 @@ module TreeHaver
               ffi_lib(name)
               lib_loaded = true
               break
-            rescue ::FFI::NotFoundError, LoadError => e
+            rescue LoadError => e
+              # Note: FFI::NotFoundError inherits from LoadError, so it's caught here too
               last_error = e
             end
 

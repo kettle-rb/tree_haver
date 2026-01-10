@@ -901,13 +901,7 @@ used based on registration and current backend.</p>
 218
 219
 220
-221
-222
-223
-224
-225
-226
-227</pre>
+221</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 149</span>
@@ -964,14 +958,8 @@ used based on registration and current backend.</p>
       <span class='kw'>return</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='id identifier rubyid_symbol'>symbol</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
     <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='const'>LoadError</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
       <span class='comment'># Tree-sitter failed to load - check for Citrus fallback
+</span>      <span class='comment'># Note: FFI::NotFoundError inherits from LoadError, so it&#39;s caught here too
 </span>      <span class='id identifier rubyid_handle_tree_sitter_load_failure'>handle_tree_sitter_load_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid_all_backends'>all_backends</span><span class='rparen'>)</span>
-    <span class='kw'>rescue</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-      <span class='comment'># Also catch FFI::NotFoundError if FFI is loaded (can&#39;t reference directly as FFI may not exist)
-</span>      <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='op'>::</span><span class='const'>FFI</span><span class='op'>::</span><span class='const'>NotFoundError</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='op'>::</span><span class='const'>FFI</span><span class='op'>::</span><span class='const'>NotFoundError</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_handle_tree_sitter_load_failure'>handle_tree_sitter_load_failure</span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='comma'>,</span> <span class='id identifier rubyid_all_backends'>all_backends</span><span class='rparen'>)</span>
-      <span class='kw'>else</span>
-        <span class='id identifier rubyid_raise'>raise</span>
-      <span class='kw'>end</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
 
@@ -1038,12 +1026,12 @@ used based on registration and current backend.</p>
       <pre class="lines">
 
 
-230
-231
-232</pre>
+224
+225
+226</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 230</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/language.rb', line 224</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_respond_to_missing?'>respond_to_missing?</span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='comma'>,</span> <span class='id identifier rubyid_include_private'>include_private</span> <span class='op'>=</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='op'>!</span><span class='op'>!</span><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='period'>.</span><span class='id identifier rubyid_registered_language'><span class='object_link'><a href="../TreeHaver.html#registered_language-class_method" title="TreeHaver.registered_language (method)">registered_language</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_method_name'>method_name</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='kw'>super</span>
@@ -1058,7 +1046,7 @@ used based on registration and current backend.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 15:41:50 2026 by
+  Generated on Fri Jan  9 16:34:48 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

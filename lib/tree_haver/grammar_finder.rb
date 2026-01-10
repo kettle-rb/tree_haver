@@ -271,9 +271,7 @@ module TreeHaver
           mod::Parser.new
           true
         rescue NoMethodError, LoadError, NotAvailable => _e
-          false
-        rescue StandardError => _e
-          # Catch FFI::NotFoundError and other errors when FFI is loaded
+          # Note: FFI::NotFoundError inherits from LoadError, so it's caught here too
           false
         end
       end

@@ -104,11 +104,59 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="changed">Changed</h3>
 
+<ul>
+  <li>
+<strong>Language#method_missing</strong>: Simplified error handling in <code>Language#method_missing</code>
+    <ul>
+      <li>Removed unreachable rescue block for <code>FFI::NotFoundError</code>
+</li>
+      <li>
+<code>FFI::NotFoundError</code> inherits from <code>LoadError</code>, so it’s already caught by the prior rescue clause</li>
+      <li>Reduces code complexity without changing behavior</li>
+    </ul>
+  </li>
+  <li>
+<strong>Parser#initialize</strong>: Simplified error handling in <code>Parser#initialize</code>
+    <ul>
+      <li>Same fix as Language - removed unreachable <code>FFI::NotFoundError</code> handling</li>
+      <li>Added comment noting that <code>FFI::NotFoundError</code> inherits from <code>LoadError</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<strong>FFI Backend Native#try_load!</strong>: Removed redundant <code>FFI::NotFoundError</code> from rescue clause
+    <ul>
+      <li>Only rescues <code>LoadError</code> now with comment explaining inheritance</li>
+    </ul>
+  </li>
+  <li>
+<strong>GrammarFinder.tree_sitter_runtime_usable?</strong>: Removed redundant <code>StandardError</code> rescue clause
+    <ul>
+      <li>
+<code>LoadError</code> already catches <code>FFI::NotFoundError</code>
+</li>
+      <li>Added comment explaining the inheritance relationship</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>
+<strong>Test Isolation</strong>: Fixed state leakage in <code>language_registry_spec.rb</code>
+    <ul>
+      <li>Tests were registering real language names (<code>:toml</code>, <code>:json</code>, <code>:yaml</code>) with fake paths</li>
+      <li>These registrations persisted and polluted other tests that expected real grammar paths</li>
+      <li>Changed all tests to use unique test-only language names (prefixed with <code>test_lang_</code>)</li>
+      <li>Fixes 2 spec failures when running all tests together (<code>TreeHaver::Tree#edit</code> specs)</li>
+    </ul>
+  </li>
+</ul>
 
 <h3 id="security">Security</h3>
 
@@ -1894,7 +1942,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Fri Jan  9 15:41:48 2026 by
+  Generated on Fri Jan  9 16:34:47 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

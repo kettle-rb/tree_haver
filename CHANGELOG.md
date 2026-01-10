@@ -36,11 +36,30 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- **Language#method_missing**: Simplified error handling in `Language#method_missing`
+  - Removed unreachable rescue block for `FFI::NotFoundError`
+  - `FFI::NotFoundError` inherits from `LoadError`, so it's already caught by the prior rescue clause
+  - Reduces code complexity without changing behavior
+- **Parser#initialize**: Simplified error handling in `Parser#initialize`
+  - Same fix as Language - removed unreachable `FFI::NotFoundError` handling
+  - Added comment noting that `FFI::NotFoundError` inherits from `LoadError`
+- **FFI Backend Native#try_load!**: Removed redundant `FFI::NotFoundError` from rescue clause
+  - Only rescues `LoadError` now with comment explaining inheritance
+- **GrammarFinder.tree_sitter_runtime_usable?**: Removed redundant `StandardError` rescue clause
+  - `LoadError` already catches `FFI::NotFoundError`
+  - Added comment explaining the inheritance relationship
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- **Test Isolation**: Fixed state leakage in `language_registry_spec.rb`
+  - Tests were registering real language names (`:toml`, `:json`, `:yaml`) with fake paths
+  - These registrations persisted and polluted other tests that expected real grammar paths
+  - Changed all tests to use unique test-only language names (prefixed with `test_lang_`)
+  - Fixes 2 spec failures when running all tests together (`TreeHaver::Tree#edit` specs)
 
 ### Security
 
