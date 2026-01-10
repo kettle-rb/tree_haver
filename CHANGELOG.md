@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [4.0.5] - 2026-01-09
+
+- TAG: [v4.0.5][4.0.5t]
+- COVERAGE: 93.50% -- 2058/2201 lines in 28 files
+- BRANCH COVERAGE: 81.11% -- 803/990 branches in 28 files
+- 95.60% documented
+
+### Added
+
 - **FFI Backend**: Added `child_by_field_name` method to `TreeHaver::Backends::FFI::Node`
   - Enables field-based child access using tree-sitter's `ts_node_child_by_field_name` C API
   - Works with all grammars (JSON, JSONC, TOML, Bash, etc.) that define field names
@@ -49,10 +68,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - `LoadError` already catches `FFI::NotFoundError`
   - Added comment explaining the inheritance relationship
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - **Test Isolation**: Fixed state leakage in `language_registry_spec.rb`
@@ -60,8 +75,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - These registrations persisted and polluted other tests that expected real grammar paths
   - Changed all tests to use unique test-only language names (prefixed with `test_lang_`)
   - Fixes 2 spec failures when running all tests together (`TreeHaver::Tree#edit` specs)
-
-### Security
 
 ## [4.0.4] - 2026-01-09
 
@@ -1057,7 +1070,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.4...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.5...HEAD
+[4.0.5]: https://github.com/kettle-rb/tree_haver/compare/v4.0.4...v4.0.5
+[4.0.5t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.5
 [4.0.4]: https://github.com/kettle-rb/tree_haver/compare/v4.0.3...v4.0.4
 [4.0.4t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.4
 [4.0.3]: https://github.com/kettle-rb/tree_haver/compare/v4.0.2...v4.0.3
