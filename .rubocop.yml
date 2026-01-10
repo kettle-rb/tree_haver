@@ -12,6 +12,7 @@ AllCops:
     - checksums/**/*
     - docs/**/*
     - fixtures/**/*
+    - gemfiles/*.gemfile
     - pkg/**/*
     - results/**/*
     - spec/fixtures/**/*
