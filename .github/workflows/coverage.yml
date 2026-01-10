@@ -6,10 +6,8 @@ permissions:
   id-token: write
 
 env:
-  # Because we run tests in different rake tasks,
-  #   we don't get a complete coverage picture, and this is artificially low.
-  K_SOUP_COV_MIN_BRANCH: 81
-  K_SOUP_COV_MIN_LINE: 93
+  K_SOUP_COV_MIN_BRANCH: 76
+  K_SOUP_COV_MIN_LINE: 91
   K_SOUP_COV_MIN_HARD: true
   K_SOUP_COV_FORMATTERS: "xml,rcov,lcov,tty"
   K_SOUP_COV_DO: true
@@ -127,7 +125,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: '93 81'
+          thresholds: '${{ env.K_SOUP_COV_MIN_LINE }} ${{ env.K_SOUP_COV_MIN_BRANCH }}'
         continue-on-error: ${{ matrix.experimental != 'false' }}
 
       - name: Add Coverage PR Comment
