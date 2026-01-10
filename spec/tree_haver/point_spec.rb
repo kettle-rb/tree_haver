@@ -44,7 +44,8 @@ RSpec.describe TreeHaver::Point do
   describe "#inspect" do
     it "returns a debug-friendly string" do
       result = point.inspect
-      expect(result).to include("TreeHaver::Point")
+      # TreeHaver::Point is an alias for TreeHaver::Base::Point
+      expect(result).to match(/TreeHaver::(Base::)?Point/)
       expect(result).to include("row=5")
       expect(result).to include("column=10")
     end

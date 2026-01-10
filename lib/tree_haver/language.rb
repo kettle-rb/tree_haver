@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
 module TreeHaver
-  # Represents a language grammar for parsing source code
+  # Factory module for loading language grammars
   #
   # Language is the entry point for loading and using grammars. It provides
-  # a unified interface that works across all backends (MRI, Rust, FFI, Java, Citrus).
+  # a unified interface that works across all backends (MRI, Rust, FFI, Java, Citrus, Parslet).
+  #
+  # This is a module with only module methods (factory pattern), not a class.
+  # Backend-specific Language classes (e.g., Backends::Citrus::Language,
+  # Backends::Parslet::Language) inherit from Base::Language.
   #
   # For tree-sitter backends, languages are loaded from shared library files (.so/.dylib/.dll).
-  # For pure-Ruby backends (Citrus, Prism, Psych), languages are built-in or provided by gems.
+  # For pure-Ruby backends (Citrus, Parslet, Prism, Psych), languages are built-in or provided by gems.
   #
   # == Loading Languages
   #
@@ -30,7 +34,9 @@ module TreeHaver
   # @example Register and load a language
   #   TreeHaver.register_language(:toml, path: "/path/to/grammar.so")
   #   language = TreeHaver::Language.toml
-  class Language
+  #
+  # @see Base::Language The base class that backend Language classes inherit from
+  module Language
     class << self
       # Load a language grammar from a shared library (ruby_tree_sitter compatibility)
       #
@@ -157,6 +163,8 @@ module TreeHaver
         # Determine which backend type to use
         backend_type = if current_backend == Backends::Citrus
           :citrus
+        elsif current_backend == Backends::Parslet
+          :parslet
         else
           :tree_sitter  # MRI, Rust, FFI, Java all use tree-sitter
         end
@@ -174,6 +182,19 @@ module TreeHaver
           raise NotAvailable,
             "Citrus backend is active but no Citrus grammar registered for :#{method_name}. " \
               "Either register a Citrus grammar or use a tree-sitter backend. " \
+              "Registered backends: #{all_backends.keys.inspect}"
+        end
+
+        # If Parslet backend is active
+        if backend_type == :parslet
+          if reg && reg[:grammar_class]
+            return Backends::Parslet::Language.new(reg[:grammar_class])
+          end
+
+          # Fall back to error if no Parslet grammar registered
+          raise NotAvailable,
+            "Parslet backend is active but no Parslet grammar registered for :#{method_name}. " \
+              "Either register a Parslet grammar or use a tree-sitter backend. " \
               "Registered backends: #{all_backends.keys.inspect}"
         end
 
@@ -203,14 +224,19 @@ module TreeHaver
           end
         end
 
-        # No tree-sitter path registered - check for Citrus fallback
+        # No tree-sitter path registered - check for Citrus or Parslet fallback
         # This enables auto-fallback when tree-sitter grammar is not installed
-        # but a Citrus grammar (pure Ruby) is available.
+        # but a pure Ruby grammar (Citrus or Parslet) is available.
         # Only fall back when backend is :auto - explicit native backend requests should fail.
         if TreeHaver.effective_backend == :auto
           citrus_reg = all_backends[:citrus]
           if citrus_reg && citrus_reg[:grammar_module]
             return Backends::Citrus::Language.new(citrus_reg[:grammar_module])
+          end
+
+          parslet_reg = all_backends[:parslet]
+          if parslet_reg && parslet_reg[:grammar_class]
+            return Backends::Parslet::Language.new(parslet_reg[:grammar_class])
           end
         end
 
@@ -227,27 +253,27 @@ module TreeHaver
 
       private
 
-      # Handle tree-sitter load failure with optional Citrus fallback
+      # Handle tree-sitter load failure with optional Citrus/Parslet fallback
       #
       # This handles cases where:
       # - The .so file doesn't exist or can't be loaded (NotAvailable, LoadError)
       # - FFI can't find required symbols like ts_parser_new (FFI::NotFoundError inherits from LoadError)
       # - Invalid arguments were provided (ArgumentError)
       #
-      # Fallback to Citrus ONLY happens when:
+      # Fallback to Citrus/Parslet ONLY happens when:
       # - The effective backend is :auto (user didn't explicitly request a native backend)
-      # - A Citrus grammar is registered for the language
+      # - A Citrus or Parslet grammar is registered for the language
       #
       # If the user explicitly requested a native backend (:mri, :rust, :ffi, :java),
-      # we should NOT silently fall back to Citrus - that would violate the user's intent.
+      # we should NOT silently fall back to pure Ruby - that would violate the user's intent.
       #
       # @param error [Exception] the original error
       # @param all_backends [Hash] all registered backends for the language
-      # @return [Backends::Citrus::Language] if Citrus fallback available and allowed
+      # @return [Backends::Citrus::Language, Backends::Parslet::Language] if fallback available and allowed
       # @raise [Exception] re-raises original error if no fallback or fallback not allowed
       # @api private
       def handle_tree_sitter_load_failure(error, all_backends)
-        # Only fall back to Citrus when backend is :auto
+        # Only fall back to pure Ruby when backend is :auto
         # If user explicitly requested a native backend, respect that choice
         effective = TreeHaver.effective_backend
         if effective == :auto
@@ -255,8 +281,13 @@ module TreeHaver
           if citrus_reg && citrus_reg[:grammar_module]
             return Backends::Citrus::Language.new(citrus_reg[:grammar_module])
           end
+
+          parslet_reg = all_backends[:parslet]
+          if parslet_reg && parslet_reg[:grammar_class]
+            return Backends::Parslet::Language.new(parslet_reg[:grammar_class])
+          end
         end
-        # No Citrus fallback allowed or available, re-raise the original error
+        # No pure Ruby fallback allowed or available, re-raise the original error
         raise error
       end
     end

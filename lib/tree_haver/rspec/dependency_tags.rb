@@ -577,6 +577,16 @@ module TreeHaver
           @citrus_available = TreeHaver::BackendRegistry.available?(:citrus)
         end
 
+        # Check if Parslet backend is available
+        #
+        # This checks if the parslet gem is installed and the backend works.
+        #
+        # @return [Boolean] true if Parslet backend is available
+        def parslet_available?
+          return @parslet_available if defined?(@parslet_available)
+          @parslet_available = TreeHaver::BackendRegistry.available?(:parslet)
+        end
+
         # ============================================================
         # Ruby Engine Detection
         # ============================================================
@@ -697,11 +707,29 @@ module TreeHaver
           end
         end
 
+        # Check if toml gem is available and functional (Parslet backend for TOML)
+        #
+        # @return [Boolean] true if toml gem is available and can parse TOML
+        def toml_gem_available?
+          return @toml_gem_available if defined?(@toml_gem_available)
+          @toml_gem_available = begin
+            require "toml"
+            # Verify it can actually parse - just requiring isn't enough
+            TOML.load('key = "value"')
+            true
+          rescue LoadError
+            false
+          rescue StandardError
+            false
+          end
+        end
+
+
         # Check if at least one TOML backend is available
         #
         # @return [Boolean] true if any TOML backend works
         def any_toml_backend_available?
-          tree_sitter_toml_available? || toml_rb_gem_available?
+          tree_sitter_toml_available? || toml_rb_gem_available? || toml_gem_available?
         end
 
         # Check if at least one markdown backend is available
@@ -795,6 +823,7 @@ module TreeHaver
             commonmarker_backend: blocked.include?(:commonmarker) ? :blocked : commonmarker_available?,
             markly_backend: blocked.include?(:markly) ? :blocked : markly_available?,
             citrus_backend: blocked.include?(:citrus) ? :blocked : citrus_available?,
+            parslet_backend: blocked.include?(:parslet) ? :blocked : parslet_available?,
             rbs_backend: blocked.include?(:rbs) ? :blocked : rbs_backend_available?,
             # Ruby engines (*_engine)
             ruby_engine: RUBY_ENGINE,
@@ -816,6 +845,7 @@ module TreeHaver
             rbs_parsing: any_rbs_backend_available?,
             # Specific libraries (*_gem)
             toml_rb_gem: toml_rb_gem_available?,
+            toml_gem: toml_gem_available?,
             rbs_gem: rbs_gem_available?,
           }
         end
@@ -1040,6 +1070,7 @@ RSpec.configure do |config|
     commonmarker: :commonmarker_available?,
     markly: :markly_available?,
     citrus: :citrus_available?,
+    parslet: :parslet_available?,
     rbs: :rbs_backend_available?,
   }
 
@@ -1054,6 +1085,7 @@ RSpec.configure do |config|
     commonmarker: :commonmarker_backend,
     markly: :markly_backend,
     citrus: :citrus_backend,
+    parslet: :parslet_backend,
     rbs: :rbs_backend,
   }
 
@@ -1208,6 +1240,7 @@ RSpec.configure do |config|
 
   config.filter_run_excluding(toml_rb_gem: true) unless deps.toml_rb_gem_available?
   config.filter_run_excluding(rbs_gem: true) unless deps.rbs_gem_available?
+
 
   # ============================================================
   # Negated Tags (run when dependency is NOT available)

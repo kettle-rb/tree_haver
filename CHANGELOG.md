@@ -20,7 +20,46 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- **Parslet Backend**: New pure Ruby PEG parser backend (`TreeHaver::Backends::Parslet`)
+  - Wraps Parslet-based parsers (like the `toml` gem) to provide a pure Ruby alternative to tree-sitter
+  - `Parslet.available?` - Check if parslet gem is available
+  - `Parslet.capabilities` - Returns `{ backend: :parslet, query: false, bytes_field: true, incremental: false, pure_ruby: true }`
+  - `Parslet::Language` - Wrapper for Parslet grammar classes
+    - `Language.new(grammar_class)` - Create from a Parslet::Parser subclass
+    - `Language.from_library(path, symbol:, name:)` - API-compatible lookup via LanguageRegistry
+  - `Parslet::Parser` - Wrapper that creates parser instances from grammar classes
+  - `Parslet::Tree` - Wraps Parslet parse results (Hash/Array/Slice structures)
+  - `Parslet::Node` - Unified node interface for Parslet results
+    - Supports both Hash nodes (with named children) and Array nodes (with indexed children)
+    - `#type` - Returns the node type (key name or "array"/"document")
+    - `#children` - Returns child nodes
+    - `#child_by_field_name(name)` - Access named children in Hash nodes
+    - `#text` - Returns the matched text from Parslet::Slice
+    - `#start_byte`, `#end_byte` - Byte positions from Parslet::Slice
+    - `#start_point`, `#end_point` - Line/column positions (computed from source)
+  - Registered with `BackendRegistry.register_availability_checker(:parslet)`
+- **RSpec Dependency Tags**: Added `parslet_available?` method
+  - Checks if parslet gem is installed via `BackendRegistry.available?(:parslet)`
+  - `:parslet_backend` tag for specs requiring Parslet
+  - `:not_parslet_backend` negated tag for specs that should skip when Parslet is available
+- **ParsletGrammarFinder**: Utility for discovering and registering Parslet grammar gems
+  - `ParsletGrammarFinder.new(language:, gem_name:, grammar_const:, require_path:)` - Find Parslet grammars
+  - `#available?` - Check if the Parslet grammar gem is installed and functional
+  - `#grammar_class` - Get the resolved Parslet::Parser subclass
+  - `#register!` - Register the grammar with TreeHaver
+  - Auto-loads via `TreeHaver::PARSLET_DEFAULTS` for known languages (toml)
+- **TreeHaver.register_language**: Extended with `grammar_class:` parameter for Parslet grammars
+- **TreeHaver.parser_for**: Extended with `parslet_config:` parameter for explicit Parslet configuration
+- **RSpec Dependency Tags**: Added `toml_gem_available?` method and updated `any_toml_backend_available?`
+
 ### Changed
+
+- **Language.method_missing**: Now recognizes `:parslet` backend type and creates `Parslet::Language` instances
+- **Parser**: Updated to recognize Parslet languages and switch to Parslet parser automatically
+  - `#backend` now returns `:parslet` for Parslet-based parsers
+  - `#language=` detects `Parslet::Language` and switches implementation
+  - `handle_parser_creation_failure` tries Parslet as fallback after Citrus
+  - `unwrap_language` extracts `grammar_class` for Parslet languages
 
 ### Deprecated
 

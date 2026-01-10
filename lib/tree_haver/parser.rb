@@ -1,20 +1,45 @@
 # frozen_string_literal: true
 
 module TreeHaver
-  # Represents a tree-sitter parser instance
+  # Unified Parser facade providing a consistent API across all backends
   #
-  # A Parser is used to parse source code into a syntax tree. You must
-  # set a language before parsing.
+  # This class acts as a facade/adapter that delegates to backend-specific
+  # parser implementations. It automatically selects the appropriate backend
+  # and provides a unified interface regardless of which parser is being used.
+  #
+  # == Backend Selection
+  #
+  # The parser automatically selects a backend based on:
+  # 1. Explicit `backend:` parameter in constructor
+  # 2. `TreeHaver.backend` global setting
+  # 3. `TREE_HAVER_BACKEND` environment variable
+  # 4. Auto-detection (tries available backends in order)
+  #
+  # == Supported Backends
+  #
+  # **Tree-sitter backends** (native, high-performance):
+  # - `:mri` - ruby_tree_sitter gem (C extension, MRI only)
+  # - `:rust` - tree_stump gem (Rust via magnus, MRI only)
+  # - `:ffi` - FFI bindings to libtree-sitter (MRI, JRuby)
+  # - `:java` - java-tree-sitter (JRuby only)
+  #
+  # **Pure Ruby backends** (portable, no native dependencies):
+  # - `:citrus` - Citrus PEG parser (e.g., toml-rb)
+  # - `:parslet` - Parslet PEG parser (e.g., toml gem)
+  # - `:prism` - Ruby's official parser (Ruby only)
+  # - `:psych` - YAML parser (stdlib)
   #
   # == Wrapping/Unwrapping Responsibility
   #
-  # TreeHaver::Parser is responsible for ALL object wrapping and unwrapping:
+  # TreeHaver::Parser handles ALL object wrapping and unwrapping:
   #
   # **Language objects:**
   # - Unwraps Language wrappers before passing to backend.language=
   # - MRI backend receives ::TreeSitter::Language
   # - Rust backend receives String (language name)
   # - FFI backend receives wrapped Language (needs to_ptr)
+  # - Citrus backend receives grammar module
+  # - Parslet backend receives grammar class
   #
   # **Tree objects:**
   # - parse() receives raw source, backend returns raw tree, Parser wraps it
@@ -33,16 +58,32 @@ module TreeHaver
   #   parser = TreeHaver::Parser.new
   #   parser.language = TreeHaver::Language.toml
   #   tree = parser.parse("[package]\nname = \"foo\"")
-  class Parser
+  #
+  # @example Explicit backend selection
+  #   parser = TreeHaver::Parser.new(backend: :citrus)
+  #   parser.language = TreeHaver::Language.toml
+  #   tree = parser.parse(toml_source)
+  #
+  # @see Base::Parser The base class defining the parser interface
+  # @see Backends::Citrus::Parser Citrus backend implementation
+  # @see Backends::Parslet::Parser Parslet backend implementation
+  # @see Backends::Prism::Parser Prism backend implementation
+  class Parser < Base::Parser
     # Create a new parser instance
     #
+    # The parser automatically selects the best available backend unless
+    # explicitly specified. Use the `backend:` parameter to force a specific backend.
+    #
     # @param backend [Symbol, String, nil] optional backend to use (overrides context/global)
+    #   Valid values: :auto, :mri, :rust, :ffi, :java, :citrus, :parslet, :prism, :psych
     # @raise [NotAvailable] if no backend is available or requested backend is unavailable
-    # @example Default (uses context/global)
+    # @example Default (auto-selects best available backend)
     #   parser = TreeHaver::Parser.new
     # @example Explicit backend
-    #   parser = TreeHaver::Parser.new(backend: :ffi)
+    #   parser = TreeHaver::Parser.new(backend: :citrus)
     def initialize(backend: nil)
+      super()  # Initialize @language from Base::Parser
+
       # Convert string backend names to symbols for consistency
       backend = backend.to_sym if backend.is_a?(String)
 
@@ -56,7 +97,7 @@ module TreeHaver
         end
       end
 
-      # Try to create the parser, with fallback to Citrus if tree-sitter fails
+      # Try to create the parser, with fallback to pure Ruby if tree-sitter fails
       # This enables auto-fallback when tree-sitter runtime isn't available
       begin
         @impl = mod::Parser.new
@@ -67,7 +108,7 @@ module TreeHaver
       end
     end
 
-    # Handle parser creation failure with optional Citrus fallback
+    # Handle parser creation failure with optional Citrus/Parslet fallback
     #
     # @param error [Exception] the error that caused parser creation to fail
     # @param backend [Symbol, nil] the requested backend
@@ -75,15 +116,18 @@ module TreeHaver
     # @api private
     def handle_parser_creation_failure(error, backend)
       # Tree-sitter backend failed (likely missing runtime library)
-      # Try Citrus as fallback if we weren't explicitly asked for a specific backend
+      # Try Citrus or Parslet as fallback if we weren't explicitly asked for a specific backend
       if backend.nil? || backend == :auto
         if Backends::Citrus.available?
           @impl = Backends::Citrus::Parser.new
           @explicit_backend = :citrus
+        elsif Backends::Parslet.available?
+          @impl = Backends::Parslet::Parser.new
+          @explicit_backend = :parslet
         else
           # No fallback available, re-raise original error
           raise NotAvailable, "Tree-sitter backend failed: #{error.message}. " \
-            "Citrus fallback not available. Install tree-sitter runtime or citrus gem."
+            "Citrus/Parslet fallback not available. Install tree-sitter runtime, citrus gem, or parslet gem."
         end
       else
         # Explicit backend was requested, don't fallback
@@ -95,7 +139,7 @@ module TreeHaver
     #
     # Returns the actual backend in use, resolving :auto to the concrete backend.
     #
-    # @return [Symbol] the backend name (:mri, :rust, :ffi, :java, or :citrus)
+    # @return [Symbol] the backend name (:mri, :rust, :ffi, :java, :citrus, or :parslet)
     def backend
       if @explicit_backend && @explicit_backend != :auto
         @explicit_backend
@@ -112,6 +156,8 @@ module TreeHaver
           :java
         when /Citrus/
           :citrus
+        when /Parslet/
+          :parslet
         else
           # Fallback to effective_backend if we can't determine from class name
           TreeHaver.effective_backend
@@ -121,28 +167,27 @@ module TreeHaver
 
     # Set the language grammar for this parser
     #
+    # The language must be compatible with the parser's backend. If a mismatch
+    # is detected (e.g., Citrus language on tree-sitter parser), the parser
+    # will automatically switch to the correct backend.
+    #
     # @param lang [Language] the language to use for parsing
     # @return [Language] the language that was set
     # @example
     #   parser.language = TreeHaver::Language.from_library("/path/to/grammar.so")
     def language=(lang)
-      # Check if this is a Citrus language - if so, we need a Citrus parser
-      # This enables automatic backend switching when tree-sitter fails and
-      # falls back to Citrus
-      if lang.is_a?(Backends::Citrus::Language)
-        unless @impl.is_a?(Backends::Citrus::Parser)
-          # Switch to Citrus parser to match the Citrus language
-          @impl = Backends::Citrus::Parser.new
-          @explicit_backend = :citrus
-        end
-      end
+      # Auto-switch backend if language type doesn't match current parser
+      # This handles the case where Language.toml returns a Citrus/Parslet language
+      # but the parser was initialized with a tree-sitter backend
+      switch_backend_for_language(lang)
 
       # Unwrap the language before passing to backend
       # Backends receive raw language objects, never TreeHaver wrappers
       inner_lang = unwrap_language(lang)
       @impl.language = inner_lang
-      # Return the original (possibly wrapped) language for consistency
-      lang # rubocop:disable Lint/Void (intentional return value)
+
+      # Store on base class for API compatibility
+      @language = lang
     end
 
     # Parse source code into a syntax tree
@@ -218,6 +263,51 @@ module TreeHaver
 
     private
 
+    # Switch backend if language type doesn't match current parser
+    #
+    # This is necessary because TreeHaver.parser_for may return a Language
+    # from a different backend than the Parser was initialized with.
+    # For example, Language.toml might return a Citrus::Language when
+    # tree-sitter-toml is not available, but Parser was initialized with :auto.
+    #
+    # @param lang [Object] The language object
+    # @api private
+    def switch_backend_for_language(lang)
+      return unless lang.respond_to?(:backend)
+
+      lang_backend = lang.backend
+      parser_backend = backend
+
+      # No switch needed if backends match
+      return if lang_backend == parser_backend
+
+      # Switch to matching backend parser
+      case lang_backend
+      when :citrus
+        unless @impl.is_a?(Backends::Citrus::Parser)
+          @impl = Backends::Citrus::Parser.new
+          @explicit_backend = :citrus
+        end
+      when :parslet
+        unless @impl.is_a?(Backends::Parslet::Parser)
+          @impl = Backends::Parslet::Parser.new
+          @explicit_backend = :parslet
+        end
+      when :prism
+        unless @impl.is_a?(Backends::Prism::Parser)
+          @impl = Backends::Prism::Parser.new
+          @explicit_backend = :prism
+        end
+      when :psych
+        unless @impl.is_a?(Backends::Psych::Parser)
+          @impl = Backends::Psych::Parser.new
+          @explicit_backend = :psych
+        end
+      # Tree-sitter backends (:mri, :rust, :ffi, :java) - don't auto-switch between them
+      # as that would require reloading the language from the .so file
+      end
+    end
+
     # Unwrap a language object to extract the raw backend language
     #
     # This method is smart about backend compatibility:
@@ -284,6 +374,8 @@ module TreeHaver
         return lang.impl if lang.respond_to?(:impl)
       when :citrus
         return lang.grammar_module if lang.respond_to?(:grammar_module)
+      when :parslet
+        return lang.grammar_class if lang.respond_to?(:grammar_class)
       when :prism
         return lang  # Prism backend expects the Language wrapper
       when :psych
@@ -299,6 +391,7 @@ module TreeHaver
         return lang.inner_language if lang.respond_to?(:inner_language)
         return lang.impl if lang.respond_to?(:impl)
         return lang.grammar_module if lang.respond_to?(:grammar_module)
+        return lang.grammar_class if lang.respond_to?(:grammar_class)
         return lang.name if lang.respond_to?(:name)
 
         # If nothing works, pass through as-is

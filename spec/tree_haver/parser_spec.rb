@@ -422,12 +422,13 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
       before do
         allow(TreeHaver).to receive(:resolve_backend_module).and_return(failing_backend_module)
         allow(TreeHaver::Backends::Citrus).to receive(:available?).and_return(false)
+        allow(TreeHaver::Backends::Parslet).to receive(:available?).and_return(false)
       end
 
       it "raises NotAvailable with helpful message" do
         expect {
           described_class.new
-        }.to raise_error(TreeHaver::NotAvailable, /Tree-sitter backend failed.*Citrus fallback not available/)
+        }.to raise_error(TreeHaver::NotAvailable, /Tree-sitter backend failed.*fallback not available/)
       end
     end
 
@@ -673,6 +674,7 @@ RSpec.describe TreeHaver::Parser, :toml_parsing do
         allow(lang).to receive(:respond_to?).with(:inner_language).and_return(false)
         allow(lang).to receive(:respond_to?).with(:impl).and_return(false)
         allow(lang).to receive(:respond_to?).with(:grammar_module).and_return(false)
+        allow(lang).to receive(:respond_to?).with(:grammar_class).and_return(false)
         allow(lang).to receive(:respond_to?).with(:name).and_return(true)
         allow(lang).to receive(:respond_to?).with(:path).and_return(false)
         allow(lang).to receive_messages(is_a?: false, backend: :unknown_test, name: "test_lang")

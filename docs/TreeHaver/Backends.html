@@ -79,7 +79,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/tree_haver.rb<span class="defines">,<br />
-  lib/tree_haver/backends/ffi.rb,<br /> lib/tree_haver/backends/mri.rb,<br /> lib/tree_haver/backends/java.rb,<br /> lib/tree_haver/backends/rust.rb,<br /> lib/tree_haver/backends/prism.rb,<br /> lib/tree_haver/backends/psych.rb,<br /> lib/tree_haver/backends/citrus.rb</span>
+  lib/tree_haver/backends/ffi.rb,<br /> lib/tree_haver/backends/mri.rb,<br /> lib/tree_haver/backends/java.rb,<br /> lib/tree_haver/backends/rust.rb,<br /> lib/tree_haver/backends/prism.rb,<br /> lib/tree_haver/backends/psych.rb,<br /> lib/tree_haver/backends/citrus.rb,<br /> lib/tree_haver/backends/parslet.rb</span>
 </dd>
   </dl>
   
@@ -96,6 +96,7 @@
   <li><span class='object_link'><a href="Backends/FFI.html" title="TreeHaver::Backends::FFI (module)">FFI</a></span> - Uses Ruby FFI to call libtree-sitter directly</li>
   <li><span class='object_link'><a href="Backends/Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span> - Uses JRuby’s Java integration</li>
   <li><span class='object_link'><a href="Backends/Citrus.html" title="TreeHaver::Backends::Citrus (module)">Citrus</a></span> - Uses Citrus PEG parser (pure Ruby, portable)</li>
+  <li><span class='object_link'><a href="Backends/Parslet.html" title="TreeHaver::Backends::Parslet (module)">Parslet</a></span> - Uses Parslet PEG parser (pure Ruby, portable)</li>
   <li><span class='object_link'><a href="Backends/Prism.html" title="TreeHaver::Backends::Prism (module)">Prism</a></span> - Uses Ruby’s built-in Prism parser (Ruby-only, stdlib in 3.4+)</li>
   <li><span class='object_link'><a href="Backends/Psych.html" title="TreeHaver::Backends::Psych (module)">Psych</a></span> - Uses Ruby’s built-in Psych parser (YAML-only, stdlib)</li>
 </ul>
@@ -110,7 +111,7 @@
 <p class="children">
   
     
-      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Backends/Citrus.html" title="TreeHaver::Backends::Citrus (module)">Citrus</a></span>, <span class='object_link'><a href="Backends/FFI.html" title="TreeHaver::Backends::FFI (module)">FFI</a></span>, <span class='object_link'><a href="Backends/Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span>, <span class='object_link'><a href="Backends/MRI.html" title="TreeHaver::Backends::MRI (module)">MRI</a></span>, <span class='object_link'><a href="Backends/Prism.html" title="TreeHaver::Backends::Prism (module)">Prism</a></span>, <span class='object_link'><a href="Backends/Psych.html" title="TreeHaver::Backends::Psych (module)">Psych</a></span>, <span class='object_link'><a href="Backends/Rust.html" title="TreeHaver::Backends::Rust (module)">Rust</a></span>
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="Backends/Citrus.html" title="TreeHaver::Backends::Citrus (module)">Citrus</a></span>, <span class='object_link'><a href="Backends/FFI.html" title="TreeHaver::Backends::FFI (module)">FFI</a></span>, <span class='object_link'><a href="Backends/Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span>, <span class='object_link'><a href="Backends/MRI.html" title="TreeHaver::Backends::MRI (module)">MRI</a></span>, <span class='object_link'><a href="Backends/Parslet.html" title="TreeHaver::Backends::Parslet (module)">Parslet</a></span>, <span class='object_link'><a href="Backends/Prism.html" title="TreeHaver::Backends::Prism (module)">Prism</a></span>, <span class='object_link'><a href="Backends/Psych.html" title="TreeHaver::Backends::Psych (module)">Psych</a></span>, <span class='object_link'><a href="Backends/Rust.html" title="TreeHaver::Backends::Rust (module)">Rust</a></span>
     
   
     
@@ -159,7 +160,8 @@ FFI calls to ts_parser_set_language will segfault.</p>
   <span class='label'>ffi:</span> <span class='lbracket'>[</span><span class='symbol'>:mri</span><span class='rbracket'>]</span><span class='comma'>,</span>  <span class='comment'># FFI segfaults if MRI (ruby_tree_sitter) has been loaded
 </span>  <span class='label'>java:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span>
   <span class='label'>citrus:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span>
-  <span class='label'>prism:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span>        <span class='comment'># Prism has no conflicts with other backends
+  <span class='label'>parslet:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span>      <span class='comment'># Parslet has no conflicts with other backends
+</span>  <span class='label'>prism:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span>        <span class='comment'># Prism has no conflicts with other backends
 </span>  <span class='label'>psych:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span>        <span class='comment'># Psych has no conflicts with other backends
 </span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
       
@@ -213,7 +215,7 @@ These are language-specific and register themselves via LanguageRegistry</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 17:21:30 2026 by
+  Generated on Fri Jan  9 22:13:40 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

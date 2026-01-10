@@ -11,6 +11,8 @@
 gem "ffi", require: false # DO NOT LOAD, because conflicts with MRI
 gem "toml-rb"
 gem "citrus"
+gem "toml"
+gem "parslet"
 gem "prism", "~> 1.6"
 gem "unparser", "~> 0.8", ">= 0.8.1"
 

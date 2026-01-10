@@ -175,6 +175,20 @@ module TreeHaver
     },
   }.freeze
 
+  # Default Parslet configurations for known languages
+  #
+  # These are used by {TreeHaver.parser_for} when no explicit parslet_config is provided
+  # and tree-sitter backends are not available (e.g., on TruffleRuby).
+  #
+  # @api private
+  PARSLET_DEFAULTS = {
+    toml: {
+      gem_name: "toml",
+      grammar_const: "TOML::Parslet",
+      require_path: "toml",
+    },
+  }.freeze
+
   # Namespace for backend implementations
   #
   # TreeHaver provides multiple backends to support different Ruby implementations:
@@ -183,6 +197,7 @@ module TreeHaver
   # - {Backends::FFI} - Uses Ruby FFI to call libtree-sitter directly
   # - {Backends::Java} - Uses JRuby's Java integration
   # - {Backends::Citrus} - Uses Citrus PEG parser (pure Ruby, portable)
+  # - {Backends::Parslet} - Uses Parslet PEG parser (pure Ruby, portable)
   # - {Backends::Prism} - Uses Ruby's built-in Prism parser (Ruby-only, stdlib in 3.4+)
   # - {Backends::Psych} - Uses Ruby's built-in Psych parser (YAML-only, stdlib)
   module Backends
@@ -191,6 +206,7 @@ module TreeHaver
     autoload :FFI, File.join(__dir__, "tree_haver", "backends", "ffi")
     autoload :Java, File.join(__dir__, "tree_haver", "backends", "java")
     autoload :Citrus, File.join(__dir__, "tree_haver", "backends", "citrus")
+    autoload :Parslet, File.join(__dir__, "tree_haver", "backends", "parslet")
     autoload :Prism, File.join(__dir__, "tree_haver", "backends", "prism")
     autoload :Psych, File.join(__dir__, "tree_haver", "backends", "psych")
 
@@ -205,6 +221,7 @@ module TreeHaver
       ffi: [:mri],  # FFI segfaults if MRI (ruby_tree_sitter) has been loaded
       java: [],
       citrus: [],
+      parslet: [],      # Parslet has no conflicts with other backends
       prism: [],        # Prism has no conflicts with other backends
       psych: [],        # Psych has no conflicts with other backends
     }.freeze
@@ -260,6 +277,19 @@ module TreeHaver
   # @see CitrusGrammarFinder
   autoload :CitrusGrammarFinder, File.join(__dir__, "tree_haver", "citrus_grammar_finder")
 
+  # Parslet grammar finder for discovering and registering Parslet-based parsers
+  #
+  # @example Register toml gem
+  #   finder = TreeHaver::ParsletGrammarFinder.new(
+  #     language: :toml,
+  #     gem_name: "toml",
+  #     grammar_const: "TOML::Parslet"
+  #   )
+  #   finder.register! if finder.available?
+  #
+  # @see ParsletGrammarFinder
+  autoload :ParsletGrammarFinder, File.join(__dir__, "tree_haver", "parslet_grammar_finder")
+
   # Point class for position information (row, column)
   autoload :Point, File.join(__dir__, "tree_haver", "point")
 
@@ -279,6 +309,26 @@ module TreeHaver
   # These backends wrap the tree-sitter C library via various bindings.
   # Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are excluded.
   NATIVE_BACKENDS = %i[mri rust ffi java].freeze
+
+  # Default configuration for Citrus grammars
+  # Maps language names to their gem and grammar module information
+  CITRUS_DEFAULTS = {
+    toml: {
+      gem_name: "toml-rb",
+      grammar_const: "TomlRB::Document",
+      require_path: "toml-rb",
+    },
+  }.freeze
+
+  # Default configuration for Parslet grammars
+  # Maps language names to their gem and grammar class information
+  PARSLET_DEFAULTS = {
+    toml: {
+      gem_name: "toml",
+      grammar_const: "TOML::Parslet",
+      require_path: "toml",
+    },
+  }.freeze
 
   # Get the current backend selection
   #
@@ -368,7 +418,7 @@ module TreeHaver
     VALID_NATIVE_BACKENDS = %w[mri rust ffi java].freeze
 
     # Valid pure Ruby backend names (no native extensions)
-    VALID_RUBY_BACKENDS = %w[citrus prism psych commonmarker markly].freeze
+    VALID_RUBY_BACKENDS = %w[citrus parslet prism psych commonmarker markly].freeze
 
     # All valid backend names
     VALID_BACKENDS = (VALID_NATIVE_BACKENDS + VALID_RUBY_BACKENDS + %w[auto none]).freeze
@@ -734,6 +784,8 @@ module TreeHaver
         Backends::Java
       when :citrus
         Backends::Citrus
+      when :parslet
+        Backends::Parslet
       when :prism
         Backends::Prism
       when :psych
@@ -875,6 +927,8 @@ module TreeHaver
         Backends::Java
       when :citrus
         Backends::Citrus
+      when :parslet
+        Backends::Parslet
       when :prism
         Backends::Prism
       when :psych
@@ -958,6 +1012,7 @@ module TreeHaver
     # @param path [String, nil] absolute path to the language shared library (for tree-sitter)
     # @param symbol [String, nil] optional exported factory symbol (e.g., "tree_sitter_toml")
     # @param grammar_module [Module, nil] Citrus grammar module that responds to .parse(source)
+    # @param grammar_class [Class, nil] Parslet grammar class that inherits from Parslet::Parser
     # @param backend_module [Module, nil] pure Ruby backend module with Language/Parser classes
     # @param backend_type [Symbol, nil] backend type for backend_module (defaults to module name)
     # @param gem_name [String, nil] optional gem name for error messages
@@ -973,6 +1028,12 @@ module TreeHaver
     #     :toml,
     #     grammar_module: TomlRB::Document,
     #     gem_name: "toml-rb"
+    #   )
+    # @example Register Parslet grammar only
+    #   TreeHaver.register_language(
+    #     :toml,
+    #     grammar_class: TOML::Parslet,
+    #     gem_name: "toml"
     #   )
     # @example Register pure Ruby backend (external gem like rbs-merge)
     #   TreeHaver.register_language(
@@ -1001,7 +1062,7 @@ module TreeHaver
     #     gem_name: "toml-rb"
     #   )
     #   # Now TreeHaver::Language.toml works with ANY backend!
-    def register_language(name, path: nil, symbol: nil, grammar_module: nil, backend_module: nil, backend_type: nil, gem_name: nil)
+    def register_language(name, path: nil, symbol: nil, grammar_module: nil, grammar_class: nil, backend_module: nil, backend_type: nil, gem_name: nil)
       # Register tree-sitter backend if path provided
       # Note: Uses `if` not `elsif` so both backends can be registered in one call
       if path
@@ -1019,6 +1080,16 @@ module TreeHaver
         LanguageRegistry.register(name, :citrus, grammar_module: grammar_module, gem_name: gem_name)
       end
 
+      # Register Parslet backend if grammar_class provided
+      # Note: Uses `if` not `elsif` so multiple backends can be registered in one call
+      if grammar_class
+        unless grammar_class.respond_to?(:new)
+          raise ArgumentError, "Grammar class must respond to :new"
+        end
+
+        LanguageRegistry.register(name, :parslet, grammar_class: grammar_class, gem_name: gem_name)
+      end
+
       # Register pure Ruby backend if backend_module provided
       # This is used by external gems (like rbs-merge) to register their own backends
       if backend_module
@@ -1028,13 +1099,13 @@ module TreeHaver
       end
 
       # Require at least one backend to be registered
-      if path.nil? && grammar_module.nil? && backend_module.nil?
-        raise ArgumentError, "Must provide at least one of: path (tree-sitter), grammar_module (Citrus), or backend_module (pure Ruby)"
+      if path.nil? && grammar_module.nil? && grammar_class.nil? && backend_module.nil?
+        raise ArgumentError, "Must provide at least one of: path (tree-sitter), grammar_module (Citrus), grammar_class (Parslet), or backend_module (pure Ruby)"
       end
 
-      # Note: No early return! This method intentionally processes both `if` blocks
+      # Note: No early return! This method intentionally processes all `if` blocks
       # above to allow registering multiple backends for the same language.
-      # Both tree-sitter and Citrus can be registered simultaneously for maximum
+      # tree-sitter, Citrus, and Parslet can be registered simultaneously for maximum
       # flexibility. See method documentation for rationale.
       nil
     end
@@ -1075,15 +1146,17 @@ module TreeHaver
     # Respects the effective backend setting (via TREE_HAVER_BACKEND env var,
     # TreeHaver.backend=, or with_backend block).
     #
-    # Supports three types of backends:
+    # Supports four types of backends:
     # 1. Tree-sitter native backends (auto-discovered or explicit path)
     # 2. Citrus grammars (pure Ruby, via CITRUS_DEFAULTS or explicit config)
-    # 3. Pure Ruby backends (registered via backend_module, e.g., Prism, Psych, RBS)
+    # 3. Parslet grammars (pure Ruby, via PARSLET_DEFAULTS or explicit config)
+    # 4. Pure Ruby backends (registered via backend_module, e.g., Prism, Psych, RBS)
     #
     # @param language_name [Symbol, String] the language to parse (e.g., :toml, :json, :ruby, :yaml, :rbs)
     # @param library_path [String, nil] optional explicit path to tree-sitter grammar library
     # @param symbol [String, nil] optional tree-sitter symbol name (defaults to "tree_sitter_<name>")
     # @param citrus_config [Hash, nil] optional Citrus fallback configuration
+    # @param parslet_config [Hash, nil] optional Parslet fallback configuration
     # @return [TreeHaver::Parser] configured parser with language set
     # @raise [TreeHaver::NotAvailable] if no parser backend is available for the language
     #
@@ -1093,11 +1166,14 @@ module TreeHaver
     # @example Force Citrus backend
     #   TreeHaver.with_backend(:citrus) { TreeHaver.parser_for(:toml) }
     #
+    # @example Force Parslet backend
+    #   TreeHaver.with_backend(:parslet) { TreeHaver.parser_for(:toml) }
+    #
     # @example Use registered pure Ruby backend (e.g., RBS)
     #   # First, rbs-merge registers its backend:
     #   # TreeHaver.register_language(:rbs, backend_module: Rbs::Merge::RbsBackend, backend_type: :rbs)
     #   parser = TreeHaver.parser_for(:rbs)
-    def parser_for(language_name, library_path: nil, symbol: nil, citrus_config: nil)
+    def parser_for(language_name, library_path: nil, symbol: nil, citrus_config: nil, parslet_config: nil)
       # Ensure built-in pure Ruby backends are registered
       ensure_builtin_backends_registered!
 
@@ -1106,18 +1182,24 @@ module TreeHaver
       requested = effective_backend
 
       # Determine which backends to try based on effective_backend
+      # When a specific backend is requested, only try that backend
       try_tree_sitter = (requested == :auto) || NATIVE_BACKENDS.include?(requested)
       try_citrus = (requested == :auto) || (requested == :citrus)
+      try_parslet = (requested == :auto) || (requested == :parslet)
+
+      # When Citrus or Parslet is explicitly requested, don't try tree-sitter
+      if requested == :citrus || requested == :parslet
+        try_tree_sitter = false
+      end
 
       language = nil
-      parser = nil
 
       # First, check for registered pure Ruby backends
       # These take precedence when explicitly requested or when no other backend is available
       registration = registered_language(name)
-      # Find any registered backend_module (not tree_sitter or citrus)
+      # Find any registered backend_module (not tree_sitter, citrus, or parslet)
       registration&.each do |backend_type, config|
-        next if %i[tree_sitter citrus].include?(backend_type)
+        next if %i[tree_sitter citrus parslet].include?(backend_type)
         next unless config[:backend_module]
 
         backend_mod = config[:backend_module]
@@ -1153,9 +1235,14 @@ module TreeHaver
         language = load_citrus_language(name, citrus_config: citrus_config)
       end
 
+      # Try Parslet if applicable
+      if try_parslet && !language
+        language = load_parslet_language(name, parslet_config: parslet_config)
+      end
+
       # Raise if nothing worked
       raise NotAvailable, "No parser available for #{name}. " \
-        "Install tree-sitter-#{name} or configure a Citrus grammar." unless language
+        "Install tree-sitter-#{name} or configure a Citrus/Parslet grammar." unless language
 
       # Create and configure parser
       parser = Parser.new
@@ -1206,6 +1293,26 @@ module TreeHaver
       return unless config[:gem_name] && config[:grammar_const]
 
       finder = CitrusGrammarFinder.new(
+        language: name,
+        gem_name: config[:gem_name],
+        grammar_const: config[:grammar_const],
+        require_path: config[:require_path],
+      )
+      return unless finder.available?
+
+      finder.register!
+      Language.public_send(name)
+    rescue NotAvailable, ArgumentError, LoadError, NameError, TypeError
+      nil
+    end
+
+    # Load a Parslet language from configuration or defaults
+    # @return [Language, nil]
+    def load_parslet_language(name, parslet_config: nil)
+      config = parslet_config || PARSLET_DEFAULTS[name] || {}
+      return unless config[:gem_name] && config[:grammar_const]
+
+      finder = ParsletGrammarFinder.new(
         language: name,
         gem_name: config[:gem_name],
         grammar_const: config[:grammar_const],
