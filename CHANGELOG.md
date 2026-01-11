@@ -54,6 +54,19 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- **BREAKING: `TreeHaver::Language` converted from class to module**
+  - Previously `TreeHaver::Language` was a class that wrapped backend language objects
+  - Now `TreeHaver::Language` is a module providing factory methods (`method_missing` for dynamic language loading)
+  - Backend-specific language classes (e.g., `TreeHaver::Backends::MRI::Language`) are now the concrete implementations
+  - Code that instantiated `TreeHaver::Language.new(...)` directly must be updated to use backend-specific classes or the factory methods
+- **BREAKING: `TreeHaver::Tree` now inherits from `TreeHaver::Base::Tree`**
+  - `TreeHaver::Tree` is now a proper subclass of `TreeHaver::Base::Tree`
+  - Inherits `inner_tree`, `source`, `lines` attributes from base class
+  - Base class provides default implementations; subclass documents divergence
+- **BREAKING: `TreeHaver::Node` now inherits from `TreeHaver::Base::Node`**
+  - `TreeHaver::Node` is now a proper subclass of `TreeHaver::Base::Node`
+  - Inherits `inner_node`, `source`, `lines` attributes from base class
+  - Base class documents the API contract; subclass documents divergence
 - **Language.method_missing**: Now recognizes `:parslet` backend type and creates `Parslet::Language` instances
 - **Parser**: Updated to recognize Parslet languages and switch to Parslet parser automatically
   - `#backend` now returns `:parslet` for Parslet-based parsers
