@@ -4,16 +4,16 @@
 
 TreeHaver follows a **single responsibility** pattern for object wrapping:
 
-**TreeHaver::Parser (top level) handles ALL wrapping and unwrapping.**
-**Backends work exclusively with raw backend objects.**
-**User-facing API uses only TreeHaver wrapper classes.**
+- **TreeHaver::Parser** (top level) handles ALL wrapping and unwrapping
+- **Backends** work exclusively with raw backend objects
+- **User-facing API** uses only TreeHaver wrapper classes
 
 This ensures:
-- ✅ Consistency across all backends
-- ✅ Predictable behavior (PoLS)
-- ✅ Single place for complexity
-- ✅ Simple backend implementations
-- ✅ Easy debugging
+- Consistency across all backends
+- Predictable behavior (PoLS)
+- Single place for complexity
+- Simple backend implementations
+- Easy debugging
 
 ## Architecture Overview
 
@@ -24,23 +24,59 @@ User Code ← TreeHaver::Tree ←────┘
             TreeHaver::Node
 ```
 
+## Inheritance Hierarchy
+
+### Base Classes
+
+Located in `lib/tree_haver/base/`:
+
+- `TreeHaver::Base::Parser` - Base class for backend Parser implementations
+- `TreeHaver::Base::Tree` - Base class for backend Tree implementations  
+- `TreeHaver::Base::Node` - Base class for backend Node implementations (provides Position API)
+
+### Top-Level Wrappers
+
+Located in `lib/tree_haver/`:
+
+- `TreeHaver::Parser` - Inherits from `Base::Parser`, handles wrapping/unwrapping
+- `TreeHaver::Tree` - Inherits from `Base::Tree`, wraps tree-sitter backend trees
+- `TreeHaver::Node` - Inherits from `Base::Node`, wraps tree-sitter backend nodes
+
+### Backend-Specific Classes
+
+Pure-Ruby backends define their own complete implementations:
+
+- `Backends::Citrus::{Parser,Tree,Node}` - Inherits from `Base::*`
+- `Backends::Parslet::{Parser,Tree,Node}` - Inherits from `Base::*`
+- `Backends::Prism::{Parser,Tree,Node}` - Inherits from `Base::*`
+- `Backends::Psych::{Parser,Tree,Node}` - Inherits from `Base::*`
+
+Tree-sitter backends (MRI, Rust, FFI, Java) do NOT define their own Tree/Node classes. They return raw backend objects that `TreeHaver::Tree` and `TreeHaver::Node` wrap.
+
 ## Language Objects
 
 ### Wrapping Contract
 
 **Input to `TreeHaver::Parser#language=`:**
-- User passes: `TreeHaver::Backends::*::Language` wrapper OR raw language object
+- User passes: `TreeHaver::Backends::*::Language` wrapper
 
 **TreeHaver::Parser unwraps:**
 - Calls `unwrap_language(lang)` helper method
-- Passes unwrapped object to `backend.language=`
+- Verifies backend compatibility via `lang.backend`
+- Attempts reload if backend mismatch detected
 
-**Backend receives:**
-- MRI: `::TreeSitter::Language` (raw)
-- Rust: `String` (language name)
-- FFI: `TreeHaver::Backends::FFI::Language` (wrapper - needs `to_ptr`)
-- Java: Java Language object (unwrapped from wrapper's `impl`)
-- Citrus: `Module` (grammar module)
+**Backend receives (after unwrapping):**
+
+| Backend | Receives |
+|---------|----------|
+| MRI | `::TreeSitter::Language` (via `to_language` or `inner_language`) |
+| Rust | `String` (language name via `name`) |
+| FFI | `TreeHaver::Backends::FFI::Language` wrapper (needs `to_ptr`) |
+| Java | Java Language object (via `impl`) |
+| Citrus | `TreeHaver::Backends::Citrus::Language` wrapper |
+| Parslet | `TreeHaver::Backends::Parslet::Language` wrapper |
+| Prism | `TreeHaver::Backends::Prism::Language` wrapper |
+| Psych | `TreeHaver::Backends::Psych::Language` wrapper |
 
 ### Unwrapping Logic
 
@@ -48,75 +84,43 @@ Located in `TreeHaver::Parser#unwrap_language`:
 
 ```ruby
 def unwrap_language(lang)
-  # Check specific wrapper types using class.name string comparison
-  # This approach is consistent, safe, and avoids autoload timing issues
-
-  # Rust wrapper - extract language name string
-  if lang.class.name == "TreeHaver::Backends::Rust::Language"
-    return lang.name
+  # Verify backend compatibility
+  if lang.respond_to?(:backend)
+    current_backend = backend
+    if lang.backend != current_backend && current_backend != :auto
+      # Backend mismatch - attempt reload
+      reloaded = try_reload_language_for_backend(lang, current_backend)
+      lang = reloaded if reloaded
+    end
   end
 
-  # FFI wrapper - return as-is (needs to_ptr)
-  if lang.class.name == "TreeHaver::Backends::FFI::Language"
-    return lang
+  # Unwrap based on backend type
+  case lang.backend
+  when :mri
+    lang.to_language || lang.inner_language
+  when :rust
+    lang.name
+  when :ffi
+    lang  # FFI needs wrapper for to_ptr
+  when :java
+    lang.impl
+  when :citrus, :parslet, :prism, :psych
+    lang  # These backends accept the Language wrapper
+  else
+    # Unknown backend - try generic unwrapping
+    lang
   end
-
-  # MRI wrapper - has specific unwrapping methods (checked via respond_to?)
-  return lang.to_language if lang.respond_to?(:to_language)
-  return lang.inner_language if lang.respond_to?(:inner_language)
-
-  # Java wrapper - extract impl
-  if lang.class.name == "TreeHaver::Backends::Java::Language"
-    return lang.impl
-  end
-
-  # Citrus wrapper - extract grammar module
-  if lang.class.name == "TreeHaver::Backends::Citrus::Language"
-    return lang.grammar_module
-  end
-
-  # Fallback for generic checks (backwards compatibility)
-  return lang.impl if lang.respond_to?(:impl)
-  return lang.grammar_module if lang.respond_to?(:grammar_module)
-
-  lang  # Raw language, pass through
 end
 ```
 
 **Special Case: FFI Backend**
 - FFI is unique: it needs the wrapped `Language` object to call `to_ptr`
-- **CRITICAL:** Must check `lang.is_a?(Backends::FFI::Language)` specifically
-- **NOT** just `respond_to?(:to_ptr)` - raw backend objects might also respond to this
-- If we pass a non-FFI object that responds to `:to_ptr`, we get a segfault!
-- FFI backend's `language=` expects the wrapper, not unwrapped pointer
+- The FFI backend's `language=` expects the wrapper, not an unwrapped pointer
 
-**Why Class Name String Checks Are Critical:**
-
-We use `lang.class.name == "TreeHaver::Backends::*::Language"` instead of `lang.is_a?(Backends::*::Language)` for several critical reasons:
-
-1. **Autoload Safety:**
-   - Using `is_a?` can trigger autoload at the wrong time
-   - String comparison works even if the class isn't fully loaded yet
-   - Avoids race conditions during backend initialization
-
-2. **Cross-Backend Safety:**
-   - When switching backends, cached objects might be from different backends
-   - String comparison reliably distinguishes `FFI::Language` from `MRI::Language`
-   - Prevents segfaults when wrong wrapper type is passed to native code
-
-3. **Method Collision Prevention:**
-   - **Rust:** Many objects have a `name` method
-   - **FFI:** Raw backend objects might respond to `:to_ptr` (causing segfaults!)
-   - **Java:** Multiple objects might have an `impl` accessor
-   - **Citrus:** Various objects might have `grammar_module`
-   - String checks ensure we only match the exact wrapper class
-
-4. **Consistency:**
-   - All backend wrappers use the same detection pattern
-   - Easier to maintain and reason about
-   - Reduces cognitive load when debugging
-
-**MRI Exception:** MRI still uses `respond_to?` checks because `to_language` and `inner_language` are highly specific methods unlikely to collide with other objects.
+**Backend Attribute Requirement**
+- All TreeHaver Language wrappers have a `backend` attribute
+- This enables backend compatibility checking
+- Passing a raw backend object (without `backend` attribute) raises an error
 
 ## Tree Objects
 
@@ -145,7 +149,7 @@ Located in `TreeHaver::Parser#parse_string`:
 old_impl = if old_tree.respond_to?(:inner_tree)
   old_tree.inner_tree
 elsif old_tree.respond_to?(:instance_variable_get)
-  # Fallback for compatibility with legacy wrappers
+  # Fallback for compatibility
   old_tree.instance_variable_get(:@inner_tree) ||
     old_tree.instance_variable_get(:@impl) ||
     old_tree
@@ -177,50 +181,46 @@ end
 ## Backend Compliance Checklist
 
 ### Language Handling
-- [ ] `language=` accepts raw unwrapped object (not TreeHaver wrapper)
-- [ ] `language=` returns the object it received (for consistency)
-- [ ] No unwrapping logic in backend (TreeHaver::Parser does it)
+- `language=` accepts raw unwrapped object (or wrapper for Citrus/Parslet/Prism/Psych/FFI)
+- `language=` returns the object it received (for consistency)
+- No unwrapping logic in backend (TreeHaver::Parser does it)
 
 ### Tree Handling (parse)
-- [ ] `parse(source)` returns raw backend tree
-- [ ] No wrapping in `parse` (TreeHaver::Parser wraps result)
+- `parse(source)` returns raw backend tree
+- No wrapping in `parse` (TreeHaver::Parser wraps result)
 
 ### Tree Handling (parse_string)
-- [ ] `parse_string(old_tree, source)` expects raw tree (already unwrapped)
-- [ ] `parse_string` returns raw backend tree
-- [ ] No unwrapping in `parse_string` (TreeHaver::Parser does it)
-- [ ] No wrapping in `parse_string` (TreeHaver::Parser wraps result)
-
-### Documentation
-- [ ] Document that backend receives unwrapped objects
-- [ ] Document that backend returns unwrapped objects
-- [ ] Note that TreeHaver::Parser handles all wrapping/unwrapping
+- `parse_string(old_tree, source)` expects raw tree (already unwrapped)
+- `parse_string` returns raw backend tree
+- No unwrapping in `parse_string` (TreeHaver::Parser does it)
+- No wrapping in `parse_string` (TreeHaver::Parser wraps result)
 
 ## Current Backend Status
 
-| Backend | Language | parse | parse_string | Compliant |
-|---------|----------|-------|--------------|-----------|
-| MRI     | ✅       | ✅    | ✅           | ✅        |
-| Rust    | ✅       | ✅    | ✅           | ✅        |
-| FFI     | ✅*      | ✅    | N/A          | ✅        |
-| Java    | ✅       | ✅    | ✅           | ✅        |
-| Citrus  | ✅       | ✅    | ✅           | ✅        |
-
-\* FFI is special case - receives wrapper (needs `to_ptr`)
+| Backend | Language | parse | parse_string | Notes |
+|---------|----------|-------|--------------|-------|
+| MRI     | ✓        | ✓     | ✓            | C extension, MRI only |
+| Rust    | ✓        | ✓     | ✓            | Rust via magnus, MRI only |
+| FFI     | ✓*       | ✓     | N/A          | *Receives wrapper (needs `to_ptr`) |
+| Java    | ✓        | ✓     | ✓            | JRuby only |
+| Citrus  | ✓        | ✓     | ✓            | Pure Ruby PEG |
+| Parslet | ✓        | ✓     | ✓            | Pure Ruby PEG |
+| Prism   | ✓        | ✓     | ✓            | Ruby parser (stdlib) |
+| Psych   | ✓        | ✓     | ✓            | YAML parser (stdlib) |
 
 ## Benefits of This Architecture
 
-1. **Single Responsibility:** Only TreeHaver::Parser knows about wrapping
-2. **Consistency:** All backends follow the same pattern
-3. **Simplicity:** Backends don't need to handle wrapper types
-4. **Testability:** Easy to mock at boundaries
-5. **Maintainability:** Changes to wrapping logic are centralized
-6. **PoLS:** Users never see backend-specific wrapper types
-7. **Performance:** No double wrapping/unwrapping
+1. **Single Responsibility** - Only TreeHaver::Parser knows about wrapping
+2. **Consistency** - All backends follow the same pattern
+3. **Simplicity** - Backends don't need to handle wrapper types
+4. **Testability** - Easy to mock at boundaries
+5. **Maintainability** - Changes to wrapping logic are centralized
+6. **PoLS** - Users never see backend-specific wrapper types
+7. **Performance** - No double wrapping/unwrapping
 
 ## Anti-Patterns to Avoid
 
-❌ **Don't unwrap in backends:**
+**Don't unwrap in backends:**
 ```ruby
 # BAD - backend doing unwrapping
 def language=(lang)
@@ -229,17 +229,17 @@ def language=(lang)
 end
 ```
 
-✅ **Let TreeHaver::Parser unwrap:**
+**Let TreeHaver::Parser unwrap:**
 ```ruby
-# GOOD - backend expects unwrapped
+# GOOD - backend expects unwrapped (or wrapper for some backends)
 def language=(lang)
-  # lang is already unwrapped by TreeHaver::Parser
+  # lang is already processed by TreeHaver::Parser
   @parser.language = lang
   lang
 end
 ```
 
-❌ **Don't wrap in backends:**
+**Don't wrap in backends:**
 ```ruby
 # BAD - backend doing wrapping
 def parse(source)
@@ -248,7 +248,7 @@ def parse(source)
 end
 ```
 
-✅ **Return raw objects:**
+**Return raw objects:**
 ```ruby
 # GOOD - return raw, TreeHaver::Parser wraps
 def parse(source)
@@ -274,4 +274,3 @@ end
 - Test with different wrapper types
 - Test with raw objects (should pass through)
 - Test nil handling
-

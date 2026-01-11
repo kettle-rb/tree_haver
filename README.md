@@ -67,9 +67,9 @@ If you've used [Faraday](https://github.com/lostisland/faraday), [multi\_json](h
 | **multi\_xml**  | XML parsing     | Nokogiri, LibXML, Ox                                                      |
 | **TreeHaver**   | Code parsing    | MRI, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus, Parslet |
 
-**Write once, run anywhere.**
-
 **Learn once, write anywhere.**
+
+**Write once, run anywhere.**
 
 Just as Faraday lets you swap HTTP adapters without changing your code, TreeHaver lets you swap tree-sitter backends. Your parsing code remains the same whether you're running on MRI with native C extensions, JRuby with FFI, or TruffleRuby.
 
@@ -468,130 +468,6 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 [tree_stump]: https://github.com/joker1007/tree_stump
 [jtreesitter]: https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter
 
-#### Backend Platform Compatibility
-
-tree_haver supports multiple parsing backends, but not all backends work on all Ruby platforms:
-
-| Platform 👉️<br> TreeHaver Backend 👇️         | MRI | JRuby | TruffleRuby | Notes                                               |
-|------------------------------------------------|:---:|:-----:|:-----------:|-----------------------------------------------------|
-| **MRI** ([ruby_tree_sitter][ruby_tree_sitter]) |  ✅  |   ❌   |      ❌      | C extension, MRI only                               |
-| **Rust** ([tree_stump][tree_stump])            |  ✅  |   ❌   |      ❌      | Rust extension via magnus/rb-sys, MRI only          |
-| **FFI**                                        |  ✅  |   ✅   |      ❌      | TruffleRuby's FFI doesn't support `STRUCT_BY_VALUE` |
-| **Java** ([jtreesitter][jtreesitter])          |  ❌  |   ✅   |      ❌      | JRuby only, requires grammar JARs                   |
-| **Prism**                                      |  ✅  |   ✅   |      ✅      | Ruby parsing, stdlib in Ruby 3.4+                   |
-| **Psych**                                      |  ✅  |   ✅   |      ✅      | YAML parsing, stdlib                                |
-| **Citrus**                                     |  ✅  |   ✅   |      ✅      | Pure Ruby PEG parser, no native dependencies        |
-| **Parslet**                                    |  ✅  |   ✅   |      ✅      | Pure Ruby PEG parser, no native dependencies        |
-| **Commonmarker**                               |  ✅  |   ❌   |      ❓      | Rust extension for Markdown                         |
-| **Markly**                                     |  ✅  |   ❌   |      ❓      | C extension for Markdown                            |
-
-**Legend**: ✅ = Works, ❌ = Does not work, ❓ = Untested
-
-**Why some backends don't work on certain platforms**:
-
-- **JRuby**: Runs on the JVM; cannot load native C/Rust extensions (`.so` files)
-- **TruffleRuby**: Has C API emulation via Sulong/LLVM, but it doesn't expose all MRI internals that native extensions require (e.g., `RBasic.flags`, `rb_gc_writebarrier`)
-- **FFI on TruffleRuby**: TruffleRuby's FFI implementation doesn't support returning structs by value, which tree-sitter's C API requires
-
-**Example implementations** for the gem templating use case:
-
-| Gem                      | Purpose         | Description                                   |
-|--------------------------|-----------------|-----------------------------------------------|
-| [kettle-dev][kettle-dev] | Gem Development | Gem templating tool using `*-merge` gems      |
-| [kettle-jem][kettle-jem] | Gem Templating  | Gem template library with smart merge support |
-
-[tree_haver]: https://github.com/kettle-rb/tree_haver
-[ast-merge]: https://github.com/kettle-rb/ast-merge
-[prism-merge]: https://github.com/kettle-rb/prism-merge
-[psych-merge]: https://github.com/kettle-rb/psych-merge
-[json-merge]: https://github.com/kettle-rb/json-merge
-[jsonc-merge]: https://github.com/kettle-rb/jsonc-merge
-[bash-merge]: https://github.com/kettle-rb/bash-merge
-[rbs-merge]: https://github.com/kettle-rb/rbs-merge
-[dotenv-merge]: https://github.com/kettle-rb/dotenv-merge
-[toml-merge]: https://github.com/kettle-rb/toml-merge
-[markdown-merge]: https://github.com/kettle-rb/markdown-merge
-[markly-merge]: https://github.com/kettle-rb/markly-merge
-[commonmarker-merge]: https://github.com/kettle-rb/commonmarker-merge
-[kettle-dev]: https://github.com/kettle-rb/kettle-dev
-[kettle-jem]: https://github.com/kettle-rb/kettle-jem
-[tree_haver-gem]: https://bestgems.org/gems/tree_haver
-[ast-merge-gem]: https://bestgems.org/gems/ast-merge
-[prism-merge-gem]: https://bestgems.org/gems/prism-merge
-[psych-merge-gem]: https://bestgems.org/gems/psych-merge
-[json-merge-gem]: https://bestgems.org/gems/json-merge
-[jsonc-merge-gem]: https://bestgems.org/gems/jsonc-merge
-[bash-merge-gem]: https://bestgems.org/gems/bash-merge
-[rbs-merge-gem]: https://bestgems.org/gems/rbs-merge
-[dotenv-merge-gem]: https://bestgems.org/gems/dotenv-merge
-[toml-merge-gem]: https://bestgems.org/gems/toml-merge
-[markdown-merge-gem]: https://bestgems.org/gems/markdown-merge
-[markly-merge-gem]: https://bestgems.org/gems/markly-merge
-[commonmarker-merge-gem]: https://bestgems.org/gems/commonmarker-merge
-[kettle-dev-gem]: https://bestgems.org/gems/kettle-dev
-[kettle-jem-gem]: https://bestgems.org/gems/kettle-jem
-[tree_haver-gem-i]: https://img.shields.io/gem/v/tree_haver.svg
-[ast-merge-gem-i]: https://img.shields.io/gem/v/ast-merge.svg
-[prism-merge-gem-i]: https://img.shields.io/gem/v/prism-merge.svg
-[psych-merge-gem-i]: https://img.shields.io/gem/v/psych-merge.svg
-[json-merge-gem-i]: https://img.shields.io/gem/v/json-merge.svg
-[jsonc-merge-gem-i]: https://img.shields.io/gem/v/jsonc-merge.svg
-[bash-merge-gem-i]: https://img.shields.io/gem/v/bash-merge.svg
-[rbs-merge-gem-i]: https://img.shields.io/gem/v/rbs-merge.svg
-[dotenv-merge-gem-i]: https://img.shields.io/gem/v/dotenv-merge.svg
-[toml-merge-gem-i]: https://img.shields.io/gem/v/toml-merge.svg
-[markdown-merge-gem-i]: https://img.shields.io/gem/v/markdown-merge.svg
-[markly-merge-gem-i]: https://img.shields.io/gem/v/markly-merge.svg
-[commonmarker-merge-gem-i]: https://img.shields.io/gem/v/commonmarker-merge.svg
-[kettle-dev-gem-i]: https://img.shields.io/gem/v/kettle-dev.svg
-[kettle-jem-gem-i]: https://img.shields.io/gem/v/kettle-jem.svg
-[tree_haver-ci-i]: https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml/badge.svg
-[ast-merge-ci-i]: https://github.com/kettle-rb/ast-merge/actions/workflows/current.yml/badge.svg
-[prism-merge-ci-i]: https://github.com/kettle-rb/prism-merge/actions/workflows/current.yml/badge.svg
-[psych-merge-ci-i]: https://github.com/kettle-rb/psych-merge/actions/workflows/current.yml/badge.svg
-[json-merge-ci-i]: https://github.com/kettle-rb/json-merge/actions/workflows/current.yml/badge.svg
-[jsonc-merge-ci-i]: https://github.com/kettle-rb/jsonc-merge/actions/workflows/current.yml/badge.svg
-[bash-merge-ci-i]: https://github.com/kettle-rb/bash-merge/actions/workflows/current.yml/badge.svg
-[rbs-merge-ci-i]: https://github.com/kettle-rb/rbs-merge/actions/workflows/current.yml/badge.svg
-[dotenv-merge-ci-i]: https://github.com/kettle-rb/dotenv-merge/actions/workflows/current.yml/badge.svg
-[toml-merge-ci-i]: https://github.com/kettle-rb/toml-merge/actions/workflows/current.yml/badge.svg
-[markdown-merge-ci-i]: https://github.com/kettle-rb/markdown-merge/actions/workflows/current.yml/badge.svg
-[markly-merge-ci-i]: https://github.com/kettle-rb/markly-merge/actions/workflows/current.yml/badge.svg
-[commonmarker-merge-ci-i]: https://github.com/kettle-rb/commonmarker-merge/actions/workflows/current.yml/badge.svg
-[kettle-dev-ci-i]: https://github.com/kettle-rb/kettle-dev/actions/workflows/current.yml/badge.svg
-[kettle-jem-ci-i]: https://github.com/kettle-rb/kettle-jem/actions/workflows/current.yml/badge.svg
-[tree_haver-ci]: https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml
-[ast-merge-ci]: https://github.com/kettle-rb/ast-merge/actions/workflows/current.yml
-[prism-merge-ci]: https://github.com/kettle-rb/prism-merge/actions/workflows/current.yml
-[psych-merge-ci]: https://github.com/kettle-rb/psych-merge/actions/workflows/current.yml
-[json-merge-ci]: https://github.com/kettle-rb/json-merge/actions/workflows/current.yml
-[jsonc-merge-ci]: https://github.com/kettle-rb/jsonc-merge/actions/workflows/current.yml
-[bash-merge-ci]: https://github.com/kettle-rb/bash-merge/actions/workflows/current.yml
-[rbs-merge-ci]: https://github.com/kettle-rb/rbs-merge/actions/workflows/current.yml
-[dotenv-merge-ci]: https://github.com/kettle-rb/dotenv-merge/actions/workflows/current.yml
-[toml-merge-ci]: https://github.com/kettle-rb/toml-merge/actions/workflows/current.yml
-[markdown-merge-ci]: https://github.com/kettle-rb/markdown-merge/actions/workflows/current.yml
-[markly-merge-ci]: https://github.com/kettle-rb/markly-merge/actions/workflows/current.yml
-[commonmarker-merge-ci]: https://github.com/kettle-rb/commonmarker-merge/actions/workflows/current.yml
-[kettle-dev-ci]: https://github.com/kettle-rb/kettle-dev/actions/workflows/current.yml
-[kettle-jem-ci]: https://github.com/kettle-rb/kettle-jem/actions/workflows/current.yml
-[prism]: https://github.com/ruby/prism
-[psych]: https://github.com/ruby/psych
-[ts-json]: https://github.com/tree-sitter/tree-sitter-json
-[ts-jsonc]: https://gitlab.com/WhyNotHugo/tree-sitter-jsonc
-[ts-bash]: https://github.com/tree-sitter/tree-sitter-bash
-[ts-rbs]: https://github.com/joker1007/tree-sitter-rbs
-[ts-toml]: https://github.com/tree-sitter-grammars/tree-sitter-toml
-[dotenv]: https://github.com/bkeepers/dotenv
-[rbs]: https://github.com/ruby/rbs
-[toml-rb]: https://github.com/emancu/toml-rb
-[toml]: https://github.com/jm/toml
-[markly]: https://github.com/ioquatix/markly
-[commonmarker]: https://github.com/gjtorikian/commonmarker
-[ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
-[tree_stump]: https://github.com/joker1007/tree_stump
-[jtreesitter]: https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter
-
 ### Comparison with Other Ruby AST / Parser Bindings
 
 | Feature                   | [tree\_haver][📜src-gh] (this gem)            | [ruby\_tree\_sitter][ruby_tree_sitter] | [tree\_stump][tree_stump] | [citrus][citrus] | [parslet][parslet] |
@@ -625,45 +501,33 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 
 **Choose TreeHaver when:**
 
-  - You need JRuby or TruffleRuby support
+- You need JRuby or TruffleRuby support
+- You're building a library that should work across Ruby implementations
+- You want automatic grammar discovery and security validations
+- You want flexibility to switch backends without code changes
+- You need incremental parsing with a unified API
 
-  - You're building a library that should work across Ruby implementations
+**Choose ruby\_tree\_sitter directly when:**
 
-  - You want automatic grammar discovery and security validations
+- You only target MRI Ruby
+- You need the full Query API without abstraction
+- You want the most battle-tested C bindings
+- You don't need TreeHaver's grammar discovery
 
-  - You want flexibility to switch backends without code changes
+**Choose tree\_stump directly when:**
 
-  - You need incremental parsing with a unified API
-    **Choose ruby\_tree\_sitter directly when:**
+- You only target MRI Ruby
+- You prefer Rust-based native extensions
+- You want precompiled binaries without system dependencies
+- You don't need TreeHaver's grammar discovery
+- **Note:** `tree_stump` currently requires unreleased fixes in the `main` branch.
 
-  - You only target MRI Ruby
+**Choose citrus or parslet directly when:**
 
-  - You need the full Query API without abstraction
-
-  - You want the most battle-tested C bindings
-
-  - You don't need TreeHaver's grammar discovery
-    **Choose tree\_stump directly when:**
-
-  - You only target MRI Ruby
-
-  - You prefer Rust-based native extensions
-
-  - You want precompiled binaries without system dependencies
-
-  - You don't need TreeHaver's grammar discovery
-
-  - **Note:** `tree_stump` currently requires unreleased fixes in the `main` branch.
-
-    **Choose citrus or parslet directly when:**
-
-  - You need zero native dependencies (pure Ruby)
-
-  - You're using a Citrus or Parslet grammar (not tree-sitter grammars)
-
-  - Performance is less critical than portability
-
-  - You don't need TreeHaver's unified API
+- You need zero native dependencies (pure Ruby)
+- You're using a Citrus or Parslet grammar (not tree-sitter grammars)
+- Performance is less critical than portability
+- You don't need TreeHaver's unified API
 
 ## 💡 Info you can shake a stick at
 
@@ -1619,12 +1483,10 @@ and `symbol` parameters (for tree-sitter) or `grammar_module` (for Citrus/Parsle
 
 This flexibility is useful for:
 
-  - **Aliasing**: Register the same grammar under multiple names
-  - **Versioning**: Register different grammar versions (e.g., `:ruby_2`, `:ruby_3`)
-  - **Testing**: Use unique names to avoid collisions between tests
-  - **Context-specific naming**: Use names that make sense for your application
-
-<!-- end list -->
+- **Aliasing**: Register the same grammar under multiple names
+- **Versioning**: Register different grammar versions (e.g., `:ruby_2`, `:ruby_3`)
+- **Testing**: Use unique names to avoid collisions between tests
+- **Context-specific naming**: Use names that make sense for your application
 
 ```ruby
 # Register the same TOML grammar under different names for different purposes
@@ -1756,7 +1618,7 @@ parser = TreeHaver::Parser.new
 
 On JRuby, TreeHaver can use the FFI backend, Java backend, Citrus backend, or Parslet backend:
 
-**Option 1: FFI Backend (recommended for tree-sitter grammars)**
+##### Option 1: FFI Backend (recommended for tree-sitter grammars)
 
 ```ruby
 # Gemfile
@@ -1774,7 +1636,7 @@ gem "ffi"  # Required for FFI backend
 parser = TreeHaver::Parser.new
 ```
 
-**Option 2: Java Backend (native JVM performance)**
+##### Option 2: Java Backend (native JVM performance)
 
 ```bash
 # 1. Download java-tree-sitter JAR from Maven Central
@@ -1819,12 +1681,10 @@ The FFI backend uses Ruby's FFI gem which relies on the system's dynamic linker,
 
 The Java backend will work with:
 
-  - Grammar JARs built specifically for java-tree-sitter / jtreesitter (self-contained, [docs](https://tree-sitter.github.io/java-tree-sitter/), [maven][jtreesitter], [source](https://github.com/tree-sitter/java-tree-sitter))
-  - Grammar `.so` files that statically link tree-sitter
+- Grammar JARs built specifically for java-tree-sitter / jtreesitter (self-contained, [docs](https://tree-sitter.github.io/java-tree-sitter/), [maven][jtreesitter], [source](https://github.com/tree-sitter/java-tree-sitter))
+- Grammar `.so` files that statically link tree-sitter
 
-    **Option 3: Citrus Backend (pure Ruby, portable)**
-
-<!-- end list -->
+##### Option 3: Citrus Backend (pure Ruby, portable)
 
 ```ruby
 # Gemfile
@@ -1850,9 +1710,7 @@ end
   - Pure Ruby performance (slower than native backends)
   - Best for: prototyping, environments without native extension support, teaching
 
-    **Option 4: Parslet Backend (pure Ruby, portable)**
-
-<!-- end list -->
+##### Option 4: Parslet Backend (pure Ruby, portable)
 
 ```ruby
 # Gemfile

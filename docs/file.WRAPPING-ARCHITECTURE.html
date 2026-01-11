@@ -63,17 +63,22 @@
 
 <p>TreeHaver follows a <strong>single responsibility</strong> pattern for object wrapping:</p>
 
-<p><strong>TreeHaver::Parser (top level) handles ALL wrapping and unwrapping.</strong><br>
-<strong>Backends work exclusively with raw backend objects.</strong><br>
-<strong>User-facing API uses only TreeHaver wrapper classes.</strong></p>
+<ul>
+  <li>
+<strong>TreeHaver::Parser</strong> (top level) handles ALL wrapping and unwrapping</li>
+  <li>
+<strong>Backends</strong> work exclusively with raw backend objects</li>
+  <li>
+<strong>User-facing API</strong> uses only TreeHaver wrapper classes</li>
+</ul>
 
 <p>This ensures:</p>
 <ul>
-  <li>✅ Consistency across all backends</li>
-  <li>✅ Predictable behavior (PoLS)</li>
-  <li>✅ Single place for complexity</li>
-  <li>✅ Simple backend implementations</li>
-  <li>✅ Easy debugging</li>
+  <li>Consistency across all backends</li>
+  <li>Predictable behavior (PoLS)</li>
+  <li>Single place for complexity</li>
+  <li>Simple backend implementations</li>
+  <li>Easy debugging</li>
 </ul>
 
 <h2 id="architecture-overview">Architecture Overview</h2>
@@ -84,68 +89,155 @@ User Code ← TreeHaver::Tree ←────┘
             TreeHaver::Node
 </code></pre>
 
+<h2 id="inheritance-hierarchy">Inheritance Hierarchy</h2>
+
+<h3 id="base-classes">Base Classes</h3>
+
+<p>Located in <code>lib/tree_haver/base/</code>:</p>
+
+<ul>
+  <li>
+<code>TreeHaver::Base::Parser</code> - Base class for backend Parser implementations</li>
+  <li>
+<code>TreeHaver::Base::Tree</code> - Base class for backend Tree implementations</li>
+  <li>
+<code>TreeHaver::Base::Node</code> - Base class for backend Node implementations (provides Position API)</li>
+</ul>
+
+<h3 id="top-level-wrappers">Top-Level Wrappers</h3>
+
+<p>Located in <code>lib/tree_haver/</code>:</p>
+
+<ul>
+  <li>
+<code>TreeHaver::Parser</code> - Inherits from <code>Base::Parser</code>, handles wrapping/unwrapping</li>
+  <li>
+<code>TreeHaver::Tree</code> - Inherits from <code>Base::Tree</code>, wraps tree-sitter backend trees</li>
+  <li>
+<code>TreeHaver::Node</code> - Inherits from <code>Base::Node</code>, wraps tree-sitter backend nodes</li>
+</ul>
+
+<h3 id="backend-specific-classes">Backend-Specific Classes</h3>
+
+<p>Pure-Ruby backends define their own complete implementations:</p>
+
+<ul>
+  <li>
+<code>Backends::Citrus::{Parser,Tree,Node}</code> - Inherits from <code>Base::*</code>
+</li>
+  <li>
+<code>Backends::Parslet::{Parser,Tree,Node}</code> - Inherits from <code>Base::*</code>
+</li>
+  <li>
+<code>Backends::Prism::{Parser,Tree,Node}</code> - Inherits from <code>Base::*</code>
+</li>
+  <li>
+<code>Backends::Psych::{Parser,Tree,Node}</code> - Inherits from <code>Base::*</code>
+</li>
+</ul>
+
+<p>Tree-sitter backends (MRI, Rust, FFI, Java) do NOT define their own Tree/Node classes. They return raw backend objects that <code>TreeHaver::Tree</code> and <code>TreeHaver::Node</code> wrap.</p>
+
 <h2 id="language-objects">Language Objects</h2>
 
 <h3 id="wrapping-contract">Wrapping Contract</h3>
 
 <p><strong>Input to <code>TreeHaver::Parser#language=</code>:</strong></p>
 <ul>
-  <li>User passes: <code>TreeHaver::Backends::*::Language</code> wrapper OR raw language object</li>
+  <li>User passes: <code>TreeHaver::Backends::*::Language</code> wrapper</li>
 </ul>
 
 <p><strong>TreeHaver::Parser unwraps:</strong></p>
 <ul>
   <li>Calls <code>unwrap_language(lang)</code> helper method</li>
-  <li>Passes unwrapped object to <code>backend.language=</code>
+  <li>Verifies backend compatibility via <code>lang.backend</code>
 </li>
+  <li>Attempts reload if backend mismatch detected</li>
 </ul>
 
-<p><strong>Backend receives:</strong></p>
-<ul>
-  <li>MRI: <code>::TreeSitter::Language</code> (raw)</li>
-  <li>Rust: <code>String</code> (language name)</li>
-  <li>FFI: <code>TreeHaver::Backends::FFI::Language</code> (wrapper - needs <code>to_ptr</code>)</li>
-  <li>Java: Java Language object (unwrapped from wrapper’s <code>impl</code>)</li>
-  <li>Citrus: <code>Module</code> (grammar module)</li>
-</ul>
+<p><strong>Backend receives (after unwrapping):</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Backend</th>
+      <th>Receives</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>MRI</td>
+      <td>
+<code>::TreeSitter::Language</code> (via <code>to_language</code> or <code>inner_language</code>)</td>
+    </tr>
+    <tr>
+      <td>Rust</td>
+      <td>
+<code>String</code> (language name via <code>name</code>)</td>
+    </tr>
+    <tr>
+      <td>FFI</td>
+      <td>
+<code>TreeHaver::Backends::FFI::Language</code> wrapper (needs <code>to_ptr</code>)</td>
+    </tr>
+    <tr>
+      <td>Java</td>
+      <td>Java Language object (via <code>impl</code>)</td>
+    </tr>
+    <tr>
+      <td>Citrus</td>
+      <td>
+<code>TreeHaver::Backends::Citrus::Language</code> wrapper</td>
+    </tr>
+    <tr>
+      <td>Parslet</td>
+      <td>
+<code>TreeHaver::Backends::Parslet::Language</code> wrapper</td>
+    </tr>
+    <tr>
+      <td>Prism</td>
+      <td>
+<code>TreeHaver::Backends::Prism::Language</code> wrapper</td>
+    </tr>
+    <tr>
+      <td>Psych</td>
+      <td>
+<code>TreeHaver::Backends::Psych::Language</code> wrapper</td>
+    </tr>
+  </tbody>
+</table>
 
 <h3 id="unwrapping-logic">Unwrapping Logic</h3>
 
 <p>Located in <code>TreeHaver::Parser#unwrap_language</code>:</p>
 
 <pre class="code language-ruby"><code class="language-ruby">def unwrap_language(lang)
-  # Check specific wrapper types using class.name string comparison
-  # This approach is consistent, safe, and avoids autoload timing issues
-
-  # Rust wrapper - extract language name string
-  if lang.class.name == &quot;TreeHaver::Backends::Rust::Language&quot;
-    return lang.name
+  # Verify backend compatibility
+  if lang.respond_to?(:backend)
+    current_backend = backend
+    if lang.backend != current_backend &amp;&amp; current_backend != :auto
+      # Backend mismatch - attempt reload
+      reloaded = try_reload_language_for_backend(lang, current_backend)
+      lang = reloaded if reloaded
+    end
   end
 
-  # FFI wrapper - return as-is (needs to_ptr)
-  if lang.class.name == &quot;TreeHaver::Backends::FFI::Language&quot;
-    return lang
+  # Unwrap based on backend type
+  case lang.backend
+  when :mri
+    lang.to_language || lang.inner_language
+  when :rust
+    lang.name
+  when :ffi
+    lang  # FFI needs wrapper for to_ptr
+  when :java
+    lang.impl
+  when :citrus, :parslet, :prism, :psych
+    lang  # These backends accept the Language wrapper
+  else
+    # Unknown backend - try generic unwrapping
+    lang
   end
-
-  # MRI wrapper - has specific unwrapping methods (checked via respond_to?)
-  return lang.to_language if lang.respond_to?(:to_language)
-  return lang.inner_language if lang.respond_to?(:inner_language)
-
-  # Java wrapper - extract impl
-  if lang.class.name == &quot;TreeHaver::Backends::Java::Language&quot;
-    return lang.impl
-  end
-
-  # Citrus wrapper - extract grammar module
-  if lang.class.name == &quot;TreeHaver::Backends::Citrus::Language&quot;
-    return lang.grammar_module
-  end
-
-  # Fallback for generic checks (backwards compatibility)
-  return lang.impl if lang.respond_to?(:impl)
-  return lang.grammar_module if lang.respond_to?(:grammar_module)
-
-  lang  # Raw language, pass through
 end
 </code></pre>
 
@@ -153,62 +245,15 @@ end
 <ul>
   <li>FFI is unique: it needs the wrapped <code>Language</code> object to call <code>to_ptr</code>
 </li>
-  <li>
-<strong>CRITICAL:</strong> Must check <code>lang.is_a?(Backends::FFI::Language)</code> specifically</li>
-  <li>
-<strong>NOT</strong> just <code>respond_to?(:to_ptr)</code> - raw backend objects might also respond to this</li>
-  <li>If we pass a non-FFI object that responds to <code>:to_ptr</code>, we get a segfault!</li>
-  <li>FFI backend’s <code>language=</code> expects the wrapper, not unwrapped pointer</li>
+  <li>The FFI backend’s <code>language=</code> expects the wrapper, not an unwrapped pointer</li>
 </ul>
 
-<p><strong>Why Class Name String Checks Are Critical:</strong></p>
-
-<p>We use <code>lang.class.name == "TreeHaver::Backends::*::Language"</code> instead of <code>lang.is_a?(Backends::*::Language)</code> for several critical reasons:</p>
-
-<ol>
-  <li>
-<strong>Autoload Safety:</strong>
-    <ul>
-      <li>Using <code>is_a?</code> can trigger autoload at the wrong time</li>
-      <li>String comparison works even if the class isn’t fully loaded yet</li>
-      <li>Avoids race conditions during backend initialization</li>
-    </ul>
-  </li>
-  <li>
-<strong>Cross-Backend Safety:</strong>
-    <ul>
-      <li>When switching backends, cached objects might be from different backends</li>
-      <li>String comparison reliably distinguishes <code>FFI::Language</code> from <code>MRI::Language</code>
-</li>
-      <li>Prevents segfaults when wrong wrapper type is passed to native code</li>
-    </ul>
-  </li>
-  <li>
-<strong>Method Collision Prevention:</strong>
-    <ul>
-      <li>
-<strong>Rust:</strong> Many objects have a <code>name</code> method</li>
-      <li>
-<strong>FFI:</strong> Raw backend objects might respond to <code>:to_ptr</code> (causing segfaults!)</li>
-      <li>
-<strong>Java:</strong> Multiple objects might have an <code>impl</code> accessor</li>
-      <li>
-<strong>Citrus:</strong> Various objects might have <code>grammar_module</code>
-</li>
-      <li>String checks ensure we only match the exact wrapper class</li>
-    </ul>
-  </li>
-  <li>
-<strong>Consistency:</strong>
-    <ul>
-      <li>All backend wrappers use the same detection pattern</li>
-      <li>Easier to maintain and reason about</li>
-      <li>Reduces cognitive load when debugging</li>
-    </ul>
-  </li>
-</ol>
-
-<p><strong>MRI Exception:</strong> MRI still uses <code>respond_to?</code> checks because <code>to_language</code> and <code>inner_language</code> are highly specific methods unlikely to collide with other objects.</p>
+<p><strong>Backend Attribute Requirement</strong></p>
+<ul>
+  <li>All TreeHaver Language wrappers have a <code>backend</code> attribute</li>
+  <li>This enables backend compatibility checking</li>
+  <li>Passing a raw backend object (without <code>backend</code> attribute) raises an error</li>
+</ul>
 
 <h2 id="tree-objects">Tree Objects</h2>
 
@@ -249,7 +294,7 @@ end
 <pre class="code language-ruby"><code class="language-ruby">old_impl = if old_tree.respond_to?(:inner_tree)
   old_tree.inner_tree
 elsif old_tree.respond_to?(:instance_variable_get)
-  # Fallback for compatibility with legacy wrappers
+  # Fallback for compatibility
   old_tree.instance_variable_get(:@inner_tree) ||
     old_tree.instance_variable_get(:@impl) ||
     old_tree
@@ -290,43 +335,29 @@ end
 <h2 id="backend-compliance-checklist">Backend Compliance Checklist</h2>
 
 <h3 id="language-handling">Language Handling</h3>
-<ul class="task-list">
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled><code>language=</code> accepts raw unwrapped object (not TreeHaver wrapper)</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled><code>language=</code> returns the object it received (for consistency)</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>No unwrapping logic in backend (TreeHaver::Parser does it)</li>
+<ul>
+  <li>
+<code>language=</code> accepts raw unwrapped object (or wrapper for Citrus/Parslet/Prism/Psych/FFI)</li>
+  <li>
+<code>language=</code> returns the object it received (for consistency)</li>
+  <li>No unwrapping logic in backend (TreeHaver::Parser does it)</li>
 </ul>
 
 <h3 id="tree-handling-parse">Tree Handling (parse)</h3>
-<ul class="task-list">
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled><code>parse(source)</code> returns raw backend tree</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>No wrapping in <code>parse</code> (TreeHaver::Parser wraps result)</li>
+<ul>
+  <li>
+<code>parse(source)</code> returns raw backend tree</li>
+  <li>No wrapping in <code>parse</code> (TreeHaver::Parser wraps result)</li>
 </ul>
 
 <h3 id="tree-handling-parse_string">Tree Handling (parse_string)</h3>
-<ul class="task-list">
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled><code>parse_string(old_tree, source)</code> expects raw tree (already unwrapped)</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled><code>parse_string</code> returns raw backend tree</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>No unwrapping in <code>parse_string</code> (TreeHaver::Parser does it)</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>No wrapping in <code>parse_string</code> (TreeHaver::Parser wraps result)</li>
-</ul>
-
-<h3 id="documentation">Documentation</h3>
-<ul class="task-list">
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>Document that backend receives unwrapped objects</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>Document that backend returns unwrapped objects</li>
-  <li class="task-list-item">
-<input type="checkbox" class="task-list-item-checkbox" disabled>Note that TreeHaver::Parser handles all wrapping/unwrapping</li>
+<ul>
+  <li>
+<code>parse_string(old_tree, source)</code> expects raw tree (already unwrapped)</li>
+  <li>
+<code>parse_string</code> returns raw backend tree</li>
+  <li>No unwrapping in <code>parse_string</code> (TreeHaver::Parser does it)</li>
+  <li>No wrapping in <code>parse_string</code> (TreeHaver::Parser wraps result)</li>
 </ul>
 
 <h2 id="current-backend-status">Current Backend Status</h2>
@@ -338,72 +369,91 @@ end
       <th>Language</th>
       <th>parse</th>
       <th>parse_string</th>
-      <th>Compliant</th>
+      <th>Notes</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>MRI</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td>✅</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>C extension, MRI only</td>
     </tr>
     <tr>
       <td>Rust</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td>✅</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>Rust via magnus, MRI only</td>
     </tr>
     <tr>
       <td>FFI</td>
-      <td>✅*</td>
-      <td>✅</td>
+      <td>✓*</td>
+      <td>✓</td>
       <td>N/A</td>
-      <td>✅</td>
+      <td>*Receives wrapper (needs <code>to_ptr</code>)</td>
     </tr>
     <tr>
       <td>Java</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td>✅</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>JRuby only</td>
     </tr>
     <tr>
       <td>Citrus</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td>✅</td>
-      <td>✅</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>Pure Ruby PEG</td>
+    </tr>
+    <tr>
+      <td>Parslet</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>Pure Ruby PEG</td>
+    </tr>
+    <tr>
+      <td>Prism</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>Ruby parser (stdlib)</td>
+    </tr>
+    <tr>
+      <td>Psych</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>YAML parser (stdlib)</td>
     </tr>
   </tbody>
 </table>
-
-<p>* FFI is special case - receives wrapper (needs <code>to_ptr</code>)</p>
 
 <h2 id="benefits-of-this-architecture">Benefits of This Architecture</h2>
 
 <ol>
   <li>
-<strong>Single Responsibility:</strong> Only TreeHaver::Parser knows about wrapping</li>
+<strong>Single Responsibility</strong> - Only TreeHaver::Parser knows about wrapping</li>
   <li>
-<strong>Consistency:</strong> All backends follow the same pattern</li>
+<strong>Consistency</strong> - All backends follow the same pattern</li>
   <li>
-<strong>Simplicity:</strong> Backends don’t need to handle wrapper types</li>
+<strong>Simplicity</strong> - Backends don’t need to handle wrapper types</li>
   <li>
-<strong>Testability:</strong> Easy to mock at boundaries</li>
+<strong>Testability</strong> - Easy to mock at boundaries</li>
   <li>
-<strong>Maintainability:</strong> Changes to wrapping logic are centralized</li>
+<strong>Maintainability</strong> - Changes to wrapping logic are centralized</li>
   <li>
-<strong>PoLS:</strong> Users never see backend-specific wrapper types</li>
+<strong>PoLS</strong> - Users never see backend-specific wrapper types</li>
   <li>
-<strong>Performance:</strong> No double wrapping/unwrapping</li>
+<strong>Performance</strong> - No double wrapping/unwrapping</li>
 </ol>
 
 <h2 id="anti-patterns-to-avoid">Anti-Patterns to Avoid</h2>
 
-<p>❌ <strong>Don’t unwrap in backends:</strong></p>
+<p><strong>Don’t unwrap in backends:</strong></p>
 <pre class="code language-ruby"><code class="language-ruby"># BAD - backend doing unwrapping
 def language=(lang)
   inner = lang.respond_to?(:inner_language) ? lang.inner_language : lang
@@ -411,16 +461,16 @@ def language=(lang)
 end
 </code></pre>
 
-<p>✅ <strong>Let TreeHaver::Parser unwrap:</strong></p>
-<pre class="code language-ruby"><code class="language-ruby"># GOOD - backend expects unwrapped
+<p><strong>Let TreeHaver::Parser unwrap:</strong></p>
+<pre class="code language-ruby"><code class="language-ruby"># GOOD - backend expects unwrapped (or wrapper for some backends)
 def language=(lang)
-  # lang is already unwrapped by TreeHaver::Parser
+  # lang is already processed by TreeHaver::Parser
   @parser.language = lang
   lang
 end
 </code></pre>
 
-<p>❌ <strong>Don’t wrap in backends:</strong></p>
+<p><strong>Don’t wrap in backends:</strong></p>
 <pre class="code language-ruby"><code class="language-ruby"># BAD - backend doing wrapping
 def parse(source)
   raw_tree = @parser.parse(source)
@@ -428,7 +478,7 @@ def parse(source)
 end
 </code></pre>
 
-<p>✅ <strong>Return raw objects:</strong></p>
+<p><strong>Return raw objects:</strong></p>
 <pre class="code language-ruby"><code class="language-ruby"># GOOD - return raw, TreeHaver::Parser wraps
 def parse(source)
   @parser.parse(source)  # Return raw tree
@@ -462,7 +512,7 @@ end
 </div></div>
 
       <div id="footer">
-  Generated on Sun Jan 11 01:40:34 2026 by
+  Generated on Sun Jan 11 02:27:12 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

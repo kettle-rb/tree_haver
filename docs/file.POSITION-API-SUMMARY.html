@@ -59,62 +59,65 @@
 
       <div id="content"><div id='filecontents'><h1 id="position-api">Position API</h1>
 
-<p><strong>Date:</strong> December 18, 2025<br>
-<strong>Feature:</strong> Unified Position API for all tree_haver backends<br>
-<strong>Version:</strong> Unreleased (planned for v3.1.0)</p>
+<p>TreeHaver provides a unified Position API across all backends, enabling consistent access to node position information regardless of the underlying parser.</p>
+
+<h2 id="methods">Methods</h2>
+
+<p>All Node classes implement the following position methods:</p>
+
+<h3 id="start_line"><code>start_line</code></h3>
+
+<p>Returns the 1-based line number where the node starts.</p>
+
+<ul>
+  <li>For backends with 0-based rows: <code>start_point.row + 1</code>
+</li>
+  <li>For backends with native 1-based lines: uses the backend’s value directly</li>
+</ul>
+
+<h3 id="end_line"><code>end_line</code></h3>
+
+<p>Returns the 1-based line number where the node ends.</p>
+
+<ul>
+  <li>For backends with 0-based rows: <code>end_point.row + 1</code>
+</li>
+  <li>For backends with native 1-based lines: uses the backend’s value directly</li>
+</ul>
+
+<h3 id="source_position"><code>source_position</code></h3>
+
+<p>Returns a position hash with 1-based lines and 0-based columns:</p>
+
+<pre class="code language-ruby"><code class="language-ruby">{start_line:, end_line:, start_column:, end_column:}
+</code></pre>
+
+<ul>
+  <li>Lines are 1-based (human-readable)</li>
+  <li>Columns are 0-based (matches tree-sitter convention)</li>
+  <li>Compatible with <code>*-merge</code> gems’ <code>FileAnalysisBase</code> expectations</li>
+</ul>
+
+<h3 id="first_child"><code>first_child</code></h3>
+
+<p>Returns <code>children.first</code> (or <code>child(0)</code> for some backends).</p>
+
+<p>Convenience method for node iteration.</p>
 
 <hr>
 
-<h2 id="what-was-done">What Was Done</h2>
+<h2 id="backend-support">Backend Support</h2>
 
-<p>Added four position-related methods to all tree_haver backend Node classes to provide a consistent API for position information across all backends:</p>
+<h3 id="treehaverbasenode">TreeHaver::Base::Node</h3>
 
-<h3 id="new-methods">New Methods</h3>
+<p>The base class defines the Position API contract. All position methods (<code>start_line</code>, <code>end_line</code>, <code>source_position</code>, <code>first_child</code>) are implemented here with sensible defaults that handle both Hash and Object-style point representations.</p>
 
-<ol>
-  <li>
-<strong><code>start_line</code></strong> - Returns 1-based line number where node starts
-    <ul>
-      <li>Converts 0-based row to 1-based line number</li>
-      <li>Formula: <code>start_point.row + 1</code> (or uses backend’s native 1-based line if available)</li>
-    </ul>
-  </li>
-  <li>
-<strong><code>end_line</code></strong> - Returns 1-based line number where node ends
-    <ul>
-      <li>Converts 0-based row to 1-based line number</li>
-      <li>Formula: <code>end_point.row + 1</code> (or uses backend’s native 1-based line if available)</li>
-    </ul>
-  </li>
-  <li>
-<strong><code>source_position</code></strong> - Returns position hash with 1-based lines and 0-based columns
-    <ul>
-      <li>Format: <code>{start_line:, end_line:, start_column:, end_column:}</code>
-</li>
-      <li>Compatible with <code>*-merge</code> gems’ <code>FileAnalysisBase</code> expectations</li>
-      <li>Lines are 1-based (human-readable)</li>
-      <li>Columns are 0-based (matches tree-sitter convention)</li>
-    </ul>
-  </li>
-  <li>
-<strong><code>first_child</code></strong> - Convenience method for iteration
-    <ul>
-      <li>Returns <code>children.first</code>
-</li>
-      <li>Provides compatibility with code expecting <code>first_child</code> method</li>
-    </ul>
-  </li>
-</ol>
+<p>All backend Node classes inherit from <code>Base::Node</code>.</p>
 
-<hr>
+<h3 id="treehavernode-tree-sitter-backends">TreeHaver::Node (Tree-sitter Backends)</h3>
 
-<h2 id="backends-updated">Backends Updated</h2>
+<p>Inherits from <code>Base::Node</code>. Wraps raw <code>::TreeSitter::Node</code> objects from:</p>
 
-<h3 id="-main-treehavernode-wrapper">✅ Main TreeHaver::Node Wrapper</h3>
-<p><strong>File:</strong> <code>vendor/tree_haver/lib/tree_haver/node.rb</code><br>
-<strong>Lines:</strong> 113-149, 230-241</p>
-
-<p>Added all four methods to the main unified Node wrapper. This automatically covers:</p>
 <ul>
   <li>Tree-sitter MRI backend</li>
   <li>Tree-sitter FFI backend</li>
@@ -122,152 +125,107 @@
   <li>Tree-sitter Rust backend</li>
 </ul>
 
-<p>All tree-sitter backends use <code>TreeHaver::Node</code> to wrap their raw nodes, so they inherit these methods automatically.</p>
+<h3 id="commonmarker-backend">Commonmarker Backend</h3>
 
-<h3 id="-commonmarker-backend-already-complete">✅ Commonmarker Backend (Already Complete)</h3>
-<p><strong>File:</strong> <code>vendor/tree_haver/lib/tree_haver/backends/commonmarker.rb</code><br>
-<strong>Lines:</strong> 286-324, 342-348</p>
+<p><code>TreeHaver::Backends::Commonmarker::Node</code> inherits from <code>Base::Node</code>.</p>
 
-<p>Already had all four methods implemented. Uses Commonmarker’s <code>sourcepos</code> array which provides 1-based line numbers directly.</p>
+<p>Overrides position methods to use Commonmarker’s <code>sourcepos</code> array, which provides 1-based line numbers directly.</p>
 
-<h3 id="-markly-backend-already-complete">✅ Markly Backend (Already Complete)</h3>
-<p><strong>File:</strong> <code>vendor/tree_haver/lib/tree_haver/backends/markly.rb</code><br>
-<strong>Lines:</strong> 346-382</p>
+<h3 id="markly-backend">Markly Backend</h3>
 
-<p>Already had all four methods implemented. Uses Markly’s <code>source_position</code> hash which provides 1-based line numbers directly.</p>
+<p><code>TreeHaver::Backends::Markly::Node</code> inherits from <code>Base::Node</code>.</p>
 
-<h3 id="-prism-backend-already-complete">✅ Prism Backend (Already Complete)</h3>
-<p><strong>File:</strong> <code>vendor/tree_haver/lib/tree_haver/backends/prism.rb</code><br>
-<strong>Lines:</strong> 398-438</p>
+<p>Overrides position methods to use Markly’s <code>source_position</code> hash, which provides 1-based line numbers directly.</p>
 
-<p>Already had all four methods implemented. Uses Prism’s <code>Location</code> object which provides 1-based line numbers directly.</p>
+<h3 id="prism-backend">Prism Backend</h3>
 
-<h3 id="-psych-backend-newly-added">✅ Psych Backend (Newly Added)</h3>
-<p><strong>File:</strong> <code>vendor/tree_haver/lib/tree_haver/backends/psych.rb</code><br>
-<strong>Lines:</strong> 363-402</p>
+<p><code>TreeHaver::Backends::Prism::Node</code> inherits from <code>Base::Node</code>.</p>
 
-<p>Added all four methods:</p>
-<ul>
-  <li>
-<code>start_line</code> - Calculates from <code>start_point.row + 1</code>
-</li>
-  <li>
-<code>end_line</code> - Calculates from <code>end_point.row + 1</code>
-</li>
-  <li>
-<code>source_position</code> - Returns hash with 1-based lines and 0-based columns</li>
-  <li>
-<code>first_child</code> - Returns <code>children.first</code>
-</li>
-</ul>
+<p>Overrides position methods to use Prism’s <code>Location</code> object, which provides 1-based line numbers directly.</p>
 
-<h3 id="-citrus-backend-newly-added">✅ Citrus Backend (Newly Added)</h3>
-<p><strong>File:</strong> <code>vendor/tree_haver/lib/tree_haver/backends/citrus.rb</code><br>
-<strong>Lines:</strong> 375-409</p>
+<h3 id="psych-backend">Psych Backend</h3>
 
-<p>Added all four methods:</p>
-<ul>
-  <li>
-<code>start_line</code> - Calculates from <code>start_point[:row] + 1</code>
-</li>
-  <li>
-<code>end_line</code> - Calculates from <code>end_point[:row] + 1</code>
-</li>
-  <li>
-<code>source_position</code> - Returns hash with 1-based lines and 0-based columns</li>
-  <li>
-<code>first_child</code> - Returns <code>child(0)</code>
-</li>
-</ul>
+<p><code>TreeHaver::Backends::Psych::Node</code> inherits from <code>Base::Node</code>.</p>
+
+<p>Uses the inherited implementation, which calculates from <code>start_point.row + 1</code> and <code>end_point.row + 1</code>.</p>
+
+<h3 id="citrus-backend">Citrus Backend</h3>
+
+<p><code>TreeHaver::Backends::Citrus::Node</code> inherits from <code>Base::Node</code>.</p>
+
+<p>Uses the inherited implementation, which handles both Hash (<code>start_point[:row]</code>) and Object (<code>start_point.row</code>) point representations.</p>
 
 <hr>
 
-<h2 id="testing">Testing</h2>
+<h2 id="usage-example">Usage Example</h2>
 
-<h3 id="manual-verification">Manual Verification</h3>
-
-<p>Tested Psych backend successfully:</p>
 <pre class="code language-ruby"><code class="language-ruby">require &quot;tree_haver/backends/psych&quot;
+
 parser = TreeHaver::Backends::Psych::Parser.new
 parser.language = TreeHaver::Backends::Psych::Language.yaml
 tree = parser.parse(&quot;foo: bar&quot;)
 node = tree.root_node
 
-# Verified all methods work:
-node.respond_to?(:start_line)      # =&gt; true
-node.respond_to?(:end_line)        # =&gt; true
-node.respond_to?(:source_position) # =&gt; true
-node.respond_to?(:first_child)     # =&gt; true
-node.start_line                    # =&gt; 1
-node.source_position               # =&gt; {start_line: 1, end_line: 2, start_column: 0, end_column: 0}
-</code></pre>
-
-<h3 id="no-syntax-errors">No Syntax Errors</h3>
-
-<p>Both Psych and Citrus backends load without syntax errors:</p>
-<pre class="code language-bash"><code class="language-bash">ruby -I vendor/tree_haver/lib -r tree_haver/backends/psych -r tree_haver/backends/citrus -e &quot;puts &#39;Backends loaded successfully&#39;&quot;
-# Output: Backends loaded successfully
+node.start_line      # =&gt; 1
+node.end_line        # =&gt; 2
+node.source_position # =&gt; {start_line: 1, end_line: 2, start_column: 0, end_column: 0}
+node.first_child     # =&gt; &lt;first child node&gt;
 </code></pre>
 
 <hr>
 
-<h2 id="benefits">Benefits</h2>
+<h2 id="implementation-notes">Implementation Notes</h2>
 
-<h3 id="1-consistent-api-across-all-backends">1. Consistent API Across All Backends</h3>
-<p>All Node classes now respond to the same position methods, regardless of backend.</p>
+<h3 id="base-class-with-overrides">Base Class with Overrides</h3>
 
-<h3 id="2-compatible-with--merge-gems">2. Compatible with *-merge Gems</h3>
-<p>The <code>source_position</code> method returns exactly what <code>FileAnalysisBase</code> expects, eliminating the need for per-gem workarounds.</p>
+<p>The Position API uses inheritance from <code>TreeHaver::Base::Node</code>:</p>
 
-<h3 id="3-backward-compatible">3. Backward Compatible</h3>
-<p>Existing code using <code>start_point</code>/<code>end_point</code> continues to work unchanged. The new methods are additive only.</p>
+<ol>
+  <li>
+<strong>Shared Implementation</strong> - <code>Base::Node</code> provides default implementations that handle both Hash and Object point representations</li>
+  <li>
+<strong>Backend Overrides</strong> - Backends with native 1-based line numbers (Commonmarker, Markly, Prism) override the methods to use their optimized representations</li>
+  <li>
+<strong>Automatic Inheritance</strong> - Backends without overrides (Psych, Citrus, tree-sitter) inherit the working defaults</li>
+</ol>
 
-<h3 id="4-language-agnostic">4. Language-Agnostic</h3>
+<h3 id="conversion-formulas">Conversion Formulas</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Backend Type</th>
+      <th>Line Calculation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>tree-sitter, Psych, Citrus</td>
+      <td>
+<code>start_point.row + 1</code> (inherited from Base::Node)</td>
+    </tr>
+    <tr>
+      <td>Commonmarker, Markly, Prism</td>
+      <td>Native 1-based value (overridden methods)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="language-agnostic">Language-Agnostic</h3>
+
 <p>Position information is a property of the source text, not the language. These methods work identically for:</p>
+
 <ul>
   <li>Ruby (Prism backend)</li>
   <li>Markdown (Commonmarker, Markly backends)</li>
   <li>YAML (Psych backend)</li>
   <li>TOML (Citrus backend via toml-rb)</li>
   <li>JSON (tree-sitter backends)</li>
-  <li>Any future language backends</li>
 </ul>
-
-<hr>
-
-<h2 id="implementation-notes">Implementation Notes</h2>
-
-<h3 id="why-not-a-mixin">Why Not a Mixin?</h3>
-
-<p>The original plan suggested a mixin (<code>NodePositionMixin</code>), but the implementation uses direct method definitions instead because:</p>
-
-<ol>
-  <li>
-<strong>Backend-Specific Optimizations</strong> - Some backends already have 1-based line numbers (Commonmarker, Markly, Prism), so they can skip the conversion</li>
-  <li>
-<strong>Different Point Representations</strong> - Some backends return Point objects, others return hashes</li>
-  <li>
-<strong>Already Implemented</strong> - Many backends already had these methods, just needed to verify/add missing ones</li>
-</ol>
-
-<h3 id="conversion-formula">Conversion Formula</h3>
-
-<p>For backends with 0-based rows (tree-sitter, Psych, Citrus):</p>
-<ul>
-  <li><code>start_line = start_point.row + 1</code></li>
-  <li><code>end_line = end_point.row + 1</code></li>
-</ul>
-
-<p>For backends with 1-based lines (Commonmarker, Markly, Prism):</p>
-<ul>
-  <li>Use the backend’s native line number directly</li>
-</ul>
-
-<hr>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Jan 11 01:40:33 2026 by
+  Generated on Sun Jan 11 02:27:12 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
