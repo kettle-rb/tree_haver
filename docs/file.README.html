@@ -303,8 +303,6 @@ gem &quot;ruby_tree_sitter&quot;, &quot;~&gt; 2.0&quot;
 NOTE: <code>tree_stump</code> currently requires unreleased fixes in the <code>main</code> branch.</li>
 </ul>
 
-<!-- end list -->
-
 <pre class="code language-ruby"><code class="language-ruby"># Add to your Gemfile for Rust backend (MRI only)
 gem &quot;tree_stump&quot;, github: &quot;joker1007/tree_stump&quot;, branch: &quot;main&quot;
 </code></pre>
@@ -319,8 +317,6 @@ gem &quot;tree_stump&quot;, github: &quot;joker1007/tree_stump&quot;, branch: &q
   <li>
 <strong>TruffleRuby</strong>: TruffleRuby’s FFI implementation doesn’t support <code>STRUCT_BY_VALUE</code> return types, which tree-sitter’s C API uses for functions like <code>ts_tree_root_node</code> and <code>ts_node_child</code>.</li>
 </ul>
-
-<!-- end list -->
 
 <pre class="code language-ruby"><code class="language-ruby"># Add to your Gemfile for FFI backend (MRI and JRuby)
 gem &quot;ffi&quot;, &quot;&gt;= 1.15&quot;, &quot;&lt; 2.0&quot;
@@ -409,8 +405,6 @@ dnf install tree-sitter tree-sitter-devel
 <code>Language.load(name)</code> was removed; use <code>SymbolLookup</code> API instead<br>
 Older versions of jtreesitter are <strong>NOT supported</strong>.</li>
 </ul>
-
-<!-- end list -->
 
 <pre class="code language-bash"><code class="language-bash"># Download jtreesitter 0.26.0 from Maven Central
 curl -L -o jtreesitter-0.26.0.jar \
@@ -1346,8 +1340,6 @@ by following the instructions below.</p>
 </li>
 </ul>
 
-<!-- end list -->
-
 <pre class="code language-ruby"><code class="language-ruby"># Tree-sitter backends
 gem &quot;ruby_tree_sitter&quot;, &quot;~&gt; 2.0&quot;  # MRI backend
 gem &quot;tree_stump&quot;                   # Rust backend
@@ -1429,8 +1421,6 @@ end
   <li>
 <strong>Thread isolation</strong>: Each thread can use a different backend safely</li>
 </ul>
-
-<!-- end list -->
 
 <pre class="code language-ruby"><code class="language-ruby"># Example: Testing with multiple backends
 [:mri, :rust, :citrus, :parslet].each do |backend_name|
@@ -1516,8 +1506,6 @@ errors = TreeHaver::PathValidator.validation_errors(path)
 <strong>Adding custom trusted directories:</strong><br>
 For non-standard installations (Homebrew on Linux, luarocks, mise, asdf, etc.), register additional trusted directories:</li>
 </ul>
-
-<!-- end list -->
 
 <pre class="code language-ruby"><code class="language-ruby"># Programmatically at application startup
 TreeHaver::PathValidator.add_trusted_directory(&quot;/home/linuxbrew/.linuxbrew/Cellar&quot;)
@@ -1695,8 +1683,6 @@ export TREE_HAVER_TRUSTED_DIRS=&quot;/home/linuxbrew/.linuxbrew/Cellar,~/.local/
   <li>Default fallback (<code>tree_sitter_toml</code>)</li>
 </ol>
 
-<!-- end list -->
-
 <pre class="code language-bash"><code class="language-bash">export TREE_SITTER_LANG_SYMBOL=tree_sitter_toml
 </code></pre>
 
@@ -1720,8 +1706,6 @@ export TREE_SITTER_JSON_PATH=/usr/local/lib/libtree-sitter-json.so
   <li>
 <strong>Grammar <code>.so</code> files</strong> built against tree-sitter 0.26+</li>
 </ol>
-
-<!-- end list -->
 
 <pre class="code language-bash"><code class="language-bash"># Download jtreesitter JAR (or use bin/setup-jtreesitter)
 export TREE_SITTER_JAVA_JARS_DIR=/path/to/java-tree-sitter/jars
@@ -1980,8 +1964,6 @@ end
 Following ruby_tree_sitter’s reasoning:</p>
   </li>
 </ol>
-
-<!-- end list -->
 
 <ul>
   <li>
@@ -2655,6 +2637,7 @@ end
 <p><strong>Available Tags:</strong></p>
 
 <p>Tags follow a naming convention:</p>
+
 <ul>
   <li>
 <code>*_backend</code> = TreeHaver backends (mri, rust, ffi, java, prism, psych, commonmarker, markly, citrus, parslet, rbs)</li>
@@ -3024,7 +3007,7 @@ Please consider sponsoring me or the project.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Sun Jan 11 02:27:12 2026 by
+  Generated on Sun Jan 11 02:45:43 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

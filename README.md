@@ -103,7 +103,7 @@ tree = parser.parse(source_code)
           - **Markly Backend**: GitHub Flavored Markdown ([Markly][markly], cmark-gfm C)
       - **Pure Ruby Fallback**:
           - **Citrus Backend**: Pure Ruby PEG parsing via [`citrus`][citrus] (no native dependencies)
-          - **Parslet Backend**: Pure Ruby PEG parsing via [`parslet`](https://github.com/kschiess/parslet) (no native dependencies)
+          - **Parslet Backend**: Pure Ruby PEG parsing via [`parslet`][parslet] (no native dependencies)
   - **Automatic Backend Selection**: Intelligently selects the best backend for your Ruby implementation
   - **Language Agnostic**: Parse any language - Ruby, Markdown, YAML, JSON, Bash, TOML, JavaScript, etc.
   - **Grammar Discovery**: Built-in `GrammarFinder` utility for platform-aware grammar library discovery
@@ -146,8 +146,6 @@ The Rust backend uses [tree\_stump][tree_stump], which is a Rust native extensio
   - **TruffleRuby**: magnus/rb-sys are incompatible with TruffleRuby's C API emulation
     NOTE: `tree_stump` currently requires unreleased fixes in the `main` branch.
 
-<!-- end list -->
-
 ```ruby
 # Add to your Gemfile for Rust backend (MRI only)
 gem "tree_stump", github: "joker1007/tree_stump", branch: "main"
@@ -160,8 +158,6 @@ gem "tree_stump", github: "joker1007/tree_stump", branch: "main"
 Requires the `ffi` gem and a system installation of `libtree-sitter`.
 
   - **TruffleRuby**: TruffleRuby's FFI implementation doesn't support `STRUCT_BY_VALUE` return types, which tree-sitter's C API uses for functions like `ts_tree_root_node` and `ts_node_child`.
-
-<!-- end list -->
 
 ```ruby
 # Add to your Gemfile for FFI backend (MRI and JRuby)
@@ -246,8 +242,6 @@ dnf install tree-sitter tree-sitter-devel
   - `Node.getChild()`, `getParent()`, `getNextSibling()`, `getPrevSibling()` return `Optional<Node>`
   - `Language.load(name)` was removed; use `SymbolLookup` API instead
     Older versions of jtreesitter are **NOT supported**.
-
-<!-- end list -->
 
 ```bash
 # Download jtreesitter 0.26.0 from Maven Central
@@ -678,8 +672,6 @@ TreeHaver supports 10 parsing backends, each with different trade-offs. The `aut
   - \*Rust + Bash: Version mismatch (use FFI instead)
     **Backend Requirements:**
 
-<!-- end list -->
-
 ```ruby
 # Tree-sitter backends
 gem "ruby_tree_sitter", "~> 2.0"  # MRI backend
@@ -759,8 +751,6 @@ This is particularly useful for:
   - **Fallback scenarios**: Try one backend, fall back to another
   - **Thread isolation**: Each thread can use a different backend safely
 
-<!-- end list -->
-
 ```ruby
 # Example: Testing with multiple backends
 [:mri, :rust, :citrus, :parslet].each do |backend_name|
@@ -832,8 +822,6 @@ The `find_library_path_safe` method only returns paths in trusted directories.
   - `/opt/homebrew/lib`, `/opt/local/lib`
     **Adding custom trusted directories:**
     For non-standard installations (Homebrew on Linux, luarocks, mise, asdf, etc.), register additional trusted directories:
-
-<!-- end list -->
 
 ```ruby
 # Programmatically at application startup
@@ -995,8 +983,6 @@ When loading a language grammar, if you don't specify the `symbol:` parameter, T
 2.  Guessed from filename (e.g., `libtree-sitter-toml.so` → `tree_sitter_toml`)
 3.  Default fallback (`tree_sitter_toml`)
 
-<!-- end list -->
-
 ```bash
 export TREE_SITTER_LANG_SYMBOL=tree_sitter_toml
 ```
@@ -1017,8 +1003,6 @@ For the Java backend on JRuby, you need:
 1.  **jtreesitter \>= 0.26.0** JAR from Maven Central
 2.  **Tree-sitter runtime library** (`libtree-sitter.so`) version 0.26+
 3.  **Grammar `.so` files** built against tree-sitter 0.26+
-
-<!-- end list -->
 
 ```bash
 # Download jtreesitter JAR (or use bin/setup-jtreesitter)
@@ -1260,8 +1244,6 @@ end
 2.  **Never rely on `rescue => e`** to catch TreeHaver errors (it won't work)
     **Why inherit from Exception?**
     Following ruby\_tree\_sitter's reasoning:
-
-<!-- end list -->
 
   - **Thread safety**: Prevents accidental catching in thread cleanup code
   - **Signal handling**: Ensures parsing errors don't interfere with SIGTERM/SIGINT
@@ -1942,6 +1924,7 @@ end
 **Available Tags:**
 
 Tags follow a naming convention:
+
 - `*_backend` = TreeHaver backends (mri, rust, ffi, java, prism, psych, commonmarker, markly, citrus, parslet, rbs)
 - `*_engine` = Ruby engines (mri, jruby, truffleruby)
 - `*_grammar` = tree-sitter grammar files (.so)
