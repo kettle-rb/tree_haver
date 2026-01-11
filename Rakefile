@@ -145,7 +145,6 @@ begin
   # Since it only runs in MRI, all we need to do is prepend the tasks it doesn't already run by default,
   # which is effectively the task `:remaining_specs`, which it runs when it attempts the entire suite.
   task(coverage: [:ffi_specs, :backend_matrix_specs])
-
 rescue LoadError
   desc("(stub) spec is unavailable")
   task(:spec) do # rubocop:disable Rake/DuplicateTask
