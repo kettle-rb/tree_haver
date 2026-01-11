@@ -2,6 +2,8 @@
 gem "ffi", github: "ffi/ffi", branch: "master", require: false # DO NOT LOAD, because conflicts with MRI
 gem "toml-rb", github: "emancu/toml-rb", branch: "master"
 gem "citrus", github: "mjackson/citrus", branch: "master"
+gem "toml", github: "jm/toml", branch: "master"
+gem "parslet", github: "kschiess/parslet", branch: "master"
 gem "prism", github: "ruby/prism", branch: "main"
 gem "unparser", github: "mbj/unparser", branch: "main"
 
