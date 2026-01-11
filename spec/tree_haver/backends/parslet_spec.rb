@@ -214,7 +214,8 @@ RSpec.describe TreeHaver::Backends::Parslet do
             "Grammar1"
           end
 
-          def initialize; end
+          def initialize
+          end
 
           def parse(_s)
             {}
@@ -228,7 +229,8 @@ RSpec.describe TreeHaver::Backends::Parslet do
             "Grammar2"
           end
 
-          def initialize; end
+          def initialize
+          end
 
           def parse(_s)
             {}
@@ -315,7 +317,8 @@ RSpec.describe TreeHaver::Backends::Parslet do
 
       let(:mock_grammar_class) do
         Class.new do
-          def initialize; end
+          def initialize
+          end
 
           def parse(_s)
             {}
@@ -348,7 +351,8 @@ RSpec.describe TreeHaver::Backends::Parslet do
 
       let(:mock_grammar_class) do
         Class.new do
-          def initialize; end
+          def initialize
+          end
 
           def parse(source)
             # Return a simple parsed result structure
@@ -394,7 +398,8 @@ RSpec.describe TreeHaver::Backends::Parslet do
 
       let(:mock_grammar_class) do
         Class.new do
-          def initialize; end
+          def initialize
+          end
 
           def parse(_s)
             {}
@@ -553,11 +558,6 @@ RSpec.describe TreeHaver::Backends::Parslet do
     end
 
     describe "with Parslet::Slice value", :parslet_backend do
-      # Only run these tests when parslet gem is available
-      before do
-        skip "Parslet gem not available" unless backend.available?
-      end
-
       let(:slice) do
         # Create a real Parslet::Slice if available
         require "parslet"
@@ -593,10 +593,6 @@ RSpec.describe TreeHaver::Backends::Parslet do
     end
 
     describe "with Hash containing Parslet::Slice values", :parslet_backend do
-      before do
-        skip "Parslet gem not available" unless backend.available?
-      end
-
       let(:key_slice) do
         require "parslet"
         position = Parslet::Position.new(source, 0)
@@ -627,10 +623,6 @@ RSpec.describe TreeHaver::Backends::Parslet do
     end
 
     describe "with Array containing Parslet::Slice values", :parslet_backend do
-      before do
-        skip "Parslet gem not available" unless backend.available?
-      end
-
       let(:first_slice) do
         require "parslet"
         position = Parslet::Position.new(source, 0)
@@ -768,10 +760,6 @@ RSpec.describe TreeHaver::Backends::Parslet do
   end
 
   describe "integration", :parslet_backend do
-    before do
-      skip "Parslet gem not available" unless backend.available?
-    end
-
     context "with real Parslet grammar" do
       # Define a simple test grammar
       let(:simple_grammar_class) do

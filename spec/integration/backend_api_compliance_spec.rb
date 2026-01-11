@@ -28,7 +28,10 @@ RSpec.describe "Backend API Compliance" do
       let(:same_language) { language_class.new(TomlRB::Document) }
       let(:different_language) do
         # Create a mock different grammar
-        mock_grammar = Module.new { def self.parse(_); end }
+        mock_grammar = Module.new do
+          def self.parse(_)
+          end
+        end
         language_class.new(mock_grammar)
       end
 
@@ -41,9 +44,9 @@ RSpec.describe "Backend API Compliance" do
           p.language = language  # Use Language wrapper (normalized pattern)
           p
         end
-        let(:simple_source) { 'key = "value"' }
+        let(:simple_source) { "key = \"value\"" }
         let(:modified_source) { 'key = "new_value"' }
-        let(:invalid_source) { '[unclosed' }
+        let(:invalid_source) { "[unclosed" }
 
         it_behaves_like "parser api compliance"
       end
@@ -112,8 +115,12 @@ RSpec.describe "Backend API Compliance" do
       let(:same_language) { language_class.new(TOML::Parslet) }
       let(:different_language) do
         mock_grammar = Class.new do
-          def initialize; end
-          def parse(_); {} end
+          def initialize
+          end
+
+          def parse(_)
+            {}
+          end
         end
         language_class.new(mock_grammar)
       end

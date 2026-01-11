@@ -60,9 +60,10 @@ RSpec.shared_examples "backend module api" do
       end
 
       context "when available" do
-        before do
-          skip "Backend not available" unless backend.available?
-        end
+        # The specs that include these shared examples will be tagged with dependency tags.
+        # before do
+        #   skip "Backend not available" unless backend.available?
+        # end
 
         it "includes :backend key" do
           expect(backend.capabilities).to have_key(:backend)

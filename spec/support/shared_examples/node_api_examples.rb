@@ -292,11 +292,10 @@ RSpec.shared_examples "node enumerable behavior" do
     end
 
     it "all yielded items respond to node API" do
-      node_with_children.each do |child|
-        expect(child).to respond_to(:type)
-        expect(child).to respond_to(:start_byte)
-        expect(child).to respond_to(:end_byte)
-      end
+      children = node_with_children.to_a
+      expect(children).to all(respond_to(:type))
+      expect(children).to all(respond_to(:start_byte))
+      expect(children).to all(respond_to(:end_byte))
     end
   end
 

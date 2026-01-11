@@ -97,10 +97,10 @@ module TreeHaver
             end
           rescue LoadError
             false
-          # :nocov: defensive code - StandardError during require is extremely rare
+            # :nocov: defensive code - StandardError during require is extremely rare
           rescue StandardError
             false
-          # :nocov:
+            # :nocov:
           end
           @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
         end

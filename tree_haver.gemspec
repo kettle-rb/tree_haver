@@ -12,8 +12,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Peter H. Boling"]
   spec.email = ["floss@galtzo.com"]
 
-  spec.summary = "🌴 Cross-Ruby adapter for tree-sitter parsing that works on MRI, JRuby, and TruffleRuby"
-  spec.description = "🌴 TreeHaver is a cross-Ruby adapter for the tree-sitter parsing library that works seamlessly across MRI Ruby, JRuby, and TruffleRuby. It provides a unified API for parsing source code using tree-sitter grammars, regardless of your Ruby implementation. Like Faraday for HTTP or multi_json for JSON, TreeHaver lets you write once and run anywhere with automatic backend selection (MRI C extensions, Rust extensions, FFI, or Java)."
+  spec.summary = "🌴 Cross-Ruby adapter for AST parsing libraries, like tree-sitter, citrus, & parslet; works on MRI, JRuby, and TruffleRuby"
+  spec.description = "🌴 TreeHaver is a cross-Ruby adapter for many AST parsing libraries; supporting MRI Ruby, JRuby, & TruffleRuby. Provides unified parsing API & AST when using ruby_tree_sitter, parslet, citrus, ffi, tree_stump (Rust), JRuby JARs, etc. As Faraday is to HTTP clients, this is for ASTs: 'Learn once & write once & run anywhere'"
   spec.homepage = "https://github.com/kettle-rb/tree_haver"
   spec.licenses = ["MIT"]
   spec.required_ruby_version = ">= 3.2.0"

@@ -436,19 +436,17 @@ module TreeHaver
         # @param index [Integer] child index
         # @return [Node, nil] child node or nil
         def child(index)
-          return nil if index.negative?
+          return if index.negative?
 
           case @value
           when Hash
             keys = @value.keys
-            return nil if index >= keys.size
+            return if index >= keys.size
             key = keys[index]
             Node.new(@value[key], @source, key: key)
           when Array
-            return nil if index >= @value.size
+            return if index >= @value.size
             Node.new(@value[index], @source, type: "element")
-          else
-            nil
           end
         end
 
@@ -529,8 +527,6 @@ module TreeHaver
               return result if result
             end
             nil
-          else
-            nil
           end
         end
 
@@ -550,8 +546,6 @@ module TreeHaver
               result = find_last_slice(v)
               return result if result
             end
-            nil
-          else
             nil
           end
         end

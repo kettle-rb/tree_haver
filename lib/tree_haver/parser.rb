@@ -303,8 +303,8 @@ module TreeHaver
           @impl = Backends::Psych::Parser.new
           @explicit_backend = :psych
         end
-      # Tree-sitter backends (:mri, :rust, :ffi, :java) - don't auto-switch between them
-      # as that would require reloading the language from the .so file
+        # Tree-sitter backends (:mri, :rust, :ffi, :java) - don't auto-switch between them
+        # as that would require reloading the language from the .so file
       end
     end
 
@@ -364,26 +364,26 @@ module TreeHaver
 
       case lang.backend
       when :mri
-        return lang.to_language if lang.respond_to?(:to_language)
-        return lang.inner_language if lang.respond_to?(:inner_language)
+        lang.to_language if lang.respond_to?(:to_language)
+        lang.inner_language if lang.respond_to?(:inner_language)
       when :rust
-        return lang.name if lang.respond_to?(:name)
+        lang.name if lang.respond_to?(:name)
       when :ffi
-        return lang  # FFI needs wrapper for to_ptr
+        lang  # FFI needs wrapper for to_ptr
       when :java
-        return lang.impl if lang.respond_to?(:impl)
+        lang.impl if lang.respond_to?(:impl)
       when :citrus
-        return lang  # Citrus backend accepts Language wrapper (handles both)
+        lang  # Citrus backend accepts Language wrapper (handles both)
       when :parslet
-        return lang  # Parslet backend accepts Language wrapper (handles both)
+        lang  # Parslet backend accepts Language wrapper (handles both)
       when :prism
-        return lang  # Prism backend expects the Language wrapper
+        lang  # Prism backend expects the Language wrapper
       when :psych
-        return lang  # Psych backend expects the Language wrapper
+        lang  # Psych backend expects the Language wrapper
       when :commonmarker
-        return lang  # Commonmarker backend expects the Language wrapper
+        lang  # Commonmarker backend expects the Language wrapper
       when :markly
-        return lang  # Markly backend expects the Language wrapper
+        lang  # Markly backend expects the Language wrapper
       else
         # Unknown backend (e.g., test backend)
         # Try generic unwrapping methods for flexibility in testing
@@ -396,7 +396,7 @@ module TreeHaver
 
         # If nothing works, pass through as-is
         # This allows test languages to be passed directly
-        return lang
+        lang
       end
     end
 

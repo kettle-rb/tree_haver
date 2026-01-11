@@ -724,7 +724,6 @@ module TreeHaver
           end
         end
 
-
         # Check if at least one TOML backend is available
         #
         # @return [Boolean] true if any TOML backend works

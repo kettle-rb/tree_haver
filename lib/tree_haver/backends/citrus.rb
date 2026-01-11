@@ -45,10 +45,10 @@ module TreeHaver
             @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
           rescue LoadError
             @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
-          # :nocov: defensive code - StandardError during require is extremely rare
+            # :nocov: defensive code - StandardError during require is extremely rare
           rescue StandardError
             @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
-          # :nocov:
+            # :nocov:
           end
           @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
         end
@@ -378,7 +378,7 @@ module TreeHaver
 
         # Override child to handle negative indices properly
         def child(index)
-          return nil if index.negative?
+          return if index.negative?
           return unless @match.respond_to?(:matches)
           return if index >= @match.matches.size
 

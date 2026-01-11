@@ -102,8 +102,8 @@ module TreeHaver
       # @param index [Integer] Child index (0-based, non-negative)
       # @return [Node, nil] The child node or nil
       def child(index)
-        return nil if index.negative?
-        return nil if index >= child_count
+        return if index.negative?
+        return if index >= child_count
 
         children[index]
       end

@@ -28,6 +28,7 @@ RSpec/DescribeClass:
     - 'spec/integration/*'
     - 'spec/system/*'
     - 'spec/e2e/*'
+    - 'spec_matrix/*'
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
