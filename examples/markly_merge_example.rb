@@ -3,11 +3,11 @@
 
 # Example: Smart GFM Merging with Markly Backend
 #
-# This demonstrates how markdown-merge uses tree_haver's Markly backend
+# This demonstrates how markdown-merge uses the markly parser
 # to intelligently merge GFM template into destination with customizations.
 #
 # markdown-merge: Base gem providing SmartMerger for template/destination merging
-# tree_haver: Multi-backend parser (using Markly for GFM)
+# markly-merge: Markly backend integration for markdown-merge
 
 require "bundler/inline"
 
@@ -18,10 +18,13 @@ gemfile do
   gem "benchmark"
 
   # Parser
-  gem "markly", "~> 0.11"
+  gem "markly", "~> 0.12"
 
   # Load markdown-merge from local path
   gem "markdown-merge", path: File.expand_path("../../markdown-merge", __dir__)
+
+  # Markly backend for markdown-merge
+  gem "markly-merge", path: File.expand_path("../../markly-merge", __dir__)
 
   # AST merging framework
   gem "ast-merge", path: File.expand_path("../../..", __dir__)
@@ -30,9 +33,7 @@ gemfile do
   gem "tree_haver", path: File.expand_path("..", __dir__)
 end
 
-require "tree_haver"
-require "markdown/merge"
-require "markly" # Explicitly require markly
+require "markly/merge"
 
 puts "=" * 80
 puts "Markdown::Merge with Markly Backend (GitHub Flavored Markdown)"
@@ -100,21 +101,6 @@ puts "-" * 80
 puts destination_markdown
 puts
 
-# Force Markly backend
-puts "Setting backend to Markly..."
-TreeHaver.backend = :markly
-puts "✓ Backend: #{TreeHaver.backend_module}"
-puts
-
-# Check availability
-if TreeHaver::Backends::Markly.available?
-  puts "✓ Markly is available"
-else
-  puts "✗ Markly not found - cannot run example"
-  exit 1
-end
-puts
-
 # Perform the smart merge (template → destination)
 puts "Merging GFM template into destination (preserving customizations)..."
 puts "-" * 80
@@ -153,42 +139,11 @@ if result.conflicts?
   puts
 end
 
-# Show GFM-specific features handled
-puts "Smart GFM Merge Behavior:"
-puts "-" * 80
-puts "✓ Custom heading preserved: 'My API Documentation'"
-puts "✓ Tables: Destination's PUT endpoint preserved, DELETE from template added"
-puts "✓ Task lists: Destination's custom checkboxes (✅ 🔐) preserved"
-puts "✓ Strikethrough from template: ~~500~~ preserved in Rate Limiting"
-puts "✓ New sections from template: 'Rate Limiting' added"
-puts "✓ Destination-only sections preserved: 'Authentication', 'Custom Notes'"
-puts
-
-# Demonstrate position API usage in merge process
-puts "Position API in Action:"
-puts "-" * 80
-puts "markdown-merge uses tree_haver's Position API to track:"
-puts "  - start_line/end_line: 1-based line numbers for each GFM node"
-puts "  - source_position: Complete position hash for precise node location"
-puts "  - first_child: Navigate AST structure (tables, lists, etc.)"
-puts
-puts "Markly provides additional GFM-specific node types:"
-puts "  - table nodes with rows and cells"
-puts "  - tasklist items with checkbox state"
-puts "  - strikethrough, autolinks, etc."
-puts
-
 puts "=" * 80
-puts "Why Use Markly Backend for GFM?"
+puts "Why Use SmartMerger with Markly?"
 puts "=" * 80
-puts "✓ GitHub's official Markdown implementation (cmark-gfm)"
-puts "✓ Full GFM extension support (tables, strikethrough, task lists)"
-puts "✓ Type normalization for consistency"
-puts "✓ Perfect for GitHub-style documentation template merging"
-puts
-puts "Use Cases:"
-puts "  - Update project READMEs from template while preserving customizations"
-puts "  - Merge API documentation updates with custom endpoints"
-puts "  - Maintain consistent structure across team documentation"
-puts "  - Preserve team-specific task lists and tables"
+puts "1. Preserves destination customizations while updating from template"
+puts "2. Full GFM support (tables, task lists, strikethrough, autolinks)"
+puts "3. Node-by-node intelligent comparison (not line-by-line)"
+puts "4. Uses GitHub's official cmark-gfm library"
 puts "=" * 80

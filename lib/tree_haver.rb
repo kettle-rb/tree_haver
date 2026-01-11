@@ -310,25 +310,6 @@ module TreeHaver
   # Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are excluded.
   NATIVE_BACKENDS = %i[mri rust ffi java].freeze
 
-  # Default configuration for Citrus grammars
-  # Maps language names to their gem and grammar module information
-  CITRUS_DEFAULTS = {
-    toml: {
-      gem_name: "toml-rb",
-      grammar_const: "TomlRB::Document",
-      require_path: "toml-rb",
-    },
-  }.freeze
-
-  # Default configuration for Parslet grammars
-  # Maps language names to their gem and grammar class information
-  PARSLET_DEFAULTS = {
-    toml: {
-      gem_name: "toml",
-      grammar_const: "TOML::Parslet",
-      require_path: "toml",
-    },
-  }.freeze
 
   # Get the current backend selection
   #

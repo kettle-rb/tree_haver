@@ -67,6 +67,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **Examples**: Fixed broken markdown examples that referenced non-existent TreeHaver backends
+  - `commonmarker_markdown.rb` - Rewrote to use commonmarker gem directly (not a TreeHaver backend)
+  - `markly_markdown.rb` - Rewrote to use markly gem directly with correct `source_position` API
+  - `commonmarker_merge_example.rb` - Fixed to use `commonmarker/merge` gem properly
+  - `markly_merge_example.rb` - Fixed to use `markly/merge` gem properly
+  - `parslet_toml.rb` - Rewrote to properly use TreeHaver's Parslet backend with language registration
+- **Examples**: Fixed `run_all.rb` test runner
+  - Added parslet example to the test list
+  - Changed markdown examples to use `backend: "standalone"` (they're not TreeHaver backends)
+  - Added MRI+TOML to known incompatibilities (parse returns nil)
+  - Added proper skip reason messages for all known incompatibilities
+- **Examples**: Updated `examples/README.md` documentation
+  - Added Parslet backend section with usage examples
+  - Renamed "Commonmarker Backend" and "Markly Backend" to "Commonmarker (Standalone)" and "Markly (Standalone)"
+  - Clarified that commonmarker and markly are standalone parsers, not TreeHaver backends
+- **Duplicate Constants**: Removed duplicate `CITRUS_DEFAULTS` and `PARSLET_DEFAULTS` definitions
+  - Constants were defined twice in `tree_haver.rb` (lines 170 and 315)
+  - This was causing "already initialized constant" warnings on every require
+
 ### Security
 
 ## [4.0.5] - 2026-01-09

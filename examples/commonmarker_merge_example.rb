@@ -3,12 +3,12 @@
 
 # Example: Smart Markdown Merging with Commonmarker Backend
 #
-# This demonstrates how markdown-merge uses tree_haver's Commonmarker backend
+# This demonstrates how markdown-merge uses the commonmarker parser
 # to intelligently merge a template into a destination file while preserving
 # destination customizations.
 #
 # markdown-merge: Base gem providing SmartMerger for template/destination merging
-# tree_haver: Multi-backend parser (using Commonmarker for Markdown)
+# commonmarker-merge: Commonmarker backend integration for markdown-merge
 
 require "bundler/inline"
 
@@ -24,6 +24,9 @@ gemfile do
   # Load markdown-merge from local path
   gem "markdown-merge", path: File.expand_path("../../markdown-merge", __dir__)
 
+  # Commonmarker backend for markdown-merge
+  gem "commonmarker-merge", path: File.expand_path("../../commonmarker-merge", __dir__)
+
   # AST merging framework
   gem "ast-merge", path: File.expand_path("../../..", __dir__)
 
@@ -31,9 +34,7 @@ gemfile do
   gem "tree_haver", path: File.expand_path("..", __dir__)
 end
 
-require "tree_haver"
-require "markdown/merge"
-require "commonmarker"
+require "commonmarker/merge"
 
 puts "=" * 80
 puts "Markdown::Merge with Commonmarker Backend"
@@ -102,21 +103,6 @@ puts "-" * 80
 puts destination_markdown
 puts
 
-# Force Commonmarker backend
-puts "Setting backend to Commonmarker..."
-TreeHaver.backend = :commonmarker
-puts "✓ Backend: #{TreeHaver.backend_module}"
-puts
-
-# Check availability
-if TreeHaver::Backends::Commonmarker.available?
-  puts "✓ Commonmarker is available"
-else
-  puts "✗ Commonmarker not found - cannot run example"
-  exit 1
-end
-puts
-
 # Perform the smart merge (template → destination)
 puts "Merging template into destination (preserving customizations)..."
 puts "-" * 80
@@ -149,40 +135,17 @@ puts
 if result.conflicts?
   puts "Conflicts:"
   puts "-" * 80
-  result.conflicts.each_with_index do |conflict, i|
-    puts "  Conflict #{i + 1}: #{conflict}"
+  result.conflicts.each do |conflict|
+    puts "  - #{conflict}"
   end
   puts
 end
 
-# Show what was preserved vs merged
-puts "Smart Merge Behavior:"
-puts "-" * 80
-puts "✓ Custom heading preserved: 'My Awesome Project'"
-puts "✓ Custom overview text preserved (destination wins)"
-puts "✓ Installation section: Destination's custom steps preserved"
-puts "✓ Features: Destination's 'My Custom Feature' preserved"
-puts "✓ New sections from template: 'Configuration' added"
-puts "✓ Destination-only sections preserved: 'Usage'"
-puts
-
-# Demonstrate position API usage in merge process
-puts "Position API in Action:"
-puts "-" * 80
-puts "markdown-merge uses tree_haver's Position API to track:"
-puts "  - start_line/end_line: 1-based line numbers for each node"
-puts "  - source_position: Complete position hash for precise node location"
-puts "  - first_child: Navigate AST structure during merge"
-puts
-puts "This enables intelligent section matching and structure-aware merging!"
-puts
-
 puts "=" * 80
-puts "Why Use Commonmarker Backend?"
+puts "Why Use SmartMerger?"
 puts "=" * 80
-puts "✓ Fast Rust-based parser (comrak)"
-puts "✓ Fully CommonMark compliant"
-puts "✓ Excellent error tolerance"
-puts "✓ Consistent Position API"
-puts "✓ Perfect for documentation workflows"
+puts "1. Preserves destination customizations while updating from template"
+puts "2. Node-by-node intelligent comparison (not line-by-line)"
+puts "3. Configurable merge strategies per node type"
+puts "4. Uses Commonmarker for fast, accurate markdown parsing"
 puts "=" * 80

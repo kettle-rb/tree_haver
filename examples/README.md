@@ -118,9 +118,33 @@ ruby examples/citrus_dhall.rb
 
 ---
 
+### Parslet Backend (1 example)
+
+Pure Ruby parsing with Parslet grammars:
+
+- **`parslet_toml.rb`** - TOML parsing with toml gem
+
+```bash
+ruby examples/parslet_toml.rb
+```
+
+**What it shows:**
+- Pure Ruby parsing (no native extensions needed)
+- Works with the toml gem (Parslet-based TOML parser)
+- Maximum portability across Ruby implementations
+
+**Use cases:**
+- When tree-sitter native library unavailable
+- Pure Ruby portability (JRuby, TruffleRuby)
+- Fallback when native builds fail
+- Cloud functions with restricted native dependencies
+- Cross-platform CI/CD without native toolchains
+
+---
+
 ### Markdown (2 examples)
 
-Parse Markdown with different backends:
+Parse Markdown with standalone gems (not TreeHaver backends):
 
 - **`commonmarker_markdown.rb`** - Commonmarker (comrak Rust parser)
 - **`markly_markdown.rb`** - Markly (cmark-gfm C library)
@@ -316,7 +340,19 @@ ruby examples/citrus_dhall.rb    # Dhall (configuration language)
 
 ---
 
-### Commonmarker Backend
+### Parslet Backend
+
+Pure Ruby parsing with Parslet:
+
+```bash
+ruby examples/parslet_toml.rb    # TOML
+```
+
+**Best for:** Pure Ruby portability, cloud functions, cross-platform CI/CD
+
+---
+
+### Commonmarker (Standalone)
 
 Fast Markdown parsing with comrak (Rust):
 
@@ -335,7 +371,7 @@ ruby examples/commonmarker_markdown.rb  # Markdown
 
 ---
 
-### Markly Backend
+### Markly (Standalone)
 
 Markdown parsing with cmark-gfm (C library):
 
@@ -346,8 +382,7 @@ ruby examples/markly_markdown.rb  # Markdown
 **What it shows:**
 - GitHub's official Markdown implementation
 - GFM extensions: tables, strikethrough, task lists, autolinks
-- Position API with 1-based line numbers
-- Type normalization (`header` → `heading`)
+- Position API via `source_position` hash
 - Multiple output formats: HTML, CommonMark, plaintext
 
 **Best for:** GitHub-compatible Markdown, README rendering, issue/PR parsing

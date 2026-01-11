@@ -44,9 +44,12 @@ EXAMPLES = [
   {file: "citrus_finitio.rb", name: "Finitio (Citrus)", backend: "citrus", language: "Finitio"},
   {file: "citrus_dhall.rb", name: "Dhall (Citrus)", backend: "citrus", language: "Dhall"},
 
-  # Markdown examples
-  {file: "commonmarker_markdown.rb", name: "Markdown (Commonmarker)", backend: "commonmarker", language: "Markdown"},
-  {file: "markly_markdown.rb", name: "Markdown (Markly)", backend: "markly", language: "Markdown"},
+  # Parslet examples
+  {file: "parslet_toml.rb", name: "TOML (Parslet)", backend: "parslet", language: "TOML"},
+
+  # Markdown examples (standalone gems, not TreeHaver backends)
+  {file: "commonmarker_markdown.rb", name: "Markdown (Commonmarker)", backend: "standalone", language: "Markdown"},
+  {file: "markly_markdown.rb", name: "Markdown (Markly)", backend: "standalone", language: "Markdown"},
 
   # Ruby examples
   {file: "prism_ruby.rb", name: "Ruby (Prism)", backend: "prism", language: "Ruby"},
@@ -55,8 +58,8 @@ EXAMPLES = [
   {file: "psych_yaml.rb", name: "YAML (Psych)", backend: "psych", language: "YAML"},
 
   # Markdown-merge examples (demonstrate 3-way merge)
-  {file: "commonmarker_merge_example.rb", name: "Markdown Merge (Commonmarker)", backend: "commonmarker", language: "Markdown"},
-  {file: "markly_merge_example.rb", name: "Markdown Merge (Markly)", backend: "markly", language: "Markdown"},
+  {file: "commonmarker_merge_example.rb", name: "Markdown Merge (Commonmarker)", backend: "standalone", language: "Markdown"},
+  {file: "markly_merge_example.rb", name: "Markdown Merge (Markly)", backend: "standalone", language: "Markdown"},
 ].freeze
 
 # ANSI color codes
@@ -88,6 +91,12 @@ def example_compatible_with_engine?(example)
       return false # Mark as incompatible (will be skipped)
     end
 
+    # Known incompatibility: MRI backend has issues with TOML grammar
+    # Parse returns nil even when grammar is registered. Use FFI or Citrus backend.
+    if example[:language] == "TOML"
+      return false # Mark as incompatible (will be skipped)
+    end
+
     true
   when "rust"
     # Known incompatibility: Rust backend + Bash has version mismatch
@@ -98,8 +107,12 @@ def example_compatible_with_engine?(example)
     end
 
     true
+  when "standalone"
+    # Standalone examples (commonmarker, markly) work on all engines
+    # They use gems directly without going through TreeHaver backends
+    true
   else
-    # auto, ffi, citrus work on all engines
+    # auto, ffi, citrus, parslet, prism, psych work on all engines
     true
   end
 end
@@ -124,6 +137,8 @@ def run_example(example, verbose: false)
       "Requires JRuby (current: #{RUBY_ENGINE})"
     elsif backend == "mri" && example[:language] == "Bash"
       "Known incompatibility: MRI+Bash (use FFI backend)"
+    elsif backend == "mri" && example[:language] == "TOML"
+      "Known incompatibility: MRI+TOML (use FFI or Citrus backend)"
     elsif backend == "rust" && example[:language] == "Bash"
       "Known incompatibility: Rust+Bash version mismatch (use FFI)"
     else
