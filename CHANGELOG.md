@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [5.0.0] - 2026-01-11
+
+- TAG: [v5.0.0][5.0.0t]
+- COVERAGE: 92.04% -- 2289/2487 lines in 30 files
+- BRANCH COVERAGE: 79.33% -- 929/1171 branches in 30 files
+- 96.21% documented
+
+### Added
+
 - **Shared Example Groups for Backend API Compliance Testing**
   - `node_api_examples.rb` - Tests for Node API compliance:
     - `"node api compliance"` - Core Node interface (type, start_byte, end_byte, children)
@@ -124,10 +143,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - `handle_parser_creation_failure` tries Parslet as fallback after Citrus
   - `unwrap_language` extracts `grammar_class` for Parslet languages
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - **FFI Backend Compliance Tests**: Fixed tests to use `TreeHaver::Parser` wrapper instead of raw `FFI::Parser`
@@ -155,8 +170,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - **Duplicate Constants**: Removed duplicate `CITRUS_DEFAULTS` and `PARSLET_DEFAULTS` definitions
   - Constants were defined twice in `tree_haver.rb` (lines 170 and 315)
   - This was causing "already initialized constant" warnings on every require
-
-### Security
 
 ## [4.0.5] - 2026-01-09
 
@@ -1198,7 +1211,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v4.0.5...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/kettle-rb/tree_haver/compare/v4.0.5...v5.0.0
+[5.0.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v5.0.0
 [4.0.5]: https://github.com/kettle-rb/tree_haver/compare/v4.0.4...v4.0.5
 [4.0.5t]: https://github.com/kettle-rb/tree_haver/releases/tag/v4.0.5
 [4.0.4]: https://github.com/kettle-rb/tree_haver/compare/v4.0.3...v4.0.4
