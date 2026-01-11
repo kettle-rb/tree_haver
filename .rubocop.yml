@@ -30,3 +30,6 @@ ThreadSafety/ClassInstanceVariable:
 
 ThreadSafety/NewThread:
   Enabled: false
+
+Layout/TrailingEmptyLines:
+  EnforcedStyle: final_blank_line

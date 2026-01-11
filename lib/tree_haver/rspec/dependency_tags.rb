@@ -715,7 +715,12 @@ module TreeHaver
           @toml_gem_available = begin
             require "toml"
             # Verify it can actually parse - just requiring isn't enough
-            TOML.load('key = "value"')
+            source_toml = <<~TOML
+              # My Information
+              [machine]
+              host = "localhost"
+            TOML
+            TOML.load(source_toml)
             true
           rescue LoadError
             false
@@ -1233,13 +1238,14 @@ RSpec.configure do |config|
   # Specific Library Tags
   # ============================================================
   # Tags for specific gems/libraries (*_gem suffix)
+  #   :toml_gem - the toml gem (Parslet-based TOML parser)
   #   :toml_rb_gem - the toml-rb gem (Citrus-based TOML parser)
   #   :rbs_gem - the rbs gem (official RBS parser, MRI only)
   #   Note: :rbs_backend is also available as an alias for :rbs_gem
 
+  config.filter_run_excluding(toml_gem: true) unless deps.toml_gem_available?
   config.filter_run_excluding(toml_rb_gem: true) unless deps.toml_rb_gem_available?
   config.filter_run_excluding(rbs_gem: true) unless deps.rbs_gem_available?
-
 
   # ============================================================
   # Negated Tags (run when dependency is NOT available)
@@ -1281,6 +1287,7 @@ RSpec.configure do |config|
   end
 
   # Specific libraries
+  config.filter_run_excluding(not_toml_gem: true) if deps.toml_gem_available?
   config.filter_run_excluding(not_toml_rb_gem: true) if deps.toml_rb_gem_available?
   config.filter_run_excluding(not_rbs_gem: true) if deps.rbs_gem_available?
 end

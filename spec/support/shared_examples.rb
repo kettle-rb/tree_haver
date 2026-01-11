@@ -15,4 +15,3 @@
 Dir[File.join(__dir__, "shared_examples", "*.rb")].each do |file|
   require file
 end
-

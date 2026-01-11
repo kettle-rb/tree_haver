@@ -105,8 +105,10 @@ RSpec.describe TreeHaver::Backends::Parslet do
     # Create a mock Parslet grammar class
     let(:mock_grammar_class) do
       Class.new do
-        def self.name
-          "MockParsletGrammar"
+        class << self
+          def name
+            "MockParsletGrammar"
+          end
         end
 
         def initialize
@@ -210,8 +212,10 @@ RSpec.describe TreeHaver::Backends::Parslet do
     describe "#<=>" do
       let(:first_grammar_class) do
         Class.new do
-          def self.name
-            "Grammar1"
+          class << self
+            def name
+              "Grammar1"
+            end
           end
 
           def initialize
@@ -225,8 +229,10 @@ RSpec.describe TreeHaver::Backends::Parslet do
 
       let(:second_grammar_class) do
         Class.new do
-          def self.name
-            "Grammar2"
+          class << self
+            def name
+              "Grammar2"
+            end
           end
 
           def initialize
@@ -803,4 +809,3 @@ RSpec.describe TreeHaver::Backends::Parslet do
     end
   end
 end
-

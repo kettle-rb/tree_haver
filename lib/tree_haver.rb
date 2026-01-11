@@ -310,7 +310,6 @@ module TreeHaver
   # Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are excluded.
   NATIVE_BACKENDS = %i[mri rust ffi java].freeze
 
-
   # Get the current backend selection
   #
   # @return [Symbol] one of :auto, :mri, :rust, :ffi, :java, or :citrus

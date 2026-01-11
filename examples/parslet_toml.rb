@@ -91,6 +91,20 @@ puts "  Structural?: #{root.structural?}"
 puts "  Children: #{root.child_count}"
 puts
 
+# NOTE: toml gem is strict, and will not work with overly simple TOML like this:
+# toml_source = 'key = "value"'
+# tree = parser.parse(toml_source)
+# puts "✓ Parsed successfully"
+# # Explore the AST
+# root = tree.root_node
+# puts "Root Node:"
+# puts "  Type: #{root.type}"
+# puts "  Structural?: #{root.structural?}"
+# puts "  Children: #{root.child_count}"
+# puts
+# # thing = TOML.load(toml_source)
+# # puts thing.inspect
+
 # Helper to display node tree
 def show_tree(node, indent = 0, max_depth = 3)
   return if indent > max_depth
@@ -175,4 +189,3 @@ puts "  - Embedded Ruby environments"
 puts "  - Quick prototyping without compilation"
 puts "  - Cross-platform CI/CD without native toolchains"
 puts "=" * 70
-

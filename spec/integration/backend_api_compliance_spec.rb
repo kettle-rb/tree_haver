@@ -29,7 +29,9 @@ RSpec.describe "Backend API Compliance" do
       let(:different_language) do
         # Create a mock different grammar
         mock_grammar = Module.new do
-          def self.parse(_)
+          class << self
+            def parse(_)
+            end
           end
         end
         language_class.new(mock_grammar)
@@ -105,11 +107,7 @@ RSpec.describe "Backend API Compliance" do
 
     it_behaves_like "backend module api"
 
-    describe "with TOML language" do
-      before do
-        skip "TOML::Parslet not available" unless defined?(TOML::Parslet)
-      end
-
+    describe "with TOML language", :toml_gem do
       let(:language_class) { backend::Language }
       let(:language) { language_class.new(TOML::Parslet) }
       let(:same_language) { language_class.new(TOML::Parslet) }
@@ -468,4 +466,3 @@ RSpec.describe "Backend API Compliance" do
     end
   end
 end
-

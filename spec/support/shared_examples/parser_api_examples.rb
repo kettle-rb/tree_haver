@@ -108,4 +108,3 @@ RSpec.shared_examples "parser error handling" do
     end
   end
 end
-

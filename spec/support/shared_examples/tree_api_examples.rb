@@ -155,4 +155,3 @@ RSpec.shared_examples "tree traversal" do
     end
   end
 end
-

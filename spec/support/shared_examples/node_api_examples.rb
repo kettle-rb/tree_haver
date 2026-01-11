@@ -403,4 +403,3 @@ RSpec.shared_examples "node inspection" do
     end
   end
 end
-

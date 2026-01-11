@@ -237,11 +237,7 @@ RSpec.describe TreeHaver::ParsletGrammarFinder do
     end
   end
 
-  describe "integration with real toml gem", :parslet_backend do
-    before do
-      skip "toml gem not available" unless toml_gem_available?
-    end
-
+  describe "integration with real toml gem", :parslet_backend, :toml_gem do
     let(:real_finder) do
       described_class.new(
         language: :toml_parslet_test,
@@ -273,4 +269,3 @@ RSpec.describe TreeHaver::ParsletGrammarFinder do
     end
   end
 end
-

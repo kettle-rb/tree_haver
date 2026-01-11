@@ -104,4 +104,3 @@ RSpec.shared_examples "language factory methods" do
     end
   end
 end
-

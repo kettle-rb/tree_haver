@@ -165,4 +165,3 @@ RSpec.shared_examples "backend integration" do
     end
   end
 end
-

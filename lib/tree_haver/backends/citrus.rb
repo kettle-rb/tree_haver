@@ -464,7 +464,6 @@ module TreeHaver
           "unknown"
         end
 
-
         def calculate_point(offset)
           return {row: 0, column: 0} if offset <= 0
 

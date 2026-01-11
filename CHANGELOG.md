@@ -71,6 +71,9 @@ Please file a bug if you notice a violation of semantic versioning.
   - Checks if parslet gem is installed via `BackendRegistry.available?(:parslet)`
   - `:parslet_backend` tag for specs requiring Parslet
   - `:not_parslet_backend` negated tag for specs that should skip when Parslet is available
+- **RSpec Dependency Tags**: Added `toml_gem_available?` method and updated `any_toml_backend_available?`
+  - `:toml_gem` tag for specs requiring the `toml` gem to be available
+  - `:not_toml_gem` negated tag for specs that should skip when the `toml` gem is not available
 - **ParsletGrammarFinder**: Utility for discovering and registering Parslet grammar gems
   - `ParsletGrammarFinder.new(language:, gem_name:, grammar_const:, require_path:)` - Find Parslet grammars
   - `#available?` - Check if the Parslet grammar gem is installed and functional
@@ -79,7 +82,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - Auto-loads via `TreeHaver::PARSLET_DEFAULTS` for known languages (toml)
 - **TreeHaver.register_language**: Extended with `grammar_class:` parameter for Parslet grammars
 - **TreeHaver.parser_for**: Extended with `parslet_config:` parameter for explicit Parslet configuration
-- **RSpec Dependency Tags**: Added `toml_gem_available?` method and updated `any_toml_backend_available?`
 - `MRI::Language#language_name` / `#name` - Derive language name from symbol or path
 - `FFI::Language#language_name` / `#name` - Derive language name from symbol or path
 - **spec_helper.rb**: Added `require "toml"` to load the toml gem for Parslet backend tests
