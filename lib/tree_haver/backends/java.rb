@@ -17,18 +17,27 @@ module TreeHaver
     #
     # == Tree/Node Architecture
     #
-    # This backend (like all tree-sitter backends: MRI, Rust, FFI, Java) does NOT
-    # define its own Tree or Node classes at the Ruby level. Instead:
+    # This backend defines Ruby wrapper classes (`Java::Language`, `Java::Parser`,
+    # `Java::Tree`, `Java::Node`) that wrap the raw jtreesitter Java objects via
+    # JRuby's Java interop. These are **raw backend wrappers** not intended for
+    # direct use by application code.
     #
-    # - Parser#parse returns raw Java tree objects (via JRuby interop)
-    # - These are wrapped by `TreeHaver::Tree` (inherits from `Base::Tree`)
-    # - `TreeHaver::Tree#root_node` wraps raw nodes in `TreeHaver::Node`
+    # The wrapping hierarchy is:
+    #   Java::Tree/Node (this backend) → TreeHaver::Tree/Node → Base::Tree/Node
     #
-    # This differs from pure-Ruby backends (Citrus, Prism, Psych) which define
-    # their own `Backend::X::Tree` and `Backend::X::Node` classes.
+    # When you use `TreeHaver::Parser#parse`:
+    # 1. `Java::Parser#parse` returns a `Java::Tree` (wrapper around jtreesitter Tree)
+    # 2. `TreeHaver::Parser` wraps it in `TreeHaver::Tree` (adds source storage)
+    # 3. `TreeHaver::Tree#root_node` wraps `Java::Node` in `TreeHaver::Node`
     #
-    # @see TreeHaver::Tree The wrapper class for tree-sitter Tree objects
-    # @see TreeHaver::Node The wrapper class for tree-sitter Node objects
+    # The `TreeHaver::Tree` and `TreeHaver::Node` wrappers provide the full unified
+    # API including `#children`, `#text`, `#source`, `#source_position`, etc.
+    #
+    # This differs from pure-Ruby backends (Citrus, Parslet, Prism, Psych) which
+    # define Tree/Node classes that directly inherit from Base::Tree/Base::Node.
+    #
+    # @see TreeHaver::Tree The wrapper class users should interact with
+    # @see TreeHaver::Node The wrapper class users should interact with
     # @see TreeHaver::Base::Tree Base class documenting the Tree API contract
     # @see TreeHaver::Base::Node Base class documenting the Node API contract
     #
@@ -228,8 +237,17 @@ module TreeHaver
         # :nocov:
       end
 
-      # Wrapper for java-tree-sitter Language
+      # Java backend language wrapper (raw backend language)
       #
+      # This is a **raw backend language** that wraps a jtreesitter Language object
+      # via JRuby's Java interop. It is used to configure the parser for a specific
+      # grammar (e.g., TOML, JSON, etc.).
+      #
+      # Unlike `TreeHaver::Language` (which is a module with factory methods), this
+      # class holds the actual loaded language data from a grammar shared library.
+      #
+      # @api private
+      # @see TreeHaver::Language The factory module users should interact with
       # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Language.html
       #
       # :nocov:
@@ -456,8 +474,19 @@ module TreeHaver
         end
       end
 
-      # Wrapper for java-tree-sitter Parser
+      # Java backend parser wrapper (raw backend parser)
       #
+      # This is a **raw backend parser** that wraps a jtreesitter Parser object via
+      # JRuby's Java interop. It is NOT intended for direct use by application code.
+      #
+      # Users should use `TreeHaver::Parser` which wraps this class and provides:
+      # - Automatic backend selection
+      # - Language wrapper unwrapping
+      # - Tree wrapping with source storage
+      # - Unified API across all backends
+      #
+      # @api private
+      # @see TreeHaver::Parser The wrapper class users should interact with
       # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Parser.html
       class Parser
         # Create a new parser instance
@@ -543,8 +572,35 @@ module TreeHaver
         end
       end
 
-      # Wrapper for java-tree-sitter Tree
+      # Java backend tree wrapper (raw backend tree)
       #
+      # This is a **raw backend tree** that wraps a jtreesitter Tree object via
+      # JRuby's Java interop. It is NOT intended for direct use by application code.
+      #
+      # == Architecture Note
+      #
+      # Unlike pure-Ruby backends (Citrus, Parslet, Prism, Psych) which define Tree
+      # classes that inherit from `TreeHaver::Base::Tree`, tree-sitter backends (MRI,
+      # Rust, FFI, Java) define raw wrapper classes that get wrapped by `TreeHaver::Tree`.
+      #
+      # The wrapping hierarchy is:
+      #   Java::Tree (this class) → TreeHaver::Tree → Base::Tree
+      #
+      # When you use `TreeHaver::Parser#parse`, the returned tree is already wrapped
+      # in `TreeHaver::Tree`, which provides the full unified API including:
+      # - `#source` - The original source text
+      # - `#root_node` - Returns a `TreeHaver::Node` (not raw `Java::Node`)
+      # - `#errors`, `#warnings`, `#comments` - Parse diagnostics
+      # - `#edit` - Mark tree as edited for incremental parsing
+      # - `#to_s`, `#inspect` - String representations
+      #
+      # This raw class only implements methods that require direct calls to jtreesitter.
+      # The wrapper adds Ruby-level conveniences and stores the source text needed for
+      # `Node#text` extraction.
+      #
+      # @api private
+      # @see TreeHaver::Tree The wrapper class users should interact with
+      # @see TreeHaver::Base::Tree The base class documenting the full Tree API
       # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Tree.html
       class Tree
         attr_reader :impl
@@ -601,8 +657,37 @@ module TreeHaver
         end
       end
 
-      # Wrapper for java-tree-sitter Node
+      # Java backend node wrapper (raw backend node)
       #
+      # This is a **raw backend node** that wraps a jtreesitter Node object via
+      # JRuby's Java interop. It provides the minimal interface needed for tree-sitter
+      # operations but is NOT intended for direct use by application code.
+      #
+      # == Architecture Note
+      #
+      # Unlike pure-Ruby backends (Citrus, Parslet, Prism, Psych) which define Node
+      # classes that inherit from `TreeHaver::Base::Node`, tree-sitter backends (MRI,
+      # Rust, FFI, Java) define raw wrapper classes that get wrapped by `TreeHaver::Node`.
+      #
+      # The wrapping hierarchy is:
+      #   Java::Node (this class) → TreeHaver::Node → Base::Node
+      #
+      # When you use `TreeHaver::Parser#parse`, the returned tree's nodes are already
+      # wrapped in `TreeHaver::Node`, which provides the full unified API including:
+      # - `#children` - Array of child nodes
+      # - `#text` - Extract text from source
+      # - `#first_child`, `#last_child` - Convenience accessors
+      # - `#start_line`, `#end_line` - 1-based line numbers
+      # - `#source_position` - Hash with position info
+      # - `#each`, `#map`, etc. - Enumerable methods
+      # - `#to_s`, `#inspect` - String representations
+      #
+      # This raw class only implements methods that require direct calls to jtreesitter.
+      # The wrapper adds Ruby-level conveniences.
+      #
+      # @api private
+      # @see TreeHaver::Node The wrapper class users should interact with
+      # @see TreeHaver::Base::Node The base class documenting the full Node API
       # @see https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Node.html
       class Node
         attr_reader :impl
@@ -799,7 +884,7 @@ module TreeHaver
       end
       # :nocov:
 
-      # Register availability checker for RSpec dependency tags
+      # Register the availability checker for RSpec dependency tags
       TreeHaver::BackendRegistry.register_availability_checker(:java) do
         available?
       end

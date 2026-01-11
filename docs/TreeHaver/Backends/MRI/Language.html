@@ -355,6 +355,31 @@ API across all backends.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#language_name-instance_method" title="#language_name (instance method)">#<strong>language_name</strong>  &#x21d2; Symbol </a>
+    
+
+    
+      (also: #name)
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the language name.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#to_language-instance_method" title="#to_language (instance method)">#<strong>to_language</strong>  &#x21d2; ::TreeSitter::Language </a>
     
 
@@ -734,14 +759,14 @@ API across all backends.</p>
       <pre class="lines">
 
 
-190
-191
-192
-193
-194</pre>
+214
+215
+216
+217
+218</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 190</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 214</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Derive symbol from path if not provided using shared utility
@@ -823,19 +848,19 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-152
-153
-154
-155
-156
-157
-158
-159
-160
-161</pre>
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 152</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 176</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::MRI::Language (class)">Language</a></span></span><span class='rparen'>)</span>
@@ -890,15 +915,102 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-165
-166
-167</pre>
+189
+190
+191</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 165</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 189</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_hash'>hash</span>
   <span class='lbracket'>[</span><span class='ivar'>@backend</span><span class='comma'>,</span> <span class='ivar'>@path</span><span class='comma'>,</span> <span class='ivar'>@symbol</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="language_name-instance_method">
+  
+    #<strong>language_name</strong>  &#x21d2; <tt>Symbol</tt> 
+  
+
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='name-instance_method'>name</span></span>
+    </span>
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the language name</p>
+
+<p>Derives a name from the symbol or path.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>language name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 150</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_language_name'>language_name</span>
+  <span class='comment'># Try to derive from symbol (e.g., &quot;tree_sitter_toml&quot; -&gt; :toml)
+</span>  <span class='kw'>if</span> <span class='ivar'>@symbol</span>
+    <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='ivar'>@symbol</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^tree_sitter_</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Try to derive from path (e.g., &quot;/path/to/libtree-sitter-toml.so&quot; -&gt; :toml)
+</span>  <span class='kw'>if</span> <span class='ivar'>@path</span>
+    <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../LibraryPathUtils.html" title="TreeHaver::LibraryPathUtils (module)">LibraryPathUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_derive_language_name_from_path'><span class='object_link'><a href="../../LibraryPathUtils.html#derive_language_name_from_path-class_method" title="TreeHaver::LibraryPathUtils.derive_language_name_from_path (method)">derive_language_name_from_path</a></span></span><span class='lparen'>(</span><span class='ivar'>@path</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='kw'>if</span> <span class='id identifier rubyid_name'>name</span>
+  <span class='kw'>end</span>
+
+  <span class='symbol'>:unknown</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -947,12 +1059,12 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-175
-176
-177</pre>
+199
+200
+201</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 175</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/mri.rb', line 199</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_language'>to_language</span>
   <span class='ivar'>@inner_language</span>
@@ -967,7 +1079,7 @@ Path and symbol uniquely identify a loaded language.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

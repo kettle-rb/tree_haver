@@ -62,7 +62,7 @@
       <div id="content"><h1>Class: TreeHaver::Backends::Java::Tree
   
   
-  
+  <span class="private note title">Private</span>
 </h1>
 <div class="box_info">
   
@@ -101,7 +101,37 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Wrapper for java-tree-sitter Tree</p>
+    <p class="note private">
+  <strong>This class is part of a private API.</strong>
+  You should avoid using this class if possible, as it may be removed or be changed in the future.
+</p>
+<p>Java backend tree wrapper (raw backend tree)</p>
+
+<p>This is a <strong>raw backend tree</strong> that wraps a jtreesitter Tree object via<br />
+JRuby’s Java interop. It is NOT intended for direct use by application code.</p>
+
+<p>== Architecture Note</p>
+
+<p>Unlike pure-Ruby backends (Citrus, Parslet, Prism, Psych) which define Tree<br />
+classes that inherit from <code>TreeHaver::Base::Tree</code>, tree-sitter backends (MRI,<br />
+Rust, FFI, Java) define raw wrapper classes that get wrapped by <code>TreeHaver::Tree</code>.</p>
+
+<p>The wrapping hierarchy is:<br />
+  Java::Tree (this class) → TreeHaver::Tree → Base::Tree</p>
+
+<p>When you use <code>TreeHaver::Parser#parse</code>, the returned tree is already wrapped<br />
+in <code>TreeHaver::Tree</code>, which provides the full unified API including:</p>
+<ul>
+  <li><code>#source</code> - The original source text</li>
+  <li><code>#root_node</code> - Returns a <code>TreeHaver::Node</code> (not raw <code>Java::Node</code>)</li>
+  <li><code>#errors</code>, <code>#warnings</code>, <code>#comments</code> - Parse diagnostics</li>
+  <li><code>#edit</code> - Mark tree as edited for incremental parsing</li>
+  <li><code>#to_s</code>, <code>#inspect</code> - String representations</li>
+</ul>
+
+<p>This raw class only implements methods that require direct calls to jtreesitter.<br />
+The wrapper adds Ruby-level conveniences and stores the source text needed for<br />
+<code>Node#text</code> extraction.</p>
 
 
   </div>
@@ -111,6 +141,10 @@
 
   <p class="tag_title">See Also:</p>
   <ul class="see">
+    
+      <li><span class='object_link'><a href="../../Tree.html" title="TreeHaver::Tree (class)">The wrapper class users should interact with</a></span></li>
+    
+      <li><span class='object_link'><a href="../../Base/Tree.html" title="TreeHaver::Base::Tree (class)">The base class documenting the full Tree API</a></span></li>
     
       <li><a href="https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Tree.html" target="_parent" title="https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Tree.html">https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Tree.html</a></li>
     
@@ -142,10 +176,10 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Returns the value of attribute impl.</p>
+    <span class="summary_desc"><div class='inline'>
 </div></span>
   
 </li>
@@ -178,7 +212,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Mark the tree as edited for incremental re-parsing.</p>
@@ -226,7 +260,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the root node of the tree.</p>
@@ -270,12 +304,12 @@
       <pre class="lines">
 
 
-553
-554
-555</pre>
+609
+610
+611</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 553</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 609</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_impl'>impl</span><span class='rparen'>)</span>
   <span class='ivar'>@impl</span> <span class='op'>=</span> <span class='id identifier rubyid_impl'>impl</span>
@@ -303,7 +337,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns the value of attribute impl.</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+
 
 
   </div>
@@ -317,12 +355,12 @@
       <pre class="lines">
 
 
-550
-551
-552</pre>
+606
+607
+608</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 550</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 606</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_impl'>impl</span>
   <span class='ivar'>@impl</span>
@@ -350,7 +388,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Mark the tree as edited for incremental re-parsing</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p class="note returns_void">This method returns an undefined value.</p><p>Mark the tree as edited for incremental re-parsing</p>
 
 
   </div>
@@ -458,28 +500,28 @@
       <pre class="lines">
 
 
-583
-584
-585
-586
-587
-588
-589
-590
-591
-592
-593
-594
-595
-596
-597
-598
-599
-600
-601</pre>
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 583</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 639</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_edit'>edit</span><span class='lparen'>(</span><span class='label'>start_byte:</span><span class='comma'>,</span> <span class='label'>old_end_byte:</span><span class='comma'>,</span> <span class='label'>new_end_byte:</span><span class='comma'>,</span> <span class='label'>start_point:</span><span class='comma'>,</span> <span class='label'>old_end_point:</span><span class='comma'>,</span> <span class='label'>new_end_point:</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_point_class'>point_class</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_java_classes'><span class='object_link'><a href="../Java.html#java_classes-class_method" title="TreeHaver::Backends::Java.java_classes (method)">java_classes</a></span></span><span class='lbracket'>[</span><span class='symbol'>:Point</span><span class='rbracket'>]</span>
@@ -516,7 +558,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the root node of the tree</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the root node of the tree</p>
 
 
   </div>
@@ -564,21 +610,21 @@
       <pre class="lines">
 
 
-561
-562
-563
-564
-565
-566
-567
-568
-569
-570
-571
-572</pre>
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 561</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 617</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_root_node'>root_node</span>
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_rootNode'>rootNode</span>
@@ -602,7 +648,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

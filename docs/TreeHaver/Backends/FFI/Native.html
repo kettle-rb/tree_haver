@@ -317,25 +317,25 @@ This prevents polluting the Ruby environment at require time.</p>
       <pre class="lines">
 
 
-170
-171
-172
-173
-174
-175
-176
-177
-178
-179
-180
-181
 182
 183
 184
-185</pre>
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 170</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 182</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_define_ts_node_struct!'>define_ts_node_struct!</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_const_defined?'>const_defined?</span><span class='lparen'>(</span><span class='symbol'>:TSNode</span><span class='comma'>,</span> <span class='kw'>false</span><span class='rparen'>)</span>
@@ -387,23 +387,23 @@ This prevents polluting the Ruby environment at require time.</p>
       <pre class="lines">
 
 
-153
-154
-155
-156
-157
-158
-159
-160
-161
-162
-163
-164
 165
-166</pre>
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 153</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 165</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_define_ts_point_struct!'>define_ts_point_struct!</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_const_defined?'>const_defined?</span><span class='lparen'>(</span><span class='symbol'>:TSPoint</span><span class='comma'>,</span> <span class='kw'>false</span><span class='rparen'>)</span>
@@ -470,22 +470,22 @@ This prevents polluting the Ruby environment at require time.</p>
       <pre class="lines">
 
 
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149</pre>
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 137</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 149</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ensure_ffi_extended!'>ensure_ffi_extended!</span>
   <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='ivar'>@ffi_extended</span>
@@ -561,19 +561,19 @@ If TREE_SITTER_RUNTIME_LIB is set, it is tried first.</p>
       <pre class="lines">
 
 
-201
-202
-203
-204
-205
-206
-207
-208
-209
-210</pre>
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 201</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 213</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_lib_candidates'>lib_candidates</span>
   <span class='lbracket'>[</span>
@@ -632,12 +632,12 @@ If TREE_SITTER_RUNTIME_LIB is set, it is tried first.</p>
       <pre class="lines">
 
 
-300
-301
-302</pre>
+312
+313
+314</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 300</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 312</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_loaded?'>loaded?</span>
   <span class='op'>!</span><span class='op'>!</span><span class='ivar'>@loaded</span>
@@ -696,18 +696,6 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
       <pre class="lines">
 
 
-219
-220
-221
-222
-223
-224
-225
-226
-227
-228
-229
-230
 231
 232
 233
@@ -775,10 +763,22 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 295
 296
 297
-298</pre>
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 219</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 231</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_try_load!'>try_load!</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='ivar'>@loaded</span>
@@ -911,13 +911,13 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
       <pre class="lines">
 
 
-189
-190
-191
-192</pre>
+201
+202
+203
+204</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 189</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 201</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ts_node_class'>ts_node_class</span>
   <span class='id identifier rubyid_ensure_ffi_extended!'>ensure_ffi_extended!</span>
@@ -933,7 +933,7 @@ After loading, attaches FFI function definitions for the tree-sitter API.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:40 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

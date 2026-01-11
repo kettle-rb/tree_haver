@@ -51,6 +51,17 @@ RSpec.describe TreeHaver::Backends::Parslet do
         expect(backend.available?).to be false
       end
     end
+
+    context "when parslet gem raises StandardError" do
+      before do
+        backend.reset!
+        allow(backend).to receive(:require).with("parslet").and_raise(StandardError.new("unexpected error"))
+      end
+
+      it "returns false" do
+        expect(backend.available?).to be false
+      end
+    end
   end
 
   describe "::reset!" do
@@ -152,6 +163,14 @@ RSpec.describe TreeHaver::Backends::Parslet do
     end
 
     describe ".from_library" do
+      context "when no name can be derived" do
+        it "raises NotAvailable" do
+          expect {
+            backend::Language.from_library(nil, symbol: nil, name: nil)
+          }.to raise_error(TreeHaver::NotAvailable, /requires a language name/)
+        end
+      end
+
       context "when no grammar is registered" do
         before do
           TreeHaver::LanguageRegistry.clear
@@ -573,6 +592,107 @@ RSpec.describe TreeHaver::Backends::Parslet do
       end
     end
 
+    describe "with Hash containing Parslet::Slice values", :parslet_backend do
+      before do
+        skip "Parslet gem not available" unless backend.available?
+      end
+
+      let(:key_slice) do
+        require "parslet"
+        position = Parslet::Position.new(source, 0)
+        Parslet::Slice.new(position, "key", nil)
+      end
+
+      let(:value_slice) do
+        require "parslet"
+        position = Parslet::Position.new(source, 6)
+        Parslet::Slice.new(position, "value", nil)
+      end
+
+      let(:hash_with_slices) { {key: key_slice, value: value_slice} }
+      let(:node) { backend::Node.new(hash_with_slices, source, type: "pair") }
+
+      describe "#start_byte" do
+        it "returns the first slice offset" do
+          expect(node.start_byte).to eq(0)
+        end
+      end
+
+      describe "#end_byte" do
+        it "returns the last slice end position" do
+          # value_slice starts at 6, is 5 chars long ("value")
+          expect(node.end_byte).to eq(11)
+        end
+      end
+    end
+
+    describe "with Array containing Parslet::Slice values", :parslet_backend do
+      before do
+        skip "Parslet gem not available" unless backend.available?
+      end
+
+      let(:first_slice) do
+        require "parslet"
+        position = Parslet::Position.new(source, 0)
+        Parslet::Slice.new(position, "key", nil)
+      end
+
+      let(:second_slice) do
+        require "parslet"
+        position = Parslet::Position.new(source, 6)
+        Parslet::Slice.new(position, "value", nil)
+      end
+
+      let(:array_with_slices) { [first_slice, second_slice] }
+      let(:node) { backend::Node.new(array_with_slices, source, type: "array") }
+
+      describe "#start_byte" do
+        it "returns the first slice offset" do
+          expect(node.start_byte).to eq(0)
+        end
+      end
+
+      describe "#end_byte" do
+        it "returns the last slice end position" do
+          expect(node.end_byte).to eq(11)
+        end
+      end
+    end
+
+    describe "with Hash containing no slices" do
+      let(:hash_without_slices) { {key: "plain_string", value: 123} }
+      let(:node) { backend::Node.new(hash_without_slices, source, type: "pair") }
+
+      describe "#start_byte" do
+        it "returns 0 when no slices found" do
+          expect(node.start_byte).to eq(0)
+        end
+      end
+
+      describe "#end_byte" do
+        it "returns source length when no slices found" do
+          expect(node.end_byte).to eq(source.length)
+        end
+      end
+    end
+
+    describe "with Array containing no slices" do
+      let(:array_without_slices) { ["plain", "strings"] }
+      let(:node) { backend::Node.new(array_without_slices, source, type: "array") }
+
+      describe "#start_byte" do
+        it "returns 0 when no slices found" do
+          expect(node.start_byte).to eq(0)
+        end
+      end
+
+      describe "#end_byte" do
+        it "returns source length when no slices found" do
+          expect(node.end_byte).to eq(source.length)
+        end
+      end
+    end
+
     describe "position methods" do
       let(:multiline_source) { "line1\nline2\nline3" }
       let(:node) { backend::Node.new({}, multiline_source, type: "document") }
@@ -614,6 +734,34 @@ RSpec.describe TreeHaver::Backends::Parslet do
           expect(pos).to have_key(:end_line)
           expect(pos).to have_key(:start_column)
           expect(pos).to have_key(:end_column)
+        end
+      end
+    end
+
+    describe "#type inference" do
+      let(:source) { "test" }
+
+      context "with String value" do
+        let(:node) { backend::Node.new("string_value", source) }
+
+        it "infers type as 'string'" do
+          expect(node.type).to eq("string")
+        end
+      end
+
+      context "with Integer value (unknown type)" do
+        let(:node) { backend::Node.new(42, source) }
+
+        it "infers type as 'unknown'" do
+          expect(node.type).to eq("unknown")
+        end
+      end
+
+      context "with nil value (unknown type)" do
+        let(:node) { backend::Node.new(nil, source) }
+
+        it "infers type as 'unknown'" do
+          expect(node.type).to eq("unknown")
         end
       end
     end

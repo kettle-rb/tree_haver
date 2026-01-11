@@ -356,6 +356,31 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#language_name-instance_method" title="#language_name (instance method)">#<strong>language_name</strong>  &#x21d2; Symbol </a>
+    
+
+    
+      (also: #name)
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get the language name.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#to_ptr-instance_method" title="#to_ptr (instance method)">#<strong>to_ptr</strong>  &#x21d2; FFI::Pointer </a>
     
 
@@ -483,21 +508,21 @@
       <pre class="lines">
 
 
-334
-335
-336
-337
-338
-339
-340
-341
-342
-343
-344
-345</pre>
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 334</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 346</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_ptr'>ptr</span><span class='comma'>,</span> <span class='id identifier rubyid_lib'>lib</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@pointer</span> <span class='op'>=</span> <span class='id identifier rubyid_ptr'>ptr</span>
@@ -561,12 +586,12 @@
       <pre class="lines">
 
 
-318
-319
-320</pre>
+330
+331
+332</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 318</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 330</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend'>backend</span>
   <span class='ivar'>@backend</span>
@@ -616,12 +641,12 @@
       <pre class="lines">
 
 
-322
-323
-324</pre>
+334
+335
+336</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 322</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 334</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_path'>path</span>
   <span class='ivar'>@path</span>
@@ -671,12 +696,12 @@
       <pre class="lines">
 
 
-314
-315
-316</pre>
+326
+327
+328</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 314</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 326</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pointer'>pointer</span>
   <span class='ivar'>@pointer</span>
@@ -726,12 +751,12 @@
       <pre class="lines">
 
 
-326
-327
-328</pre>
+338
+339
+340</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 326</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 338</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_symbol'>symbol</span>
   <span class='ivar'>@symbol</span>
@@ -790,42 +815,6 @@
       <pre class="lines">
 
 
-400
-401
-402
-403
-404
-405
-406
-407
-408
-409
-410
-411
-412
-413
-414
-415
-416
-417
-418
-419
-420
-421
-422
-423
-424
-425
-426
-427
-428
-429
-430
-431
-432
-433
-434
-435
 436
 437
 438
@@ -864,10 +853,46 @@
 471
 472
 473
-474</pre>
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 400</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 436</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FFI not available</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../../Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../FFI.html" title="TreeHaver::Backends::FFI (module)">FFI</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../FFI.html#available%3F-class_method" title="TreeHaver::Backends::FFI.available? (method)">available?</a></span></span>
@@ -1019,19 +1044,19 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-354
-355
-356
-357
-358
-359
-360
-361
-362
-363</pre>
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 354</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 366</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Language (class)">Language</a></span></span><span class='rparen'>)</span>
@@ -1086,15 +1111,102 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-367
-368
-369</pre>
+379
+380
+381</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 367</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 379</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_hash'>hash</span>
   <span class='lbracket'>[</span><span class='ivar'>@backend</span><span class='comma'>,</span> <span class='ivar'>@path</span><span class='comma'>,</span> <span class='ivar'>@symbol</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="language_name-instance_method">
+  
+    #<strong>language_name</strong>  &#x21d2; <tt>Symbol</tt> 
+  
+
+  
+    <span class="aliases">Also known as:
+    <span class="names"><span id='name-instance_method'>name</span></span>
+    </span>
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get the language name</p>
+
+<p>Derives a name from the symbol or path.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>language name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 391</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_language_name'>language_name</span>
+  <span class='comment'># Try to derive from symbol (e.g., &quot;tree_sitter_toml&quot; -&gt; :toml)
+</span>  <span class='kw'>if</span> <span class='ivar'>@symbol</span>
+    <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='ivar'>@symbol</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^tree_sitter_</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Try to derive from path (e.g., &quot;/path/to/libtree-sitter-toml.so&quot; -&gt; :toml)
+</span>  <span class='kw'>if</span> <span class='ivar'>@path</span>
+    <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../LibraryPathUtils.html" title="TreeHaver::LibraryPathUtils (module)">LibraryPathUtils</a></span></span><span class='period'>.</span><span class='id identifier rubyid_derive_language_name_from_path'><span class='object_link'><a href="../../LibraryPathUtils.html#derive_language_name_from_path-class_method" title="TreeHaver::LibraryPathUtils.derive_language_name_from_path (method)">derive_language_name_from_path</a></span></span><span class='lparen'>(</span><span class='ivar'>@path</span><span class='rparen'>)</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='kw'>if</span> <span class='id identifier rubyid_name'>name</span>
+  <span class='kw'>end</span>
+
+  <span class='symbol'>:unknown</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1139,12 +1251,12 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-377
-378
-379</pre>
+413
+414
+415</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 377</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 413</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_ptr'>to_ptr</span>
   <span class='ivar'>@pointer</span>
@@ -1159,7 +1271,7 @@ Path and symbol uniquely identify a loaded language.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

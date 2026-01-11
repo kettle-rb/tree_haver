@@ -373,9 +373,9 @@ module TreeHaver
       when :java
         return lang.impl if lang.respond_to?(:impl)
       when :citrus
-        return lang.grammar_module if lang.respond_to?(:grammar_module)
+        return lang  # Citrus backend accepts Language wrapper (handles both)
       when :parslet
-        return lang.grammar_class if lang.respond_to?(:grammar_class)
+        return lang  # Parslet backend accepts Language wrapper (handles both)
       when :prism
         return lang  # Prism backend expects the Language wrapper
       when :psych
@@ -398,9 +398,6 @@ module TreeHaver
         # This allows test languages to be passed directly
         return lang
       end
-
-      # Shouldn't reach here, but just in case
-      lang
     end
 
     # Try to reload a language for the current backend

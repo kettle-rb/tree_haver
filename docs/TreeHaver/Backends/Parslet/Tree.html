@@ -69,10 +69,12 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">Object</span>
+      <span class="inheritName"><span class='object_link'><a href="../../Base/Tree.html" title="TreeHaver::Base::Tree (class)">TreeHaver::Base::Tree</a></span></span>
       
         <ul class="fullTree">
           <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="../../Base/Tree.html" title="TreeHaver::Base::Tree (class)">TreeHaver::Base::Tree</a></span></li>
           
             <li class="next">TreeHaver::Backends::Parslet::Tree</li>
           
@@ -110,6 +112,9 @@
 <p>Wraps Parslet parse results (Hash/Array/Slice) to provide<br />
 tree-sitter-compatible API.</p>
 
+<p>Inherits from Base::Tree to get shared methods like #errors, #warnings,<br />
+#comments, #has_error?, and #inspect.</p>
+
 
   </div>
 </div>
@@ -126,7 +131,7 @@ tree-sitter-compatible API.</p>
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#parslet_result-instance_method" title="#parslet_result (instance method)">#<strong>parslet_result</strong>  &#x21d2; Object </a>
+      <a href="#parslet_result-instance_method" title="#parslet_result (instance method)">#<strong>parslet_result</strong>  &#x21d2; Hash, ... </a>
     
 
     
@@ -145,35 +150,7 @@ tree-sitter-compatible API.</p>
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'>
-</div></span>
-  
-</li>
-
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#source-instance_method" title="#source (instance method)">#<strong>source</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'>
+    <span class="summary_desc"><div class='inline'><p>The raw Parslet parse result.</p>
 </div></span>
   
 </li>
@@ -182,6 +159,11 @@ tree-sitter-compatible API.</p>
   </ul>
 
 
+
+  
+  
+  <h3 class="inherited">Attributes inherited from <span class='object_link'><a href="../../Base/Tree.html" title="TreeHaver::Base::Tree (class)">TreeHaver::Base::Tree</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Tree.html#inner_tree-instance_method" title="TreeHaver::Base::Tree#inner_tree (method)">#inner_tree</a></span>, <span class='object_link'><a href="../../Base/Tree.html#lines-instance_method" title="TreeHaver::Base::Tree#lines (method)">#lines</a></span>, <span class='object_link'><a href="../../Base/Tree.html#source-instance_method" title="TreeHaver::Base::Tree#source (method)">#source</a></span></p>
 
 
   
@@ -243,6 +225,17 @@ tree-sitter-compatible API.</p>
     </ul>
   
 
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="../../Base/Tree.html" title="TreeHaver::Base::Tree (class)">TreeHaver::Base::Tree</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Tree.html#comments-instance_method" title="TreeHaver::Base::Tree#comments (method)">#comments</a></span>, <span class='object_link'><a href="../../Base/Tree.html#edit-instance_method" title="TreeHaver::Base::Tree#edit (method)">#edit</a></span>, <span class='object_link'><a href="../../Base/Tree.html#errors-instance_method" title="TreeHaver::Base::Tree#errors (method)">#errors</a></span>, <span class='object_link'><a href="../../Base/Tree.html#has_error%3F-instance_method" title="TreeHaver::Base::Tree#has_error? (method)">#has_error?</a></span>, <span class='object_link'><a href="../../Base/Tree.html#inspect-instance_method" title="TreeHaver::Base::Tree#inspect (method)">#inspect</a></span>, <span class='object_link'><a href="../../Base/Tree.html#warnings-instance_method" title="TreeHaver::Base::Tree#warnings (method)">#warnings</a></span></p>
 <div id="constructor_details" class="method_details_list">
   <h2>Constructor Details</h2>
   
@@ -275,17 +268,17 @@ tree-sitter-compatible API.</p>
       <pre class="lines">
 
 
-275
-276
-277
-278</pre>
+304
+305
+306
+307</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 275</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 304</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_parslet_result'>parslet_result</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='ivar'>@parslet_result</span> <span class='op'>=</span> <span class='id identifier rubyid_parslet_result'>parslet_result</span>
-  <span class='ivar'>@source</span> <span class='op'>=</span> <span class='id identifier rubyid_source'>source</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_parslet_result'>parslet_result</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -302,7 +295,7 @@ tree-sitter-compatible API.</p>
       <div class="method_details first">
   <h3 class="signature first" id="parslet_result-instance_method">
   
-    #<strong>parslet_result</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+    #<strong>parslet_result</strong>  &#x21d2; <tt>Hash</tt>, ...  <span class="extras">(readonly)</span>
   
 
   
@@ -314,13 +307,30 @@ tree-sitter-compatible API.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-
+<p>The raw Parslet parse result</p>
 
 
   </div>
 </div>
 <div class="tags">
   
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>, <tt>Array</tt>, <tt>Parslet::Slice</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>The parse result</p>
+</div>
+      
+    </li>
+  
+</ul>
 
 </div><table class="source_code">
   <tr>
@@ -328,61 +338,15 @@ tree-sitter-compatible API.</p>
       <pre class="lines">
 
 
-273
-274
-275</pre>
+302
+303
+304</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 273</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 302</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parslet_result'>parslet_result</span>
   <span class='ivar'>@parslet_result</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="source-instance_method">
-  
-    #<strong>source</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-273
-274
-275</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 273</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_source'>source</span>
-  <span class='ivar'>@source</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -425,12 +389,12 @@ tree-sitter-compatible API.</p>
       <pre class="lines">
 
 
-280
-281
-282</pre>
+309
+310
+311</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 280</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 309</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_root_node'>root_node</span>
   <span class='const'><span class='object_link'><a href="Node.html" title="TreeHaver::Backends::Parslet::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Node.html#initialize-instance_method" title="TreeHaver::Backends::Parslet::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='ivar'>@parslet_result</span><span class='comma'>,</span> <span class='ivar'>@source</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>document</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -445,7 +409,7 @@ tree-sitter-compatible API.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:42 2026 by
+  Generated on Sat Jan 10 22:57:22 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

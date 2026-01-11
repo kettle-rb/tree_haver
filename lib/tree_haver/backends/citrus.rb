@@ -45,8 +45,10 @@ module TreeHaver
             @loaded = true # rubocop:disable ThreadSafety/ClassInstanceVariable
           rescue LoadError
             @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          # :nocov: defensive code - StandardError during require is extremely rare
           rescue StandardError
             @loaded = false # rubocop:disable ThreadSafety/ClassInstanceVariable
+          # :nocov:
           end
           @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
         end
@@ -107,6 +109,22 @@ module TreeHaver
           @grammar_module = grammar_module
           @backend = :citrus
         end
+
+        # Get the language name
+        #
+        # Derives a name from the grammar module name.
+        #
+        # @return [Symbol] language name
+        def language_name
+          # Derive name from grammar module (e.g., TomlRB::Document -> :toml)
+          return :unknown unless @grammar_module.respond_to?(:name) && @grammar_module.name
+
+          name = @grammar_module.name.to_s.split("::").first.downcase
+          name.sub(/rb$/, "").to_sym
+        end
+
+        # Alias for language_name (API compatibility)
+        alias_method :name, :language_name
 
         # Compare languages for equality
         #
@@ -192,23 +210,31 @@ module TreeHaver
 
         # Set the grammar for this parser
         #
-        # Note: TreeHaver::Parser unwraps language objects before calling this method.
-        # This backend receives the raw Citrus grammar module (unwrapped), not the Language wrapper.
+        # Accepts either a Citrus::Language wrapper or a raw Citrus grammar module.
+        # When passed a Language wrapper, extracts the grammar_module from it.
+        # When passed a raw grammar module, uses it directly.
         #
-        # @param grammar [Module] Citrus grammar module with a parse method
+        # This flexibility allows both patterns:
+        #   parser.language = TreeHaver::Backends::Citrus::Language.new(TomlRB::Document)
+        #   parser.language = TomlRB::Document  # Also works
+        #
+        # @param grammar [Language, Module] Citrus Language wrapper or grammar module
         # @return [void]
-        # @example
-        #   require "toml-rb"
-        #   # TreeHaver::Parser unwraps Language.new(TomlRB::Document) to just TomlRB::Document
-        #   parser.language = TomlRB::Document  # Backend receives unwrapped module
         def language=(grammar)
-          # grammar is already unwrapped by TreeHaver::Parser
-          unless grammar.respond_to?(:parse)
+          # Accept Language wrapper or raw grammar module
+          actual_grammar = case grammar
+          when Language
+            grammar.grammar_module
+          else
+            grammar
+          end
+
+          unless actual_grammar.respond_to?(:parse)
             raise ArgumentError,
-              "Expected Citrus grammar module with parse method, " \
+              "Expected Citrus grammar module with parse method or Language wrapper, " \
                 "got #{grammar.class}"
           end
-          @grammar = grammar
+          @grammar = actual_grammar
         end
 
         # Parse source code
@@ -247,13 +273,18 @@ module TreeHaver
       # Wraps a Citrus::Match (which represents the parse tree) to provide
       # tree-sitter-compatible API.
       #
+      # Inherits from Base::Tree to get shared methods like #errors, #warnings,
+      # #comments, #has_error?, and #inspect.
+      #
       # @api private
-      class Tree
-        attr_reader :root_match, :source
+      class Tree < TreeHaver::Base::Tree
+        # The raw Citrus::Match root
+        # @return [Citrus::Match] The root match
+        attr_reader :root_match
 
         def initialize(root_match, source)
           @root_match = root_match
-          @source = source
+          super(root_match, source: source)
         end
 
         def root_node
@@ -273,21 +304,23 @@ module TreeHaver
       # - matches: child matches
       # - captures: named groups
       #
+      # Inherits from Base::Node to get shared methods like #first_child, #last_child,
+      # #to_s, #inspect, #==, #<=>, #source_position, #start_line, #end_line, etc.
+      #
       # Language-specific helpers can be mixed in for convenience:
       #   require "tree_haver/backends/citrus/toml_helpers"
       #   TreeHaver::Backends::Citrus::Node.include(TreeHaver::Backends::Citrus::TomlHelpers)
       #
       # @api private
-      class Node
-        include Comparable
-        include Enumerable
-
-        attr_reader :match, :source
+      class Node < TreeHaver::Base::Node
+        attr_reader :match
 
         def initialize(match, source)
           @match = match
-          @source = source
+          super(match, source: source)
         end
+
+        # -- Required API Methods (from Base::Node) ----------------------------
 
         # Get node type from Citrus rule name
         #
@@ -306,6 +339,50 @@ module TreeHaver
           return "unknown" if @match.events.empty?
 
           extract_type_from_event(@match.events.first)
+        end
+
+        def start_byte
+          @match.offset
+        end
+
+        def end_byte
+          @match.offset + @match.length
+        end
+
+        def children
+          return [] unless @match.respond_to?(:matches)
+          @match.matches.map { |m| Node.new(m, @source) }
+        end
+
+        # -- Overridden Methods ------------------------------------------------
+
+        # Override start_point to calculate from source
+        def start_point
+          calculate_point(@match.offset)
+        end
+
+        # Override end_point to calculate from source
+        def end_point
+          calculate_point(@match.offset + @match.length)
+        end
+
+        # Override text to use Citrus match string
+        def text
+          @match.string
+        end
+
+        # Override child_count for efficiency (avoid building full children array)
+        def child_count
+          @match.respond_to?(:matches) ? @match.matches.size : 0
+        end
+
+        # Override child to handle negative indices properly
+        def child(index)
+          return nil if index.negative?
+          return unless @match.respond_to?(:matches)
+          return if index >= @match.matches.size
+
+          Node.new(@match.matches[index], @source)
         end
 
         # Check if this node represents a structural element vs a terminal/token
@@ -387,98 +464,6 @@ module TreeHaver
           "unknown"
         end
 
-        public
-
-        def start_byte
-          @match.offset
-        end
-
-        def end_byte
-          @match.offset + @match.length
-        end
-
-        def start_point
-          calculate_point(@match.offset)
-        end
-
-        def end_point
-          calculate_point(@match.offset + @match.length)
-        end
-
-        # Get the 1-based line number where this node starts
-        #
-        # @return [Integer] 1-based line number
-        def start_line
-          start_point[:row] + 1
-        end
-
-        # Get the 1-based line number where this node ends
-        #
-        # @return [Integer] 1-based line number
-        def end_line
-          end_point[:row] + 1
-        end
-
-        # Get position information as a hash
-        #
-        # Returns a hash with 1-based line numbers and 0-based columns.
-        # Compatible with *-merge gems' FileAnalysisBase.
-        #
-        # @return [Hash{Symbol => Integer}] Position hash
-        def source_position
-          {
-            start_line: start_line,
-            end_line: end_line,
-            start_column: start_point[:column],
-            end_column: end_point[:column],
-          }
-        end
-
-        # Get the first child node
-        #
-        # @return [Node, nil] First child or nil
-        def first_child
-          child(0)
-        end
-
-        def text
-          @match.string
-        end
-
-        def child_count
-          @match.respond_to?(:matches) ? @match.matches.size : 0
-        end
-
-        def child(index)
-          return unless @match.respond_to?(:matches)
-          return if index >= @match.matches.size
-
-          Node.new(@match.matches[index], @source)
-        end
-
-        def children
-          return [] unless @match.respond_to?(:matches)
-          @match.matches.map { |m| Node.new(m, @source) }
-        end
-
-        def each(&block)
-          return to_enum(__method__) unless block_given?
-          children.each(&block)
-        end
-
-        def has_error?
-          false  # Citrus raises on parse error, so successful parse has no errors
-        end
-
-        def missing?
-          false  # Citrus doesn't have the concept of missing nodes
-        end
-
-        def named?
-          true  # Citrus matches are typically "named" in tree-sitter terminology
-        end
-
-        private
 
         def calculate_point(offset)
           return {row: 0, column: 0} if offset <= 0
@@ -494,7 +479,7 @@ module TreeHaver
         end
       end
 
-      # Register availability checker for RSpec dependency tags
+      # Register the availability checker for RSpec dependency tags
       TreeHaver::BackendRegistry.register_availability_checker(:citrus) do
         available?
       end

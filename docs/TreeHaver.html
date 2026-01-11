@@ -191,7 +191,7 @@ use Prism, Psych, Citrus, or potentially Commonmarker/Markly</li>
 </div></h5>
       
       <pre class="example code"><code><span class='comment'># Load a language grammar
-</span><span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="TreeHaver/Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span>
+</span><span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (module)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="TreeHaver/Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/usr/local/lib/libtree-sitter-toml.so</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
   <span class='label'>symbol:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree_sitter_toml</span><span class='tstring_end'>&quot;</span></span>
 <span class='rparen'>)</span>
@@ -235,7 +235,7 @@ use Prism, Psych, Citrus, or potentially Commonmarker/Markly</li>
 </div></h5>
       
       <pre class="example code"><code><span class='const'>TreeHaver</span><span class='period'>.</span><span class='id identifier rubyid_register_language'><span class='object_link'><a href="#register_language-class_method" title="TreeHaver.register_language (method)">register_language</a></span></span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/usr/local/lib/libtree-sitter-toml.so</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_toml'>toml</span></code></pre>
+<span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (module)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_toml'>toml</span></code></pre>
     
       
         <h5 class="example_title"><div class='inline'><p>Using GrammarFinder for automatic discovery</p>
@@ -244,7 +244,7 @@ use Prism, Psych, Citrus, or potentially Commonmarker/Markly</li>
       <pre class="example code"><code><span class='comment'># GrammarFinder automatically locates grammar libraries on the system
 </span><span class='id identifier rubyid_finder'>finder</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/GrammarFinder.html" title="TreeHaver::GrammarFinder (class)">GrammarFinder</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="TreeHaver/GrammarFinder.html#initialize-instance_method" title="TreeHaver::GrammarFinder#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:toml</span><span class='rparen'>)</span>
 <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_register!'>register!</span> <span class='kw'>if</span> <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_available?'>available?</span>
-<span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_toml'>toml</span></code></pre>
+<span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TreeHaver</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (module)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_toml'>toml</span></code></pre>
     
       
         <h5 class="example_title"><div class='inline'><p>Selecting a backend</p>
@@ -279,11 +279,11 @@ use Prism, Psych, Citrus, or potentially Commonmarker/Markly</li>
 <p class="children">
   
     
-      <strong class="modules">Modules:</strong> <span class='object_link'><a href="TreeHaver/BackendAPI.html" title="TreeHaver::BackendAPI (module)">BackendAPI</a></span>, <span class='object_link'><a href="TreeHaver/BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span>, <span class='object_link'><a href="TreeHaver/Backends.html" title="TreeHaver::Backends (module)">Backends</a></span>, <span class='object_link'><a href="TreeHaver/Base.html" title="TreeHaver::Base (module)">Base</a></span>, <span class='object_link'><a href="TreeHaver/LanguageRegistry.html" title="TreeHaver::LanguageRegistry (module)">LanguageRegistry</a></span>, <span class='object_link'><a href="TreeHaver/LibraryPathUtils.html" title="TreeHaver::LibraryPathUtils (module)">LibraryPathUtils</a></span>, <span class='object_link'><a href="TreeHaver/PathValidator.html" title="TreeHaver::PathValidator (module)">PathValidator</a></span>, <span class='object_link'><a href="TreeHaver/RSpec.html" title="TreeHaver::RSpec (module)">RSpec</a></span>, <span class='object_link'><a href="TreeHaver/Version.html" title="TreeHaver::Version (module)">Version</a></span>
+      <strong class="modules">Modules:</strong> <span class='object_link'><a href="TreeHaver/BackendAPI.html" title="TreeHaver::BackendAPI (module)">BackendAPI</a></span>, <span class='object_link'><a href="TreeHaver/BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span>, <span class='object_link'><a href="TreeHaver/Backends.html" title="TreeHaver::Backends (module)">Backends</a></span>, <span class='object_link'><a href="TreeHaver/Base.html" title="TreeHaver::Base (module)">Base</a></span>, <span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (module)">Language</a></span>, <span class='object_link'><a href="TreeHaver/LanguageRegistry.html" title="TreeHaver::LanguageRegistry (module)">LanguageRegistry</a></span>, <span class='object_link'><a href="TreeHaver/LibraryPathUtils.html" title="TreeHaver::LibraryPathUtils (module)">LibraryPathUtils</a></span>, <span class='object_link'><a href="TreeHaver/PathValidator.html" title="TreeHaver::PathValidator (module)">PathValidator</a></span>, <span class='object_link'><a href="TreeHaver/RSpec.html" title="TreeHaver::RSpec (module)">RSpec</a></span>, <span class='object_link'><a href="TreeHaver/Version.html" title="TreeHaver::Version (module)">Version</a></span>
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="TreeHaver/BackendConflict.html" title="TreeHaver::BackendConflict (class)">BackendConflict</a></span>, <span class='object_link'><a href="TreeHaver/CitrusGrammarFinder.html" title="TreeHaver::CitrusGrammarFinder (class)">CitrusGrammarFinder</a></span>, <span class='object_link'><a href="TreeHaver/Error.html" title="TreeHaver::Error (class)">Error</a></span>, <span class='object_link'><a href="TreeHaver/GrammarFinder.html" title="TreeHaver::GrammarFinder (class)">GrammarFinder</a></span>, <span class='object_link'><a href="TreeHaver/Language.html" title="TreeHaver::Language (class)">Language</a></span>, <span class='object_link'><a href="TreeHaver/Node.html" title="TreeHaver::Node (class)">Node</a></span>, <span class='object_link'><a href="TreeHaver/NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span>, <span class='object_link'><a href="TreeHaver/Parser.html" title="TreeHaver::Parser (class)">Parser</a></span>, <span class='object_link'><a href="TreeHaver/ParsletGrammarFinder.html" title="TreeHaver::ParsletGrammarFinder (class)">ParsletGrammarFinder</a></span>, <span class='object_link'><a href="TreeHaver/Point.html" title="TreeHaver::Point (class)">Point</a></span>, <span class='object_link'><a href="TreeHaver/Tree.html" title="TreeHaver::Tree (class)">Tree</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="TreeHaver/BackendConflict.html" title="TreeHaver::BackendConflict (class)">BackendConflict</a></span>, <span class='object_link'><a href="TreeHaver/CitrusGrammarFinder.html" title="TreeHaver::CitrusGrammarFinder (class)">CitrusGrammarFinder</a></span>, <span class='object_link'><a href="TreeHaver/Error.html" title="TreeHaver::Error (class)">Error</a></span>, <span class='object_link'><a href="TreeHaver/GrammarFinder.html" title="TreeHaver::GrammarFinder (class)">GrammarFinder</a></span>, <span class='object_link'><a href="TreeHaver/Node.html" title="TreeHaver::Node (class)">Node</a></span>, <span class='object_link'><a href="TreeHaver/NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span>, <span class='object_link'><a href="TreeHaver/Parser.html" title="TreeHaver::Parser (class)">Parser</a></span>, <span class='object_link'><a href="TreeHaver/ParsletGrammarFinder.html" title="TreeHaver::ParsletGrammarFinder (class)">ParsletGrammarFinder</a></span>, <span class='object_link'><a href="TreeHaver/Tree.html" title="TreeHaver::Tree (class)">Tree</a></span>
     
   
 </p>
@@ -413,6 +413,63 @@ Pure Ruby backends (Citrus, Prism, Psych, Commonmarker, Markly) are excluded.</p
 </div>
         </dt>
         <dd><pre class="code"><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="#VALID_NATIVE_BACKENDS-constant" title="TreeHaver::VALID_NATIVE_BACKENDS (constant)">VALID_NATIVE_BACKENDS</a></span></span> <span class='op'>+</span> <span class='const'><span class='object_link'><a href="#VALID_RUBY_BACKENDS-constant" title="TreeHaver::VALID_RUBY_BACKENDS (constant)">VALID_RUBY_BACKENDS</a></span></span> <span class='op'>+</span> <span class='qwords_beg'>%w[</span><span class='tstring_content'>auto</span><span class='words_sep'> </span><span class='tstring_content'>none</span><span class='tstring_end'>]</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
+      
+        <dt id="Point-constant" class="">Point =
+          <div class="docstring">
+  <div class="discussion">
+    <p>Point class that works as both a Hash and an object with row/column accessors</p>
+
+<p>This provides compatibility with code expecting either:</p>
+<ul>
+  <li>Hash access: point[:row], point[:column]</li>
+  <li>Method access: point.row, point.column</li>
+</ul>
+
+<p>TreeHaver::Point is an alias for TreeHaver::Base::Point, which is a Struct<br />
+providing all the necessary functionality.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Method access</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>Point</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='int'>5</span><span class='comma'>,</span> <span class='int'>10</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span>    <span class='comment'># =&gt; 5
+</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span> <span class='comment'># =&gt; 10</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Hash-like access</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span>    <span class='comment'># =&gt; 5
+</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span> <span class='comment'># =&gt; 10</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Converting to hash</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_to_h'>to_h</span> <span class='comment'># =&gt; {row: 5, column: 10}</span></code></pre>
+    
+  </div>
+
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="TreeHaver/Base/Point.html" title="TreeHaver::Base::Point (class)">The underlying Struct implementation</a></span></li>
+    
+  </ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'><span class='object_link'><a href="TreeHaver/Base.html" title="TreeHaver::Base (module)">Base</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Base/Point.html" title="TreeHaver::Base::Point (class)">Point</a></span></span></pre></dd>
       
         <dt id="VERSION-constant" class="">VERSION =
           <div class="docstring">
@@ -1260,12 +1317,12 @@ Special values:</p>
       <pre class="lines">
 
 
-423
 424
-425</pre>
+425
+426</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 423</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 424</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_allowed_native_backends'>allowed_native_backends</span>
   <span class='ivar'>@allowed_native_backends</span> <span class='op'>||=</span> <span class='id identifier rubyid_parse_backend_list_env'>parse_backend_list_env</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_HAVER_NATIVE_BACKEND</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#VALID_NATIVE_BACKENDS-constant" title="TreeHaver::VALID_NATIVE_BACKENDS (constant)">VALID_NATIVE_BACKENDS</a></span></span><span class='rparen'>)</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -1343,12 +1400,12 @@ Special values:</p>
       <pre class="lines">
 
 
-441
 442
-443</pre>
+443
+444</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 441</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 442</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_allowed_ruby_backends'>allowed_ruby_backends</span>
   <span class='ivar'>@allowed_ruby_backends</span> <span class='op'>||=</span> <span class='id identifier rubyid_parse_backend_list_env'>parse_backend_list_env</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_HAVER_RUBY_BACKEND</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="#VALID_RUBY_BACKENDS-constant" title="TreeHaver::VALID_RUBY_BACKENDS (constant)">VALID_RUBY_BACKENDS</a></span></span><span class='rparen'>)</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -1391,14 +1448,14 @@ Special values:</p>
       <pre class="lines">
 
 
-391
 392
 393
 394
-395</pre>
+395
+396</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 391</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 392</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend'>backend</span>
   <span class='kw'>return</span> <span class='ivar'>@backend</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@backend</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@backend</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -1488,12 +1545,12 @@ Special values:</p>
       <pre class="lines">
 
 
-488
 489
-490</pre>
+490
+491</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 488</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 489</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend='>backend=</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='op'>&amp;.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -1578,7 +1635,6 @@ TREE_HAVER_RUBY_BACKEND for pure Ruby backends.</p>
       <pre class="lines">
 
 
-457
 458
 459
 460
@@ -1599,10 +1655,11 @@ TREE_HAVER_RUBY_BACKEND for pure Ruby backends.</p>
 475
 476
 477
-478</pre>
+478
+479</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 457</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 458</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend_allowed?'>backend_allowed?</span><span class='lparen'>(</span><span class='id identifier rubyid_backend_name'>backend_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_backend_sym'>backend_sym</span> <span class='op'>=</span> <span class='id identifier rubyid_backend_name'>backend_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
@@ -1689,7 +1746,6 @@ Citrus is the final fallback as it’s pure Ruby and works everywhere.</p>
       <pre class="lines">
 
 
-886
 887
 888
 889
@@ -1737,10 +1793,11 @@ Citrus is the final fallback as it’s pure Ruby and works everywhere.</p>
 931
 932
 933
-934</pre>
+934
+935</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 886</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 887</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend_module'>backend_module</span>
   <span class='id identifier rubyid_requested'>requested</span> <span class='op'>=</span> <span class='id identifier rubyid_effective_backend'>effective_backend</span>  <span class='comment'># Changed from: backend
@@ -1821,12 +1878,12 @@ Citrus is the final fallback as it’s pure Ruby and works everywhere.</p>
       <pre class="lines">
 
 
-343
 344
-345</pre>
+345
+346</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 343</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 344</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend_protect'>backend_protect</span>
   <span class='id identifier rubyid_backend_protect?'>backend_protect?</span>
@@ -1891,13 +1948,13 @@ For example, FFI will not work after MRI has been used.</p>
       <pre class="lines">
 
 
-329
 330
 331
-332</pre>
+332
+333</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 329</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 330</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend_protect='>backend_protect=</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span>
   <span class='ivar'>@backend_protect_mutex</span> <span class='op'>||=</span> <span class='const'>Mutex</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
@@ -1950,13 +2007,13 @@ For example, FFI will not work after MRI has been used.</p>
       <pre class="lines">
 
 
-337
 338
 339
-340</pre>
+340
+341</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 337</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 338</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend_protect?'>backend_protect?</span>
   <span class='kw'>return</span> <span class='ivar'>@backend_protect</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@backend_protect</span><span class='rparen'>)</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -2009,12 +2066,12 @@ For example, FFI will not work after MRI has been used.</p>
       <pre class="lines">
 
 
-350
 351
-352</pre>
+352
+353</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 350</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 351</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backends_used'>backends_used</span>
   <span class='ivar'>@backends_used</span> <span class='op'>||=</span> <span class='const'>Set</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -2066,12 +2123,12 @@ For example, FFI will not work after MRI has been used.</p>
       <pre class="lines">
 
 
-543
 544
-545</pre>
+545
+546</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 543</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 544</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_builtin_backends_registered?'>builtin_backends_registered?</span>
   <span class='ivar'>@builtin_backends_registered</span> <span class='op'>||=</span> <span class='kw'>false</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -2142,14 +2199,14 @@ Common keys include:</p>
       <pre class="lines">
 
 
-950
 951
 952
 953
-954</pre>
+954
+955</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 950</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 951</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='id identifier rubyid_mod'>mod</span> <span class='op'>=</span> <span class='id identifier rubyid_backend_module'>backend_module</span>
@@ -2222,7 +2279,6 @@ Common keys include:</p>
       <pre class="lines">
 
 
-377
 378
 379
 380
@@ -2232,10 +2288,11 @@ Common keys include:</p>
 384
 385
 386
-387</pre>
+387
+388</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 377</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 378</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_backend_conflict!'>check_backend_conflict!</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_backend_protect?'>backend_protect?</span>
@@ -2314,13 +2371,13 @@ Common keys include:</p>
       <pre class="lines">
 
 
-367
 368
 369
-370</pre>
+370
+371</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 367</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 368</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_conflicting_backends_for'>conflicting_backends_for</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_blockers'>blockers</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="TreeHaver/Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Backends.html#BLOCKED_BY-constant" title="TreeHaver::Backends::BLOCKED_BY (constant)">BLOCKED_BY</a></span></span><span class='lbracket'>[</span><span class='id identifier rubyid_backend'>backend</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -2389,15 +2446,15 @@ Common keys include:</p>
       <pre class="lines">
 
 
-612
 613
 614
 615
 616
-617</pre>
+617
+618</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 612</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 613</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_current_backend_context'>current_backend_context</span>
   <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_current'>current</span><span class='lbracket'>[</span><span class='symbol'>:tree_haver_backend_context</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbrace'>{</span>
@@ -2470,13 +2527,13 @@ Common keys include:</p>
       <pre class="lines">
 
 
-630
 631
 632
-633</pre>
+633
+634</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 630</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 631</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_effective_backend'>effective_backend</span>
   <span class='id identifier rubyid_ctx'>ctx</span> <span class='op'>=</span> <span class='id identifier rubyid_current_backend_context'>current_backend_context</span>
@@ -2516,14 +2573,14 @@ Common keys include:</p>
       <pre class="lines">
 
 
-551
 552
 553
 554
-555</pre>
+555
+556</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 551</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 552</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ensure_builtin_backends_registered!'>ensure_builtin_backends_registered!</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_builtin_backends_registered?'>builtin_backends_registered?</span>
@@ -2615,7 +2672,6 @@ Common keys include:</p>
       <pre class="lines">
 
 
-577
 578
 579
 580
@@ -2637,10 +2693,11 @@ Common keys include:</p>
 596
 597
 598
-599</pre>
+599
+600</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 577</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 578</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse_backend_list_env'>parse_backend_list_env</span><span class='lparen'>(</span><span class='id identifier rubyid_env_var'>env_var</span><span class='comma'>,</span> <span class='id identifier rubyid_valid_backends'>valid_backends</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_env_value'>env_value</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='id identifier rubyid_env_var'>env_var</span><span class='rbracket'>]</span>
@@ -2716,7 +2773,6 @@ Common keys include:</p>
       <pre class="lines">
 
 
-561
 562
 563
 564
@@ -2724,10 +2780,11 @@ Common keys include:</p>
 566
 567
 568
-569</pre>
+569
+570</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 561</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 562</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse_single_backend_env'>parse_single_backend_env</span>
   <span class='id identifier rubyid_env_value'>env_value</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_HAVER_BACKEND</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -2931,7 +2988,6 @@ TreeHaver.backend=, or with_backend block).</p>
       <pre class="lines">
 
 
-1156
 1157
 1158
 1159
@@ -3001,10 +3057,16 @@ TreeHaver.backend=, or with_backend block).</p>
 1223
 1224
 1225
-1226</pre>
+1226
+1227
+1228
+1229
+1230
+1231
+1232</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1156</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1157</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parser_for'>parser_for</span><span class='lparen'>(</span><span class='id identifier rubyid_language_name'>language_name</span><span class='comma'>,</span> <span class='label'>library_path:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>citrus_config:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>parslet_config:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Ensure built-in pure Ruby backends are registered
@@ -3015,12 +3077,17 @@ TreeHaver.backend=, or with_backend block).</p>
   <span class='id identifier rubyid_requested'>requested</span> <span class='op'>=</span> <span class='id identifier rubyid_effective_backend'>effective_backend</span>
 
   <span class='comment'># Determine which backends to try based on effective_backend
+</span>  <span class='comment'># When a specific backend is requested, only try that backend
 </span>  <span class='id identifier rubyid_try_tree_sitter'>try_tree_sitter</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_requested'>requested</span> <span class='op'>==</span> <span class='symbol'>:auto</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='const'><span class='object_link'><a href="#NATIVE_BACKENDS-constant" title="TreeHaver::NATIVE_BACKENDS (constant)">NATIVE_BACKENDS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_requested'>requested</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_try_citrus'>try_citrus</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_requested'>requested</span> <span class='op'>==</span> <span class='symbol'>:auto</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_requested'>requested</span> <span class='op'>==</span> <span class='symbol'>:citrus</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_try_parslet'>try_parslet</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_requested'>requested</span> <span class='op'>==</span> <span class='symbol'>:auto</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_requested'>requested</span> <span class='op'>==</span> <span class='symbol'>:parslet</span><span class='rparen'>)</span>
 
+  <span class='comment'># When Citrus or Parslet is explicitly requested, don&#39;t try tree-sitter
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_requested'>requested</span> <span class='op'>==</span> <span class='symbol'>:citrus</span> <span class='op'>||</span> <span class='id identifier rubyid_requested'>requested</span> <span class='op'>==</span> <span class='symbol'>:parslet</span>
+    <span class='id identifier rubyid_try_tree_sitter'>try_tree_sitter</span> <span class='op'>=</span> <span class='kw'>false</span>
+  <span class='kw'>end</span>
+
   <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='kw'>nil</span>
-  <span class='id identifier rubyid_parser'>parser</span> <span class='op'>=</span> <span class='kw'>nil</span>
 
   <span class='comment'># First, check for registered pure Ruby backends
 </span>  <span class='comment'># These take precedence when explicitly requested or when no other backend is available
@@ -3130,12 +3197,12 @@ TreeHaver.backend=, or with_backend block).</p>
       <pre class="lines">
 
 
-359
 360
-361</pre>
+361
+362</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 359</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 360</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_record_backend_usage'>record_backend_usage</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_backends_used'>backends_used</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_backend'>backend</span>
@@ -3207,13 +3274,13 @@ found by TreeHaver.backend = :name and other lookup methods.</p>
       <pre class="lines">
 
 
-1101
 1102
 1103
-1104</pre>
+1104
+1105</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1101</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1102</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_backend'>register_backend</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_mod'>mod</span><span class='rparen'>)</span>
   <span class='ivar'>@backend_registry</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
@@ -3267,7 +3334,6 @@ manually in tests or when reset! has cleared the registry.</p>
       <pre class="lines">
 
 
-520
 521
 522
 523
@@ -3284,10 +3350,11 @@ manually in tests or when reset! has cleared the registry.</p>
 534
 535
 536
-537</pre>
+537
+538</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 520</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 521</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_builtin_backends!'>register_builtin_backends!</span>
   <span class='const'><span class='object_link'><a href="TreeHaver/Backends.html" title="TreeHaver::Backends (module)">Backends</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="TreeHaver/Backends.html#PURE_RUBY_BACKENDS-constant" title="TreeHaver::Backends::PURE_RUBY_BACKENDS (constant)">PURE_RUBY_BACKENDS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_backend_type'>backend_type</span><span class='comma'>,</span> <span class='id identifier rubyid_info'>info</span><span class='op'>|</span>
@@ -3581,7 +3648,6 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-1045
 1046
 1047
 1048
@@ -3627,10 +3693,11 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
 1088
 1089
 1090
-1091</pre>
+1091
+1092</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1045</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1046</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_language'>register_language</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>grammar_module:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>grammar_class:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>backend_module:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>backend_type:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>gem_name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Register tree-sitter backend if path provided
@@ -3745,13 +3812,13 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-1110
 1111
 1112
-1113</pre>
+1113
+1114</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1110</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1111</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_registered_backend'>registered_backend</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='ivar'>@backend_registry</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
@@ -3827,12 +3894,12 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-1120
 1121
-1122</pre>
+1122
+1123</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1120</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 1121</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_registered_language'>registered_language</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="TreeHaver/LanguageRegistry.html" title="TreeHaver::LanguageRegistry (module)">LanguageRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_registered'><span class='object_link'><a href="TreeHaver/LanguageRegistry.html#registered-class_method" title="TreeHaver::LanguageRegistry.registered (method)">registered</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
@@ -3907,14 +3974,14 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-502
 503
 504
 505
-506</pre>
+506
+507</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 502</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 503</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_backend!'>reset_backend!</span><span class='lparen'>(</span><span class='label'>to:</span> <span class='symbol'>:auto</span><span class='rparen'>)</span>
   <span class='ivar'>@backend</span> <span class='op'>=</span> <span class='id identifier rubyid_to'>to</span><span class='op'>&amp;.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -4015,7 +4082,6 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-752
 753
 754
 755
@@ -4073,10 +4139,11 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
 807
 808
 809
-810</pre>
+810
+811</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 752</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 753</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_resolve_backend_module'>resolve_backend_module</span><span class='lparen'>(</span><span class='id identifier rubyid_explicit_backend'>explicit_backend</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Temporarily override effective backend
@@ -4224,13 +4291,13 @@ No code changes needed to switch backends - just change TreeHaver.backend.</p>
       <pre class="lines">
 
 
-739
 740
 741
-742</pre>
+742
+743</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 739</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 740</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_resolve_effective_backend'>resolve_effective_backend</span><span class='lparen'>(</span><span class='id identifier rubyid_explicit_backend'>explicit_backend</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_explicit_backend'>explicit_backend</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span> <span class='kw'>if</span> <span class='id identifier rubyid_explicit_backend'>explicit_backend</span>
@@ -4333,7 +4400,6 @@ considered because they don’t support from_library.</p>
       <pre class="lines">
 
 
-827
 828
 829
 830
@@ -4377,10 +4443,11 @@ considered because they don’t support from_library.</p>
 868
 869
 870
-871</pre>
+871
+872</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 827</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 828</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_resolve_native_backend_module'>resolve_native_backend_module</span><span class='lparen'>(</span><span class='id identifier rubyid_explicit_backend'>explicit_backend</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='comment'># Short-circuit on TruffleRuby: no native backends work
@@ -4629,7 +4696,6 @@ threads can safely use different backends without interfering with each other.</
       <pre class="lines">
 
 
-703
 704
 705
 706
@@ -4650,10 +4716,11 @@ threads can safely use different backends without interfering with each other.</
 721
 722
 723
-724</pre>
+724
+725</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 703</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver.rb', line 704</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_with_backend'>with_backend</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backend name required</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -4687,7 +4754,7 @@ threads can safely use different backends without interfering with each other.</
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:40 2026 by
+  Generated on Sat Jan 10 22:57:20 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

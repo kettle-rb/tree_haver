@@ -20,6 +20,33 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- **Shared Example Groups for Backend API Compliance Testing**
+  - `node_api_examples.rb` - Tests for Node API compliance:
+    - `"node api compliance"` - Core Node interface (type, start_byte, end_byte, children)
+    - `"node position api"` - Position API (start_point, end_point, start_line, end_line, source_position)
+    - `"node children api"` - Children traversal (#child, #first_child, #last_child)
+    - `"node enumerable behavior"` - Enumerable methods (#each, #map, #select, #find)
+    - `"node comparison behavior"` - Comparison and equality (#==, #<=>, #hash)
+    - `"node text extraction"` - Text content (#text, #to_s)
+    - `"node inspection"` - Debug output (#inspect)
+  - `tree_api_examples.rb` - Tests for Tree API compliance:
+    - `"tree api compliance"` - Core Tree interface (root_node, source, errors, warnings, comments)
+    - `"tree error handling"` - Error detection (#has_error?, #errors)
+    - `"tree traversal"` - Depth-first traversal via root_node
+  - `parser_api_examples.rb` - Tests for Parser API compliance:
+    - `"parser api compliance"` - Core Parser interface (#parse, #parse_string, #language=)
+    - `"parser incremental parsing"` - Incremental parsing support
+    - `"parser error handling"` - Error recovery behavior
+  - `language_api_examples.rb` - Tests for Language API compliance:
+    - `"language api compliance"` - Core Language interface (#backend, #name/#language_name)
+    - `"language comparison"` - Comparison and equality
+    - `"language factory methods"` - Factory methods (.from_library, .from_path)
+  - `backend_api_examples.rb` - Tests for Backend module API compliance:
+    - `"backend module api"` - Backend availability and capabilities
+    - `"backend class structure"` - Nested class verification
+    - `"backend integration"` - Full parse cycle testing
+  - `spec/support/shared_examples.rb` - Master loader for all shared examples
+  - `spec/integration/backend_api_compliance_spec.rb` - Integration tests using all shared examples
 - **Parslet Backend**: New pure Ruby PEG parser backend (`TreeHaver::Backends::Parslet`)
   - Wraps Parslet-based parsers (like the `toml` gem) to provide a pure Ruby alternative to tree-sitter
   - `Parslet.available?` - Check if parslet gem is available
@@ -27,9 +54,11 @@ Please file a bug if you notice a violation of semantic versioning.
   - `Parslet::Language` - Wrapper for Parslet grammar classes
     - `Language.new(grammar_class)` - Create from a Parslet::Parser subclass
     - `Language.from_library(path, symbol:, name:)` - API-compatible lookup via LanguageRegistry
+    - `#language_name` / `#name` - Derive language name from grammar class
   - `Parslet::Parser` - Wrapper that creates parser instances from grammar classes
-  - `Parslet::Tree` - Wraps Parslet parse results (Hash/Array/Slice structures)
-  - `Parslet::Node` - Unified node interface for Parslet results
+    - Accepts both raw grammar class and Language wrapper (normalized API)
+  - `Parslet::Tree` - Wraps Parslet parse results, inherits from `Base::Tree`
+  - `Parslet::Node` - Unified node interface, inherits from `Base::Node`
     - Supports both Hash nodes (with named children) and Array nodes (with indexed children)
     - `#type` - Returns the node type (key name or "array"/"document")
     - `#children` - Returns child nodes
@@ -51,6 +80,9 @@ Please file a bug if you notice a violation of semantic versioning.
 - **TreeHaver.register_language**: Extended with `grammar_class:` parameter for Parslet grammars
 - **TreeHaver.parser_for**: Extended with `parslet_config:` parameter for explicit Parslet configuration
 - **RSpec Dependency Tags**: Added `toml_gem_available?` method and updated `any_toml_backend_available?`
+- `MRI::Language#language_name` / `#name` - Derive language name from symbol or path
+- `FFI::Language#language_name` / `#name` - Derive language name from symbol or path
+- **spec_helper.rb**: Added `require "toml"` to load the toml gem for Parslet backend tests
 
 ### Changed
 
@@ -67,6 +99,22 @@ Please file a bug if you notice a violation of semantic versioning.
   - `TreeHaver::Node` is now a proper subclass of `TreeHaver::Base::Node`
   - Inherits `inner_node`, `source`, `lines` attributes from base class
   - Base class documents the API contract; subclass documents divergence
+- **BREAKING: `Citrus::Node` and `Citrus::Tree` now inherit from Base classes**
+  - `Citrus::Node` now inherits from `TreeHaver::Base::Node`
+  - `Citrus::Tree` now inherits from `TreeHaver::Base::Tree`
+  - Removes duplicated methods, uses inherited implementations
+  - Adds `#language_name` / `#name` methods for API compliance
+- **BREAKING: `Parslet::Node` and `Parslet::Tree` now inherit from Base classes**
+  - `Parslet::Node` now inherits from `TreeHaver::Base::Node`
+  - `Parslet::Tree` now inherits from `TreeHaver::Base::Tree`
+  - Removes duplicated methods, uses inherited implementations
+- **Base::Node#child now returns nil for negative indices** (tree-sitter API compatibility)
+- **Citrus::Parser#language= now accepts Language wrapper or raw grammar module**
+  - Both patterns now work: `parser.language = TomlRB::Document` or `parser.language = Citrus::Language.new(TomlRB::Document)`
+- **Parslet::Parser#language= now accepts Language wrapper or raw grammar class**
+  - Both patterns now work: `parser.language = TOML::Parslet` or `parser.language = Parslet::Language.new(TOML::Parslet)`
+- **TreeHaver::Parser#unwrap_language** now passes Language wrappers directly to Citrus/Parslet backends
+  - Previously unwrapped to raw grammar; now backends handle their own Language wrappers
 - **Language.method_missing**: Now recognizes `:parslet` backend type and creates `Parslet::Language` instances
 - **Parser**: Updated to recognize Parslet languages and switch to Parslet parser automatically
   - `#backend` now returns `:parslet` for Parslet-based parsers
@@ -80,6 +128,13 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Fixed
 
+- **FFI Backend Compliance Tests**: Fixed tests to use `TreeHaver::Parser` wrapper instead of raw `FFI::Parser`
+  - Raw FFI classes (`FFI::Tree`, `FFI::Node`) don't have full API (missing `#children`, `#text`, `#source`, etc.)
+  - TreeHaver wrapper classes (`TreeHaver::Tree`, `TreeHaver::Node`) provide the complete unified API
+  - Tests now properly test the wrapped API that users actually interact with
+- **Parslet TOML Sources**: Fixed test sources to be valid for the `toml` gem's Parslet grammar
+  - Grammar requires table sections (not bare key-value pairs at root)
+  - Grammar requires trailing newlines
 - **Examples**: Fixed broken markdown examples that referenced non-existent TreeHaver backends
   - `commonmarker_markdown.rb` - Rewrote to use commonmarker gem directly (not a TreeHaver backend)
   - `markly_markdown.rb` - Rewrote to use markly gem directly with correct `source_position` API

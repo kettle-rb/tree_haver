@@ -114,7 +114,7 @@ environment variables or user input.</p>
       
       <pre class="example code"><code><span class='id identifier rubyid_path'>path</span> <span class='op'>=</span> <span class='const'>ENV</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TREE_SITTER_TOML_PATH</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
 <span class='kw'>if</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>PathValidator</span><span class='period'>.</span><span class='id identifier rubyid_safe_library_path?'><span class='object_link'><a href="#safe_library_path%3F-class_method" title="TreeHaver::PathValidator.safe_library_path? (method)">safe_library_path?</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Language.html" title="TreeHaver::Language (module)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='rparen'>)</span>
 <span class='kw'>else</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unsafe path: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_path'>path</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></code></pre>
@@ -1993,7 +1993,7 @@ and directories from TREE_HAVER_TRUSTED_DIRS environment variable.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:40 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -286,7 +286,9 @@ language needs its own Citrus grammar (e.g., toml-rb for TOML).</p>
 49
 50
 51
-52</pre>
+52
+53
+54</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 40</span>
@@ -299,8 +301,10 @@ language needs its own Citrus grammar (e.g., toml-rb for TOML).</p>
     <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>true</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
 </span>  <span class='kw'>rescue</span> <span class='const'>LoadError</span>
     <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
+</span>  <span class='comment'># :nocov: defensive code - StandardError during require is extremely rare
 </span>  <span class='kw'>rescue</span> <span class='const'>StandardError</span>
     <span class='ivar'>@loaded</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
+</span>  <span class='comment'># :nocov:
 </span>  <span class='kw'>end</span>
   <span class='ivar'>@loaded</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
 </span><span class='kw'>end</span></pre>
@@ -360,8 +364,6 @@ language needs its own Citrus grammar (e.g., toml-rb for TOML).</p>
       <pre class="lines">
 
 
-69
-70
 71
 72
 73
@@ -369,10 +371,12 @@ language needs its own Citrus grammar (e.g., toml-rb for TOML).</p>
 75
 76
 77
-78</pre>
+78
+79
+80</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 69</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 71</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_capabilities'>capabilities</span>
   <span class='kw'>return</span> <span class='lbrace'>{</span><span class='rbrace'>}</span> <span class='kw'>unless</span> <span class='id identifier rubyid_available?'>available?</span>
@@ -418,13 +422,13 @@ language needs its own Citrus grammar (e.g., toml-rb for TOML).</p>
       <pre class="lines">
 
 
-58
-59
 60
-61</pre>
+61
+62
+63</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 58</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 60</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
   <span class='ivar'>@load_attempted</span> <span class='op'>=</span> <span class='kw'>false</span> <span class='comment'># rubocop:disable ThreadSafety/ClassInstanceVariable
@@ -440,7 +444,7 @@ language needs its own Citrus grammar (e.g., toml-rb for TOML).</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:40 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -366,7 +366,7 @@ module TreeHaver
       # Alias Point to the base class for compatibility
       Point = TreeHaver::Base::Point
 
-      # Register availability checker for RSpec dependency tags
+      # Register the availability checker for RSpec dependency tags
       TreeHaver::BackendRegistry.register_availability_checker(:psych) do
         available?
       end

@@ -268,13 +268,13 @@
       <pre class="lines">
 
 
-188
-189
-190
-191</pre>
+206
+207
+208
+209</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 188</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 206</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>citrus gem not available</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../Citrus.html" title="TreeHaver::Backends::Citrus (module)">Citrus</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Citrus.html#available%3F-class_method" title="TreeHaver::Backends::Citrus.available? (method)">available?</a></span></span>
@@ -305,24 +305,19 @@
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p><p>Set the grammar for this parser</p>
 
-<p>Note: TreeHaver::Parser unwraps language objects before calling this method.<br />
-This backend receives the raw Citrus grammar module (unwrapped), not the Language wrapper.</p>
+<p>Accepts either a Citrus::Language wrapper or a raw Citrus grammar module.<br />
+When passed a Language wrapper, extracts the grammar_module from it.<br />
+When passed a raw grammar module, uses it directly.</p>
+
+<p>This flexibility allows both patterns:<br />
+  parser.language = TreeHaver::Backends::Citrus::Language.new(TomlRB::Document)<br />
+  parser.language = TomlRB::Document  # Also works</p>
 
 
   </div>
 </div>
 <div class="tags">
-  
-  <div class="examples">
-    <h4 class="tag_title">Examples:</h4>
-    
-      
-      <pre class="example code"><code><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>toml-rb</span><span class='tstring_end'>&quot;</span></span>
-<span class='comment'># TreeHaver::Parser unwraps Language.new(TomlRB::Document) to just TomlRB::Document
-</span><span class='id identifier rubyid_parser'>parser</span><span class='period'>.</span><span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'>TomlRB</span><span class='op'>::</span><span class='const'>Document</span>  <span class='comment'># Backend receives unwrapped module</span></code></pre>
-    
-  </div>
-<p class="tag_title">Parameters:</p>
+  <p class="tag_title">Parameters:</p>
 <ul class="param">
   
     <li>
@@ -330,12 +325,12 @@ This backend receives the raw Citrus grammar module (unwrapped), not the Languag
         <span class='name'>grammar</span>
       
       
-        <span class='type'>(<tt>Module</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Language.html" title="TreeHaver::Backends::Citrus::Language (class)">Language</a></span></tt>, <tt>Module</tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>Citrus grammar module with a parse method</p>
+        <div class='inline'><p>Citrus Language wrapper or grammar module</p>
 </div>
       
     </li>
@@ -349,27 +344,41 @@ This backend receives the raw Citrus grammar module (unwrapped), not the Languag
       <pre class="lines">
 
 
-204
-205
-206
-207
-208
-209
-210
-211
-212</pre>
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 204</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 223</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_language='>language=</span><span class='lparen'>(</span><span class='id identifier rubyid_grammar'>grammar</span><span class='rparen'>)</span>
-  <span class='comment'># grammar is already unwrapped by TreeHaver::Parser
-</span>  <span class='kw'>unless</span> <span class='id identifier rubyid_grammar'>grammar</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:parse</span><span class='rparen'>)</span>
+  <span class='comment'># Accept Language wrapper or raw grammar module
+</span>  <span class='id identifier rubyid_actual_grammar'>actual_grammar</span> <span class='op'>=</span> <span class='kw'>case</span> <span class='id identifier rubyid_grammar'>grammar</span>
+  <span class='kw'>when</span> <span class='const'><span class='object_link'><a href="Language.html" title="TreeHaver::Backends::Citrus::Language (class)">Language</a></span></span>
+    <span class='id identifier rubyid_grammar'>grammar</span><span class='period'>.</span><span class='id identifier rubyid_grammar_module'>grammar_module</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_grammar'>grammar</span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>unless</span> <span class='id identifier rubyid_actual_grammar'>actual_grammar</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:parse</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span>
-      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Expected Citrus grammar module with parse method, </span><span class='tstring_end'>&quot;</span></span> \
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Expected Citrus grammar module with parse method or Language wrapper, </span><span class='tstring_end'>&quot;</span></span> \
         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>got </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_grammar'>grammar</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
-  <span class='ivar'>@grammar</span> <span class='op'>=</span> <span class='id identifier rubyid_grammar'>grammar</span>
+  <span class='ivar'>@grammar</span> <span class='op'>=</span> <span class='id identifier rubyid_actual_grammar'>actual_grammar</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -467,21 +476,21 @@ This backend receives the raw Citrus grammar module (unwrapped), not the Languag
       <pre class="lines">
 
 
-220
-221
-222
-223
-224
-225
-226
-227
-228
-229
-230
-231</pre>
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 220</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 246</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No grammar loaded</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@grammar</span>
@@ -578,12 +587,12 @@ This backend receives the raw Citrus grammar module (unwrapped), not the Languag
       <pre class="lines">
 
 
-240
-241
-242</pre>
+266
+267
+268</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 240</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 266</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse_string'>parse_string</span><span class='lparen'>(</span><span class='id identifier rubyid_old_tree'>old_tree</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span> <span class='comment'># rubocop:disable Lint/UnusedMethodArgument
 </span>  <span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>  <span class='comment'># Citrus doesn&#39;t support incremental parsing
@@ -598,7 +607,7 @@ This backend receives the raw Citrus grammar module (unwrapped), not the Languag
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:42 2026 by
+  Generated on Sat Jan 10 22:57:22 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

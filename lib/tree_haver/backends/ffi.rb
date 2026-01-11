@@ -17,18 +17,26 @@ module TreeHaver
     #
     # == Tree/Node Architecture
     #
-    # This backend (like all tree-sitter backends: MRI, Rust, FFI, Java) does NOT
-    # define its own Tree or Node classes. Instead:
+    # This backend defines raw `FFI::Tree` and `FFI::Node` wrapper classes that
+    # provide minimal FFI bindings to the tree-sitter C structs. These are **not**
+    # intended for direct use by application code.
     #
-    # - Parser#parse returns raw FFI-wrapped tree objects
-    # - These are wrapped by `TreeHaver::Tree` (inherits from `Base::Tree`)
-    # - `TreeHaver::Tree#root_node` wraps raw nodes in `TreeHaver::Node`
+    # The wrapping hierarchy is:
+    #   FFI::Tree/Node (raw FFI wrappers) → TreeHaver::Tree/Node → Base::Tree/Node
     #
-    # This differs from pure-Ruby backends (Citrus, Prism, Psych) which define
-    # their own `Backend::X::Tree` and `Backend::X::Node` classes.
+    # When you use `TreeHaver::Parser#parse`:
+    # 1. `FFI::Parser#parse` returns an `FFI::Tree` (raw pointer wrapper)
+    # 2. `TreeHaver::Parser` wraps it in `TreeHaver::Tree` (adds source storage)
+    # 3. `TreeHaver::Tree#root_node` wraps `FFI::Node` in `TreeHaver::Node`
     #
-    # @see TreeHaver::Tree The wrapper class for tree-sitter Tree objects
-    # @see TreeHaver::Node The wrapper class for tree-sitter Node objects
+    # The `TreeHaver::Tree` and `TreeHaver::Node` wrappers provide the full unified
+    # API including `#children`, `#text`, `#source`, `#source_position`, etc.
+    #
+    # This differs from pure-Ruby backends (Citrus, Parslet, Prism, Psych) which
+    # define Tree/Node classes that directly inherit from Base::Tree/Base::Node.
+    #
+    # @see TreeHaver::Tree The wrapper class users should interact with
+    # @see TreeHaver::Node The wrapper class users should interact with
     # @see TreeHaver::Base::Tree Base class documenting the Tree API contract
     # @see TreeHaver::Base::Node Base class documenting the Node API contract
     #
@@ -79,16 +87,20 @@ module TreeHaver
           @loaded = begin # rubocop:disable ThreadSafety/ClassInstanceVariable
             # TruffleRuby's FFI doesn't support STRUCT_BY_VALUE return types
             # which tree-sitter uses extensively (ts_tree_root_node, ts_node_child, etc.)
+            # :nocov: TruffleRuby returns false early - subsequent FFI code paths unreachable on TruffleRuby
             if RUBY_ENGINE == "truffleruby"
               false
+            # :nocov:
             else
               require "ffi"
               true
             end
           rescue LoadError
             false
+          # :nocov: defensive code - StandardError during require is extremely rare
           rescue StandardError
             false
+          # :nocov:
           end
           @loaded # rubocop:disable ThreadSafety/ClassInstanceVariable
         end
@@ -371,6 +383,30 @@ module TreeHaver
         # Alias eql? to ==
         alias_method :eql?, :==
 
+        # Get the language name
+        #
+        # Derives a name from the symbol or path.
+        #
+        # @return [Symbol] language name
+        def language_name
+          # Try to derive from symbol (e.g., "tree_sitter_toml" -> :toml)
+          if @symbol
+            name = @symbol.to_s.sub(/^tree_sitter_/, "")
+            return name.to_sym
+          end
+
+          # Try to derive from path (e.g., "/path/to/libtree-sitter-toml.so" -> :toml)
+          if @path
+            name = LibraryPathUtils.derive_language_name_from_path(@path)
+            return name.to_sym if name
+          end
+
+          :unknown
+        end
+
+        # Alias for language_name (API compatibility)
+        alias_method :name, :language_name
+
         # Convert to FFI pointer for passing to native functions
         #
         # @return [FFI::Pointer]
@@ -642,10 +678,37 @@ module TreeHaver
         end
       end
 
-      # FFI-based tree-sitter node
+      # FFI-based tree-sitter node (raw backend node)
       #
-      # Wraps a TSNode by-value struct. TSNode is passed by value in the
-      # tree-sitter C API, so we store the struct value directly.
+      # This is a **raw backend node** that wraps a TSNode by-value struct from the
+      # tree-sitter C API. It provides the minimal interface needed for tree-sitter
+      # operations but is NOT intended for direct use by application code.
+      #
+      # == Architecture Note
+      #
+      # Unlike pure-Ruby backends (Citrus, Parslet, Prism, Psych) which define Node
+      # classes that inherit from `TreeHaver::Base::Node`, tree-sitter backends (MRI,
+      # Rust, FFI, Java) define raw wrapper classes that get wrapped by `TreeHaver::Node`.
+      #
+      # The wrapping hierarchy is:
+      #   FFI::Node (this class) → TreeHaver::Node → Base::Node
+      #
+      # When you use `TreeHaver::Parser#parse`, the returned tree's nodes are already
+      # wrapped in `TreeHaver::Node`, which provides the full unified API including:
+      # - `#children` - Array of child nodes
+      # - `#text` - Extract text from source
+      # - `#first_child`, `#last_child` - Convenience accessors
+      # - `#start_line`, `#end_line` - 1-based line numbers
+      # - `#source_position` - Hash with position info
+      # - `#each`, `#map`, etc. - Enumerable methods
+      # - `#to_s`, `#inspect` - String representations
+      #
+      # This raw class only implements methods that require direct FFI calls to the
+      # tree-sitter C library. The wrapper adds Ruby-level conveniences.
+      #
+      # @api private
+      # @see TreeHaver::Node The wrapper class users should interact with
+      # @see TreeHaver::Base::Node The base class documenting the full Node API
       class Node
         include Enumerable
 
@@ -937,7 +1000,7 @@ module TreeHaver
         end
       end
 
-      # Register availability checker for RSpec dependency tags
+      # Register the availability checker for RSpec dependency tags
       TreeHaver::BackendRegistry.register_availability_checker(:ffi) do
         available?
       end

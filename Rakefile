@@ -139,6 +139,13 @@ begin
   Rake::Task[:magic].clear if Rake::Task.task_defined?(:magic)
   desc("Run specs with FFI tests first, then backend matrix, then remaining tests")
   task(magic: [:ffi_specs, :backend_matrix_specs, :remaining_specs])
+
+  desc("Run magic specs with coverage and open results in browser")
+  # The `:coverage` task will already run the full suite (with certain specs skipped due to a platform / backend).
+  # Since it only runs in MRI, all we need to do is prepend the tasks it doesn't already run by default,
+  # which is effectively the task `:remaining_specs`, which it runs when it attempts the entire suite.
+  task(coverage: [:ffi_specs, :backend_matrix_specs])
+
 rescue LoadError
   desc("(stub) spec is unavailable")
   task(:spec) do # rubocop:disable Rake/DuplicateTask

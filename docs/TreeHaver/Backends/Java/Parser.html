@@ -62,7 +62,7 @@
       <div id="content"><h1>Class: TreeHaver::Backends::Java::Parser
   
   
-  
+  <span class="private note title">Private</span>
 </h1>
 <div class="box_info">
   
@@ -101,7 +101,22 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Wrapper for java-tree-sitter Parser</p>
+    <p class="note private">
+  <strong>This class is part of a private API.</strong>
+  You should avoid using this class if possible, as it may be removed or be changed in the future.
+</p>
+<p>Java backend parser wrapper (raw backend parser)</p>
+
+<p>This is a <strong>raw backend parser</strong> that wraps a jtreesitter Parser object via<br />
+JRuby’s Java interop. It is NOT intended for direct use by application code.</p>
+
+<p>Users should use <code>TreeHaver::Parser</code> which wraps this class and provides:</p>
+<ul>
+  <li>Automatic backend selection</li>
+  <li>Language wrapper unwrapping</li>
+  <li>Tree wrapping with source storage</li>
+  <li>Unified API across all backends</li>
+</ul>
 
 
   </div>
@@ -111,6 +126,8 @@
 
   <p class="tag_title">See Also:</p>
   <ul class="see">
+    
+      <li><span class='object_link'><a href="../../Parser.html" title="TreeHaver::Parser (class)">The wrapper class users should interact with</a></span></li>
     
       <li><a href="https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Parser.html" target="_parent" title="https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Parser.html">https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Parser.html</a></li>
     
@@ -147,7 +164,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Create a new parser instance.</p>
@@ -170,7 +187,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Set the language for this parser.</p>
@@ -193,7 +210,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Parse source code.</p>
@@ -216,7 +233,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Parse source code with optional incremental parsing.</p>
@@ -242,7 +259,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Create a new parser instance</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Create a new parser instance</p>
 
 
   </div>
@@ -273,13 +294,13 @@
       <pre class="lines">
 
 
-466
-467
-468
-469</pre>
+495
+496
+497
+498</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 466</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 495</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Java backend not available</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Java.html#available%3F-class_method" title="TreeHaver::Backends::Java.available? (method)">available?</a></span></span>
@@ -308,7 +329,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Set the language for this parser</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p class="note returns_void">This method returns an undefined value.</p><p>Set the language for this parser</p>
 
 <p>Note: TreeHaver::Parser unwraps language objects before calling this method.<br />
 This backend receives the Language wrapper’s inner impl (java Language object).</p>
@@ -344,13 +369,13 @@ This backend receives the Language wrapper’s inner impl (java Language object)
       <pre class="lines">
 
 
-478
-479
-480
-481</pre>
+507
+508
+509
+510</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 478</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 507</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_language='>language=</span><span class='lparen'>(</span><span class='id identifier rubyid_lang'>lang</span><span class='rparen'>)</span>
   <span class='comment'># lang is already unwrapped by TreeHaver::Parser
@@ -372,7 +397,11 @@ This backend receives the Language wrapper’s inner impl (java Language object)
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Parse source code</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Parse source code</p>
 
 
   </div>
@@ -435,16 +464,16 @@ This backend receives the Language wrapper’s inner impl (java Language object)
       <pre class="lines">
 
 
-487
-488
-489
-490
-491
-492
-493</pre>
+516
+517
+518
+519
+520
+521
+522</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 487</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 516</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_java_result'>java_result</span> <span class='op'>=</span> <span class='ivar'>@parser</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
@@ -469,7 +498,11 @@ This backend receives the Language wrapper’s inner impl (java Language object)
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Parse source code with optional incremental parsing</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Parse source code with optional incremental parsing</p>
 
 <p>Note: old_tree is already unwrapped by TreeHaver::Parser before reaching this method.<br />
 The backend receives the raw Tree wrapper’s impl, not a TreeHaver::Tree.</p>
@@ -560,33 +593,33 @@ unchanged nodes for better performance.</p>
       <pre class="lines">
 
 
-507
-508
-509
-510
-511
-512
-513
-514
-515
-516
-517
-518
-519
-520
-521
-522
-523
-524
-525
-526
-527
-528
-529
-530</pre>
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 507</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 536</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parse_string'>parse_string</span><span class='lparen'>(</span><span class='id identifier rubyid_old_tree'>old_tree</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='comment'># old_tree is already unwrapped to Tree wrapper&#39;s impl by TreeHaver::Parser
@@ -622,7 +655,7 @@ unchanged nodes for better performance.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

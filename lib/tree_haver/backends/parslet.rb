@@ -109,6 +109,22 @@ module TreeHaver
           @backend = :parslet
         end
 
+        # Get the language name
+        #
+        # Derives a name from the grammar class name.
+        #
+        # @return [Symbol] language name
+        def language_name
+          # Derive name from grammar class (e.g., TOML::Parslet -> :toml)
+          return :unknown unless @grammar_class.respond_to?(:name) && @grammar_class.name
+
+          name = @grammar_class.name.to_s.split("::").first.downcase
+          name.to_sym
+        end
+
+        # Alias for language_name (API compatibility)
+        alias_method :name, :language_name
+
         # Compare languages for equality
         #
         # Parslet languages are equal if they have the same backend and grammar_class.
@@ -212,23 +228,31 @@ module TreeHaver
 
         # Set the grammar for this parser
         #
-        # Note: TreeHaver::Parser unwraps language objects before calling this method.
-        # This backend receives the raw Parslet grammar class (unwrapped), not the Language wrapper.
+        # Accepts either a Parslet::Language wrapper or a raw Parslet grammar class.
+        # When passed a Language wrapper, extracts the grammar_class from it.
+        # When passed a raw grammar class, uses it directly.
         #
-        # @param grammar [Class] Parslet grammar class that inherits from ::Parslet::Parser
+        # This flexibility allows both patterns:
+        #   parser.language = TreeHaver::Backends::Parslet::Language.new(TOML::Parslet)
+        #   parser.language = TOML::Parslet  # Also works
+        #
+        # @param grammar [Language, Class] Parslet Language wrapper or grammar class
         # @return [void]
-        # @example
-        #   require "toml"
-        #   # TreeHaver::Parser unwraps Language.new(TOML::Parslet) to just TOML::Parslet
-        #   parser.language = TOML::Parslet  # Backend receives unwrapped class
         def language=(grammar)
-          # grammar is already unwrapped by TreeHaver::Parser
-          unless grammar.respond_to?(:new)
+          # Accept Language wrapper or raw grammar class
+          actual_grammar = case grammar
+          when Language
+            grammar.grammar_class
+          else
+            grammar
+          end
+
+          unless actual_grammar.respond_to?(:new)
             raise ArgumentError,
-              "Expected Parslet grammar class with new method, " \
+              "Expected Parslet grammar class with new method or Language wrapper, " \
                 "got #{grammar.class}"
           end
-          @grammar = grammar
+          @grammar = actual_grammar
         end
 
         # Parse source code
@@ -268,13 +292,18 @@ module TreeHaver
       # Wraps Parslet parse results (Hash/Array/Slice) to provide
       # tree-sitter-compatible API.
       #
+      # Inherits from Base::Tree to get shared methods like #errors, #warnings,
+      # #comments, #has_error?, and #inspect.
+      #
       # @api private
-      class Tree
-        attr_reader :parslet_result, :source
+      class Tree < TreeHaver::Base::Tree
+        # The raw Parslet parse result
+        # @return [Hash, Array, Parslet::Slice] The parse result
+        attr_reader :parslet_result
 
         def initialize(parslet_result, source)
           @parslet_result = parslet_result
-          @source = source
+          super(parslet_result, source: source)
         end
 
         def root_node
@@ -294,19 +323,21 @@ module TreeHaver
       #
       # This wrapper normalizes these into a tree-sitter-like node structure.
       #
+      # Inherits from Base::Node to get shared methods like #first_child, #last_child,
+      # #to_s, #inspect, #==, #<=>, #source_position, #start_line, #end_line, etc.
+      #
       # @api private
-      class Node
-        include Comparable
-        include Enumerable
-
-        attr_reader :value, :source, :node_type
+      class Node < TreeHaver::Base::Node
+        attr_reader :value, :node_type
 
         def initialize(value, source, type: nil, key: nil)
           @value = value
-          @source = source
           @node_type = type || infer_type(key)
           @key = key
+          super(value, source: source)
         end
+
+        # -- Required API Methods (from Base::Node) ----------------------------
 
         # Get node type
         #
@@ -358,101 +389,6 @@ module TreeHaver
           end
         end
 
-        def start_point
-          calculate_point(start_byte)
-        end
-
-        def end_point
-          calculate_point(end_byte)
-        end
-
-        # Get the 1-based line number where this node starts
-        #
-        # @return [Integer] 1-based line number
-        def start_line
-          start_point[:row] + 1
-        end
-
-        # Get the 1-based line number where this node ends
-        #
-        # @return [Integer] 1-based line number
-        def end_line
-          end_point[:row] + 1
-        end
-
-        # Get position information as a hash
-        #
-        # Returns a hash with 1-based line numbers and 0-based columns.
-        # Compatible with *-merge gems' FileAnalysisBase.
-        #
-        # @return [Hash{Symbol => Integer}] Position hash
-        def source_position
-          {
-            start_line: start_line,
-            end_line: end_line,
-            start_column: start_point[:column],
-            end_column: end_point[:column],
-          }
-        end
-
-        # Get the first child node
-        #
-        # @return [Node, nil] First child or nil
-        def first_child
-          child(0)
-        end
-
-        # Get the text content of this node
-        #
-        # @return [String] matched text
-        def text
-          case @value
-          when ::Parslet::Slice
-            @value.to_s
-          when String
-            @value
-          when Hash, Array
-            @source[start_byte...end_byte] || ""
-          else
-            @value.to_s
-          end
-        end
-
-        # Get number of children
-        #
-        # @return [Integer] child count
-        def child_count
-          case @value
-          when Hash
-            @value.keys.size
-          when Array
-            @value.size
-          else
-            0
-          end
-        end
-
-        # Get child at index
-        #
-        # @param index [Integer] child index
-        # @return [Node, nil] child node or nil
-        def child(index)
-          return if index < 0
-
-          case @value
-          when Hash
-            keys = @value.keys
-            return if index >= keys.size
-            key = keys[index]
-            Node.new(@value[key], @source, key: key)
-          when Array
-            return if index >= @value.size
-            Node.new(@value[index], @source, type: "element")
-          else
-            nil
-          end
-        end
-
         # Get all children
         #
         # @return [Array<Node>] child nodes
@@ -467,28 +403,66 @@ module TreeHaver
           end
         end
 
-        # Iterate over children
-        def each(&block)
-          return to_enum(__method__) unless block_given?
-          children.each(&block)
+        # -- Overridden Methods ------------------------------------------------
+
+        # Override start_point to calculate from source
+        # @return [Hash{Symbol => Integer}] {row: 0, column: 0}
+        def start_point
+          calculate_point(start_byte)
         end
 
-        # Check for parse errors
-        #
-        # Parslet raises on parse error, so successful parse has no errors.
-        #
-        # @return [Boolean] always false for successful parse
-        def has_error?
-          false
+        # Override end_point to calculate from source
+        # @return [Hash{Symbol => Integer}] {row: 0, column: 0}
+        def end_point
+          calculate_point(end_byte)
         end
 
-        # Check if node is missing
-        #
-        # Parslet doesn't have the concept of missing nodes.
-        #
-        # @return [Boolean] always false
-        def missing?
-          false
+        # Override text to handle Parslet-specific value types
+        # @return [String] matched text
+        def text
+          case @value
+          when ::Parslet::Slice
+            @value.to_s
+          when String
+            @value
+          when Hash, Array
+            @source[start_byte...end_byte] || ""
+          else
+            @value.to_s
+          end
+        end
+
+        # Override child to handle negative indices properly
+        # @param index [Integer] child index
+        # @return [Node, nil] child node or nil
+        def child(index)
+          return nil if index.negative?
+
+          case @value
+          when Hash
+            keys = @value.keys
+            return nil if index >= keys.size
+            key = keys[index]
+            Node.new(@value[key], @source, key: key)
+          when Array
+            return nil if index >= @value.size
+            Node.new(@value[index], @source, type: "element")
+          else
+            nil
+          end
+        end
+
+        # Override child_count for efficiency (avoid building full children array)
+        # @return [Integer] child count
+        def child_count
+          case @value
+          when Hash
+            @value.keys.size
+          when Array
+            @value.size
+          else
+            0
+          end
         end
 
         # Check if node is named
@@ -583,7 +557,7 @@ module TreeHaver
         end
       end
 
-      # Register availability checker for RSpec dependency tags
+      # Register the availability checker for RSpec dependency tags
       TreeHaver::BackendRegistry.register_availability_checker(:parslet) do
         available?
       end

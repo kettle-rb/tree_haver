@@ -4,8 +4,8 @@
 # Run FFI specs in isolation (without MRI backend loaded)
 #
 # Usage:
-#   bin/rspec-ffi                           # Run all FFI specs
-#   bin/rspec-ffi spec/tree_haver/backends/ffi_spec.rb  # Run specific spec
+#   bin/rspec-ffi                           # Run all specs tagged :ffi_backend
+#   bin/rspec-ffi spec/tree_haver/backends/ffi_spec.rb  # Run specific spec file
 #
 # NOTE: This script uses --options /dev/null to bypass the .rspec file,
 # which would otherwise load spec_thin_helper before spec_ffi_helper.
@@ -33,7 +33,8 @@ end
 # Build the rspec command with FFI helper
 # CRITICAL: Use --options /dev/null to ignore .rspec which has --require spec_thin_helper
 # Use --tag ffi_backend to trigger isolated_test_mode and run FFI tests
-spec_files = ARGV.empty? ? ["spec/tree_haver/backends/ffi_spec.rb"] : ARGV
+# When no args provided, run ALL specs with ffi_backend tag (like bin/rake ffi_specs)
+spec_files = ARGV.empty? ? ["spec/"] : ARGV
 cmd = [
   "bundle",
   "exec",

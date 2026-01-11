@@ -127,7 +127,7 @@ This can occur when:</p>
 </div></h5>
       
       <pre class="example code"><code><span class='kw'>begin</span>
-  <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/path/to/grammar.so</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Language.html" title="TreeHaver::Language (module)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from_library'><span class='object_link'><a href="Language.html#from_library-class_method" title="TreeHaver::Language.from_library (method)">from_library</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/path/to/grammar.so</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>NotAvailable</span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
   <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Grammar not available: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_message'>message</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></code></pre>
@@ -161,7 +161,7 @@ This can occur when:</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

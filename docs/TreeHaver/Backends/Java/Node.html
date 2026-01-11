@@ -62,7 +62,7 @@
       <div id="content"><h1>Class: TreeHaver::Backends::Java::Node
   
   
-  
+  <span class="private note title">Private</span>
 </h1>
 <div class="box_info">
   
@@ -101,7 +101,39 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Wrapper for java-tree-sitter Node</p>
+    <p class="note private">
+  <strong>This class is part of a private API.</strong>
+  You should avoid using this class if possible, as it may be removed or be changed in the future.
+</p>
+<p>Java backend node wrapper (raw backend node)</p>
+
+<p>This is a <strong>raw backend node</strong> that wraps a jtreesitter Node object via<br />
+JRuby’s Java interop. It provides the minimal interface needed for tree-sitter<br />
+operations but is NOT intended for direct use by application code.</p>
+
+<p>== Architecture Note</p>
+
+<p>Unlike pure-Ruby backends (Citrus, Parslet, Prism, Psych) which define Node<br />
+classes that inherit from <code>TreeHaver::Base::Node</code>, tree-sitter backends (MRI,<br />
+Rust, FFI, Java) define raw wrapper classes that get wrapped by <code>TreeHaver::Node</code>.</p>
+
+<p>The wrapping hierarchy is:<br />
+  Java::Node (this class) → TreeHaver::Node → Base::Node</p>
+
+<p>When you use <code>TreeHaver::Parser#parse</code>, the returned tree’s nodes are already<br />
+wrapped in <code>TreeHaver::Node</code>, which provides the full unified API including:</p>
+<ul>
+  <li><code>#children</code> - Array of child nodes</li>
+  <li><code>#text</code> - Extract text from source</li>
+  <li><code>#first_child</code>, <code>#last_child</code> - Convenience accessors</li>
+  <li><code>#start_line</code>, <code>#end_line</code> - 1-based line numbers</li>
+  <li><code>#source_position</code> - Hash with position info</li>
+  <li><code>#each</code>, <code>#map</code>, etc. - Enumerable methods</li>
+  <li><code>#to_s</code>, <code>#inspect</code> - String representations</li>
+</ul>
+
+<p>This raw class only implements methods that require direct calls to jtreesitter.<br />
+The wrapper adds Ruby-level conveniences.</p>
 
 
   </div>
@@ -111,6 +143,10 @@
 
   <p class="tag_title">See Also:</p>
   <ul class="see">
+    
+      <li><span class='object_link'><a href="../../Node.html" title="TreeHaver::Node (class)">The wrapper class users should interact with</a></span></li>
+    
+      <li><span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">The base class documenting the full Node API</a></span></li>
     
       <li><a href="https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Node.html" target="_parent" title="https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Node.html">https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Node.html</a></li>
     
@@ -142,10 +178,10 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Returns the value of attribute impl.</p>
+    <span class="summary_desc"><div class='inline'>
 </div></span>
   
 </li>
@@ -178,7 +214,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get a child by index.</p>
@@ -201,7 +237,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get a child by field name.</p>
@@ -224,7 +260,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the number of children.</p>
@@ -247,7 +283,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Iterate over children.</p>
@@ -270,7 +306,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the end byte position.</p>
@@ -293,7 +329,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the end point (row, column).</p>
@@ -316,7 +352,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Check if this node has an error.</p>
@@ -364,7 +400,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Check if this node is missing.</p>
@@ -387,7 +423,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Check if this is a named node.</p>
@@ -410,7 +446,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the next sibling node.</p>
@@ -433,7 +469,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the parent node.</p>
@@ -456,7 +492,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the previous sibling node.</p>
@@ -479,7 +515,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the start byte position.</p>
@@ -502,7 +538,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the start point (row, column).</p>
@@ -525,7 +561,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the text of this node.</p>
@@ -548,7 +584,7 @@
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the type of this node.</p>
@@ -592,12 +628,12 @@
       <pre class="lines">
 
 
-611
-612
-613</pre>
+696
+697
+698</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 611</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 696</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_impl'>impl</span><span class='rparen'>)</span>
   <span class='ivar'>@impl</span> <span class='op'>=</span> <span class='id identifier rubyid_impl'>impl</span>
@@ -625,7 +661,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns the value of attribute impl.</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+
 
 
   </div>
@@ -639,12 +679,12 @@
       <pre class="lines">
 
 
-608
-609
-610</pre>
+693
+694
+695</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 608</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 693</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_impl'>impl</span>
   <span class='ivar'>@impl</span>
@@ -672,7 +712,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get a child by index</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get a child by index</p>
 
 
   </div>
@@ -722,27 +766,27 @@
       <pre class="lines">
 
 
-633
-634
-635
-636
-637
-638
-639
-640
-641
-642
-643
-644
-645
-646
-647
-648
-649
-650</pre>
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 633</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 718</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
   <span class='comment'># jtreesitter 0.26.0: getChild returns Optional&lt;Node&gt; or throws IndexOutOfBoundsException
@@ -778,7 +822,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get a child by field name</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get a child by field name</p>
 
 
   </div>
@@ -828,26 +876,26 @@
       <pre class="lines">
 
 
-656
-657
-658
-659
-660
-661
-662
-663
-664
-665
-666
-667
-668
-669
-670
-671
-672</pre>
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 656</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 741</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='comment'># jtreesitter 0.26.0: getChildByFieldName returns Optional&lt;Node&gt;
@@ -882,7 +930,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the number of children</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the number of children</p>
 
 
   </div>
@@ -913,12 +965,12 @@
       <pre class="lines">
 
 
-625
-626
-627</pre>
+710
+711
+712</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 625</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 710</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_count'>child_count</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_childCount'>childCount</span>
@@ -939,7 +991,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Iterate over children</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p class="note returns_void">This method returns an undefined value.</p><p>Iterate over children</p>
 
 
   </div>
@@ -970,15 +1026,15 @@
       <pre class="lines">
 
 
-678
-679
-680
-681
-682
-683</pre>
+763
+764
+765
+766
+767
+768</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 678</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 763</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_enum_for'>enum_for</span><span class='lparen'>(</span><span class='symbol'>:each</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
@@ -1002,7 +1058,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the end byte position</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the end byte position</p>
 
 
   </div>
@@ -1033,12 +1093,12 @@
       <pre class="lines">
 
 
-695
-696
-697</pre>
+780
+781
+782</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 695</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 780</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_endByte'>endByte</span>
@@ -1059,7 +1119,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the end point (row, column)</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the end point (row, column)</p>
 
 
   </div>
@@ -1090,13 +1154,13 @@
       <pre class="lines">
 
 
-710
-711
-712
-713</pre>
+795
+796
+797
+798</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 710</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 795</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
   <span class='id identifier rubyid_pt'>pt</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_endPoint'>endPoint</span>
@@ -1118,7 +1182,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Check if this node has an error</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Check if this node has an error</p>
 
 
   </div>
@@ -1149,12 +1217,12 @@
       <pre class="lines">
 
 
-718
-719
-720</pre>
+803
+804
+805</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 718</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 803</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_hasError'>hasError</span>
@@ -1175,7 +1243,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Check if this node is missing</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Check if this node is missing</p>
 
 
   </div>
@@ -1206,12 +1278,12 @@
       <pre class="lines">
 
 
-725
-726
-727</pre>
+810
+811
+812</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 725</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 810</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_isMissing'>isMissing</span>
@@ -1232,7 +1304,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Check if this is a named node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Check if this is a named node</p>
 
 
   </div>
@@ -1263,12 +1339,12 @@
       <pre class="lines">
 
 
-732
-733
-734</pre>
+817
+818
+819</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 732</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 817</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_isNamed'>isNamed</span>
@@ -1289,7 +1365,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the next sibling node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the next sibling node</p>
 
 
   </div>
@@ -1320,24 +1400,24 @@
       <pre class="lines">
 
 
-758
-759
-760
-761
-762
-763
-764
-765
-766
-767
-768
-769
-770
-771
-772</pre>
+843
+844
+845
+846
+847
+848
+849
+850
+851
+852
+853
+854
+855
+856
+857</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 758</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 843</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
   <span class='comment'># jtreesitter 0.26.0: getNextSibling returns Optional&lt;Node&gt;
@@ -1370,7 +1450,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the parent node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the parent node</p>
 
 
   </div>
@@ -1401,24 +1485,24 @@
       <pre class="lines">
 
 
-739
-740
-741
-742
-743
-744
-745
-746
-747
-748
-749
-750
-751
-752
-753</pre>
+824
+825
+826
+827
+828
+829
+830
+831
+832
+833
+834
+835
+836
+837
+838</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 739</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 824</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
   <span class='comment'># jtreesitter 0.26.0: getParent returns Optional&lt;Node&gt;
@@ -1451,7 +1535,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the previous sibling node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the previous sibling node</p>
 
 
   </div>
@@ -1482,24 +1570,24 @@
       <pre class="lines">
 
 
-777
-778
-779
-780
-781
-782
-783
-784
-785
-786
-787
-788
-789
-790
-791</pre>
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 777</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 862</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
   <span class='comment'># jtreesitter 0.26.0: getPrevSibling returns Optional&lt;Node&gt;
@@ -1532,7 +1620,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the start byte position</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the start byte position</p>
 
 
   </div>
@@ -1563,12 +1655,12 @@
       <pre class="lines">
 
 
-688
-689
-690</pre>
+773
+774
+775</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 688</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 773</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_startByte'>startByte</span>
@@ -1589,7 +1681,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the start point (row, column)</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the start point (row, column)</p>
 
 
   </div>
@@ -1620,13 +1716,13 @@
       <pre class="lines">
 
 
-702
-703
-704
-705</pre>
+787
+788
+789
+790</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 702</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 787</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
   <span class='id identifier rubyid_pt'>pt</span> <span class='op'>=</span> <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_startPoint'>startPoint</span>
@@ -1648,7 +1744,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the text of this node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the text of this node</p>
 
 
   </div>
@@ -1679,12 +1779,12 @@
       <pre class="lines">
 
 
-796
-797
-798</pre>
+881
+882
+883</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 796</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 881</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_text'>text</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_text'>text</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -1705,7 +1805,11 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the type of this node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the type of this node</p>
 
 
   </div>
@@ -1736,12 +1840,12 @@
       <pre class="lines">
 
 
-618
-619
-620</pre>
+703
+704
+705</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 618</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 703</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
   <span class='ivar'>@impl</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span>
@@ -1756,7 +1860,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

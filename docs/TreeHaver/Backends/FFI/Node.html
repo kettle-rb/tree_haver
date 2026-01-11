@@ -62,7 +62,7 @@
       <div id="content"><h1>Class: TreeHaver::Backends::FFI::Node
   
   
-  
+  <span class="private note title">Private</span>
 </h1>
 <div class="box_info">
   
@@ -106,16 +106,54 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>FFI-based tree-sitter node</p>
+    <p class="note private">
+  <strong>This class is part of a private API.</strong>
+  You should avoid using this class if possible, as it may be removed or be changed in the future.
+</p>
+<p>FFI-based tree-sitter node (raw backend node)</p>
 
-<p>Wraps a TSNode by-value struct. TSNode is passed by value in the<br />
-tree-sitter C API, so we store the struct value directly.</p>
+<p>This is a <strong>raw backend node</strong> that wraps a TSNode by-value struct from the<br />
+tree-sitter C API. It provides the minimal interface needed for tree-sitter<br />
+operations but is NOT intended for direct use by application code.</p>
+
+<p>== Architecture Note</p>
+
+<p>Unlike pure-Ruby backends (Citrus, Parslet, Prism, Psych) which define Node<br />
+classes that inherit from <code>TreeHaver::Base::Node</code>, tree-sitter backends (MRI,<br />
+Rust, FFI, Java) define raw wrapper classes that get wrapped by <code>TreeHaver::Node</code>.</p>
+
+<p>The wrapping hierarchy is:<br />
+  FFI::Node (this class) → TreeHaver::Node → Base::Node</p>
+
+<p>When you use <code>TreeHaver::Parser#parse</code>, the returned tree’s nodes are already<br />
+wrapped in <code>TreeHaver::Node</code>, which provides the full unified API including:</p>
+<ul>
+  <li><code>#children</code> - Array of child nodes</li>
+  <li><code>#text</code> - Extract text from source</li>
+  <li><code>#first_child</code>, <code>#last_child</code> - Convenience accessors</li>
+  <li><code>#start_line</code>, <code>#end_line</code> - 1-based line numbers</li>
+  <li><code>#source_position</code> - Hash with position info</li>
+  <li><code>#each</code>, <code>#map</code>, etc. - Enumerable methods</li>
+  <li><code>#to_s</code>, <code>#inspect</code> - String representations</li>
+</ul>
+
+<p>This raw class only implements methods that require direct FFI calls to the<br />
+tree-sitter C library. The wrapper adds Ruby-level conveniences.</p>
 
 
   </div>
 </div>
 <div class="tags">
   
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="../../Node.html" title="TreeHaver::Node (class)">The wrapper class users should interact with</a></span></li>
+    
+      <li><span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">The base class documenting the full Node API</a></span></li>
+    
+  </ul>
 
 </div>
 
@@ -146,7 +184,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Compare nodes for ordering (used by Comparable module).</p>
@@ -169,7 +207,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get a child by index.</p>
@@ -192,7 +230,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get a child node by field name.</p>
@@ -215,7 +253,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the number of children.</p>
@@ -238,7 +276,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Find the smallest descendant that spans the given byte range.</p>
@@ -261,7 +299,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Find the smallest descendant that spans the given point range.</p>
@@ -284,7 +322,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Iterate over child nodes.</p>
@@ -307,7 +345,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get end byte offset.</p>
@@ -330,7 +368,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get end point.</p>
@@ -353,7 +391,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Check if node has error.</p>
@@ -401,7 +439,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Check if this is a MISSING node.</p>
@@ -424,7 +462,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Check if this is a named node.</p>
@@ -447,7 +485,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get a named child by index.</p>
@@ -470,7 +508,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the count of named children.</p>
@@ -493,7 +531,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Find the smallest named descendant that spans the given byte range.</p>
@@ -516,7 +554,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Find the smallest named descendant that spans the given point range.</p>
@@ -539,7 +577,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the next named sibling node.</p>
@@ -562,7 +600,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the next sibling node.</p>
@@ -585,7 +623,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the parent node.</p>
@@ -608,7 +646,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the previous named sibling node.</p>
@@ -631,7 +669,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the previous sibling node.</p>
@@ -654,7 +692,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get start byte offset.</p>
@@ -677,7 +715,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get start point.</p>
@@ -700,7 +738,7 @@ tree-sitter C API, so we store the struct value directly.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Get the type name of this node.</p>
@@ -764,13 +802,13 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-654
-655
-656
-657</pre>
+717
+718
+719
+720</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 654</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 717</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_ts_node_value'>ts_node_value</span><span class='rparen'>)</span>
   <span class='comment'># Store by-value struct (FFI will copy); methods pass it back by value
@@ -799,7 +837,11 @@ tree-sitter C API, so we store the struct value directly.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Compare nodes for ordering (used by Comparable module)</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Compare nodes for ordering (used by Comparable module)</p>
 
 <p>Nodes are ordered by their position in the source:</p>
 <ol>
@@ -856,20 +898,20 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-927
-928
-929
-930
-931
-932
-933
-934
-935
-936
-937</pre>
+990
+991
+992
+993
+994
+995
+996
+997
+998
+999
+1000</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 927</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 990</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::FFI::Node (class)">Node</a></span></span><span class='rparen'>)</span>
@@ -898,7 +940,11 @@ tree-sitter C API, so we store the struct value directly.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get a child by index</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get a child by index</p>
 
 
   </div>
@@ -948,14 +994,14 @@ tree-sitter C API, so we store the struct value directly.</p>
       <pre class="lines">
 
 
-677
-678
-679
-680
-681</pre>
+740
+741
+742
+743
+744</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 677</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 740</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_child_count'>child_count</span> <span class='op'>||</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&lt;</span> <span class='int'>0</span>
@@ -978,7 +1024,11 @@ tree-sitter C API, so we store the struct value directly.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get a child node by field name</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get a child node by field name</p>
 
 <p>Tree-sitter grammars define named fields for certain child positions.<br />
 For example, in JSON, a “pair” node has “key” and “value” fields.</p>
@@ -1043,17 +1093,17 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
       <pre class="lines">
 
 
-693
-694
-695
-696
-697
-698
-699
-700</pre>
+756
+757
+758
+759
+760
+761
+762
+763</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 693</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 756</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='const'>String</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
@@ -1079,7 +1129,11 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the number of children</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the number of children</p>
 
 
   </div>
@@ -1110,12 +1164,12 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
       <pre class="lines">
 
 
-669
-670
-671</pre>
+732
+733
+734</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 669</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 732</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_count'>child_count</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_child_count'>ts_node_child_count</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1136,7 +1190,11 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Find the smallest descendant that spans the given byte range</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Find the smallest descendant that spans the given byte range</p>
 
 
   </div>
@@ -1201,15 +1259,15 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
       <pre class="lines">
 
 
-842
-843
-844
-845
-846
-847</pre>
+905
+906
+907
+908
+909
+910</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 842</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 905</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_descendant_for_byte_range'>descendant_for_byte_range</span><span class='lparen'>(</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='comma'>,</span> <span class='id identifier rubyid_end_byte'>end_byte</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_node'>node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_descendant_for_byte_range'>ts_node_descendant_for_byte_range</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='comma'>,</span> <span class='id identifier rubyid_start_byte'>start_byte</span><span class='comma'>,</span> <span class='id identifier rubyid_end_byte'>end_byte</span><span class='rparen'>)</span>
@@ -1233,7 +1291,11 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Find the smallest descendant that spans the given point range</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Find the smallest descendant that spans the given point range</p>
 
 
   </div>
@@ -1247,7 +1309,7 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
         <span class='name'>start_point</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
       
       
       
@@ -1262,7 +1324,7 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
         <span class='name'>end_point</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
       
       
       
@@ -1298,23 +1360,23 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
       <pre class="lines">
 
 
-866
-867
-868
-869
-870
-871
-872
-873
-874
-875
-876
-877
-878
-879</pre>
+929
+930
+931
+932
+933
+934
+935
+936
+937
+938
+939
+940
+941
+942</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 866</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 929</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_descendant_for_point_range'>descendant_for_point_range</span><span class='lparen'>(</span><span class='id identifier rubyid_start_point'>start_point</span><span class='comma'>,</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_start_pt'>start_pt</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='op'>::</span><span class='const'>TSPoint</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
@@ -1346,7 +1408,11 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Iterate over child nodes</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Iterate over child nodes</p>
 
 
   </div>
@@ -1396,21 +1462,21 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
       <pre class="lines">
 
 
-905
-906
-907
-908
-909
-910
-911
-912
-913
-914
-915
-916</pre>
+968
+969
+970
+971
+972
+973
+974
+975
+976
+977
+978
+979</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 905</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 968</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_enum_for'>enum_for</span><span class='lparen'>(</span><span class='symbol'>:each</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
@@ -1440,7 +1506,11 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get end byte offset</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get end byte offset</p>
 
 
   </div>
@@ -1467,12 +1537,12 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
       <pre class="lines">
 
 
-712
-713
-714</pre>
+775
+776
+777</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 712</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 775</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_end_byte'>ts_node_end_byte</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1485,7 +1555,7 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
       <div class="method_details ">
   <h3 class="signature " id="end_point-instance_method">
   
-    #<strong>end_point</strong>  &#x21d2; <tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt> 
+    #<strong>end_point</strong>  &#x21d2; <tt><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">TreeHaver::Point</a></span></tt> 
   
 
   
@@ -1493,7 +1563,11 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get end point</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get end point</p>
 
 
   </div>
@@ -1506,7 +1580,7 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">TreeHaver::Point</a></span></tt>)</span>
       
       
       
@@ -1524,19 +1598,19 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
       <pre class="lines">
 
 
-728
-729
-730
-731
-732</pre>
+791
+792
+793
+794
+795</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 728</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 791</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
   <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_end_point'>ts_node_end_point</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
   <span class='comment'># TSPoint is returned by value as an FFI::Struct with :row and :column fields
-</span>  <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+</span>  <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1554,7 +1628,11 @@ For example, in JSON, a “pair” node has “key” and “value” fields.</p
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Check if node has error</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Check if node has error</p>
 
 <p>Returns true if this node or any of its descendants have a syntax error.<br />
 This is the FFI equivalent of tree-sitter’s ts_node_has_error.</p>
@@ -1588,14 +1666,14 @@ This is the FFI equivalent of tree-sitter’s ts_node_has_error.</p>
       <pre class="lines">
 
 
-740
-741
-742
-743
-744</pre>
+803
+804
+805
+806
+807</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 740</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 803</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
   <span class='comment'># Explicit boolean conversion ensures consistent behavior across Ruby versions
@@ -1618,7 +1696,11 @@ This is the FFI equivalent of tree-sitter’s ts_node_has_error.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Check if this is a MISSING node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Check if this is a MISSING node</p>
 
 <p>A MISSING node represents a token that was expected by the grammar<br />
 but was not found in the source. Tree-sitter inserts MISSING nodes<br />
@@ -1653,12 +1735,12 @@ to allow parsing to continue despite syntax errors.</p>
       <pre class="lines">
 
 
-753
-754
-755</pre>
+816
+817
+818</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 753</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 816</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
   <span class='op'>!</span><span class='op'>!</span><span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_missing'>ts_node_is_missing</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1679,7 +1761,11 @@ to allow parsing to continue despite syntax errors.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Check if this is a named node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Check if this is a named node</p>
 
 <p>Named nodes represent syntactic constructs (e.g., “pair”, “object”).<br />
 Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
@@ -1713,12 +1799,12 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-763
-764
-765</pre>
+826
+827
+828</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 763</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 826</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
   <span class='op'>!</span><span class='op'>!</span><span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_is_named'>ts_node_is_named</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1739,7 +1825,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get a named child by index</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get a named child by index</p>
 
 
   </div>
@@ -1789,17 +1879,17 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-821
-822
-823
-824
-825
-826
-827
-828</pre>
+884
+885
+886
+887
+888
+889
+890
+891</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 821</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 884</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named_child'>named_child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&lt;</span> <span class='int'>0</span> <span class='op'>||</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_named_child_count'>named_child_count</span>
@@ -1825,7 +1915,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the count of named children</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the count of named children</p>
 
 
   </div>
@@ -1856,12 +1950,12 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-833
-834
-835</pre>
+896
+897
+898</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 833</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 896</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named_child_count'>named_child_count</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_named_child_count'>ts_node_named_child_count</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -1882,7 +1976,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Find the smallest named descendant that spans the given byte range</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Find the smallest named descendant that spans the given byte range</p>
 
 
   </div>
@@ -1947,15 +2045,15 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-854
-855
-856
-857
-858
-859</pre>
+917
+918
+919
+920
+921
+922</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 854</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 917</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named_descendant_for_byte_range'>named_descendant_for_byte_range</span><span class='lparen'>(</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='comma'>,</span> <span class='id identifier rubyid_end_byte'>end_byte</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_node'>node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_named_descendant_for_byte_range'>ts_node_named_descendant_for_byte_range</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='comma'>,</span> <span class='id identifier rubyid_start_byte'>start_byte</span><span class='comma'>,</span> <span class='id identifier rubyid_end_byte'>end_byte</span><span class='rparen'>)</span>
@@ -1979,7 +2077,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Find the smallest named descendant that spans the given point range</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Find the smallest named descendant that spans the given point range</p>
 
 
   </div>
@@ -1993,7 +2095,7 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
         <span class='name'>start_point</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
       
       
       
@@ -2008,7 +2110,7 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
         <span class='name'>end_point</span>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">TreeHaver::Point</a></span></tt>, <tt>Hash</tt>)</span>
       
       
       
@@ -2044,23 +2146,23 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-886
-887
-888
-889
-890
-891
-892
-893
-894
-895
-896
-897
-898
-899</pre>
+949
+950
+951
+952
+953
+954
+955
+956
+957
+958
+959
+960
+961
+962</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 886</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 949</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named_descendant_for_point_range'>named_descendant_for_point_range</span><span class='lparen'>(</span><span class='id identifier rubyid_start_point'>start_point</span><span class='comma'>,</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_start_pt'>start_pt</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='op'>::</span><span class='const'>TSPoint</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
@@ -2092,7 +2194,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the next named sibling node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the next named sibling node</p>
 
 
   </div>
@@ -2123,15 +2229,15 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-800
-801
-802
-803
-804
-805</pre>
+863
+864
+865
+866
+867
+868</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 800</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 863</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_next_named_sibling'>next_named_sibling</span>
   <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_next_named_sibling'>ts_node_next_named_sibling</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -2155,7 +2261,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the next sibling node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the next sibling node</p>
 
 
   </div>
@@ -2186,15 +2296,15 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-780
-781
-782
-783
-784
-785</pre>
+843
+844
+845
+846
+847
+848</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 780</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 843</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
   <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_next_sibling'>ts_node_next_sibling</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -2218,7 +2328,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the parent node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the parent node</p>
 
 
   </div>
@@ -2249,15 +2363,15 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-770
-771
-772
-773
-774
-775</pre>
+833
+834
+835
+836
+837
+838</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 770</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 833</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
   <span class='id identifier rubyid_parent_node'>parent_node</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_parent'>ts_node_parent</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -2281,7 +2395,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the previous named sibling node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the previous named sibling node</p>
 
 
   </div>
@@ -2312,15 +2430,15 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-810
-811
-812
-813
-814
-815</pre>
+873
+874
+875
+876
+877
+878</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 810</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 873</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prev_named_sibling'>prev_named_sibling</span>
   <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_prev_named_sibling'>ts_node_prev_named_sibling</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -2344,7 +2462,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the previous sibling node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the previous sibling node</p>
 
 
   </div>
@@ -2375,15 +2497,15 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-790
-791
-792
-793
-794
-795</pre>
+853
+854
+855
+856
+857
+858</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 790</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 853</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
   <span class='id identifier rubyid_sibling'>sibling</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_prev_sibling'>ts_node_prev_sibling</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -2407,7 +2529,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get start byte offset</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get start byte offset</p>
 
 
   </div>
@@ -2434,12 +2560,12 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-705
-706
-707</pre>
+768
+769
+770</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 705</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 768</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_start_byte'>ts_node_start_byte</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -2452,7 +2578,7 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <div class="method_details ">
   <h3 class="signature " id="start_point-instance_method">
   
-    #<strong>start_point</strong>  &#x21d2; <tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt> 
+    #<strong>start_point</strong>  &#x21d2; <tt><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">TreeHaver::Point</a></span></tt> 
   
 
   
@@ -2460,7 +2586,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get start point</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get start point</p>
 
 
   </div>
@@ -2473,7 +2603,7 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">TreeHaver::Point</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">TreeHaver::Point</a></span></tt>)</span>
       
       
       
@@ -2491,19 +2621,19 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-719
-720
-721
-722
-723</pre>
+782
+783
+784
+785
+786</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 719</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 782</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
   <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_start_point'>ts_node_start_point</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
   <span class='comment'># TSPoint is returned by value as an FFI::Struct with :row and :column fields
-</span>  <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../../Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+</span>  <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2521,7 +2651,11 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Get the type name of this node</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Get the type name of this node</p>
 
 
   </div>
@@ -2552,12 +2686,12 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
       <pre class="lines">
 
 
-662
-663
-664</pre>
+725
+726
+727</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 662</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/ffi.rb', line 725</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
   <span class='const'><span class='object_link'><a href="Native.html" title="TreeHaver::Backends::FFI::Native (module)">Native</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ts_node_type'>ts_node_type</span><span class='lparen'>(</span><span class='ivar'>@val</span><span class='rparen'>)</span>
@@ -2572,7 +2706,7 @@ Anonymous nodes represent syntax/punctuation (e.g., “{“, “,”).</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

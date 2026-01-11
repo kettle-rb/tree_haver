@@ -95,9 +95,16 @@ module TreeHaver
       end
 
       # Get a child node by index
-      # @param index [Integer] Child index
+      #
+      # Returns nil for negative indices or indices out of bounds.
+      # This matches tree-sitter behavior where negative indices are invalid.
+      #
+      # @param index [Integer] Child index (0-based, non-negative)
       # @return [Node, nil] The child node or nil
       def child(index)
+        return nil if index.negative?
+        return nil if index >= child_count
+
         children[index]
       end
 

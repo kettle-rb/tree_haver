@@ -147,7 +147,7 @@ It stores the source text to enable text extraction from nodes.</p>
 </div></h5>
       
       <pre class="example code"><code><span class='id identifier rubyid_parser'>parser</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Parser.html" title="TreeHaver::Parser (class)">Parser</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Parser.html#initialize-instance_method" title="TreeHaver::Parser#initialize (method)">new</a></span></span>
-<span class='id identifier rubyid_parser'>parser</span><span class='period'>.</span><span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_toml'>toml</span>
+<span class='id identifier rubyid_parser'>parser</span><span class='period'>.</span><span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Language.html" title="TreeHaver::Language (module)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_toml'>toml</span>
 <span class='id identifier rubyid_tree'>tree</span> <span class='op'>=</span> <span class='id identifier rubyid_parser'>parser</span><span class='period'>.</span><span class='id identifier rubyid_parse'>parse</span><span class='lparen'>(</span><span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
 <span class='id identifier rubyid_root'><span class='object_link'><a href="../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span> <span class='op'>=</span> <span class='id identifier rubyid_tree'>tree</span><span class='period'>.</span><span class='id identifier rubyid_root_node'>root_node</span>
 <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_root'><span class='object_link'><a href="../top-level-namespace.html" title="Top Level Namespace (root)">root</a></span></span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span></code></pre>
@@ -1160,7 +1160,7 @@ end</code></pre>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

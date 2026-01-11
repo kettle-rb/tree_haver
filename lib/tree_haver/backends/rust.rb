@@ -230,7 +230,7 @@ module TreeHaver
         end
       end
 
-      # Register availability checker for RSpec dependency tags
+      # Register the availability checker for RSpec dependency tags
       TreeHaver::BackendRegistry.register_availability_checker(:rust) do
         available?
       end

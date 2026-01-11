@@ -142,6 +142,30 @@ module TreeHaver
           @symbol = symbol
         end
 
+        # Get the language name
+        #
+        # Derives a name from the symbol or path.
+        #
+        # @return [Symbol] language name
+        def language_name
+          # Try to derive from symbol (e.g., "tree_sitter_toml" -> :toml)
+          if @symbol
+            name = @symbol.to_s.sub(/^tree_sitter_/, "")
+            return name.to_sym
+          end
+
+          # Try to derive from path (e.g., "/path/to/libtree-sitter-toml.so" -> :toml)
+          if @path
+            name = LibraryPathUtils.derive_language_name_from_path(@path)
+            return name.to_sym if name
+          end
+
+          :unknown
+        end
+
+        # Alias for language_name (API compatibility)
+        alias_method :name, :language_name
+
         # Compare languages for equality
         #
         # MRI languages are equal if they have the same backend, path, and symbol.
@@ -329,7 +353,7 @@ module TreeHaver
         end
       end
 
-      # Register availability checker for RSpec dependency tags
+      # Register the availability checker for RSpec dependency tags
       TreeHaver::BackendRegistry.register_availability_checker(:mri) do
         available?
       end

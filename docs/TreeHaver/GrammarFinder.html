@@ -148,7 +148,7 @@ paths from trusted system directories.</p>
       
       <pre class="example code"><code><span class='id identifier rubyid_finder'>finder</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>GrammarFinder</span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::GrammarFinder#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:json</span><span class='rparen'>)</span>
 <span class='kw'>if</span> <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_available?'>available?</span>
-  <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Language.html" title="TreeHaver::Language (class)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_load'><span class='object_link'><a href="Language.html#load-class_method" title="TreeHaver::Language.load (method)">load</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_language_name'>language_name</span><span class='comma'>,</span> <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_find_library_path'>find_library_path</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_language'>language</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Language.html" title="TreeHaver::Language (module)">Language</a></span></span><span class='period'>.</span><span class='id identifier rubyid_load'><span class='object_link'><a href="Language.html#load-class_method" title="TreeHaver::Language.load (method)">load</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_language_name'>language_name</span><span class='comma'>,</span> <span class='id identifier rubyid_finder'>finder</span><span class='period'>.</span><span class='id identifier rubyid_find_library_path'>find_library_path</span><span class='rparen'>)</span>
 <span class='kw'>end</span></code></pre>
     
       
@@ -2093,7 +2093,7 @@ custom installation locations.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:42 2026 by
+  Generated on Sat Jan 10 22:57:22 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

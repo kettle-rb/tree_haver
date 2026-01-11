@@ -72,13 +72,328 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>
+<strong>Shared Example Groups for Backend API Compliance Testing</strong>
+    <ul>
+      <li>
+<code>node_api_examples.rb</code> - Tests for Node API compliance:
+        <ul>
+          <li>
+<code>"node api compliance"</code> - Core Node interface (type, start_byte, end_byte, children)</li>
+          <li>
+<code>"node position api"</code> - Position API (start_point, end_point, start_line, end_line, source_position)</li>
+          <li>
+<code>"node children api"</code> - Children traversal (#child, #first_child, #last_child)</li>
+          <li>
+<code>"node enumerable behavior"</code> - Enumerable methods (#each, #map, #select, #find)</li>
+          <li>
+<code>"node comparison behavior"</code> - Comparison and equality (#==, #&lt;=&gt;, #hash)</li>
+          <li>
+<code>"node text extraction"</code> - Text content (#text, #to_s)</li>
+          <li>
+<code>"node inspection"</code> - Debug output (#inspect)</li>
+        </ul>
+      </li>
+      <li>
+<code>tree_api_examples.rb</code> - Tests for Tree API compliance:
+        <ul>
+          <li>
+<code>"tree api compliance"</code> - Core Tree interface (root_node, source, errors, warnings, comments)</li>
+          <li>
+<code>"tree error handling"</code> - Error detection (#has_error?, #errors)</li>
+          <li>
+<code>"tree traversal"</code> - Depth-first traversal via root_node</li>
+        </ul>
+      </li>
+      <li>
+<code>parser_api_examples.rb</code> - Tests for Parser API compliance:
+        <ul>
+          <li>
+<code>"parser api compliance"</code> - Core Parser interface (#parse, #parse_string, #language=)</li>
+          <li>
+<code>"parser incremental parsing"</code> - Incremental parsing support</li>
+          <li>
+<code>"parser error handling"</code> - Error recovery behavior</li>
+        </ul>
+      </li>
+      <li>
+<code>language_api_examples.rb</code> - Tests for Language API compliance:
+        <ul>
+          <li>
+<code>"language api compliance"</code> - Core Language interface (#backend, #name/#language_name)</li>
+          <li>
+<code>"language comparison"</code> - Comparison and equality</li>
+          <li>
+<code>"language factory methods"</code> - Factory methods (.from_library, .from_path)</li>
+        </ul>
+      </li>
+      <li>
+<code>backend_api_examples.rb</code> - Tests for Backend module API compliance:
+        <ul>
+          <li>
+<code>"backend module api"</code> - Backend availability and capabilities</li>
+          <li>
+<code>"backend class structure"</code> - Nested class verification</li>
+          <li>
+<code>"backend integration"</code> - Full parse cycle testing</li>
+        </ul>
+      </li>
+      <li>
+<code>spec/support/shared_examples.rb</code> - Master loader for all shared examples</li>
+      <li>
+<code>spec/integration/backend_api_compliance_spec.rb</code> - Integration tests using all shared examples</li>
+    </ul>
+  </li>
+  <li>
+<strong>Parslet Backend</strong>: New pure Ruby PEG parser backend (<code>TreeHaver::Backends::Parslet</code>)
+    <ul>
+      <li>Wraps Parslet-based parsers (like the <code>toml</code> gem) to provide a pure Ruby alternative to tree-sitter</li>
+      <li>
+<code>Parslet.available?</code> - Check if parslet gem is available</li>
+      <li>
+<code>Parslet.capabilities</code> - Returns <code>{ backend: :parslet, query: false, bytes_field: true, incremental: false, pure_ruby: true }</code>
+</li>
+      <li>
+<code>Parslet::Language</code> - Wrapper for Parslet grammar classes
+        <ul>
+          <li>
+<code>Language.new(grammar_class)</code> - Create from a Parslet::Parser subclass</li>
+          <li>
+<code>Language.from_library(path, symbol:, name:)</code> - API-compatible lookup via LanguageRegistry</li>
+          <li>
+<code>#language_name</code> / <code>#name</code> - Derive language name from grammar class</li>
+        </ul>
+      </li>
+      <li>
+<code>Parslet::Parser</code> - Wrapper that creates parser instances from grammar classes
+        <ul>
+          <li>Accepts both raw grammar class and Language wrapper (normalized API)</li>
+        </ul>
+      </li>
+      <li>
+<code>Parslet::Tree</code> - Wraps Parslet parse results, inherits from <code>Base::Tree</code>
+</li>
+      <li>
+<code>Parslet::Node</code> - Unified node interface, inherits from <code>Base::Node</code>
+        <ul>
+          <li>Supports both Hash nodes (with named children) and Array nodes (with indexed children)</li>
+          <li>
+<code>#type</code> - Returns the node type (key name or “array”/”document”)</li>
+          <li>
+<code>#children</code> - Returns child nodes</li>
+          <li>
+<code>#child_by_field_name(name)</code> - Access named children in Hash nodes</li>
+          <li>
+<code>#text</code> - Returns the matched text from Parslet::Slice</li>
+          <li>
+<code>#start_byte</code>, <code>#end_byte</code> - Byte positions from Parslet::Slice</li>
+          <li>
+<code>#start_point</code>, <code>#end_point</code> - Line/column positions (computed from source)</li>
+        </ul>
+      </li>
+      <li>Registered with <code>BackendRegistry.register_availability_checker(:parslet)</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<strong>RSpec Dependency Tags</strong>: Added <code>parslet_available?</code> method
+    <ul>
+      <li>Checks if parslet gem is installed via <code>BackendRegistry.available?(:parslet)</code>
+</li>
+      <li>
+<code>:parslet_backend</code> tag for specs requiring Parslet</li>
+      <li>
+<code>:not_parslet_backend</code> negated tag for specs that should skip when Parslet is available</li>
+    </ul>
+  </li>
+  <li>
+<strong>ParsletGrammarFinder</strong>: Utility for discovering and registering Parslet grammar gems
+    <ul>
+      <li>
+<code>ParsletGrammarFinder.new(language:, gem_name:, grammar_const:, require_path:)</code> - Find Parslet grammars</li>
+      <li>
+<code>#available?</code> - Check if the Parslet grammar gem is installed and functional</li>
+      <li>
+<code>#grammar_class</code> - Get the resolved Parslet::Parser subclass</li>
+      <li>
+<code>#register!</code> - Register the grammar with TreeHaver</li>
+      <li>Auto-loads via <code>TreeHaver::PARSLET_DEFAULTS</code> for known languages (toml)</li>
+    </ul>
+  </li>
+  <li>
+<strong>TreeHaver.register_language</strong>: Extended with <code>grammar_class:</code> parameter for Parslet grammars</li>
+  <li>
+<strong>TreeHaver.parser_for</strong>: Extended with <code>parslet_config:</code> parameter for explicit Parslet configuration</li>
+  <li>
+<strong>RSpec Dependency Tags</strong>: Added <code>toml_gem_available?</code> method and updated <code>any_toml_backend_available?</code>
+</li>
+  <li>
+<code>MRI::Language#language_name</code> / <code>#name</code> - Derive language name from symbol or path</li>
+  <li>
+<code>FFI::Language#language_name</code> / <code>#name</code> - Derive language name from symbol or path</li>
+  <li>
+<strong>spec_helper.rb</strong>: Added <code>require "toml"</code> to load the toml gem for Parslet backend tests</li>
+</ul>
+
 <h3 id="changed">Changed</h3>
+
+<ul>
+  <li>
+<strong>BREAKING: <code>TreeHaver::Language</code> converted from class to module</strong>
+    <ul>
+      <li>Previously <code>TreeHaver::Language</code> was a class that wrapped backend language objects</li>
+      <li>Now <code>TreeHaver::Language</code> is a module providing factory methods (<code>method_missing</code> for dynamic language loading)</li>
+      <li>Backend-specific language classes (e.g., <code>TreeHaver::Backends::MRI::Language</code>) are now the concrete implementations</li>
+      <li>Code that instantiated <code>TreeHaver::Language.new(...)</code> directly must be updated to use backend-specific classes or the factory methods</li>
+    </ul>
+  </li>
+  <li>
+<strong>BREAKING: <code>TreeHaver::Tree</code> now inherits from <code>TreeHaver::Base::Tree</code></strong>
+    <ul>
+      <li>
+<code>TreeHaver::Tree</code> is now a proper subclass of <code>TreeHaver::Base::Tree</code>
+</li>
+      <li>Inherits <code>inner_tree</code>, <code>source</code>, <code>lines</code> attributes from base class</li>
+      <li>Base class provides default implementations; subclass documents divergence</li>
+    </ul>
+  </li>
+  <li>
+<strong>BREAKING: <code>TreeHaver::Node</code> now inherits from <code>TreeHaver::Base::Node</code></strong>
+    <ul>
+      <li>
+<code>TreeHaver::Node</code> is now a proper subclass of <code>TreeHaver::Base::Node</code>
+</li>
+      <li>Inherits <code>inner_node</code>, <code>source</code>, <code>lines</code> attributes from base class</li>
+      <li>Base class documents the API contract; subclass documents divergence</li>
+    </ul>
+  </li>
+  <li>
+<strong>BREAKING: <code>Citrus::Node</code> and <code>Citrus::Tree</code> now inherit from Base classes</strong>
+    <ul>
+      <li>
+<code>Citrus::Node</code> now inherits from <code>TreeHaver::Base::Node</code>
+</li>
+      <li>
+<code>Citrus::Tree</code> now inherits from <code>TreeHaver::Base::Tree</code>
+</li>
+      <li>Removes duplicated methods, uses inherited implementations</li>
+      <li>Adds <code>#language_name</code> / <code>#name</code> methods for API compliance</li>
+    </ul>
+  </li>
+  <li>
+<strong>BREAKING: <code>Parslet::Node</code> and <code>Parslet::Tree</code> now inherit from Base classes</strong>
+    <ul>
+      <li>
+<code>Parslet::Node</code> now inherits from <code>TreeHaver::Base::Node</code>
+</li>
+      <li>
+<code>Parslet::Tree</code> now inherits from <code>TreeHaver::Base::Tree</code>
+</li>
+      <li>Removes duplicated methods, uses inherited implementations</li>
+    </ul>
+  </li>
+  <li>
+<strong>Base::Node#child now returns nil for negative indices</strong> (tree-sitter API compatibility)</li>
+  <li>
+<strong>Citrus::Parser#language= now accepts Language wrapper or raw grammar module</strong>
+    <ul>
+      <li>Both patterns now work: <code>parser.language = TomlRB::Document</code> or <code>parser.language = Citrus::Language.new(TomlRB::Document)</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<strong>Parslet::Parser#language= now accepts Language wrapper or raw grammar class</strong>
+    <ul>
+      <li>Both patterns now work: <code>parser.language = TOML::Parslet</code> or <code>parser.language = Parslet::Language.new(TOML::Parslet)</code>
+</li>
+    </ul>
+  </li>
+  <li>
+<strong>TreeHaver::Parser#unwrap_language</strong> now passes Language wrappers directly to Citrus/Parslet backends
+    <ul>
+      <li>Previously unwrapped to raw grammar; now backends handle their own Language wrappers</li>
+    </ul>
+  </li>
+  <li>
+<strong>Language.method_missing</strong>: Now recognizes <code>:parslet</code> backend type and creates <code>Parslet::Language</code> instances</li>
+  <li>
+<strong>Parser</strong>: Updated to recognize Parslet languages and switch to Parslet parser automatically
+    <ul>
+      <li>
+<code>#backend</code> now returns <code>:parslet</code> for Parslet-based parsers</li>
+      <li>
+<code>#language=</code> detects <code>Parslet::Language</code> and switches implementation</li>
+      <li>
+<code>handle_parser_creation_failure</code> tries Parslet as fallback after Citrus</li>
+      <li>
+<code>unwrap_language</code> extracts <code>grammar_class</code> for Parslet languages</li>
+    </ul>
+  </li>
+</ul>
 
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>
+<strong>FFI Backend Compliance Tests</strong>: Fixed tests to use <code>TreeHaver::Parser</code> wrapper instead of raw <code>FFI::Parser</code>
+    <ul>
+      <li>Raw FFI classes (<code>FFI::Tree</code>, <code>FFI::Node</code>) don’t have full API (missing <code>#children</code>, <code>#text</code>, <code>#source</code>, etc.)</li>
+      <li>TreeHaver wrapper classes (<code>TreeHaver::Tree</code>, <code>TreeHaver::Node</code>) provide the complete unified API</li>
+      <li>Tests now properly test the wrapped API that users actually interact with</li>
+    </ul>
+  </li>
+  <li>
+<strong>Parslet TOML Sources</strong>: Fixed test sources to be valid for the <code>toml</code> gem’s Parslet grammar
+    <ul>
+      <li>Grammar requires table sections (not bare key-value pairs at root)</li>
+      <li>Grammar requires trailing newlines</li>
+    </ul>
+  </li>
+  <li>
+<strong>Examples</strong>: Fixed broken markdown examples that referenced non-existent TreeHaver backends
+    <ul>
+      <li>
+<code>commonmarker_markdown.rb</code> - Rewrote to use commonmarker gem directly (not a TreeHaver backend)</li>
+      <li>
+<code>markly_markdown.rb</code> - Rewrote to use markly gem directly with correct <code>source_position</code> API</li>
+      <li>
+<code>commonmarker_merge_example.rb</code> - Fixed to use <code>commonmarker/merge</code> gem properly</li>
+      <li>
+<code>markly_merge_example.rb</code> - Fixed to use <code>markly/merge</code> gem properly</li>
+      <li>
+<code>parslet_toml.rb</code> - Rewrote to properly use TreeHaver’s Parslet backend with language registration</li>
+    </ul>
+  </li>
+  <li>
+<strong>Examples</strong>: Fixed <code>run_all.rb</code> test runner
+    <ul>
+      <li>Added parslet example to the test list</li>
+      <li>Changed markdown examples to use <code>backend: "standalone"</code> (they’re not TreeHaver backends)</li>
+      <li>Added MRI+TOML to known incompatibilities (parse returns nil)</li>
+      <li>Added proper skip reason messages for all known incompatibilities</li>
+    </ul>
+  </li>
+  <li>
+<strong>Examples</strong>: Updated <code>examples/README.md</code> documentation
+    <ul>
+      <li>Added Parslet backend section with usage examples</li>
+      <li>Renamed “Commonmarker Backend” and “Markly Backend” to “Commonmarker (Standalone)” and “Markly (Standalone)”</li>
+      <li>Clarified that commonmarker and markly are standalone parsers, not TreeHaver backends</li>
+    </ul>
+  </li>
+  <li>
+<strong>Duplicate Constants</strong>: Removed duplicate <code>CITRUS_DEFAULTS</code> and <code>PARSLET_DEFAULTS</code> definitions
+    <ul>
+      <li>Constants were defined twice in <code>tree_haver.rb</code> (lines 170 and 315)</li>
+      <li>This was causing “already initialized constant” warnings on every require</li>
+    </ul>
+  </li>
+</ul>
 
 <h3 id="security">Security</h3>
 
@@ -1959,7 +2274,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:40 2026 by
+  Generated on Sat Jan 10 22:57:20 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -69,10 +69,12 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">Object</span>
+      <span class="inheritName"><span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></span>
       
         <ul class="fullTree">
           <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></li>
           
             <li class="next">TreeHaver::Backends::Citrus::Node</li>
           
@@ -86,11 +88,6 @@
   
   
   
-  
-  <dl>
-      <dt>Includes:</dt>
-      <dd>Comparable, Enumerable</dd>
-  </dl>
   
   
 
@@ -123,6 +120,9 @@
   <li>matches: child matches</li>
   <li>captures: named groups</li>
 </ul>
+
+<p>Inherits from Base::Node to get shared methods like #first_child, #last_child,<br />
+#to_s, #inspect, #==, #&lt;=&gt;, #source_position, #start_line, #end_line, etc.</p>
 
 <p>Language-specific helpers can be mixed in for convenience:<br />
   require “tree_haver/backends/citrus/toml_helpers”<br />
@@ -169,37 +169,14 @@
 </li>
 
     
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#source-instance_method" title="#source (instance method)">#<strong>source</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'>
-</div></span>
-  
-</li>
-
-    
   </ul>
 
 
+
+  
+  
+  <h3 class="inherited">Attributes inherited from <span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Node.html#inner_node-instance_method" title="TreeHaver::Base::Node#inner_node (method)">#inner_node</a></span>, <span class='object_link'><a href="../../Base/Node.html#lines-instance_method" title="TreeHaver::Base::Node#lines (method)">#lines</a></span>, <span class='object_link'><a href="../../Base/Node.html#source-instance_method" title="TreeHaver::Base::Node#source (method)">#source</a></span></p>
 
 
   
@@ -227,7 +204,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'>
+    <span class="summary_desc"><div class='inline'><p>Override child to handle negative indices properly.</p>
 </div></span>
   
 </li>
@@ -250,7 +227,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'>
+    <span class="summary_desc"><div class='inline'><p>Override child_count for efficiency (avoid building full children array).</p>
 </div></span>
   
 </li>
@@ -260,29 +237,6 @@
   <span class="summary_signature">
     
       <a href="#children-instance_method" title="#children (instance method)">#<strong>children</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#each-instance_method" title="#each (instance method)">#<strong>each</strong>(&amp;block)  &#x21d2; Object </a>
     
 
     
@@ -328,29 +282,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#end_line-instance_method" title="#end_line (instance method)">#<strong>end_line</strong>  &#x21d2; Integer </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get the 1-based line number where this node ends.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#end_point-instance_method" title="#end_point (instance method)">#<strong>end_point</strong>  &#x21d2; Object </a>
     
 
@@ -365,53 +296,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#first_child-instance_method" title="#first_child (instance method)">#<strong>first_child</strong>  &#x21d2; Node<sup>?</sup> </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get the first child node.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#has_error%3F-instance_method" title="#has_error? (instance method)">#<strong>has_error?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'>
+    <span class="summary_desc"><div class='inline'><p>Override end_point to calculate from source.</p>
 </div></span>
   
 </li>
@@ -445,75 +330,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#missing%3F-instance_method" title="#missing? (instance method)">#<strong>missing?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#named%3F-instance_method" title="#named? (instance method)">#<strong>named?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#source_position-instance_method" title="#source_position (instance method)">#<strong>source_position</strong>  &#x21d2; Hash{Symbol =&gt; Integer} </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get position information as a hash.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#start_byte-instance_method" title="#start_byte (instance method)">#<strong>start_byte</strong>  &#x21d2; Object </a>
     
 
@@ -537,29 +353,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#start_line-instance_method" title="#start_line (instance method)">#<strong>start_line</strong>  &#x21d2; Integer </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get the 1-based line number where this node starts.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#start_point-instance_method" title="#start_point (instance method)">#<strong>start_point</strong>  &#x21d2; Object </a>
     
 
@@ -574,7 +367,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'>
+    <span class="summary_desc"><div class='inline'><p>Override start_point to calculate from source.</p>
 </div></span>
   
 </li>
@@ -620,7 +413,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'>
+    <span class="summary_desc"><div class='inline'><p>Override text to use Citrus match string.</p>
 </div></span>
   
 </li>
@@ -652,6 +445,17 @@
     </ul>
   
 
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Node.html#<=>-instance_method" title="TreeHaver::Base::Node#&lt;=&gt; (method)">#<=></a></span>, <span class='object_link'><a href="../../Base/Node.html#==-instance_method" title="TreeHaver::Base::Node#== (method)">#==</a></span>, <span class='object_link'><a href="../../Base/Node.html#child_by_field_name-instance_method" title="TreeHaver::Base::Node#child_by_field_name (method)">#child_by_field_name</a></span>, <span class='object_link'><a href="../../Base/Node.html#each-instance_method" title="TreeHaver::Base::Node#each (method)">#each</a></span>, <span class='object_link'><a href="../../Base/Node.html#end_line-instance_method" title="TreeHaver::Base::Node#end_line (method)">#end_line</a></span>, <span class='object_link'><a href="../../Base/Node.html#first_child-instance_method" title="TreeHaver::Base::Node#first_child (method)">#first_child</a></span>, <span class='object_link'><a href="../../Base/Node.html#has_error%3F-instance_method" title="TreeHaver::Base::Node#has_error? (method)">#has_error?</a></span>, <span class='object_link'><a href="../../Base/Node.html#inspect-instance_method" title="TreeHaver::Base::Node#inspect (method)">#inspect</a></span>, <span class='object_link'><a href="../../Base/Node.html#last_child-instance_method" title="TreeHaver::Base::Node#last_child (method)">#last_child</a></span>, <span class='object_link'><a href="../../Base/Node.html#missing%3F-instance_method" title="TreeHaver::Base::Node#missing? (method)">#missing?</a></span>, <span class='object_link'><a href="../../Base/Node.html#named%3F-instance_method" title="TreeHaver::Base::Node#named? (method)">#named?</a></span>, <span class='object_link'><a href="../../Base/Node.html#next_sibling-instance_method" title="TreeHaver::Base::Node#next_sibling (method)">#next_sibling</a></span>, <span class='object_link'><a href="../../Base/Node.html#parent-instance_method" title="TreeHaver::Base::Node#parent (method)">#parent</a></span>, <span class='object_link'><a href="../../Base/Node.html#prev_sibling-instance_method" title="TreeHaver::Base::Node#prev_sibling (method)">#prev_sibling</a></span>, <span class='object_link'><a href="../../Base/Node.html#source_position-instance_method" title="TreeHaver::Base::Node#source_position (method)">#source_position</a></span>, <span class='object_link'><a href="../../Base/Node.html#start_line-instance_method" title="TreeHaver::Base::Node#start_line (method)">#start_line</a></span>, <span class='object_link'><a href="../../Base/Node.html#to_s-instance_method" title="TreeHaver::Base::Node#to_s (method)">#to_s</a></span></p>
 
   
   <div id="constructor_details" class="method_details_list">
@@ -686,17 +490,17 @@
       <pre class="lines">
 
 
-287
-288
-289
-290</pre>
+318
+319
+320
+321</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 287</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 318</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_match'>match</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
   <span class='ivar'>@match</span> <span class='op'>=</span> <span class='id identifier rubyid_match'>match</span>
-  <span class='ivar'>@source</span> <span class='op'>=</span> <span class='id identifier rubyid_source'>source</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_match'>match</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -739,61 +543,15 @@
       <pre class="lines">
 
 
-285
-286
-287</pre>
+316
+317
+318</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 285</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 316</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_match'>match</span>
   <span class='ivar'>@match</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="source-instance_method">
-  
-    #<strong>source</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-285
-286
-287</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 285</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_source'>source</span>
-  <span class='ivar'>@source</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -822,7 +580,7 @@
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-
+<p>Override child to handle negative indices properly</p>
 
 
   </div>
@@ -836,17 +594,19 @@
       <pre class="lines">
 
 
-452
-453
-454
-455
-456
-457</pre>
+380
+381
+382
+383
+384
+385
+386</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 452</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 380</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span><span class='period'>.</span><span class='id identifier rubyid_negative?'>negative?</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:matches</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_matches'>matches</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
 
@@ -872,7 +632,7 @@
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-
+<p>Override child_count for efficiency (avoid building full children array)</p>
 
 
   </div>
@@ -886,12 +646,12 @@
       <pre class="lines">
 
 
-448
-449
-450</pre>
+375
+376
+377</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 448</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 375</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_count'>child_count</span>
   <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:matches</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_matches'>matches</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>:</span> <span class='int'>0</span>
@@ -930,63 +690,17 @@
       <pre class="lines">
 
 
-459
-460
-461
-462</pre>
+352
+353
+354
+355</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 459</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 352</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_children'>children</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:matches</span><span class='rparen'>)</span>
   <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_matches'>matches</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_m'>m</span><span class='op'>|</span> <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Citrus::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Citrus::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_m'>m</span><span class='comma'>,</span> <span class='ivar'>@source</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="each-instance_method">
-  
-    #<strong>each</strong>(&amp;block)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-464
-465
-466
-467</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 464</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_to_enum'>to_enum</span><span class='lparen'>(</span><span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
-  <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1022,76 +736,15 @@
       <pre class="lines">
 
 
-396
-397
-398</pre>
+348
+349
+350</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 396</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 348</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
   <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_offset'>offset</span> <span class='op'>+</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="end_line-instance_method">
-  
-    #<strong>end_line</strong>  &#x21d2; <tt>Integer</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get the 1-based line number where this node ends</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>1-based line number</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-418
-419
-420</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 418</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_end_line'>end_line</span>
-  <span class='id identifier rubyid_end_point'>end_point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='int'>1</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1113,7 +766,7 @@
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-
+<p>Override end_point to calculate from source</p>
 
 
   </div>
@@ -1127,321 +780,15 @@
       <pre class="lines">
 
 
-404
-405
-406</pre>
+365
+366
+367</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 404</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 365</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
   <span class='id identifier rubyid_calculate_point'>calculate_point</span><span class='lparen'>(</span><span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_offset'>offset</span> <span class='op'>+</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="first_child-instance_method">
-  
-    #<strong>first_child</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::Citrus::Node (class)">Node</a></span></tt><sup>?</sup> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get the first child node</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::Citrus::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>First child or nil</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-440
-441
-442</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 440</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_first_child'>first_child</span>
-  <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="has_error?-instance_method">
-  
-    #<strong>has_error?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-469
-470
-471</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 469</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
-  <span class='kw'>false</span>  <span class='comment'># Citrus raises on parse error, so successful parse has no errors
-</span><span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="missing?-instance_method">
-  
-    #<strong>missing?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-473
-474
-475</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 473</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
-  <span class='kw'>false</span>  <span class='comment'># Citrus doesn&#39;t have the concept of missing nodes
-</span><span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="named?-instance_method">
-  
-    #<strong>named?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-477
-478
-479</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 477</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
-  <span class='kw'>true</span>  <span class='comment'># Citrus matches are typically &quot;named&quot; in tree-sitter terminology
-</span><span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="source_position-instance_method">
-  
-    #<strong>source_position</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Integer}</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get position information as a hash</p>
-
-<p>Returns a hash with 1-based line numbers and 0-based columns.<br />
-Compatible with *-merge gems’ FileAnalysisBase.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Hash{Symbol =&gt; Integer}</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Position hash</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-428
-429
-430
-431
-432
-433
-434
-435</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 428</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_source_position'>source_position</span>
-  <span class='lbrace'>{</span>
-    <span class='label'>start_line:</span> <span class='id identifier rubyid_start_line'>start_line</span><span class='comma'>,</span>
-    <span class='label'>end_line:</span> <span class='id identifier rubyid_end_line'>end_line</span><span class='comma'>,</span>
-    <span class='label'>start_column:</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>end_column:</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='comma'>,</span>
-  <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1477,76 +824,15 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-392
-393
-394</pre>
+344
+345
+346</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 392</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 344</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
   <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_offset'>offset</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="start_line-instance_method">
-  
-    #<strong>start_line</strong>  &#x21d2; <tt>Integer</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get the 1-based line number where this node starts</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>1-based line number</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-411
-412
-413</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 411</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_start_line'>start_line</span>
-  <span class='id identifier rubyid_start_point'>start_point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='int'>1</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1568,7 +854,7 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-
+<p>Override start_point to calculate from source</p>
 
 
   </div>
@@ -1582,12 +868,12 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-400
-401
-402</pre>
+360
+361
+362</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 400</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 360</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
   <span class='id identifier rubyid_calculate_point'>calculate_point</span><span class='lparen'>(</span><span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_offset'>offset</span><span class='rparen'>)</span>
@@ -1647,32 +933,32 @@ a structural rule (like “table”, “keyvalue”) vs a terminal token<br />
       <pre class="lines">
 
 
-318
-319
-320
-321
-322
-323
-324
-325
-326
-327
-328
-329
-330
-331
-332
-333
-334
-335
-336
-337
-338
-339
-340</pre>
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 318</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 395</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_structural?'>structural?</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:events</span><span class='rparen'>)</span>
@@ -1717,7 +1003,7 @@ a structural rule (like “table”, “keyvalue”) vs a terminal token<br />
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-
+<p>Override text to use Citrus match string</p>
 
 
   </div>
@@ -1731,12 +1017,12 @@ a structural rule (like “table”, “keyvalue”) vs a terminal token<br />
       <pre class="lines">
 
 
-444
-445
-446</pre>
+370
+371
+372</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 444</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 370</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_text'>text</span>
   <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_string'>string</span>
@@ -1802,16 +1088,16 @@ Works with any Citrus grammar without language-specific knowledge.</p>
       <pre class="lines">
 
 
-303
-304
-305
-306
-307
-308
-309</pre>
+336
+337
+338
+339
+340
+341
+342</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 303</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 336</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
   <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>unknown</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:events</span><span class='rparen'>)</span>
@@ -1830,7 +1116,7 @@ Works with any Citrus grammar without language-specific knowledge.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:42 2026 by
+  Generated on Sat Jan 10 22:57:22 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

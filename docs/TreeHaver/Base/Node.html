@@ -160,7 +160,7 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
 
 </div><div id="subclasses">
   <h2>Direct Known Subclasses</h2>
-  <p class="children"><span class='object_link'><a href="../Backends/Prism/Node.html" title="TreeHaver::Backends::Prism::Node (class)">TreeHaver::Backends::Prism::Node</a></span>, <span class='object_link'><a href="../Backends/Psych/Node.html" title="TreeHaver::Backends::Psych::Node (class)">TreeHaver::Backends::Psych::Node</a></span></p>
+  <p class="children"><span class='object_link'><a href="../Backends/Citrus/Node.html" title="TreeHaver::Backends::Citrus::Node (class)">TreeHaver::Backends::Citrus::Node</a></span>, <span class='object_link'><a href="../Backends/Parslet/Node.html" title="TreeHaver::Backends::Parslet::Node (class)">TreeHaver::Backends::Parslet::Node</a></span>, <span class='object_link'><a href="../Backends/Prism/Node.html" title="TreeHaver::Backends::Prism::Node (class)">TreeHaver::Backends::Prism::Node</a></span>, <span class='object_link'><a href="../Backends/Psych/Node.html" title="TreeHaver::Backends::Psych::Node (class)">TreeHaver::Backends::Psych::Node</a></span></p>
 </div>
 
 
@@ -1238,17 +1238,17 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-197
-198
-199
-200
-201
-202
-203
-204</pre>
+204
+205
+206
+207
+208
+209
+210
+211</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 197</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 204</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:start_byte</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:end_byte</span><span class='rparen'>)</span>
@@ -1316,14 +1316,14 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-286
-287
-288
-289
-290</pre>
+293
+294
+295
+296
+297</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 286</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 293</span>
 
 <span class='kw'>def</span> <span class='op'>==</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:type</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:start_byte</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:end_byte</span><span class='rparen'>)</span>
@@ -1348,6 +1348,9 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
   <div class="discussion">
     <p>Get a child node by index</p>
 
+<p>Returns nil for negative indices or indices out of bounds.<br />
+This matches tree-sitter behavior where negative indices are invalid.</p>
+
 
   </div>
 </div>
@@ -1365,7 +1368,7 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       
       
         &mdash;
-        <div class='inline'><p>Child index</p>
+        <div class='inline'><p>Child index (0-based, non-negative)</p>
 </div>
       
     </li>
@@ -1396,14 +1399,20 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-100
-101
-102</pre>
+104
+105
+106
+107
+108
+109</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 100</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 104</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span><span class='period'>.</span><span class='id identifier rubyid_negative?'>negative?</span>
+  <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_child_count'>child_count</span>
+
   <span class='id identifier rubyid_children'>children</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1472,12 +1481,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-176
-177
-178</pre>
+183
+184
+185</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 176</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 183</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_by_field_name'>child_by_field_name</span><span class='lparen'>(</span><span class='id identifier rubyid__name'>_name</span><span class='rparen'>)</span>
   <span class='kw'>nil</span>
@@ -1652,14 +1661,14 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-106
-107
-108
-109
-110</pre>
+113
+114
+115
+116
+117</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 106</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 113</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='id identifier rubyid_to_enum'>to_enum</span><span class='lparen'>(</span><span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block'>block</span>
@@ -1779,18 +1788,18 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-220
-221
-222
-223
-224
-225
-226
 227
-228</pre>
+228
+229
+230
+231
+232
+233
+234
+235</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 220</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 227</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_line'>end_line</span>
   <span class='id identifier rubyid_ep'>ep</span> <span class='op'>=</span> <span class='id identifier rubyid_end_point'>end_point</span>
@@ -1848,12 +1857,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-188
-189
-190</pre>
+195
+196
+197</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 188</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 195</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
   <span class='lbrace'>{</span><span class='label'>row:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='int'>0</span><span class='rbrace'>}</span>
@@ -1901,12 +1910,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-114
-115
-116</pre>
+121
+122
+123</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 114</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 121</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_first_child'>first_child</span>
   <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
@@ -1958,12 +1967,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-155
-156
-157</pre>
+162
+163
+164</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 155</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 162</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
   <span class='kw'>false</span>
@@ -2011,18 +2020,18 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-267
-268
-269
-270
-271
-272
-273
 274
-275</pre>
+275
+276
+277
+278
+279
+280
+281
+282</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 267</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 274</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
   <span class='id identifier rubyid_class_name'>class_name</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>||</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_superclass'>superclass</span><span class='op'>&amp;.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>(anonymous)</span><span class='tstring_end'>&quot;</span></span>
@@ -2076,12 +2085,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-120
-121
-122</pre>
+127
+128
+129</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 120</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 127</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_last_child'>last_child</span>
   <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span>
@@ -2133,12 +2142,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-161
-162
-163</pre>
+168
+169
+170</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 161</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 168</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
   <span class='kw'>false</span>
@@ -2194,12 +2203,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-146
-147
-148</pre>
+153
+154
+155</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 146</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 153</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
   <span class='kw'>true</span>
@@ -2251,12 +2260,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-134
-135
-136</pre>
+141
+142
+143</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 134</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 141</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_next_sibling'>next_sibling</span>
   <span class='kw'>nil</span>
@@ -2308,12 +2317,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-128
-129
-130</pre>
+135
+136
+137</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 128</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 135</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
   <span class='kw'>nil</span>
@@ -2365,12 +2374,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-140
-141
-142</pre>
+147
+148
+149</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 140</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 147</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prev_sibling'>prev_sibling</span>
   <span class='kw'>nil</span>
@@ -2418,13 +2427,6 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-232
-233
-234
-235
-236
-237
-238
 239
 240
 241
@@ -2449,10 +2451,17 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
 260
 261
 262
-263</pre>
+263
+264
+265
+266
+267
+268
+269
+270</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 232</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 239</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_source_position'>source_position</span>
   <span class='id identifier rubyid_sp'>sp</span> <span class='op'>=</span> <span class='id identifier rubyid_start_point'>start_point</span>
@@ -2599,18 +2608,18 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-208
-209
-210
-211
-212
-213
-214
 215
-216</pre>
+216
+217
+218
+219
+220
+221
+222
+223</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 208</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 215</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_line'>start_line</span>
   <span class='id identifier rubyid_sp'>sp</span> <span class='op'>=</span> <span class='id identifier rubyid_start_point'>start_point</span>
@@ -2668,12 +2677,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-182
-183
-184</pre>
+189
+190
+191</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 182</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 189</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
   <span class='lbrace'>{</span><span class='label'>row:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>column:</span> <span class='int'>0</span><span class='rbrace'>}</span>
@@ -2725,14 +2734,14 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-167
-168
-169
-170
-171</pre>
+174
+175
+176
+177
+178</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 167</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 174</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_text'>text</span>
   <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_source'>source</span>
@@ -2782,12 +2791,12 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
       <pre class="lines">
 
 
-279
-280
-281</pre>
+286
+287
+288</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 279</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/base/node.rb', line 286</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='id identifier rubyid_text'>text</span>
@@ -2872,7 +2881,7 @@ They return raw <code>::TreeSitter::Node</code> objects which are wrapped by<br 
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

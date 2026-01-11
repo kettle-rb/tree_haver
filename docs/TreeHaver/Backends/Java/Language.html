@@ -62,7 +62,7 @@
       <div id="content"><h1>Class: TreeHaver::Backends::Java::Language
   
   
-  
+  <span class="private note title">Private</span>
 </h1>
 <div class="box_info">
   
@@ -106,7 +106,18 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    <p>Wrapper for java-tree-sitter Language</p>
+    <p class="note private">
+  <strong>This class is part of a private API.</strong>
+  You should avoid using this class if possible, as it may be removed or be changed in the future.
+</p>
+<p>Java backend language wrapper (raw backend language)</p>
+
+<p>This is a <strong>raw backend language</strong> that wraps a jtreesitter Language object<br />
+via JRuby’s Java interop. It is used to configure the parser for a specific<br />
+grammar (e.g., TOML, JSON, etc.).</p>
+
+<p>Unlike <code>TreeHaver::Language</code> (which is a module with factory methods), this<br />
+class holds the actual loaded language data from a grammar shared library.</p>
 
 <p>:nocov:<br />
 All Java backend implementation classes require JRuby and cannot be tested on MRI/CRuby.<br />
@@ -120,6 +131,8 @@ JRuby-specific CI jobs would test this code.</p>
 
   <p class="tag_title">See Also:</p>
   <ul class="see">
+    
+      <li><span class='object_link'><a href="../../Language.html" title="TreeHaver::Language (module)">The factory module users should interact with</a></span></li>
     
       <li><a href="https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Language.html" target="_parent" title="https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Language.html">https://tree-sitter.github.io/java-tree-sitter/io/github/treesitter/jtreesitter/Language.html</a></li>
     
@@ -151,7 +164,7 @@ JRuby-specific CI jobs would test this code.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>The backend this language is for.</p>
@@ -179,10 +192,10 @@ JRuby-specific CI jobs would test this code.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Returns the value of attribute impl.</p>
+    <span class="summary_desc"><div class='inline'>
 </div></span>
   
 </li>
@@ -207,7 +220,7 @@ JRuby-specific CI jobs would test this code.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>The path this language was loaded from (if known).</p>
@@ -235,7 +248,7 @@ JRuby-specific CI jobs would test this code.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>The symbol name (if known).</p>
@@ -273,7 +286,7 @@ JRuby-specific CI jobs would test this code.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'>
@@ -296,7 +309,7 @@ JRuby-specific CI jobs would test this code.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Load a language by name from java-tree-sitter grammar JARs.</p>
@@ -328,7 +341,7 @@ JRuby-specific CI jobs would test this code.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Compare languages for equality.</p>
@@ -351,7 +364,7 @@ JRuby-specific CI jobs would test this code.</p>
   
   
   
-  
+  <span class="private note title">private</span>
 
   
     <span class="summary_desc"><div class='inline'><p>Hash value for this language (for use in Sets/Hashes).</p>
@@ -421,15 +434,15 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-256
-257
-258
-259
-260
-261</pre>
+274
+275
+276
+277
+278
+279</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 256</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 274</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_impl'>impl</span><span class='comma'>,</span> <span class='label'>path:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@impl</span> <span class='op'>=</span> <span class='id identifier rubyid_impl'>impl</span>
@@ -460,7 +473,11 @@ JRuby-specific CI jobs would test this code.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>The backend this language is for</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>The backend this language is for</p>
 
 
   </div>
@@ -487,12 +504,12 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-245
-246
-247</pre>
+263
+264
+265</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 245</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 263</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_backend'>backend</span>
   <span class='ivar'>@backend</span>
@@ -515,7 +532,11 @@ JRuby-specific CI jobs would test this code.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Returns the value of attribute impl.</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+
 
 
   </div>
@@ -529,12 +550,12 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-241
-242
-243</pre>
+259
+260
+261</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 241</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 259</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_impl'>impl</span>
   <span class='ivar'>@impl</span>
@@ -557,7 +578,11 @@ JRuby-specific CI jobs would test this code.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>The path this language was loaded from (if known)</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>The path this language was loaded from (if known)</p>
 
 
   </div>
@@ -584,12 +609,12 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-249
-250
-251</pre>
+267
+268
+269</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 249</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 267</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_path'>path</span>
   <span class='ivar'>@path</span>
@@ -612,7 +637,11 @@ JRuby-specific CI jobs would test this code.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>The symbol name (if known)</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>The symbol name (if known)</p>
 
 
   </div>
@@ -639,12 +668,12 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-253
-254
-255</pre>
+271
+272
+273</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 253</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 271</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_symbol'>symbol</span>
   <span class='ivar'>@symbol</span>
@@ -676,7 +705,11 @@ JRuby-specific CI jobs would test this code.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+
 
 
   </div>
@@ -703,24 +736,6 @@ JRuby-specific CI jobs would test this code.</p>
       <pre class="lines">
 
 
-318
-319
-320
-321
-322
-323
-324
-325
-326
-327
-328
-329
-330
-331
-332
-333
-334
-335
 336
 337
 338
@@ -773,10 +788,28 @@ JRuby-specific CI jobs would test this code.</p>
 385
 386
 387
-388</pre>
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 318</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 336</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_from_library'>from_library</span><span class='lparen'>(</span><span class='id identifier rubyid_path'>path</span><span class='comma'>,</span> <span class='label'>symbol:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Java backend not available</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Java.html#available%3F-class_method" title="TreeHaver::Backends::Java.available? (method)">available?</a></span></span>
@@ -865,7 +898,11 @@ JRuby-specific CI jobs would test this code.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Load a language by name from java-tree-sitter grammar JARs</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Load a language by name from java-tree-sitter grammar JARs</p>
 
 <p>This method loads grammars that are packaged as java-tree-sitter JARs<br />
 from Maven Central. These JARs include the native grammar library<br />
@@ -946,24 +983,6 @@ pre-built for Java’s Foreign Function API.</p>
       <pre class="lines">
 
 
-404
-405
-406
-407
-408
-409
-410
-411
-412
-413
-414
-415
-416
-417
-418
-419
-420
-421
 422
 423
 424
@@ -993,10 +1012,28 @@ pre-built for Java’s Foreign Function API.</p>
 448
 449
 450
-451</pre>
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 404</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 422</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_load_by_name'>load_by_name</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Java backend not available</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="../Java.html" title="TreeHaver::Backends::Java (module)">Java</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../Java.html#available%3F-class_method" title="TreeHaver::Backends::Java.available? (method)">available?</a></span></span>
@@ -1068,7 +1105,11 @@ pre-built for Java’s Foreign Function API.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Compare languages for equality</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Compare languages for equality</p>
 
 <p>Java languages are equal if they have the same backend, path, and symbol.<br />
 Path and symbol uniquely identify a loaded language.</p>
@@ -1121,19 +1162,19 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-270
-271
-272
-273
-274
-275
-276
-277
-278
-279</pre>
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 270</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 288</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Java::Language (class)">Language</a></span></span><span class='rparen'>)</span>
@@ -1161,7 +1202,11 @@ Path and symbol uniquely identify a loaded language.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p>Hash value for this language (for use in Sets/Hashes)</p>
+    <p class="note private">
+  <strong>This method is part of a private API.</strong>
+  You should avoid using this method if possible, as it may be removed or be changed in the future.
+</p>
+<p>Hash value for this language (for use in Sets/Hashes)</p>
 
 
   </div>
@@ -1188,12 +1233,12 @@ Path and symbol uniquely identify a loaded language.</p>
       <pre class="lines">
 
 
-283
-284
-285</pre>
+301
+302
+303</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 283</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/java.rb', line 301</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_hash'>hash</span>
   <span class='lbracket'>[</span><span class='ivar'>@backend</span><span class='comma'>,</span> <span class='ivar'>@path</span><span class='comma'>,</span> <span class='ivar'>@symbol</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span>
@@ -1208,7 +1253,7 @@ Path and symbol uniquely identify a loaded language.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

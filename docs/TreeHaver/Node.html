@@ -1925,7 +1925,7 @@ equality for testing and collection membership, not position-based equality.</p>
       <div class="method_details ">
   <h3 class="signature " id="end_point-instance_method">
   
-    #<strong>end_point</strong>  &#x21d2; <tt><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></tt> 
+    #<strong>end_point</strong>  &#x21d2; <tt><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></tt> 
   
 
   
@@ -1946,7 +1946,7 @@ equality for testing and collection membership, not position-based equality.</p>
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></tt>)</span>
       
       
       
@@ -1994,17 +1994,17 @@ equality for testing and collection membership, not position-based equality.</p>
     <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_end_point'>end_point</span>
     <span class='comment'># Handle both Point objects and hashes
 </span>    <span class='kw'>if</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
-      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
     <span class='kw'>else</span>
-      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
   <span class='kw'>elsif</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:end_position</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_end_position'>end_position</span>
     <span class='comment'># Handle both Point objects and hashes
 </span>    <span class='kw'>if</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
-      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
     <span class='kw'>else</span>
-      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="TreeHaver::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backend node does not support end_point/end_position</span><span class='tstring_end'>&quot;</span></span>
@@ -3157,7 +3157,7 @@ This is useful for error messages and matching with editor line numbers.</p>
       <div class="method_details ">
   <h3 class="signature " id="start_point-instance_method">
   
-    #<strong>start_point</strong>  &#x21d2; <tt><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></tt> 
+    #<strong>start_point</strong>  &#x21d2; <tt><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></tt> 
   
 
   
@@ -3178,7 +3178,7 @@ This is useful for error messages and matching with editor line numbers.</p>
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></tt>)</span>
       
       
       
@@ -3226,17 +3226,17 @@ This is useful for error messages and matching with editor line numbers.</p>
     <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_start_point'>start_point</span>
     <span class='comment'># Handle both Point objects and hashes
 </span>    <span class='kw'>if</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
-      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
     <span class='kw'>else</span>
-      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
   <span class='kw'>elsif</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:start_position</span><span class='rparen'>)</span>
     <span class='id identifier rubyid_point'>point</span> <span class='op'>=</span> <span class='ivar'>@inner_node</span><span class='period'>.</span><span class='id identifier rubyid_start_position'>start_position</span>
     <span class='comment'># Handle both Point objects and hashes
 </span>    <span class='kw'>if</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
-      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='rparen'>)</span>
     <span class='kw'>else</span>
-      <span class='const'><span class='object_link'><a href="Point.html" title="TreeHaver::Point (class)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Point.html#initialize-instance_method" title="TreeHaver::Point#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
+      <span class='const'><span class='object_link'><a href="../TreeHaver.html#Point-constant" title="TreeHaver::Point (constant)">Point</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_row'>row</span><span class='comma'>,</span> <span class='id identifier rubyid_point'>point</span><span class='period'>.</span><span class='id identifier rubyid_column'>column</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Error.html" title="TreeHaver::Error (class)">Error</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Backend node does not support start_point/start_position</span><span class='tstring_end'>&quot;</span></span>
@@ -3553,7 +3553,7 @@ while anonymous nodes are syntax/punctuation (e.g., [, =, whitespace).</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:41 2026 by
+  Generated on Sat Jan 10 22:57:21 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

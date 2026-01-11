@@ -69,10 +69,12 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName">Object</span>
+      <span class="inheritName"><span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></span>
       
         <ul class="fullTree">
           <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></li>
           
             <li class="next">TreeHaver::Backends::Parslet::Node</li>
           
@@ -86,11 +88,6 @@
   
   
   
-  
-  <dl>
-      <dt>Includes:</dt>
-      <dd>Comparable, Enumerable</dd>
-  </dl>
   
   
 
@@ -124,6 +121,9 @@
 
 <p>This wrapper normalizes these into a tree-sitter-like node structure.</p>
 
+<p>Inherits from Base::Node to get shared methods like #first_child, #last_child,<br />
+#to_s, #inspect, #==, #&lt;=&gt;, #source_position, #start_line, #end_line, etc.</p>
+
 
   </div>
 </div>
@@ -141,34 +141,6 @@
   <span class="summary_signature">
     
       <a href="#node_type-instance_method" title="#node_type (instance method)">#<strong>node_type</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'>
-</div></span>
-  
-</li>
-
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#source-instance_method" title="#source (instance method)">#<strong>source</strong>  &#x21d2; Object </a>
     
 
     
@@ -225,6 +197,11 @@
 
 
 
+  
+  
+  <h3 class="inherited">Attributes inherited from <span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Node.html#inner_node-instance_method" title="TreeHaver::Base::Node#inner_node (method)">#inner_node</a></span>, <span class='object_link'><a href="../../Base/Node.html#lines-instance_method" title="TreeHaver::Base::Node#lines (method)">#lines</a></span>, <span class='object_link'><a href="../../Base/Node.html#source-instance_method" title="TreeHaver::Base::Node#source (method)">#source</a></span></p>
+
 
   
     <h2>
@@ -251,7 +228,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Get child at index.</p>
+    <span class="summary_desc"><div class='inline'><p>Override child to handle negative indices properly.</p>
 </div></span>
   
 </li>
@@ -274,7 +251,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Get number of children.</p>
+    <span class="summary_desc"><div class='inline'><p>Override child_count for efficiency (avoid building full children array).</p>
 </div></span>
   
 </li>
@@ -306,29 +283,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#each-instance_method" title="#each (instance method)">#<strong>each</strong>(&amp;block)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Iterate over children.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#end_byte-instance_method" title="#end_byte (instance method)">#<strong>end_byte</strong>  &#x21d2; Integer </a>
     
 
@@ -352,7 +306,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#end_line-instance_method" title="#end_line (instance method)">#<strong>end_line</strong>  &#x21d2; Integer </a>
+      <a href="#end_point-instance_method" title="#end_point (instance method)">#<strong>end_point</strong>  &#x21d2; Hash{Symbol =&gt; Integer} </a>
     
 
     
@@ -366,76 +320,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Get the 1-based line number where this node ends.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#end_point-instance_method" title="#end_point (instance method)">#<strong>end_point</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#first_child-instance_method" title="#first_child (instance method)">#<strong>first_child</strong>  &#x21d2; Node<sup>?</sup> </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get the first child node.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#has_error%3F-instance_method" title="#has_error? (instance method)">#<strong>has_error?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Check for parse errors.</p>
+    <span class="summary_desc"><div class='inline'><p>Override end_point to calculate from source.</p>
 </div></span>
   
 </li>
@@ -469,29 +354,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#missing%3F-instance_method" title="#missing? (instance method)">#<strong>missing?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Check if node is missing.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#named%3F-instance_method" title="#named? (instance method)">#<strong>named?</strong>  &#x21d2; Boolean </a>
     
 
@@ -507,29 +369,6 @@
 
   
     <span class="summary_desc"><div class='inline'><p>Check if node is named.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#source_position-instance_method" title="#source_position (instance method)">#<strong>source_position</strong>  &#x21d2; Hash{Symbol =&gt; Integer} </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'><p>Get position information as a hash.</p>
 </div></span>
   
 </li>
@@ -561,7 +400,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#start_line-instance_method" title="#start_line (instance method)">#<strong>start_line</strong>  &#x21d2; Integer </a>
+      <a href="#start_point-instance_method" title="#start_point (instance method)">#<strong>start_point</strong>  &#x21d2; Hash{Symbol =&gt; Integer} </a>
     
 
     
@@ -575,30 +414,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Get the 1-based line number where this node starts.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#start_point-instance_method" title="#start_point (instance method)">#<strong>start_point</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  <span class="private note title">private</span>
-
-  
-    <span class="summary_desc"><div class='inline'>
+    <span class="summary_desc"><div class='inline'><p>Override start_point to calculate from source.</p>
 </div></span>
   
 </li>
@@ -644,7 +460,7 @@
   <span class="private note title">private</span>
 
   
-    <span class="summary_desc"><div class='inline'><p>Get the text content of this node.</p>
+    <span class="summary_desc"><div class='inline'><p>Override text to handle Parslet-specific value types.</p>
 </div></span>
   
 </li>
@@ -676,6 +492,17 @@
     </ul>
   
 
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="../../Base/Node.html" title="TreeHaver::Base::Node (class)">TreeHaver::Base::Node</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="../../Base/Node.html#<=>-instance_method" title="TreeHaver::Base::Node#&lt;=&gt; (method)">#<=></a></span>, <span class='object_link'><a href="../../Base/Node.html#==-instance_method" title="TreeHaver::Base::Node#== (method)">#==</a></span>, <span class='object_link'><a href="../../Base/Node.html#child_by_field_name-instance_method" title="TreeHaver::Base::Node#child_by_field_name (method)">#child_by_field_name</a></span>, <span class='object_link'><a href="../../Base/Node.html#each-instance_method" title="TreeHaver::Base::Node#each (method)">#each</a></span>, <span class='object_link'><a href="../../Base/Node.html#end_line-instance_method" title="TreeHaver::Base::Node#end_line (method)">#end_line</a></span>, <span class='object_link'><a href="../../Base/Node.html#first_child-instance_method" title="TreeHaver::Base::Node#first_child (method)">#first_child</a></span>, <span class='object_link'><a href="../../Base/Node.html#has_error%3F-instance_method" title="TreeHaver::Base::Node#has_error? (method)">#has_error?</a></span>, <span class='object_link'><a href="../../Base/Node.html#inspect-instance_method" title="TreeHaver::Base::Node#inspect (method)">#inspect</a></span>, <span class='object_link'><a href="../../Base/Node.html#last_child-instance_method" title="TreeHaver::Base::Node#last_child (method)">#last_child</a></span>, <span class='object_link'><a href="../../Base/Node.html#missing%3F-instance_method" title="TreeHaver::Base::Node#missing? (method)">#missing?</a></span>, <span class='object_link'><a href="../../Base/Node.html#next_sibling-instance_method" title="TreeHaver::Base::Node#next_sibling (method)">#next_sibling</a></span>, <span class='object_link'><a href="../../Base/Node.html#parent-instance_method" title="TreeHaver::Base::Node#parent (method)">#parent</a></span>, <span class='object_link'><a href="../../Base/Node.html#prev_sibling-instance_method" title="TreeHaver::Base::Node#prev_sibling (method)">#prev_sibling</a></span>, <span class='object_link'><a href="../../Base/Node.html#source_position-instance_method" title="TreeHaver::Base::Node#source_position (method)">#source_position</a></span>, <span class='object_link'><a href="../../Base/Node.html#start_line-instance_method" title="TreeHaver::Base::Node#start_line (method)">#start_line</a></span>, <span class='object_link'><a href="../../Base/Node.html#to_s-instance_method" title="TreeHaver::Base::Node#to_s (method)">#to_s</a></span></p>
 
   
   <div id="constructor_details" class="method_details_list">
@@ -710,21 +537,21 @@
       <pre class="lines">
 
 
-304
-305
-306
-307
-308
-309</pre>
+333
+334
+335
+336
+337
+338</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 304</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 333</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='comma'>,</span> <span class='id identifier rubyid_source'>source</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>key:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='ivar'>@value</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span>
-  <span class='ivar'>@source</span> <span class='op'>=</span> <span class='id identifier rubyid_source'>source</span>
   <span class='ivar'>@node_type</span> <span class='op'>=</span> <span class='id identifier rubyid_type'>type</span> <span class='op'>||</span> <span class='id identifier rubyid_infer_type'>infer_type</span><span class='lparen'>(</span><span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
   <span class='ivar'>@key</span> <span class='op'>=</span> <span class='id identifier rubyid_key'>key</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_value'>value</span><span class='comma'>,</span> <span class='label'>source:</span> <span class='id identifier rubyid_source'>source</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -767,61 +594,15 @@
       <pre class="lines">
 
 
-302
-303
-304</pre>
+331
+332
+333</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 302</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 331</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_node_type'>node_type</span>
   <span class='ivar'>@node_type</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="source-instance_method">
-  
-    #<strong>source</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-302
-303
-304</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 302</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_source'>source</span>
-  <span class='ivar'>@source</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -859,12 +640,12 @@
       <pre class="lines">
 
 
-302
-303
-304</pre>
+331
+332
+333</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 302</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 331</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span>
   <span class='ivar'>@value</span>
@@ -896,7 +677,7 @@
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-<p>Get child at index</p>
+<p>Override child to handle negative indices properly</p>
 
 
   </div>
@@ -946,6 +727,7 @@
       <pre class="lines">
 
 
+438
 439
 440
 441
@@ -960,23 +742,22 @@
 450
 451
 452
-453
-454</pre>
+453</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 439</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 438</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&lt;</span> <span class='int'>0</span>
+  <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span><span class='period'>.</span><span class='id identifier rubyid_negative?'>negative?</span>
 
   <span class='kw'>case</span> <span class='ivar'>@value</span>
   <span class='kw'>when</span> <span class='const'>Hash</span>
     <span class='id identifier rubyid_keys'>keys</span> <span class='op'>=</span> <span class='ivar'>@value</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span>
-    <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
+    <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
     <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_keys'>keys</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span>
     <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Parslet::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Parslet::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='ivar'>@value</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='ivar'>@source</span><span class='comma'>,</span> <span class='label'>key:</span> <span class='id identifier rubyid_key'>key</span><span class='rparen'>)</span>
   <span class='kw'>when</span> <span class='const'>Array</span>
-    <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='ivar'>@value</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
+    <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='ivar'>@value</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
     <span class='const'><span class='object_link'><a href="" title="TreeHaver::Backends::Parslet::Node (class)">Node</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="TreeHaver::Backends::Parslet::Node#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='ivar'>@value</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='ivar'>@source</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>element</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>else</span>
     <span class='kw'>nil</span>
@@ -1002,7 +783,7 @@
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-<p>Get number of children</p>
+<p>Override child_count for efficiency (avoid building full children array)</p>
 
 
   </div>
@@ -1033,19 +814,19 @@
       <pre class="lines">
 
 
-424
-425
-426
-427
-428
-429
-430
-431
-432
-433</pre>
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 424</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 457</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child_count'>child_count</span>
   <span class='kw'>case</span> <span class='ivar'>@value</span>
@@ -1108,19 +889,19 @@
       <pre class="lines">
 
 
-459
-460
-461
-462
-463
-464
-465
-466
-467
-468</pre>
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 459</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 395</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_children'>children</span>
   <span class='kw'>case</span> <span class='ivar'>@value</span>
@@ -1131,52 +912,6 @@
   <span class='kw'>else</span>
     <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="each-instance_method">
-  
-    #<strong>each</strong>(&amp;block)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Iterate over children</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-471
-472
-473
-474</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 471</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='id identifier rubyid_to_enum'>to_enum</span><span class='lparen'>(</span><span class='id identifier rubyid___method__'>__method__</span><span class='rparen'>)</span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
-  <span class='id identifier rubyid_children'>children</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1229,25 +964,25 @@
       <pre class="lines">
 
 
-344
-345
-346
-347
-348
-349
-350
-351
-352
-353
-354
-355
-356
-357
-358
-359</pre>
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 344</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 375</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_byte'>end_byte</span>
   <span class='kw'>case</span> <span class='ivar'>@value</span>
@@ -1271,9 +1006,9 @@
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="end_line-instance_method">
+  <h3 class="signature " id="end_point-instance_method">
   
-    #<strong>end_line</strong>  &#x21d2; <tt>Integer</tt> 
+    #<strong>end_point</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Integer}</tt> 
   
 
   
@@ -1285,7 +1020,7 @@
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-<p>Get the 1-based line number where this node ends</p>
+<p>Override end_point to calculate from source</p>
 
 
   </div>
@@ -1298,12 +1033,12 @@
     <li>
       
       
-        <span class='type'>(<tt>Integer</tt>)</span>
+        <span class='type'>(<tt>Hash{Symbol =&gt; Integer}</tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>1-based line number</p>
+        <div class='inline'><p>0, column: 0</p>
 </div>
       
     </li>
@@ -1316,246 +1051,15 @@
       <pre class="lines">
 
 
-379
-380
-381</pre>
+416
+417
+418</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 379</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_end_line'>end_line</span>
-  <span class='id identifier rubyid_end_point'>end_point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='int'>1</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="end_point-instance_method">
-  
-    #<strong>end_point</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-365
-366
-367</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 365</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 416</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_end_point'>end_point</span>
   <span class='id identifier rubyid_calculate_point'>calculate_point</span><span class='lparen'>(</span><span class='id identifier rubyid_end_byte'>end_byte</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="first_child-instance_method">
-  
-    #<strong>first_child</strong>  &#x21d2; <tt><span class='object_link'><a href="" title="TreeHaver::Backends::Parslet::Node (class)">Node</a></span></tt><sup>?</sup> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get the first child node</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="" title="TreeHaver::Backends::Parslet::Node (class)">Node</a></span></tt>, <tt>nil</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>First child or nil</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-401
-402
-403</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 401</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_first_child'>first_child</span>
-  <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="has_error?-instance_method">
-  
-    #<strong>has_error?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Check for parse errors</p>
-
-<p>Parslet raises on parse error, so successful parse has no errors.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>always false for successful parse</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-481
-482
-483</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 481</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_has_error?'>has_error?</span>
-  <span class='kw'>false</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="missing?-instance_method">
-  
-    #<strong>missing?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Check if node is missing</p>
-
-<p>Parslet doesn’t have the concept of missing nodes.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>always false</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-490
-491
-492</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 490</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_missing?'>missing?</span>
-  <span class='kw'>false</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1610,89 +1114,15 @@
       <pre class="lines">
 
 
-499
-500
-501</pre>
+473
+474
+475</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 499</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 473</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_named?'>named?</span>
   <span class='op'>!</span><span class='ivar'>@key</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='ivar'>@value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="source_position-instance_method">
-  
-    #<strong>source_position</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Integer}</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-<p>Get position information as a hash</p>
-
-<p>Returns a hash with 1-based line numbers and 0-based columns.<br />
-Compatible with *-merge gems’ FileAnalysisBase.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Hash{Symbol =&gt; Integer}</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>Position hash</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-389
-390
-391
-392
-393
-394
-395
-396</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 389</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_source_position'>source_position</span>
-  <span class='lbrace'>{</span>
-    <span class='label'>start_line:</span> <span class='id identifier rubyid_start_line'>start_line</span><span class='comma'>,</span>
-    <span class='label'>end_line:</span> <span class='id identifier rubyid_end_line'>end_line</span><span class='comma'>,</span>
-    <span class='label'>start_column:</span> <span class='id identifier rubyid_start_point'>start_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>end_column:</span> <span class='id identifier rubyid_end_point'>end_point</span><span class='lbracket'>[</span><span class='symbol'>:column</span><span class='rbracket'>]</span><span class='comma'>,</span>
-  <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1745,25 +1175,25 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-326
-327
-328
-329
-330
-331
-332
-333
-334
-335
-336
-337
-338
-339
-340
-341</pre>
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 326</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 357</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_byte'>start_byte</span>
   <span class='kw'>case</span> <span class='ivar'>@value</span>
@@ -1787,9 +1217,9 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="start_line-instance_method">
+  <h3 class="signature " id="start_point-instance_method">
   
-    #<strong>start_line</strong>  &#x21d2; <tt>Integer</tt> 
+    #<strong>start_point</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Integer}</tt> 
   
 
   
@@ -1801,7 +1231,7 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-<p>Get the 1-based line number where this node starts</p>
+<p>Override start_point to calculate from source</p>
 
 
   </div>
@@ -1814,12 +1244,12 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
     <li>
       
       
-        <span class='type'>(<tt>Integer</tt>)</span>
+        <span class='type'>(<tt>Hash{Symbol =&gt; Integer}</tt>)</span>
       
       
       
         &mdash;
-        <div class='inline'><p>1-based line number</p>
+        <div class='inline'><p>0, column: 0</p>
 </div>
       
     </li>
@@ -1832,56 +1262,12 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-372
-373
-374</pre>
+410
+411
+412</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 372</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_start_line'>start_line</span>
-  <span class='id identifier rubyid_start_point'>start_point</span><span class='lbracket'>[</span><span class='symbol'>:row</span><span class='rbracket'>]</span> <span class='op'>+</span> <span class='int'>1</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="start_point-instance_method">
-  
-    #<strong>start_point</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p class="note private">
-  <strong>This method is part of a private API.</strong>
-  You should avoid using this method if possible, as it may be removed or be changed in the future.
-</p>
-
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-361
-362
-363</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 361</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 410</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_start_point'>start_point</span>
   <span class='id identifier rubyid_calculate_point'>calculate_point</span><span class='lparen'>(</span><span class='id identifier rubyid_start_byte'>start_byte</span><span class='rparen'>)</span>
@@ -1937,12 +1323,12 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-506
-507
-508</pre>
+480
+481
+482</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 506</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 480</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_structural?'>structural?</span>
   <span class='ivar'>@value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Hash</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='ivar'>@value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span>
@@ -1967,7 +1353,7 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
   <strong>This method is part of a private API.</strong>
   You should avoid using this method if possible, as it may be removed or be changed in the future.
 </p>
-<p>Get the text content of this node</p>
+<p>Override text to handle Parslet-specific value types</p>
 
 
   </div>
@@ -1998,21 +1384,21 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-408
-409
-410
-411
-412
-413
-414
-415
-416
-417
-418
-419</pre>
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 408</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 422</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_text'>text</span>
   <span class='kw'>case</span> <span class='ivar'>@value</span>
@@ -2084,12 +1470,12 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
       <pre class="lines">
 
 
-319
-320
-321</pre>
+350
+351
+352</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 319</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/parslet.rb', line 350</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
   <span class='ivar'>@node_type</span>
@@ -2104,7 +1490,7 @@ Compatible with *-merge gems’ FileAnalysisBase.</p>
 </div>
 
       <div id="footer">
-  Generated on Fri Jan  9 22:13:42 2026 by
+  Generated on Sat Jan 10 22:57:22 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
