@@ -7920,21 +7920,7 @@ NOTE: [kettle-readme-backers](https://github.com/kettle-rb/tree_haver/blob/main/
 
 
 <!-- OPENCOLLECTIVE-INDIVIDUALS:START -->
-
-
-
-
-
-
-
-No backers yet. Be the first\!
-
-
-
-
-
-
-
+No backers yet. Be the first!
 <!-- OPENCOLLECTIVE-INDIVIDUALS:END -->
 
 
@@ -8000,21 +7986,7 @@ NOTE: [kettle-readme-backers](https://github.com/kettle-rb/tree_haver/blob/main/
 
 
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:START -->
-
-
-
-
-
-
-
-No sponsors yet. Be the first\!
-
-
-
-
-
-
-
+No sponsors yet. Be the first!
 <!-- OPENCOLLECTIVE-ORGANIZATIONS:END -->
 
 
