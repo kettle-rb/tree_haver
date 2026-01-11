@@ -208,6 +208,15 @@ Please file a bug if you notice a violation of semantic versioning.</p>
     </ul>
   </li>
   <li>
+<strong>RSpec Dependency Tags</strong>: Added <code>toml_gem_available?</code> method and updated <code>any_toml_backend_available?</code>
+    <ul>
+      <li>
+<code>:toml_gem</code> tag for specs requiring the <code>toml</code> gem to be available</li>
+      <li>
+<code>:not_toml_gem</code> negated tag for specs that should skip when the <code>toml</code> gem is not available</li>
+    </ul>
+  </li>
+  <li>
 <strong>ParsletGrammarFinder</strong>: Utility for discovering and registering Parslet grammar gems
     <ul>
       <li>
@@ -225,9 +234,6 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 <strong>TreeHaver.register_language</strong>: Extended with <code>grammar_class:</code> parameter for Parslet grammars</li>
   <li>
 <strong>TreeHaver.parser_for</strong>: Extended with <code>parslet_config:</code> parameter for explicit Parslet configuration</li>
-  <li>
-<strong>RSpec Dependency Tags</strong>: Added <code>toml_gem_available?</code> method and updated <code>any_toml_backend_available?</code>
-</li>
   <li>
 <code>MRI::Language#language_name</code> / <code>#name</code> - Derive language name from symbol or path</li>
   <li>
@@ -2274,7 +2280,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Sat Jan 10 22:57:20 2026 by
+  Generated on Sun Jan 11 01:40:33 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

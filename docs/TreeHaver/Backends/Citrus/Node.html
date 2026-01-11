@@ -606,7 +606,7 @@
       <pre class="code"><span class="info file"># File 'lib/tree_haver/backends/citrus.rb', line 380</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span><span class='period'>.</span><span class='id identifier rubyid_negative?'>negative?</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span><span class='period'>.</span><span class='id identifier rubyid_negative?'>negative?</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:matches</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='ivar'>@match</span><span class='period'>.</span><span class='id identifier rubyid_matches'>matches</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
 
@@ -1116,7 +1116,7 @@ Works with any Citrus grammar without language-specific knowledge.</p>
 </div>
 
       <div id="footer">
-  Generated on Sat Jan 10 22:57:22 2026 by
+  Generated on Sun Jan 11 01:40:35 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

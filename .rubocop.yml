@@ -32,4 +32,5 @@ ThreadSafety/NewThread:
   Enabled: false
 
 Layout/TrailingEmptyLines:
-  EnforcedStyle: final_blank_line
+  # Confusingly, final_blank_line means two blank lines, and final_newline means one.
+  EnforcedStyle: final_newline
