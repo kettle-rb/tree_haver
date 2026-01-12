@@ -248,7 +248,7 @@ RSpec.describe TreeHaver::RSpec::TestableNode do
     end
 
     it "references TreeHaver::RSpec::TestableNode" do
-      expect(TestableNode).to eq(TreeHaver::RSpec::TestableNode)
+      expect(TestableNode).to eq(described_class)
     end
   end
 end
