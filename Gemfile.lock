@@ -30,7 +30,7 @@ GIT
 PATH
   remote: .
   specs:
-    tree_haver (5.0.0)
+    tree_haver (5.0.1)
       version_gem (~> 1.1, >= 1.1.9)
 
 GEM
@@ -536,7 +536,7 @@ CHECKSUMS
   timecop-rspec (1.0.3) sha256=005f14841bb606dcaefb060e321b5388e2e59537742bee8b3a9a9a40e598fab9
   toml (0.3.0) sha256=0a91d0f76a9036e84e44f95693b12f58d358c1df3ac8e3b5271f2056ecc6e4b9
   toml-rb (4.1.0) sha256=14456ec4549e4703881bf04b83a56f3264ef99884880092d83c98a2058d95846
-  tree_haver (5.0.0)
+  tree_haver (5.0.1)
   tree_stump (0.1.0)
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   ttfunk (1.8.0) sha256=a7cbc7e489cc46e979dde04d34b5b9e4f5c8f1ee5fc6b1a7be39b829919d20ca

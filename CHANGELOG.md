@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [5.0.1] - 2026-01-11
+
+- TAG: [v5.0.1][5.0.1t]
+- COVERAGE: 90.79% -- 2308/2542 lines in 30 files
+- BRANCH COVERAGE: 78.09% -- 930/1191 branches in 30 files
+- 94.76% documented
+
+### Added
+
 - `TreeHaver::RSpec::TestableNode` - A testable node class for creating mock TreeHaver::Node instances
   in tests without requiring an actual parser backend. Available via `require "tree_haver/rspec/testable_node"`
   or automatically when using `require "tree_haver/rspec"`.
@@ -49,10 +68,6 @@ Please file a bug if you notice a violation of semantic versioning.
   - `backend_availability_methods` and `backend_tags` hashes are built dynamically
 - RSpec exclusion filters for backend tags are configured dynamically from BackendRegistry
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - **`TreeHaver::Parser#unwrap_language` bug fix for MRI and Rust backends**
@@ -62,8 +77,6 @@ Please file a bug if you notice a violation of semantic versioning.
 - `any_markdown_backend_available?` now uses `BackendRegistry.tag_available?` instead of calling
   `markly_available?` and `commonmarker_available?` directly. This fixes `NoMethodError` when
   the external markdown backend gems haven't registered their tags yet.
-
-### Security
 
 ## [5.0.0] - 2026-01-11
 
@@ -1246,7 +1259,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v5.0.0...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v5.0.1...HEAD
+[5.0.1]: https://github.com/kettle-rb/tree_haver/compare/v5.0.0...v5.0.1
+[5.0.1t]: https://github.com/kettle-rb/tree_haver/releases/tag/v5.0.1
 [5.0.0]: https://github.com/kettle-rb/tree_haver/compare/v4.0.5...v5.0.0
 [5.0.0t]: https://github.com/kettle-rb/tree_haver/releases/tag/v5.0.0
 [4.0.5]: https://github.com/kettle-rb/tree_haver/compare/v4.0.4...v4.0.5
