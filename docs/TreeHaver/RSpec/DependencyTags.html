@@ -295,29 +295,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#commonmarker_available%3F-class_method" title="commonmarker_available? (class method)">.<strong>commonmarker_available?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Check if commonmarker gem is available.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#compute_blocked_backends-class_method" title="compute_blocked_backends (class method)">.<strong>compute_blocked_backends</strong>  &#x21d2; Set&lt;Symbol&gt; </a>
     
 
@@ -517,29 +494,6 @@
 
   
     <span class="summary_desc"><div class='inline'><p>Check if libtree-sitter runtime library is loadable.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#markly_available%3F-class_method" title="markly_available? (class method)">.<strong>markly_available?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'><p>Check if markly gem is available.</p>
 </div></span>
   
 </li>
@@ -1170,6 +1124,9 @@
   <div class="discussion">
     <p>Check if at least one markdown backend is available</p>
 
+<p>Uses BackendRegistry.tag_available? to check external backends that may<br />
+not have their methods defined yet (registered by external gems).</p>
+
 
   </div>
 </div>
@@ -1199,15 +1156,17 @@
       <pre class="lines">
 
 
-742
-743
-744</pre>
+746
+747
+748
+749</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 742</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 746</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_any_markdown_backend_available?'>any_markdown_backend_available?</span>
-  <span class='id identifier rubyid_markly_available?'>markly_available?</span> <span class='op'>||</span> <span class='id identifier rubyid_commonmarker_available?'>commonmarker_available?</span>
+  <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_tag_available?'><span class='object_link'><a href="../BackendRegistry.html#tag_available%3F-class_method" title="TreeHaver::BackendRegistry.tag_available? (method)">tag_available?</a></span></span><span class='lparen'>(</span><span class='symbol'>:markly_backend</span><span class='rparen'>)</span> <span class='op'>||</span>
+    <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_tag_available?'><span class='object_link'><a href="../BackendRegistry.html#tag_available%3F-class_method" title="TreeHaver::BackendRegistry.tag_available? (method)">tag_available?</a></span></span><span class='lparen'>(</span><span class='symbol'>:commonmarker_backend</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1252,17 +1211,17 @@
       <pre class="lines">
 
 
-746
-747
-748
-749
-750
 751
 752
-753</pre>
+753
+754
+755
+756
+757
+758</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 746</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 751</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_any_native_grammar_available?'>any_native_grammar_available?</span>
   <span class='id identifier rubyid_libtree_sitter_available?'>libtree_sitter_available?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span>
@@ -1319,12 +1278,12 @@
       <pre class="lines">
 
 
-689
 690
-691</pre>
+691
+692</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 689</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 690</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_any_rbs_backend_available?'>any_rbs_backend_available?</span>
   <span class='id identifier rubyid_rbs_gem_available?'>rbs_gem_available?</span> <span class='op'>||</span> <span class='id identifier rubyid_tree_sitter_rbs_available?'>tree_sitter_rbs_available?</span>
@@ -1376,12 +1335,12 @@
       <pre class="lines">
 
 
-735
 736
-737</pre>
+737
+738</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 735</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 736</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_any_toml_backend_available?'>any_toml_backend_available?</span>
   <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span> <span class='op'>||</span> <span class='id identifier rubyid_toml_rb_gem_available?'>toml_rb_gem_available?</span> <span class='op'>||</span> <span class='id identifier rubyid_toml_gem_available?'>toml_gem_available?</span>
@@ -1514,78 +1473,17 @@ TREE_HAVER_NATIVE_BACKEND and TREE_HAVER_RUBY_BACKEND.</p>
       <pre class="lines">
 
 
-575
 576
 577
-578</pre>
+578
+579</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 575</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 576</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_citrus_available?'>citrus_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@citrus_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@citrus_available</span><span class='rparen'>)</span>
   <span class='ivar'>@citrus_available</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../BackendRegistry.html#available%3F-class_method" title="TreeHaver::BackendRegistry.available? (method)">available?</a></span></span><span class='lparen'>(</span><span class='symbol'>:citrus</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="commonmarker_available?-class_method">
-  
-    .<strong>commonmarker_available?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Check if commonmarker gem is available</p>
-
-<p>Uses BackendRegistry which allows commonmarker-merge to register its checker.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>true if commonmarker gem is available</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-539
-540
-541
-542</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 539</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_commonmarker_available?'>commonmarker_available?</span>
-  <span class='kw'>return</span> <span class='ivar'>@commonmarker_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@commonmarker_available</span><span class='rparen'>)</span>
-  <span class='ivar'>@commonmarker_available</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../BackendRegistry.html#available%3F-class_method" title="TreeHaver::BackendRegistry.available? (method)">available?</a></span></span><span class='lparen'>(</span><span class='symbol'>:commonmarker</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1639,11 +1537,6 @@ before the blocked_backends instance variable is set.</p>
       <pre class="lines">
 
 
-767
-768
-769
-770
-771
 772
 773
 774
@@ -1675,10 +1568,15 @@ before the blocked_backends instance variable is set.</p>
 800
 801
 802
-803</pre>
+803
+804
+805
+806
+807
+808</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 767</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 772</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_compute_blocked_backends'>compute_blocked_backends</span>
   <span class='id identifier rubyid_blocked'>blocked</span> <span class='op'>=</span> <span class='const'>Set</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
@@ -1764,24 +1662,24 @@ before the blocked_backends instance variable is set.</p>
       <pre class="lines">
 
 
-860
-861
-862
-863
-864
-865
-866
-867
-868
-869
-870
-871
-872
-873
-874</pre>
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897
+898
+899
+900
+901
+902</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 860</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 888</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_env_summary'>env_summary</span>
   <span class='lbrace'>{</span>
@@ -2335,12 +2233,12 @@ the grammar .so files are incompatible (built for MRI, not java-tree-sitter).</p
       <pre class="lines">
 
 
-597
 598
-599</pre>
+599
+600</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 597</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 598</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_jruby?'>jruby?</span>
   <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RUBY_ENGINE</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>jruby</span><span class='tstring_end'>&quot;</span></span>
@@ -2430,67 +2328,6 @@ the grammar .so files are incompatible (built for MRI, not java-tree-sitter).</p
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="markly_available?-class_method">
-  
-    .<strong>markly_available?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <p>Check if markly gem is available</p>
-
-<p>Uses BackendRegistry which allows markly-merge to register its checker.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'><p>true if markly gem is available</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-549
-550
-551
-552</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 549</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_markly_available?'>markly_available?</span>
-  <span class='kw'>return</span> <span class='ivar'>@markly_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@markly_available</span><span class='rparen'>)</span>
-  <span class='ivar'>@markly_available</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="../BackendRegistry.html#available%3F-class_method" title="TreeHaver::BackendRegistry.available? (method)">available?</a></span></span><span class='lparen'>(</span><span class='symbol'>:markly</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
   <h3 class="signature " id="mri?-class_method">
   
     .<strong>mri?</strong>  &#x21d2; <tt>Boolean</tt> 
@@ -2532,12 +2369,12 @@ the grammar .so files are incompatible (built for MRI, not java-tree-sitter).</p
       <pre class="lines">
 
 
-611
 612
-613</pre>
+613
+614</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 611</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 612</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_mri?'>mri?</span>
   <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RUBY_ENGINE</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ruby</span><span class='tstring_end'>&quot;</span></span>
@@ -2779,13 +2616,13 @@ without triggering any FFI availability checks.</p>
       <pre class="lines">
 
 
-585
 586
 587
-588</pre>
+588
+589</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 585</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 586</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parslet_available?'>parslet_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@parslet_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@parslet_available</span><span class='rparen'>)</span>
@@ -2838,13 +2675,13 @@ without triggering any FFI availability checks.</p>
       <pre class="lines">
 
 
-557
 558
 559
-560</pre>
+560
+561</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 557</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 558</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prism_available?'>prism_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@prism_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@prism_available</span><span class='rparen'>)</span>
@@ -2897,13 +2734,13 @@ without triggering any FFI availability checks.</p>
       <pre class="lines">
 
 
-565
 566
 567
-568</pre>
+568
+569</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 565</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 566</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_psych_available?'>psych_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@psych_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@psych_available</span><span class='rparen'>)</span>
@@ -2962,7 +2799,6 @@ without triggering any FFI availability checks.</p>
       <pre class="lines">
 
 
-665
 666
 667
 668
@@ -2975,10 +2811,11 @@ without triggering any FFI availability checks.</p>
 675
 676
 677
-678</pre>
+678
+679</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 665</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 666</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_rbs_gem_available?'>rbs_gem_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@rbs_gem_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@rbs_gem_available</span><span class='rparen'>)</span>
@@ -3027,16 +2864,16 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-882
-883
-884
-885
-886
-887
-888</pre>
+910
+911
+912
+913
+914
+915
+916</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 882</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 910</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset!'>reset!</span>
   <span class='id identifier rubyid_instance_variables'>instance_variables</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ivar'>ivar</span><span class='op'>|</span>
@@ -3077,15 +2914,15 @@ Note: This does NOT undo backend usage recording.</p>
       <pre class="lines">
 
 
-895
-896
-897
-898
-899
-900</pre>
+923
+924
+925
+926
+927
+928</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 895</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 923</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_selected_backend!'>reset_selected_backend!</span>
   <span class='id identifier rubyid_remove_instance_variable'>remove_instance_variable</span><span class='lparen'>(</span><span class='symbol'>:@selected_backend</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@selected_backend</span><span class='rparen'>)</span>
@@ -3289,11 +3126,6 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
       <pre class="lines">
 
 
-811
-812
-813
-814
-815
 816
 817
 818
@@ -3333,55 +3165,106 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
 852
 853
 854
-855</pre>
+855
+856
+857
+858
+859
+860
+861
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876
+877
+878
+879
+880
+881
+882
+883</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 811</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 816</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_summary'>summary</span>
   <span class='comment'># Use stored blocked_backends if available, otherwise compute dynamically
 </span>  <span class='id identifier rubyid_blocked'>blocked</span> <span class='op'>=</span> <span class='ivar'>@blocked_backends</span> <span class='op'>||</span> <span class='id identifier rubyid_compute_blocked_backends'>compute_blocked_backends</span>
 
-  <span class='lbrace'>{</span>
+  <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='lbrace'>{</span>
     <span class='comment'># Backend selection from environment variables
 </span>    <span class='label'>selected_backend:</span> <span class='id identifier rubyid_selected_backend'>selected_backend</span><span class='comma'>,</span>
     <span class='label'>allowed_native_backends:</span> <span class='id identifier rubyid_allowed_native_backends'>allowed_native_backends</span><span class='comma'>,</span>
     <span class='label'>allowed_ruby_backends:</span> <span class='id identifier rubyid_allowed_ruby_backends'>allowed_ruby_backends</span><span class='comma'>,</span>
-    <span class='comment'># TreeHaver backends (*_backend) - skip blocked backends to avoid loading them
-</span>    <span class='label'>ffi_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:ffi</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_ffi_available?'>ffi_available?</span><span class='comma'>,</span>
-    <span class='label'>mri_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_mri_backend_available?'>mri_backend_available?</span><span class='comma'>,</span>
-    <span class='label'>rust_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:rust</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_rust_backend_available?'>rust_backend_available?</span><span class='comma'>,</span>
-    <span class='label'>java_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:java</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_java_backend_available?'>java_backend_available?</span><span class='comma'>,</span>
-    <span class='label'>prism_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:prism</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_prism_available?'>prism_available?</span><span class='comma'>,</span>
-    <span class='label'>psych_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:psych</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_psych_available?'>psych_available?</span><span class='comma'>,</span>
-    <span class='label'>commonmarker_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:commonmarker</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_commonmarker_available?'>commonmarker_available?</span><span class='comma'>,</span>
-    <span class='label'>markly_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:markly</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_markly_available?'>markly_available?</span><span class='comma'>,</span>
-    <span class='label'>citrus_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:citrus</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_citrus_available?'>citrus_available?</span><span class='comma'>,</span>
-    <span class='label'>parslet_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:parslet</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_parslet_available?'>parslet_available?</span><span class='comma'>,</span>
-    <span class='label'>rbs_backend:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:rbs</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_rbs_backend_available?'>rbs_backend_available?</span><span class='comma'>,</span>
-    <span class='comment'># Ruby engines (*_engine)
-</span>    <span class='label'>ruby_engine:</span> <span class='const'>RUBY_ENGINE</span><span class='comma'>,</span>
-    <span class='label'>mri_engine:</span> <span class='id identifier rubyid_mri?'>mri?</span><span class='comma'>,</span>
-    <span class='label'>jruby_engine:</span> <span class='id identifier rubyid_jruby?'>jruby?</span><span class='comma'>,</span>
-    <span class='label'>truffleruby_engine:</span> <span class='id identifier rubyid_truffleruby?'>truffleruby?</span><span class='comma'>,</span>
-    <span class='comment'># Tree-sitter grammars (*_grammar) - also respect blocked backends
-</span>    <span class='comment'># since grammar checks may load backends
-</span>    <span class='label'>libtree_sitter:</span> <span class='id identifier rubyid_libtree_sitter_available?'>libtree_sitter_available?</span><span class='comma'>,</span>
-    <span class='label'>bash_grammar:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_bash_available?'>tree_sitter_bash_available?</span><span class='comma'>,</span>
-    <span class='label'>toml_grammar:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span><span class='comma'>,</span>
-    <span class='label'>json_grammar:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_json_available?'>tree_sitter_json_available?</span><span class='comma'>,</span>
-    <span class='label'>jsonc_grammar:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_jsonc_available?'>tree_sitter_jsonc_available?</span><span class='comma'>,</span>
-    <span class='label'>rbs_grammar:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_rbs_available?'>tree_sitter_rbs_available?</span><span class='comma'>,</span>
-    <span class='label'>any_native_grammar:</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_any_native_grammar_available?'>any_native_grammar_available?</span><span class='comma'>,</span>
-    <span class='comment'># Language parsing capabilities (*_parsing)
-</span>    <span class='label'>toml_parsing:</span> <span class='id identifier rubyid_any_toml_backend_available?'>any_toml_backend_available?</span><span class='comma'>,</span>
-    <span class='label'>markdown_parsing:</span> <span class='id identifier rubyid_any_markdown_backend_available?'>any_markdown_backend_available?</span><span class='comma'>,</span>
-    <span class='label'>rbs_parsing:</span> <span class='id identifier rubyid_any_rbs_backend_available?'>any_rbs_backend_available?</span><span class='comma'>,</span>
-    <span class='comment'># Specific libraries (*_gem)
-</span>    <span class='label'>toml_rb_gem:</span> <span class='id identifier rubyid_toml_rb_gem_available?'>toml_rb_gem_available?</span><span class='comma'>,</span>
-    <span class='label'>toml_gem:</span> <span class='id identifier rubyid_toml_gem_available?'>toml_gem_available?</span><span class='comma'>,</span>
-    <span class='label'>rbs_gem:</span> <span class='id identifier rubyid_rbs_gem_available?'>rbs_gem_available?</span><span class='comma'>,</span>
   <span class='rbrace'>}</span>
+
+  <span class='comment'># Built-in TreeHaver backends (*_backend) - skip blocked backends to avoid loading them
+</span>  <span class='id identifier rubyid_builtin_backends'>builtin_backends</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='label'>ffi:</span> <span class='symbol'>:ffi_available?</span><span class='comma'>,</span>
+    <span class='label'>mri:</span> <span class='symbol'>:mri_backend_available?</span><span class='comma'>,</span>
+    <span class='label'>rust:</span> <span class='symbol'>:rust_backend_available?</span><span class='comma'>,</span>
+    <span class='label'>java:</span> <span class='symbol'>:java_backend_available?</span><span class='comma'>,</span>
+    <span class='label'>prism:</span> <span class='symbol'>:prism_available?</span><span class='comma'>,</span>
+    <span class='label'>psych:</span> <span class='symbol'>:psych_available?</span><span class='comma'>,</span>
+    <span class='label'>citrus:</span> <span class='symbol'>:citrus_available?</span><span class='comma'>,</span>
+    <span class='label'>parslet:</span> <span class='symbol'>:parslet_available?</span><span class='comma'>,</span>
+    <span class='label'>rbs:</span> <span class='symbol'>:rbs_backend_available?</span><span class='comma'>,</span>
+  <span class='rbrace'>}</span>
+
+  <span class='id identifier rubyid_builtin_backends'>builtin_backends</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_backend'>backend</span><span class='comma'>,</span> <span class='id identifier rubyid_method'>method</span><span class='op'>|</span>
+    <span class='id identifier rubyid_tag'>tag</span> <span class='op'>=</span> <span class='symbol'>:&quot;#{</span><span class='id identifier rubyid_backend'>backend</span><span class='embexpr_end'>}</span><span class='tstring_content'>_backend</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_tag'>tag</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_public_send'>public_send</span><span class='lparen'>(</span><span class='id identifier rubyid_method'>method</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Dynamically registered backends from BackendRegistry
+</span>  <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_registered_tags'><span class='object_link'><a href="../BackendRegistry.html#registered_tags-class_method" title="TreeHaver::BackendRegistry.registered_tags (method)">registered_tags</a></span></span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='op'>|</span>
+    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='rparen'>)</span> <span class='comment'># Don&#39;t override built-ins
+</span>
+    <span class='id identifier rubyid_meta'>meta</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_tag_metadata'><span class='object_link'><a href="../BackendRegistry.html#tag_metadata-class_method" title="TreeHaver::BackendRegistry.tag_metadata (method)">tag_metadata</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='rparen'>)</span>
+    <span class='kw'>next</span> <span class='kw'>unless</span> <span class='id identifier rubyid_meta'>meta</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:category</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='symbol'>:backend</span>
+
+    <span class='id identifier rubyid_backend'>backend</span> <span class='op'>=</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:backend_name</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_backend'>backend</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='const'><span class='object_link'><a href="../../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../BackendRegistry.html" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_tag_available?'><span class='object_link'><a href="../BackendRegistry.html#tag_available%3F-class_method" title="TreeHaver::BackendRegistry.tag_available? (method)">tag_available?</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Ruby engines (*_engine)
+</span>  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:ruby_engine</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='const'>RUBY_ENGINE</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:mri_engine</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_mri?'>mri?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:jruby_engine</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_jruby?'>jruby?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:truffleruby_engine</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_truffleruby?'>truffleruby?</span>
+
+  <span class='comment'># Tree-sitter grammars (*_grammar) - also respect blocked backends
+</span>  <span class='comment'># since grammar checks may load backends
+</span>  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:libtree_sitter</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_libtree_sitter_available?'>libtree_sitter_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:bash_grammar</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_bash_available?'>tree_sitter_bash_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:toml_grammar</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:json_grammar</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_json_available?'>tree_sitter_json_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:jsonc_grammar</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_jsonc_available?'>tree_sitter_jsonc_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:rbs_grammar</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_tree_sitter_rbs_available?'>tree_sitter_rbs_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:any_native_grammar</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_blocked'>blocked</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:mri</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='symbol'>:blocked</span> <span class='op'>:</span> <span class='id identifier rubyid_any_native_grammar_available?'>any_native_grammar_available?</span>
+
+  <span class='comment'># Language parsing capabilities (*_parsing)
+</span>  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:toml_parsing</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_any_toml_backend_available?'>any_toml_backend_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:markdown_parsing</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_any_markdown_backend_available?'>any_markdown_backend_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:rbs_parsing</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_any_rbs_backend_available?'>any_rbs_backend_available?</span>
+
+  <span class='comment'># Specific libraries (*_gem)
+</span>  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:toml_rb_gem</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_toml_rb_gem_available?'>toml_rb_gem_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:toml_gem</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_toml_gem_available?'>toml_gem_available?</span>
+  <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='symbol'>:rbs_gem</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_rbs_gem_available?'>rbs_gem_available?</span>
+
+  <span class='id identifier rubyid_result'>result</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -3430,7 +3313,6 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
       <pre class="lines">
 
 
-713
 714
 715
 716
@@ -3447,10 +3329,11 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
 727
 728
 729
-730</pre>
+730
+731</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 713</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 714</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_toml_gem_available?'>toml_gem_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@toml_gem_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@toml_gem_available</span><span class='rparen'>)</span>
@@ -3578,7 +3461,6 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
       <pre class="lines">
 
 
-696
 697
 698
 699
@@ -3590,10 +3472,11 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
 705
 706
 707
-708</pre>
+708
+709</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 696</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 697</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_toml_rb_gem_available?'>toml_rb_gem_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@toml_rb_gem_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@toml_rb_gem_available</span><span class='rparen'>)</span>
@@ -3655,13 +3538,13 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
       <pre class="lines">
 
 
-623
 624
 625
-626</pre>
+626
+627</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 623</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 624</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_bash_available?'>tree_sitter_bash_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@tree_sitter_bash_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_bash_available</span><span class='rparen'>)</span>
@@ -3714,13 +3597,13 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
       <pre class="lines">
 
 
-639
 640
 641
-642</pre>
+642
+643</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 639</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 640</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_json_available?'>tree_sitter_json_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@tree_sitter_json_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_json_available</span><span class='rparen'>)</span>
@@ -3773,13 +3656,13 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
       <pre class="lines">
 
 
-647
 648
 649
-650</pre>
+650
+651</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 647</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 648</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_jsonc_available?'>tree_sitter_jsonc_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@tree_sitter_jsonc_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_jsonc_available</span><span class='rparen'>)</span>
@@ -3832,13 +3715,13 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
       <pre class="lines">
 
 
-655
 656
 657
-658</pre>
+658
+659</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 655</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 656</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_rbs_available?'>tree_sitter_rbs_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@tree_sitter_rbs_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_rbs_available</span><span class='rparen'>)</span>
@@ -3891,13 +3774,13 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
       <pre class="lines">
 
 
-631
 632
 633
-634</pre>
+634
+635</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 631</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 632</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tree_sitter_toml_available?'>tree_sitter_toml_available?</span>
   <span class='kw'>return</span> <span class='ivar'>@tree_sitter_toml_available</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_toml_available</span><span class='rparen'>)</span>
@@ -3950,12 +3833,12 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
       <pre class="lines">
 
 
-604
 605
-606</pre>
+606
+607</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 604</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/dependency_tags.rb', line 605</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_truffleruby?'>truffleruby?</span>
   <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>RUBY_ENGINE</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='const'>RUBY_ENGINE</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>truffleruby</span><span class='tstring_end'>&quot;</span></span>
@@ -3970,7 +3853,7 @@ that would conflict with isolated test modes (e.g., FFI-only tests).</p>
 </div>
 
       <div id="footer">
-  Generated on Sun Jan 11 03:24:09 2026 by
+  Generated on Sun Jan 11 21:17:18 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -1,4 +1,4 @@
-ed# Changelog
+# Changelog
 
 [![SemVer 2.0.0][📌semver-img]][📌semver] [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]][📗keep-changelog]
 
@@ -20,13 +20,48 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- `TreeHaver::RSpec::TestableNode` - A testable node class for creating mock TreeHaver::Node instances
+  in tests without requiring an actual parser backend. Available via `require "tree_haver/rspec/testable_node"`
+  or automatically when using `require "tree_haver/rspec"`.
+  - `TestableNode.create(type:, text:, ...)` - Create a single test node
+  - `TestableNode.create_list(...)` - Create multiple test nodes
+  - `MockInnerNode` - The underlying mock that simulates backend-specific nodes
+  - Top-level `TestableNode` constant for convenience in specs
+- **Fully Dynamic Tag Registration** in `TreeHaver::BackendRegistry`:
+  - `register_tag(tag_name, category:, backend_name:, require_path:)` - Register a complete dependency tag
+    with lazy loading support. External gems can now get full RSpec tag support without any hardcoded
+    knowledge in tree_haver.
+  - `tag_available?(tag_name)` - Check if a tag's dependency is available, with automatic lazy loading
+    via the registered `require_path`
+  - `registered_tags` - Get all registered tag names
+  - `tags_by_category(category)` - Get tags filtered by category (:backend, :gem, :parsing, :grammar, :engine, :other)
+  - `tag_metadata(tag_name)` - Get full metadata for a registered tag
+  - `tag_summary` - Get availability status of all registered tags
+
 ### Changed
+
+- **Fully Dynamic Backend Availability** in `BackendRegistry` and `DependencyTags`:
+  - `register_tag` now dynamically defines `*_available?` methods on `DependencyTags` at registration time
+  - External gems automatically get availability methods when they call `register_tag`
+  - No changes to tree_haver are needed for new external backend gems
+  - Built-in backends (prism, psych, citrus, parslet) retain explicit methods
+  - `summary` method dynamically includes registered backends from BackendRegistry
+  - `backend_availability_methods` and `backend_tags` hashes are built dynamically
+- RSpec exclusion filters for backend tags are configured dynamically from BackendRegistry
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- **`TreeHaver::Parser#unwrap_language` bug fix for MRI and Rust backends**
+  - `:mri` and `:rust` cases were not returning the unwrapped language value
+  - The code called `lang.to_language` / `lang.inner_language` / `lang.name` but didn't `return` the result
+  - Now properly returns the unwrapped language for all backend types
+- `any_markdown_backend_available?` now uses `BackendRegistry.tag_available?` instead of calling
+  `markly_available?` and `commonmarker_available?` directly. This fixes `NoMethodError` when
+  the external markdown backend gems haven't registered their tags yet.
 
 ### Security
 

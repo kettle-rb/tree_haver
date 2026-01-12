@@ -57,7 +57,7 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><div id='filecontents'><p>ed# Changelog</p>
+      <div id="content"><div id='filecontents'><h1 id="changelog">Changelog</h1>
 
 <p><a href="https://semver.org/spec/v2.0.0.html"><img src="https://img.shields.io/badge/semver-2.0.0-FFDD67.svg?style=flat" alt="SemVer 2.0.0"></a> <a href="https://keepachangelog.com/en/1.0.0/"><img src="https://img.shields.io/badge/keep--a--changelog-1.0.0-FFDD67.svg?style=flat" alt="Keep-A-Changelog 1.0.0"></a></p>
 
@@ -72,13 +72,86 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>
+<code>TreeHaver::RSpec::TestableNode</code> - A testable node class for creating mock TreeHaver::Node instances<br>
+in tests without requiring an actual parser backend. Available via <code>require "tree_haver/rspec/testable_node"</code><br>
+or automatically when using <code>require "tree_haver/rspec"</code>.
+    <ul>
+      <li>
+<code>TestableNode.create(type:, text:, ...)</code> - Create a single test node</li>
+      <li>
+<code>TestableNode.create_list(...)</code> - Create multiple test nodes</li>
+      <li>
+<code>MockInnerNode</code> - The underlying mock that simulates backend-specific nodes</li>
+      <li>Top-level <code>TestableNode</code> constant for convenience in specs</li>
+    </ul>
+  </li>
+  <li>
+<strong>Fully Dynamic Tag Registration</strong> in <code>TreeHaver::BackendRegistry</code>:
+    <ul>
+      <li>
+<code>register_tag(tag_name, category:, backend_name:, require_path:)</code> - Register a complete dependency tag<br>
+with lazy loading support. External gems can now get full RSpec tag support without any hardcoded<br>
+knowledge in tree_haver.</li>
+      <li>
+<code>tag_available?(tag_name)</code> - Check if a tag’s dependency is available, with automatic lazy loading<br>
+via the registered <code>require_path</code>
+</li>
+      <li>
+<code>registered_tags</code> - Get all registered tag names</li>
+      <li>
+<code>tags_by_category(category)</code> - Get tags filtered by category (:backend, :gem, :parsing, :grammar, :engine, :other)</li>
+      <li>
+<code>tag_metadata(tag_name)</code> - Get full metadata for a registered tag</li>
+      <li>
+<code>tag_summary</code> - Get availability status of all registered tags</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="changed">Changed</h3>
+
+<ul>
+  <li>
+<strong>Fully Dynamic Backend Availability</strong> in <code>BackendRegistry</code> and <code>DependencyTags</code>:
+    <ul>
+      <li>
+<code>register_tag</code> now dynamically defines <code>*_available?</code> methods on <code>DependencyTags</code> at registration time</li>
+      <li>External gems automatically get availability methods when they call <code>register_tag</code>
+</li>
+      <li>No changes to tree_haver are needed for new external backend gems</li>
+      <li>Built-in backends (prism, psych, citrus, parslet) retain explicit methods</li>
+      <li>
+<code>summary</code> method dynamically includes registered backends from BackendRegistry</li>
+      <li>
+<code>backend_availability_methods</code> and <code>backend_tags</code> hashes are built dynamically</li>
+    </ul>
+  </li>
+  <li>RSpec exclusion filters for backend tags are configured dynamically from BackendRegistry</li>
+</ul>
 
 <h3 id="deprecated">Deprecated</h3>
 
 <h3 id="removed">Removed</h3>
 
 <h3 id="fixed">Fixed</h3>
+
+<ul>
+  <li>
+<strong><code>TreeHaver::Parser#unwrap_language</code> bug fix for MRI and Rust backends</strong>
+    <ul>
+      <li>
+<code>:mri</code> and <code>:rust</code> cases were not returning the unwrapped language value</li>
+      <li>The code called <code>lang.to_language</code> / <code>lang.inner_language</code> / <code>lang.name</code> but didn’t <code>return</code> the result</li>
+      <li>Now properly returns the unwrapped language for all backend types</li>
+    </ul>
+  </li>
+  <li>
+<code>any_markdown_backend_available?</code> now uses <code>BackendRegistry.tag_available?</code> instead of calling<br>
+<code>markly_available?</code> and <code>commonmarker_available?</code> directly. This fixes <code>NoMethodError</code> when<br>
+the external markdown backend gems haven’t registered their tags yet.</li>
+</ul>
 
 <h3 id="security">Security</h3>
 
@@ -2297,7 +2370,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Sun Jan 11 03:24:08 2026 by
+  Generated on Sun Jan 11 21:17:18 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

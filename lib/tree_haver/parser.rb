@@ -364,10 +364,12 @@ module TreeHaver
 
       case lang.backend
       when :mri
-        lang.to_language if lang.respond_to?(:to_language)
-        lang.inner_language if lang.respond_to?(:inner_language)
+        return lang.to_language if lang.respond_to?(:to_language)
+        return lang.inner_language if lang.respond_to?(:inner_language)
+        lang
       when :rust
-        lang.name if lang.respond_to?(:name)
+        return lang.name if lang.respond_to?(:name)
+        lang
       when :ffi
         lang  # FFI needs wrapper for to_ptr
       when :java

@@ -31,7 +31,7 @@
 [rubygems-maint-policy]: https://github.com/ruby/rubygems/blob/b1ab33a3d52310a84d16b193991af07f5a6a07c0/doc/rubygems/POLICIES.md?plain=1#L187-L196
 [policy-fail]: https://www.reddit.com/r/ruby/comments/1ove9vp/rubycentral_hates_this_one_fact/
 
-[![Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0][🖼️galtzo-i]](https://discord.gg/3qme4XHNKN) [![ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5][🖼️ruby-lang-i]](https://www.ruby-lang.org/) [![kettle-rb Logo by Aboling0, CC BY-SA 4.0][🖼️kettle-rb-i]](https://github.com/kettle-rb)
+[![Galtzo FLOSS Logo by Aboling0, CC BY-SA 4.0][🖼️galtzo-i]][🖼️galtzo-discord] [![ruby-lang Logo, Yukihiro Matsumoto, Ruby Visual Identity Team, CC BY-SA 2.5][🖼️ruby-lang-i]][🖼️ruby-lang] [![kettle-rb Logo by Aboling0, CC BY-SA 4.0][🖼️kettle-rb-i]][🖼️kettle-rb]
 
 [🖼️galtzo-i]: https://logos.galtzo.com/assets/images/galtzo-floss/avatar-192px.svg
 [🖼️galtzo-discord]: https://discord.gg/3qme4XHNKN
@@ -42,7 +42,7 @@
 
 # 🌴 TreeHaver
 
-[![Version][👽versioni]](https://bestgems.org/gems/tree_haver) [![GitHub tag (latest SemVer)][⛳️tag-img]](http://github.com/kettle-rb/tree_haver/releases) [![License: MIT][📄license-img]](https://opensource.org/licenses/MIT) [![Downloads Rank][👽dl-ranki]](https://bestgems.org/gems/tree_haver) [![Open Source Helpers][👽oss-helpi]](https://www.codetriage.com/kettle-rb/tree_haver) [![CodeCov Test Coverage][🏀codecovi]](https://codecov.io/gh/kettle-rb/tree_haver) [![Coveralls Test Coverage][🏀coveralls-img]](https://coveralls.io/github/kettle-rb/tree_haver?branch=main) [![QLTY Test Coverage][🏀qlty-covi]](https://qlty.sh/gh/kettle-rb/projects/tree_haver/metrics/code?sort=coverageRating) [![QLTY Maintainability][🏀qlty-mnti]](https://qlty.sh/gh/kettle-rb/projects/tree_haver) [![CI Heads][🚎3-hd-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/heads.yml) [![CI Runtime Dependencies @ HEAD][🚎12-crh-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/dep-heads.yml) [![CI Current][🚎11-c-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml) [![CI Truffle Ruby][🚎9-t-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/truffle.yml) [![Deps Locked][🚎13-🔒️-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/locked_deps.yml) [![Deps Unlocked][🚎14-🔓️-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/unlocked_deps.yml) [![CI Supported][🚎6-s-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/supported.yml) [![CI Test Coverage][🚎2-cov-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/coverage.yml) [![CI Style][🚎5-st-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/style.yml) [![CodeQL][🖐codeQL-img]](https://github.com/kettle-rb/tree_haver/security/code-scanning) [![Apache SkyWalking Eyes License Compatibility Check][🚎15-🪪-wfi]](https://github.com/kettle-rb/tree_haver/actions/workflows/license-eye.yml)
+[![Version][👽versioni]][👽dl-rank] [![GitHub tag (latest SemVer)][⛳️tag-img]][⛳️tag] [![License: MIT][📄license-img]][📄license-ref] [![Downloads Rank][👽dl-ranki]][👽dl-rank] [![Open Source Helpers][👽oss-helpi]][👽oss-help] [![CodeCov Test Coverage][🏀codecovi]][🏀codecov] [![Coveralls Test Coverage][🏀coveralls-img]][🏀coveralls] [![QLTY Test Coverage][🏀qlty-covi]][🏀qlty-cov] [![QLTY Maintainability][🏀qlty-mnti]][🏀qlty-mnt] [![CI Heads][🚎3-hd-wfi]][🚎3-hd-wf] [![CI Runtime Dependencies @ HEAD][🚎12-crh-wfi]][🚎12-crh-wf] [![CI Current][🚎11-c-wfi]][🚎11-c-wf] [![CI Truffle Ruby][🚎9-t-wfi]][🚎9-t-wf] [![Deps Locked][🚎13-🔒️-wfi]][🚎13-🔒️-wf] [![Deps Unlocked][🚎14-🔓️-wfi]][🚎14-🔓️-wf] [![CI Supported][🚎6-s-wfi]][🚎6-s-wf] [![CI Test Coverage][🚎2-cov-wfi]][🚎2-cov-wf] [![CI Style][🚎5-st-wfi]][🚎5-st-wf] [![CodeQL][🖐codeQL-img]][🖐codeQL] [![Apache SkyWalking Eyes License Compatibility Check][🚎15-🪪-wfi]][🚎15-🪪-wf]
 
 `if ci_badges.map(&:color).detect { it != "green"}` ☝️ [let me know][🖼️galtzo-discord], as I may have missed the [discord notification][🖼️galtzo-discord].
 
@@ -50,7 +50,7 @@
 
 `if ci_badges.map(&:color).all? { it == "green"}` 👇️ send money so I can do more of this. FLOSS maintenance is now my full-time job.
 
-[![OpenCollective Backers][🖇osc-backers-i]](https://opencollective.com/kettle-rb#backer) [![OpenCollective Sponsors][🖇osc-sponsors-i]](https://opencollective.com/kettle-rb#sponsor) [![Sponsor Me on Github][🖇sponsor-img]](https://github.com/sponsors/pboling) [![Liberapay Goal Progress][⛳liberapay-img]](https://liberapay.com/pboling/donate) [![Donate on PayPal][🖇paypal-img]](https://www.paypal.com/paypalme/peterboling) [![Buy me a coffee][🖇buyme-small-img]](https://www.buymeacoffee.com/pboling) [![Donate on Polar][🖇polar-img]](https://polar.sh/pboling) [![Donate at ko-fi.com][🖇kofi-img]](https://ko-fi.com/O5O86SNP4)
+[![OpenCollective Backers][🖇osc-backers-i]][🖇osc-backers] [![OpenCollective Sponsors][🖇osc-sponsors-i]][🖇osc-sponsors] [![Sponsor Me on Github][🖇sponsor-img]][🖇sponsor] [![Liberapay Goal Progress][⛳liberapay-img]][⛳liberapay] [![Donate on PayPal][🖇paypal-img]][🖇paypal] [![Buy me a coffee][🖇buyme-small-img]][🖇buyme] [![Donate on Polar][🖇polar-img]][🖇polar] [![Donate at ko-fi.com][🖇kofi-img]][🖇kofi]
 
 ## 🌻 Synopsis
 
@@ -525,18 +525,18 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 
 ## 💡 Info you can shake a stick at
 
-| Tokens to Remember      | [![Gem name][⛳️name-img]](https://bestgems.org/gems/tree_haver) [![Gem namespace][⛳️namespace-img]](https://github.com/kettle-rb/tree_haver)                                                                                                                                                                                                                                                                                                                                                                                        |
+| Tokens to Remember      | [![Gem name][⛳️name-img]][👽dl-rank] [![Gem namespace][⛳️namespace-img]][📜src-gh]                                                                                                                                                                                                                                                                                                                                                                                        |
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Works with JRuby        | [![JRuby 10.0 Compat][💎jruby-c-i]](https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml) [![JRuby HEAD Compat][💎jruby-headi]](https://github.com/kettle-rb/tree_haver/actions/workflows/heads.yml)                                                                                                                                                                                                                                                                                                               |
-| Works with Truffle Ruby | [![Truffle Ruby 23.1 Compat][💎truby-23.1i]](https://github.com/kettle-rb/tree_haver/actions/workflows/truffle.yml) [![Truffle Ruby 24.1 Compat][💎truby-c-i]](https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml)                                                                                                                                                                                                                                                                                               |
-| Works with MRI Ruby 3   | [![Ruby 3.2 Compat][💎ruby-3.2i]](https://github.com/kettle-rb/tree_haver/actions/workflows/supported.yml) [![Ruby 3.3 Compat][💎ruby-3.3i]](https://github.com/kettle-rb/tree_haver/actions/workflows/supported.yml) [![Ruby 3.4 Compat][💎ruby-c-i]](https://github.com/kettle-rb/tree_haver/actions/workflows/current.yml) [![Ruby HEAD Compat][💎ruby-headi]](https://github.com/kettle-rb/tree_haver/actions/workflows/heads.yml)                                                                                              |
-| Support & Community     | [![Join Me on Daily.dev's RubyFriends][✉️ruby-friends-img]](https://app.daily.dev/squads/rubyfriends) [![Live Chat on Discord][✉️discord-invite-img-ftb]](https://discord.gg/3qme4XHNKN) [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]](https://www.upwork.com/freelancers/~014942e9b056abdf86?mp_source=share) [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]](https://www.codementor.io/peterboling?utm_source=github&utm_medium=button&utm_term=peterboling&utm_campaign=github)                    |
-| Source                  | [![Source on GitLab.com][📜src-gl-img]](https://gitlab.com/kettle-rb/tree_haver/) [![Source on CodeBerg.org][📜src-cb-img]](https://codeberg.org/kettle-rb/tree_haver) [![Source on Github.com][📜src-gh-img]](https://github.com/kettle-rb/tree_haver) [![The best SHA: dQw4w9WgXcQ\!](https://img.shields.io/badge/KLOC-2.484-FFDD67.svg?style=for-the-badge&logo=YouTube&logoColor=blue)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)                                                                                           |
-| Documentation           | [![Current release on RubyDoc.info][📜docs-cr-rd-img]](http://rubydoc.info/gems/tree_haver) [![YARD on Galtzo.com][📜docs-head-rd-img]](https://tree-haver.galtzo.com) [![Maintainer Blog][🚂maint-blog-img]](http://www.railsbling.com/tags/tree_haver) [![GitLab Wiki][📜gl-wiki-img]](https://gitlab.com/kettle-rb/tree_haver/-/wikis/home) [![GitHub Wiki][📜gh-wiki-img]](https://github.com/kettle-rb/tree_haver/wiki)                                                                                                        |
-| Compliance              | [![License: MIT][📄license-img]](https://opensource.org/licenses/MIT) [![Compatible with Apache Software Projects: Verified by SkyWalking Eyes][📄license-compat-img]](https://dev.to/galtzo/how-to-check-license-compatibility-41h0) [![📄ilo-declaration-img][📄ilo-declaration-img]](https://www.ilo.org/declaration/lang--en/index.htm) [![Security Policy][🔐security-img]](SECURITY.md) [![Contributor Covenant 2.1][🪇conduct-img]](CODE_OF_CONDUCT.md) [![SemVer 2.0.0][📌semver-img]](https://semver.org/spec/v2.0.0.html) |
-| Style                   | [![Enforced Code Style Linter][💎rlts-img]](https://github.com/rubocop-lts/rubocop-lts) [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]](https://keepachangelog.com/en/1.0.0/) [![Gitmoji Commits][📌gitmoji-img]](https://gitmoji.dev) [![Compatibility appraised by: appraisal2][💎appraisal2-img]](https://github.com/appraisal-rb/appraisal2)                                                                                                                                                                                  |
-| Maintainer 🎖️          | [![Follow Me on LinkedIn][💖🖇linkedin-img]](http://www.linkedin.com/in/peterboling) [![Follow Me on Ruby.Social][💖🐘ruby-mast-img]](https://ruby.social/@galtzo) [![Follow Me on Bluesky][💖🦋bluesky-img]](https://bsky.app/profile/galtzo.com) [![Contact Maintainer][🚂maint-contact-img]](http://www.railsbling.com/contact) [![My technical writing][💖💁🏼‍♂️devto-img]](https://dev.to/galtzo)                                                                                                                             |
-| `...` 💖                | [![Find Me on WellFound:][💖✌️wellfound-img]](https://wellfound.com/u/peter-boling) [![Find Me on CrunchBase][💖💲crunchbase-img]](https://www.crunchbase.com/person/peter-boling) [![My LinkTree][💖🌳linktree-img]](https://linktr.ee/galtzo) [![More About Me][💖💁🏼‍♂️aboutme-img]](https://about.me/peter.boling) [🧊][💖🧊berg] [🐙][💖🐙hub] [🛖][💖🛖hut] [🧪][💖🧪lab]                                                                                                                                                    |
+| Works with JRuby        | [![JRuby 10.0 Compat][💎jruby-c-i]][🚎11-c-wf] [![JRuby HEAD Compat][💎jruby-headi]][🚎3-hd-wf]                                                                                                                                                                                                                                                                                                               |
+| Works with Truffle Ruby | [![Truffle Ruby 23.1 Compat][💎truby-23.1i]][🚎9-t-wf] [![Truffle Ruby 24.1 Compat][💎truby-c-i]][🚎11-c-wf]                                                                                                                                                                                                                                                                                               |
+| Works with MRI Ruby 3   | [![Ruby 3.2 Compat][💎ruby-3.2i]][🚎6-s-wf] [![Ruby 3.3 Compat][💎ruby-3.3i]][🚎6-s-wf] [![Ruby 3.4 Compat][💎ruby-c-i]][🚎11-c-wf] [![Ruby HEAD Compat][💎ruby-headi]][🚎3-hd-wf]                                                                                              |
+| Support & Community     | [![Join Me on Daily.dev's RubyFriends][✉️ruby-friends-img]][✉️ruby-friends] [![Live Chat on Discord][✉️discord-invite-img-ftb]][🖼️galtzo-discord] [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]][👨🏼‍🏫expsup-upwork] [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]][👨🏼‍🏫expsup-codementor]                    |
+| Source                  | [![Source on GitLab.com][📜src-gl-img]][📜src-gl] [![Source on CodeBerg.org][📜src-cb-img]][📜src-cb] [![Source on Github.com][📜src-gh-img]][📜src-gh] [![The best SHA: dQw4w9WgXcQ\!](https://img.shields.io/badge/KLOC-2.484-FFDD67.svg?style=for-the-badge&logo=YouTube&logoColor=blue)][🧮kloc]                                                                                           |
+| Documentation           | [![Current release on RubyDoc.info][📜docs-cr-rd-img]][🚎yard-current] [![YARD on Galtzo.com][📜docs-head-rd-img]][🚎yard-head] [![Maintainer Blog][🚂maint-blog-img]][🚂maint-blog] [![GitLab Wiki][📜gl-wiki-img]][📜gl-wiki] [![GitHub Wiki][📜gh-wiki-img]][📜gh-wiki]                                                                                                        |
+| Compliance              | [![License: MIT][📄license-img]][📄license-ref] [![Compatible with Apache Software Projects: Verified by SkyWalking Eyes][📄license-compat-img]][📄license-compat] [![📄ilo-declaration-img][📄ilo-declaration-img]][📄ilo-declaration] [![Security Policy][🔐security-img]][🔐security] [![Contributor Covenant 2.1][🪇conduct-img]][🪇conduct] [![SemVer 2.0.0][📌semver-img]][📌semver] |
+| Style                   | [![Enforced Code Style Linter][💎rlts-img]][💎rlts] [![Keep-A-Changelog 1.0.0][📗keep-changelog-img]][📗keep-changelog] [![Gitmoji Commits][📌gitmoji-img]][📌gitmoji] [![Compatibility appraised by: appraisal2][💎appraisal2-img]][💎appraisal2]                                                                                                                                                                                  |
+| Maintainer 🎖️          | [![Follow Me on LinkedIn][💖🖇linkedin-img]][💖🖇linkedin] [![Follow Me on Ruby.Social][💖🐘ruby-mast-img]][💖🐘ruby-mast] [![Follow Me on Bluesky][💖🦋bluesky-img]][💖🦋bluesky] [![Contact Maintainer][🚂maint-contact-img]][🚂maint-contact] [![My technical writing][💖💁🏼‍♂️devto-img]][💖💁🏼‍♂️devto]                                                                                                                             |
+| `...` 💖                | [![Find Me on WellFound:][💖✌️wellfound-img]][💖✌️wellfound] [![Find Me on CrunchBase][💖💲crunchbase-img]][💖💲crunchbase] [![My LinkTree][💖🌳linktree-img]][💖🌳linktree] [![More About Me][💖💁🏼‍♂️aboutme-img]][💖💁🏼‍♂️aboutme] [🧊][💖🧊berg] [🐙][💖🐙hub] [🛖][💖🛖hut] [🧪][💖🧪lab]                                                                                                                                                    |
 
 ### Compatibility
 
@@ -556,13 +556,13 @@ Compatible with MRI Ruby 3.2.0+, and concordant releases of JRuby, and TruffleRu
 | 🧪 [kettle-rb/tree\_haver on GitLab][📜src-gl]   | The Truth                                                                          | [💚][🤝gl-issues]          | [💚][🤝gl-pulls]          | [💚][📜gl-wiki]            | 🐭 Tiny Matrix            | ➖                              |
 | 🧊 [kettle-rb/tree\_haver on CodeBerg][📜src-cb] | An Ethical Mirror ([Donate][🤝cb-donate])                                          | [💚][🤝cb-issues]          | [💚][🤝cb-pulls]          | ➖                          | ⭕️ No Matrix              | ➖                              |
 | 🐙 [kettle-rb/tree\_haver on GitHub][📜src-gh]   | Another Mirror                                                                     | [💚][🤝gh-issues]          | [💚][🤝gh-pulls]          | [💚][📜gh-wiki]            | 💯 Full Matrix            | [💚][gh-discussions]           |
-| 🎮️ [Discord Server][🖼️galtzo-discord]          | [![Live Chat on Discord][✉️discord-invite-img-ftb]](https://discord.gg/3qme4XHNKN) | [Let's][🖼️galtzo-discord] | [talk][🖼️galtzo-discord] | [about][🖼️galtzo-discord] | [this][🖼️galtzo-discord] | [library\!][🖼️galtzo-discord] |
+| 🎮️ [Discord Server][🖼️galtzo-discord]          | [![Live Chat on Discord][✉️discord-invite-img-ftb]][🖼️galtzo-discord] | [Let's][🖼️galtzo-discord] | [talk][🖼️galtzo-discord] | [about][🖼️galtzo-discord] | [this][🖼️galtzo-discord] | [library\!][🖼️galtzo-discord] |
 
 </details>
 
 [gh-discussions]: https://github.com/kettle-rb/tree_haver/discussions
 
-### Enterprise Support [![Tidelift](https://tidelift.com/badges/package/rubygems/tree_haver)](https://tidelift.com/subscription/pkg/rubygems-tree_haver?utm_source=rubygems-tree_haver&utm_medium=referral&utm_campaign=readme)
+### Enterprise Support [![Tidelift](https://tidelift.com/badges/package/rubygems/tree_haver)][🏙️entsup-tidelift]
 
 Available as part of the Tidelift Subscription.
 
@@ -571,7 +571,7 @@ Available as part of the Tidelift Subscription.
 
 The maintainers of this and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source packages you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact packages you use.
 
-[![Get help from me on Tidelift][🏙️entsup-tidelift-img]](https://tidelift.com/subscription/pkg/rubygems-tree_haver?utm_source=rubygems-tree_haver&utm_medium=referral&utm_campaign=readme)
+[![Get help from me on Tidelift][🏙️entsup-tidelift-img]][🏙️entsup-tidelift]
 
   - 💡Subscribe for support guarantees covering *all* your FLOSS dependencies
 
@@ -580,11 +580,11 @@ The maintainers of this and thousands of other packages are working with Tidelif
   - 💡Tidelift pays maintainers to maintain the software you depend on\!<br/>📊`@`Pointy Haired Boss: An [enterprise support][🏙️entsup-tidelift] subscription is "[never gonna let you down][🧮kloc]", and *supports* open source maintainers
     Alternatively:
 
-  - [![Live Chat on Discord][✉️discord-invite-img-ftb]](https://discord.gg/3qme4XHNKN)
+  - [![Live Chat on Discord][✉️discord-invite-img-ftb]][🖼️galtzo-discord]
 
-  - [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]](https://www.upwork.com/freelancers/~014942e9b056abdf86?mp_source=share)
+  - [![Get help from me on Upwork][👨🏼‍🏫expsup-upwork-img]][👨🏼‍🏫expsup-upwork]
 
-  - [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]](https://www.codementor.io/peterboling?utm_source=github&utm_medium=button&utm_term=peterboling&utm_campaign=github)
+  - [![Get help from me on Codementor][👨🏼‍🏫expsup-codementor-img]][👨🏼‍🏫expsup-codementor]
 
 </details>
 
@@ -2033,7 +2033,7 @@ I’m developing a new library, [floss\_funding][🖇floss-funding-gem], designe
 
 **[Floss-Funding.dev][🖇floss-funding.dev]: 👉️ No network calls. 👉️ No tracking. 👉️ No oversight. 👉️ Minimal crypto hashing. 💡 Easily disabled nags**
 
-[![OpenCollective Backers][🖇osc-backers-i]](https://opencollective.com/kettle-rb#backer) [![OpenCollective Sponsors][🖇osc-sponsors-i]](https://opencollective.com/kettle-rb#sponsor) [![Sponsor Me on Github][🖇sponsor-img]](https://github.com/sponsors/pboling) [![Liberapay Goal Progress][⛳liberapay-img]](https://liberapay.com/pboling/donate) [![Donate on PayPal][🖇paypal-img]](https://www.paypal.com/paypalme/peterboling) [![Buy me a coffee][🖇buyme-small-img]](https://www.buymeacoffee.com/pboling) [![Donate on Polar][🖇polar-img]](https://polar.sh/pboling) [![Donate to my FLOSS efforts at ko-fi.com][🖇kofi-img]](https://ko-fi.com/O5O86SNP4) [![Donate to my FLOSS efforts using Patreon][🖇patreon-img]](https://patreon.com/galtzo)
+[![OpenCollective Backers][🖇osc-backers-i]][🖇osc-backers] [![OpenCollective Sponsors][🖇osc-sponsors-i]][🖇osc-sponsors] [![Sponsor Me on Github][🖇sponsor-img]][🖇sponsor] [![Liberapay Goal Progress][⛳liberapay-img]][⛳liberapay] [![Donate on PayPal][🖇paypal-img]][🖇paypal] [![Buy me a coffee][🖇buyme-small-img]][🖇buyme] [![Donate on Polar][🖇polar-img]][🖇polar] [![Donate to my FLOSS efforts at ko-fi.com][🖇kofi-img]][🖇kofi] [![Donate to my FLOSS efforts using Patreon][🖇patreon-img]][🖇patreon]
 
 ## 🔐 Security
 
@@ -2045,7 +2045,7 @@ If you need some ideas of where to help, you could work on adding more code cove
 or if it is already 💯 (see [below](#code-coverage)) check [reek](REEK), [issues][🤝gh-issues], or [PRs][🤝gh-pulls],
 or use the gem and think about how it could be better.
 
-We [![Keep A Changelog][📗keep-changelog-img]](https://keepachangelog.com/en/1.0.0/) so if you make changes, remember to update it.
+We [![Keep A Changelog][📗keep-changelog-img]][📗keep-changelog] so if you make changes, remember to update it.
 
 See [CONTRIBUTING.md][🤝contributing] for more detailed instructions.
 
@@ -2055,20 +2055,20 @@ See [CONTRIBUTING.md][🤝contributing].
 
 ### Code Coverage
 
-[![Coverage Graph][🏀codecov-g]](https://codecov.io/gh/kettle-rb/tree_haver)
+[![Coverage Graph][🏀codecov-g]][🏀codecov]
 
-[![Coveralls Test Coverage][🏀coveralls-img]](https://coveralls.io/github/kettle-rb/tree_haver?branch=main)
+[![Coveralls Test Coverage][🏀coveralls-img]][🏀coveralls]
 
-[![QLTY Test Coverage][🏀qlty-covi]](https://qlty.sh/gh/kettle-rb/projects/tree_haver/metrics/code?sort=coverageRating)
+[![QLTY Test Coverage][🏀qlty-covi]][🏀qlty-cov]
 
 ### 🪇 Code of Conduct
 
 Everyone interacting with this project's codebases, issue trackers,
-chat rooms and mailing lists agrees to follow the [![Contributor Covenant 2.1][🪇conduct-img]](CODE_OF_CONDUCT.md).
+chat rooms and mailing lists agrees to follow the [![Contributor Covenant 2.1][🪇conduct-img]][🪇conduct].
 
 ## 🌈 Contributors
 
-[![Contributors][🖐contributors-img]](https://github.com/kettle-rb/tree_haver/graphs/contributors)
+[![Contributors][🖐contributors-img]][🖐contributors]
 
 Made with [contributors-img][🖐contrib-rocks].
 
@@ -2089,7 +2089,7 @@ Also see GitLab Contributors: <https://gitlab.com/kettle-rb/tree_haver/-/graphs/
 
 ## 📌 Versioning
 
-This Library adheres to [![Semantic Versioning 2.0.0][📌semver-img]](https://semver.org/spec/v2.0.0.html).
+This Library adheres to [![Semantic Versioning 2.0.0][📌semver-img]][📌semver].
 Violations of this scheme should be reported as bugs.
 Specifically, if a minor or patch version is released that breaks backward compatibility,
 a new version should be immediately released that restores compatibility.
@@ -2127,7 +2127,7 @@ See [CHANGELOG.md][📌changelog] for a list of releases.
 ## 📄 License
 
 The gem is available as open source under the terms of
-the [MIT License][📄license] [![License: MIT][📄license-img]](https://opensource.org/licenses/MIT).
+the [MIT License][📄license] [![License: MIT][📄license-img]][📄license-ref].
 See [LICENSE.txt][📄license] for the official [Copyright Notice][📄copyright-notice-explainer].
 
 ### © Copyright
@@ -2155,11 +2155,11 @@ Please consider sponsoring me or the project.
 
 To join the community or get help 👇️ Join the Discord.
 
-[![Live Chat on Discord][✉️discord-invite-img-ftb]](https://discord.gg/3qme4XHNKN)
+[![Live Chat on Discord][✉️discord-invite-img-ftb]][🖼️galtzo-discord]
 
 To say "thanks\!" ☝️ Join the Discord or 👇️ send money.
 
-[![Sponsor kettle-rb/tree\_haver on Open Source Collective][🖇osc-all-bottom-img]](https://opencollective.com/kettle-rb) 💌 [![Sponsor me on GitHub Sponsors][🖇sponsor-bottom-img]](https://github.com/sponsors/pboling) 💌 [![Sponsor me on Liberapay][⛳liberapay-bottom-img]](https://liberapay.com/pboling/donate) 💌 [![Donate on PayPal][🖇paypal-bottom-img]](https://www.paypal.com/paypalme/peterboling)
+[![Sponsor kettle-rb/tree\_haver on Open Source Collective][🖇osc-all-bottom-img]][🖇osc] 💌 [![Sponsor me on GitHub Sponsors][🖇sponsor-bottom-img]][🖇sponsor] 💌 [![Sponsor me on Liberapay][⛳liberapay-bottom-img]][⛳liberapay] 💌 [![Donate on PayPal][🖇paypal-bottom-img]][🖇paypal]
 
 ### Please give the project a star ⭐ ♥.
 

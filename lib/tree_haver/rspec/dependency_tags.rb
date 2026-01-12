@@ -162,7 +162,7 @@ require "set"
 # ==== Language Parsing Capability Tags (*_parsing)
 #
 # [:toml_parsing]
-#   At least one TOML parser (tree-sitter-toml OR toml-rb/Citrus) is available.
+#   At least one TOML parser (tree-sitter-toml OR toml-rb/Citrus OR toml/Parslet) is available.
 #
 # [:markdown_parsing]
 #   At least one markdown parser (commonmarker OR markly) is available.
@@ -531,25 +531,26 @@ module TreeHaver
           nil
         end
 
-        # Check if commonmarker gem is available
+        # ============================================================
+        # Dynamic Backend Availability (via BackendRegistry)
+        # ============================================================
         #
-        # Uses BackendRegistry which allows commonmarker-merge to register its checker.
+        # External gems register tags with BackendRegistry.register_tag which
+        # dynamically defines *_available? methods on this module.
         #
-        # @return [Boolean] true if commonmarker gem is available
-        def commonmarker_available?
-          return @commonmarker_available if defined?(@commonmarker_available)
-          @commonmarker_available = TreeHaver::BackendRegistry.available?(:commonmarker)
-        end
-
-        # Check if markly gem is available
+        # @example External gem registers a tag
+        #   TreeHaver::BackendRegistry.register_tag(
+        #     :my_backend_backend,
+        #     category: :backend,
+        #     require_path: "my_backend/merge"
+        #   ) { MyBackend::Merge::Backend.available? }
         #
-        # Uses BackendRegistry which allows markly-merge to register its checker.
+        #   # The registration automatically defines:
+        #   TreeHaver::RSpec::DependencyTags.my_backend_available?  # => true/false
         #
-        # @return [Boolean] true if markly gem is available
-        def markly_available?
-          return @markly_available if defined?(@markly_available)
-          @markly_available = TreeHaver::BackendRegistry.available?(:markly)
-        end
+        # Built-in backends (prism, psych, citrus, parslet) have explicit methods
+        # defined below. External backends get methods defined dynamically when
+        # their gem calls register_tag.
 
         # Check if prism gem is available
         #
@@ -738,9 +739,13 @@ module TreeHaver
 
         # Check if at least one markdown backend is available
         #
+        # Uses BackendRegistry.tag_available? to check external backends that may
+        # not have their methods defined yet (registered by external gems).
+        #
         # @return [Boolean] true if any markdown backend works
         def any_markdown_backend_available?
-          markly_available? || commonmarker_available?
+          TreeHaver::BackendRegistry.tag_available?(:markly_backend) ||
+            TreeHaver::BackendRegistry.tag_available?(:commonmarker_backend)
         end
 
         def any_native_grammar_available?
@@ -812,46 +817,69 @@ module TreeHaver
           # Use stored blocked_backends if available, otherwise compute dynamically
           blocked = @blocked_backends || compute_blocked_backends
 
-          {
+          result = {
             # Backend selection from environment variables
             selected_backend: selected_backend,
             allowed_native_backends: allowed_native_backends,
             allowed_ruby_backends: allowed_ruby_backends,
-            # TreeHaver backends (*_backend) - skip blocked backends to avoid loading them
-            ffi_backend: blocked.include?(:ffi) ? :blocked : ffi_available?,
-            mri_backend: blocked.include?(:mri) ? :blocked : mri_backend_available?,
-            rust_backend: blocked.include?(:rust) ? :blocked : rust_backend_available?,
-            java_backend: blocked.include?(:java) ? :blocked : java_backend_available?,
-            prism_backend: blocked.include?(:prism) ? :blocked : prism_available?,
-            psych_backend: blocked.include?(:psych) ? :blocked : psych_available?,
-            commonmarker_backend: blocked.include?(:commonmarker) ? :blocked : commonmarker_available?,
-            markly_backend: blocked.include?(:markly) ? :blocked : markly_available?,
-            citrus_backend: blocked.include?(:citrus) ? :blocked : citrus_available?,
-            parslet_backend: blocked.include?(:parslet) ? :blocked : parslet_available?,
-            rbs_backend: blocked.include?(:rbs) ? :blocked : rbs_backend_available?,
-            # Ruby engines (*_engine)
-            ruby_engine: RUBY_ENGINE,
-            mri_engine: mri?,
-            jruby_engine: jruby?,
-            truffleruby_engine: truffleruby?,
-            # Tree-sitter grammars (*_grammar) - also respect blocked backends
-            # since grammar checks may load backends
-            libtree_sitter: libtree_sitter_available?,
-            bash_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_bash_available?,
-            toml_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_toml_available?,
-            json_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_json_available?,
-            jsonc_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_jsonc_available?,
-            rbs_grammar: blocked.include?(:mri) ? :blocked : tree_sitter_rbs_available?,
-            any_native_grammar: blocked.include?(:mri) ? :blocked : any_native_grammar_available?,
-            # Language parsing capabilities (*_parsing)
-            toml_parsing: any_toml_backend_available?,
-            markdown_parsing: any_markdown_backend_available?,
-            rbs_parsing: any_rbs_backend_available?,
-            # Specific libraries (*_gem)
-            toml_rb_gem: toml_rb_gem_available?,
-            toml_gem: toml_gem_available?,
-            rbs_gem: rbs_gem_available?,
           }
+
+          # Built-in TreeHaver backends (*_backend) - skip blocked backends to avoid loading them
+          builtin_backends = {
+            ffi: :ffi_available?,
+            mri: :mri_backend_available?,
+            rust: :rust_backend_available?,
+            java: :java_backend_available?,
+            prism: :prism_available?,
+            psych: :psych_available?,
+            citrus: :citrus_available?,
+            parslet: :parslet_available?,
+            rbs: :rbs_backend_available?,
+          }
+
+          builtin_backends.each do |backend, method|
+            tag = :"#{backend}_backend"
+            result[tag] = blocked.include?(backend) ? :blocked : public_send(method)
+          end
+
+          # Dynamically registered backends from BackendRegistry
+          TreeHaver::BackendRegistry.registered_tags.each do |tag_name|
+            next if result.key?(tag_name) # Don't override built-ins
+
+            meta = TreeHaver::BackendRegistry.tag_metadata(tag_name)
+            next unless meta && meta[:category] == :backend
+
+            backend = meta[:backend_name]
+            result[tag_name] = blocked.include?(backend) ? :blocked : TreeHaver::BackendRegistry.tag_available?(tag_name)
+          end
+
+          # Ruby engines (*_engine)
+          result[:ruby_engine] = RUBY_ENGINE
+          result[:mri_engine] = mri?
+          result[:jruby_engine] = jruby?
+          result[:truffleruby_engine] = truffleruby?
+
+          # Tree-sitter grammars (*_grammar) - also respect blocked backends
+          # since grammar checks may load backends
+          result[:libtree_sitter] = libtree_sitter_available?
+          result[:bash_grammar] = blocked.include?(:mri) ? :blocked : tree_sitter_bash_available?
+          result[:toml_grammar] = blocked.include?(:mri) ? :blocked : tree_sitter_toml_available?
+          result[:json_grammar] = blocked.include?(:mri) ? :blocked : tree_sitter_json_available?
+          result[:jsonc_grammar] = blocked.include?(:mri) ? :blocked : tree_sitter_jsonc_available?
+          result[:rbs_grammar] = blocked.include?(:mri) ? :blocked : tree_sitter_rbs_available?
+          result[:any_native_grammar] = blocked.include?(:mri) ? :blocked : any_native_grammar_available?
+
+          # Language parsing capabilities (*_parsing)
+          result[:toml_parsing] = any_toml_backend_available?
+          result[:markdown_parsing] = any_markdown_backend_available?
+          result[:rbs_parsing] = any_rbs_backend_available?
+
+          # Specific libraries (*_gem)
+          result[:toml_rb_gem] = toml_rb_gem_available?
+          result[:toml_gem] = toml_gem_available?
+          result[:rbs_gem] = rbs_gem_available?
+
+          result
         end
 
         # Get environment variable summary for debugging
@@ -907,7 +935,7 @@ module TreeHaver
         # @param test_source [String] sample source code to parse
         # @return [Boolean] true if parsing works without errors
         def grammar_works?(language, test_source)
-          debug = ENV["TREE_HAVER_DEBUG"]
+          debug = !ENV.fetch("TREE_HAVER_DEBUG", "false").casecmp?("false")
           env_var = "TREE_SITTER_#{language.to_s.upcase}_PATH"
           env_value = ENV[env_var]
 
@@ -972,7 +1000,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     # Print dependency summary if TREE_HAVER_DEBUG is set
-    if ENV["TREE_HAVER_DEBUG"]
+    unless ENV.fetch("TREE_HAVER_DEBUG", "false").casecmp?("false")
       puts "\n=== TreeHaver Environment Variables ==="
       deps.env_summary.each do |var, value|
         puts "  #{var}: #{value.inspect}"
@@ -1063,35 +1091,35 @@ RSpec.configure do |config|
   #
   # This is dynamic based on TreeHaver::Backends::BLOCKED_BY configuration.
 
-  # Map of backend symbols to their availability check methods
-  backend_availability_methods = {
-    mri: :mri_backend_available?,
-    rust: :rust_backend_available?,
-    ffi: :ffi_available?,
-    java: :java_backend_available?,
-    prism: :prism_available?,
-    psych: :psych_available?,
-    commonmarker: :commonmarker_available?,
-    markly: :markly_available?,
-    citrus: :citrus_available?,
-    parslet: :parslet_available?,
-    rbs: :rbs_backend_available?,
-  }
+  # Build backend maps dynamically from BackendRegistry and built-in backends
+  # This allows external gems to register and automatically get tag support
+  backend_availability_methods = {}
+  backend_tags = {}
 
-  # Map of backend symbols to their RSpec tag names
-  backend_tags = {
-    mri: :mri_backend,
-    rust: :rust_backend,
-    ffi: :ffi_backend,
-    java: :java_backend,
-    prism: :prism_backend,
-    psych: :psych_backend,
-    commonmarker: :commonmarker_backend,
-    markly: :markly_backend,
-    citrus: :citrus_backend,
-    parslet: :parslet_backend,
-    rbs: :rbs_backend,
-  }
+  # Built-in backends (always present in tree_haver)
+  builtin_backends = %i[mri rust ffi java prism psych citrus parslet rbs]
+  builtin_backends.each do |backend|
+    # Special case for ffi which uses ffi_available? not ffi_backend_available?
+    availability_method = backend == :ffi ? :ffi_available? : :"#{backend}_available?"
+    # Special case for backends that use *_backend_available? naming
+    availability_method = :"#{backend}_backend_available?" if %i[mri rust java rbs].include?(backend)
+
+    backend_availability_methods[backend] = availability_method
+    backend_tags[backend] = :"#{backend}_backend"
+  end
+
+  # Add dynamically registered backends from BackendRegistry
+  # This picks up external gems like commonmarker-merge, markly-merge, etc.
+  TreeHaver::BackendRegistry.registered_tags.each do |tag_name|
+    meta = TreeHaver::BackendRegistry.tag_metadata(tag_name)
+    next unless meta && meta[:category] == :backend
+
+    backend_name = meta[:backend_name]
+    next if backend_availability_methods.key?(backend_name) # Don't override built-ins
+
+    backend_availability_methods[backend_name] = :"#{backend_name}_available?"
+    backend_tags[backend_name] = tag_name
+  end
 
   # Determine which backends should NOT have availability checked
   # based on which *_backend_only tag is being run OR which backend is
@@ -1219,7 +1247,7 @@ RSpec.configure do |config|
   # Language Parsing Capability Tags
   # ============================================================
   # Tags: *_parsing - require ANY parser for a language (any backend that can parse it)
-  #   :toml_parsing   - any TOML parser (tree-sitter-toml OR toml-rb/Citrus)
+  #   :toml_parsing   - any TOML parser (tree-sitter-toml OR toml-rb/Citrus OR toml/Parslet)
   #   :markdown_parsing - any Markdown parser (commonmarker OR markly)
   #   :rbs_parsing    - any RBS parser (rbs gem OR tree-sitter-rbs)
   #   :native_parsing - any native tree-sitter backend + grammar

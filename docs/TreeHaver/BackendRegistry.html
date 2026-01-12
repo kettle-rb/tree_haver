@@ -108,6 +108,19 @@ their checkers automatically when loaded from <code>tree_haver/backends/*.rb</co
 their checkers when their backend module is loaded</li>
 </ul>
 
+<p>== Full Tag Registration</p>
+
+<p>External gems can register complete tag support using <span class='object_link'><a href="#register_tag-class_method" title="TreeHaver::BackendRegistry.register_tag (method)">BackendRegistry.register_tag</a></span>:</p>
+<ul>
+  <li>Tag name (e.g., :commonmarker_backend)</li>
+  <li>Category (:backend, :gem, :parsing, :grammar)</li>
+  <li>Availability checker</li>
+  <li>Optional require path for lazy loading</li>
+</ul>
+
+<p>This enables tree_haver/rspec/dependency_tags to automatically configure<br />
+RSpec exclusion filters for any registered tag without hardcoded knowledge.</p>
+
 <p>== Thread Safety</p>
 
 <p>All operations are thread-safe using a Mutex for synchronization.<br />
@@ -122,13 +135,24 @@ Results are cached after first check for performance.</p>
     <h4 class="tag_title">Examples:</h4>
     
       
-        <h5 class="example_title"><div class='inline'><p>Registering a backend availability checker (in your gem)</p>
+        <h5 class="example_title"><div class='inline'><p>Registering a backend availability checker (simple form)</p>
 </div></h5>
       
       <pre class="example code"><code><span class='comment'># In commonmarker-merge/lib/commonmarker/merge/backend.rb
 </span><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>BackendRegistry</span><span class='period'>.</span><span class='id identifier rubyid_register_availability_checker'><span class='object_link'><a href="#register_availability_checker-class_method" title="TreeHaver::BackendRegistry.register_availability_checker (method)">register_availability_checker</a></span></span><span class='lparen'>(</span><span class='symbol'>:commonmarker</span><span class='rparen'>)</span> <span class='kw'>do</span>
   <span class='id identifier rubyid_available?'>available?</span>
 <span class='kw'>end</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Registering a full tag with require path (preferred for external gems)</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>BackendRegistry</span><span class='period'>.</span><span class='id identifier rubyid_register_tag'><span class='object_link'><a href="#register_tag-class_method" title="TreeHaver::BackendRegistry.register_tag (method)">register_tag</a></span></span><span class='lparen'>(</span>
+  <span class='symbol'>:commonmarker_backend</span><span class='comma'>,</span>
+  <span class='label'>category:</span> <span class='symbol'>:backend</span><span class='comma'>,</span>
+  <span class='label'>backend_name:</span> <span class='symbol'>:commonmarker</span><span class='comma'>,</span>
+  <span class='label'>require_path:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commonmarker/merge</span><span class='tstring_end'>&quot;</span></span>
+<span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='const'>Commonmarker</span><span class='op'>::</span><span class='const'>Merge</span><span class='op'>::</span><span class='const'>Backend</span><span class='period'>.</span><span class='id identifier rubyid_available?'>available?</span> <span class='rbrace'>}</span></code></pre>
     
       
         <h5 class="example_title"><div class='inline'><p>Checking backend availability</p>
@@ -139,16 +163,11 @@ Results are cached after first check for performance.</p>
 </span><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>BackendRegistry</span><span class='period'>.</span><span class='id identifier rubyid_available?'><span class='object_link'><a href="#available%3F-class_method" title="TreeHaver::BackendRegistry.available? (method)">available?</a></span></span><span class='lparen'>(</span><span class='symbol'>:rbs</span><span class='rparen'>)</span>           <span class='comment'># =&gt; true/false</span></code></pre>
     
       
-        <h5 class="example_title"><div class='inline'><p>Checking if a checker is registered</p>
+        <h5 class="example_title"><div class='inline'><p>Getting all registered tags</p>
 </div></h5>
       
-      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>BackendRegistry</span><span class='period'>.</span><span class='id identifier rubyid_registered?'><span class='object_link'><a href="#registered%3F-class_method" title="TreeHaver::BackendRegistry.registered? (method)">registered?</a></span></span><span class='lparen'>(</span><span class='symbol'>:commonmarker</span><span class='rparen'>)</span> <span class='comment'># =&gt; true/false</span></code></pre>
-    
-      
-        <h5 class="example_title"><div class='inline'><p>Getting all registered backends</p>
-</div></h5>
-      
-      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>BackendRegistry</span><span class='period'>.</span><span class='id identifier rubyid_registered_backends'><span class='object_link'><a href="#registered_backends-class_method" title="TreeHaver::BackendRegistry.registered_backends (method)">registered_backends</a></span></span> <span class='comment'># =&gt; [:mri, :rust, :ffi, ...]</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>BackendRegistry</span><span class='period'>.</span><span class='id identifier rubyid_registered_tags'><span class='object_link'><a href="#registered_tags-class_method" title="TreeHaver::BackendRegistry.registered_tags (method)">registered_tags</a></span></span> <span class='comment'># =&gt; [:commonmarker_backend, :markly_backend, ...]
+</span><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'>BackendRegistry</span><span class='period'>.</span><span class='id identifier rubyid_tags_by_category'><span class='object_link'><a href="#tags_by_category-class_method" title="TreeHaver::BackendRegistry.tags_by_category (method)">tags_by_category</a></span></span><span class='lparen'>(</span><span class='symbol'>:backend</span><span class='rparen'>)</span> <span class='comment'># =&gt; [...]</span></code></pre>
     
   </div>
 
@@ -161,6 +180,36 @@ Results are cached after first check for performance.</p>
   </ul>
 
 </div>
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="CATEGORIES-constant" class="">CATEGORIES =
+          <div class="docstring">
+  <div class="discussion">
+    <p class="note private">
+  <strong>This constant is part of a private API.</strong>
+  You should avoid using this constant if possible, as it may be removed or be changed in the future.
+</p>
+<p>Tag categories for organizing dependency tags</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='qsymbols_beg'>%i[</span><span class='tstring_content'>backend</span><span class='words_sep'> </span><span class='tstring_content'>gem</span><span class='words_sep'> </span><span class='tstring_content'>parsing</span><span class='words_sep'> </span><span class='tstring_content'>grammar</span><span class='words_sep'> </span><span class='tstring_content'>engine</span><span class='words_sep'> </span><span class='tstring_content'>other</span><span class='tstring_end'>]</span></span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
+      
+    </dl>
+  
+
 
 
 
@@ -261,7 +310,30 @@ Results are cached after first check for performance.</p>
   
 
   
-    <span class="summary_desc"><div class='inline'><p>Register an availability checker for a backend.</p>
+    <span class="summary_desc"><div class='inline'><p>Register an availability checker for a backend (simple form).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#register_tag-class_method" title="register_tag (class method)">.<strong>register_tag</strong>(tag_name, category:, backend_name: nil, require_path: nil, checker: nil) { ... } &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Register a full dependency tag with all metadata.</p>
 </div></span>
   
 </li>
@@ -308,6 +380,144 @@ Results are cached after first check for performance.</p>
 
   
     <span class="summary_desc"><div class='inline'><p>Get all registered backend names.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#registered_tags-class_method" title="registered_tags (class method)">.<strong>registered_tags</strong>  &#x21d2; Array&lt;Symbol&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get all registered tag names.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tag_available%3F-class_method" title="tag_available? (class method)">.<strong>tag_available?</strong>(tag_name)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if a tag’s dependency is available.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tag_metadata-class_method" title="tag_metadata (class method)">.<strong>tag_metadata</strong>(tag_name)  &#x21d2; Hash<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get tag metadata.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tag_registered%3F-class_method" title="tag_registered? (class method)">.<strong>tag_registered?</strong>(tag_name)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Check if a tag is registered.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tag_summary-class_method" title="tag_summary (class method)">.<strong>tag_summary</strong>  &#x21d2; Hash{Symbol =&gt; Boolean} </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get a summary of all registered tags and their availability.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#tags_by_category-class_method" title="tags_by_category (class method)">.<strong>tags_by_category</strong>(category)  &#x21d2; Array&lt;Symbol&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Get tags filtered by category.</p>
 </div></span>
   
 </li>
@@ -399,46 +609,46 @@ Use <span class='object_link'><a href="#clear_cache!-class_method" title="TreeHa
       <pre class="lines">
 
 
-114
-115
-116
-117
-118
-119
-120
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150</pre>
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 114</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 199</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_available?'>available?</span><span class='lparen'>(</span><span class='id identifier rubyid_backend_name'>backend_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span> <span class='id identifier rubyid_backend_name'>backend_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
@@ -518,21 +728,23 @@ Primarily useful for testing to reset state between test cases.</p>
       <pre class="lines">
 
 
-205
-206
-207
-208
-209
-210
-211</pre>
+290
+291
+292
+293
+294
+295
+296
+297</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 205</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 290</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_clear!'>clear!</span>
   <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
     <span class='ivar'>@availability_checkers</span><span class='period'>.</span><span class='id identifier rubyid_clear'>clear</span>
     <span class='ivar'>@availability_cache</span><span class='period'>.</span><span class='id identifier rubyid_clear'>clear</span>
+    <span class='ivar'>@tag_registry</span><span class='period'>.</span><span class='id identifier rubyid_clear'>clear</span>
   <span class='kw'>end</span>
   <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
@@ -578,15 +790,15 @@ Primarily useful for testing to reset state between test cases.</p>
       <pre class="lines">
 
 
-189
-190
-191
-192
-193
-194</pre>
+274
+275
+276
+277
+278
+279</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 189</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 274</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_clear_cache!'>clear_cache!</span>
   <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
@@ -610,11 +822,13 @@ Primarily useful for testing to reset state between test cases.</p>
   
 </h3><div class="docstring">
   <div class="discussion">
-    <p class="note returns_void">This method returns an undefined value.</p><p>Register an availability checker for a backend</p>
+    <p class="note returns_void">This method returns an undefined value.</p><p>Register an availability checker for a backend (simple form)</p>
 
 <p>The checker should be a callable (lambda/proc/block) that returns true if<br />
 the backend is available and can be used. The checker is called lazily<br />
 (only when <span class='object_link'><a href="#available%3F-class_method" title="TreeHaver::BackendRegistry.available? (method)">available?</a></span> is first called for this backend).</p>
+
+<p>For full tag support including require paths, use <span class='object_link'><a href="#register_tag-class_method" title="TreeHaver::BackendRegistry.register_tag (method)">register_tag</a></span> instead.</p>
 
 
   </div>
@@ -759,21 +973,21 @@ the backend is available and can be used. The checker is called lazily<br />
       <pre class="lines">
 
 
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97</pre>
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 86</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 171</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register_availability_checker'>register_availability_checker</span><span class='lparen'>(</span><span class='id identifier rubyid_backend_name'>backend_name</span><span class='comma'>,</span> <span class='id identifier rubyid_checker'>checker</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_callable'>callable</span> <span class='op'>=</span> <span class='id identifier rubyid_checker'>checker</span> <span class='op'>||</span> <span class='id identifier rubyid_block'>block</span>
@@ -785,6 +999,262 @@ the backend is available and can be used. The checker is called lazily<br />
     <span class='comment'># Clear cache for this backend when re-registering
 </span>    <span class='ivar'>@availability_cache</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_backend_name'>backend_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
+  <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="register_tag-class_method">
+  
+    .<strong>register_tag</strong>(tag_name, category:, backend_name: nil, require_path: nil, checker: nil) { ... } &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p><p>Register a full dependency tag with all metadata</p>
+
+<p>This is the preferred method for external gems to register their availability<br />
+with complete tag support. It registers both the availability checker and<br />
+the tag metadata needed for RSpec configuration.</p>
+
+<p>When a tag is registered, this also dynamically defines a <code>*_available?</code> method<br />
+on <code>TreeHaver::RSpec::DependencyTags</code> if it doesn’t already exist.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Register a backend tag with require path</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_register_tag'>register_tag</span><span class='lparen'>(</span>
+  <span class='symbol'>:commonmarker_backend</span><span class='comma'>,</span>
+  <span class='label'>category:</span> <span class='symbol'>:backend</span><span class='comma'>,</span>
+  <span class='label'>require_path:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>commonmarker/merge</span><span class='tstring_end'>&quot;</span></span>
+<span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='const'>Commonmarker</span><span class='op'>::</span><span class='const'>Merge</span><span class='op'>::</span><span class='const'>Backend</span><span class='period'>.</span><span class='id identifier rubyid_available?'>available?</span> <span class='rbrace'>}</span></code></pre>
+    
+      
+        <h5 class="example_title"><div class='inline'><p>Register a gem tag</p>
+</div></h5>
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_register_tag'>register_tag</span><span class='lparen'>(</span>
+  <span class='symbol'>:toml_gem</span><span class='comma'>,</span>
+  <span class='label'>category:</span> <span class='symbol'>:gem</span><span class='comma'>,</span>
+  <span class='label'>require_path:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>toml</span><span class='tstring_end'>&quot;</span></span>
+<span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='const'>TOML</span><span class='rparen'>)</span> <span class='rbrace'>}</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>tag_name</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the RSpec tag name (e.g., :commonmarker_backend)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>category</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>one of :backend, :gem, :parsing, :grammar, :engine, :other</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>backend_name</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>the backend name for availability checks (defaults to tag without suffix)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>require_path</span>
+      
+      
+        <span class='type'>(<tt>String</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>optional require path to load before checking availability</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>checker</span>
+      
+      
+        <span class='type'>(<tt>#call</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>a callable that returns true if available</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Yields:</p>
+<ul class="yield">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'><p>Block form of checker (alternative to passing a callable)</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Yield Returns:</p>
+<ul class="yieldreturn">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if the tag’s dependency is available</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>ArgumentError</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 109</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_register_tag'>register_tag</span><span class='lparen'>(</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='comma'>,</span> <span class='label'>category:</span><span class='comma'>,</span> <span class='label'>backend_name:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>require_path:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>checker:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_callable'>callable</span> <span class='op'>=</span> <span class='id identifier rubyid_checker'>checker</span> <span class='op'>||</span> <span class='id identifier rubyid_block'>block</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Must provide a checker callable or block</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_callable'>callable</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Checker must respond to #call</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_callable'>callable</span><span class='period'>.</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:call</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Invalid category: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_category'>category</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#CATEGORIES-constant" title="TreeHaver::BackendRegistry::CATEGORIES (constant)">CATEGORIES</a></span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_category'>category</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_tag_sym'>tag_sym</span> <span class='op'>=</span> <span class='id identifier rubyid_tag_name'>tag_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
+  <span class='comment'># Derive backend_name from tag_name if not provided (e.g., :commonmarker_backend -&gt; :commonmarker)
+</span>  <span class='id identifier rubyid_derived_backend'>derived_backend</span> <span class='op'>=</span> <span class='id identifier rubyid_backend_name'>backend_name</span> <span class='op'>||</span> <span class='id identifier rubyid_tag_sym'>tag_sym</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>_backend$</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
+
+  <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
+    <span class='ivar'>@tag_registry</span><span class='lbracket'>[</span><span class='id identifier rubyid_tag_sym'>tag_sym</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+      <span class='label'>category:</span> <span class='id identifier rubyid_category'>category</span><span class='comma'>,</span>
+      <span class='label'>backend_name:</span> <span class='id identifier rubyid_derived_backend'>derived_backend</span><span class='comma'>,</span>
+      <span class='label'>require_path:</span> <span class='id identifier rubyid_require_path'>require_path</span><span class='comma'>,</span>
+      <span class='label'>checker:</span> <span class='id identifier rubyid_callable'>callable</span><span class='comma'>,</span>
+    <span class='rbrace'>}</span>
+    <span class='comment'># Also register as availability checker for the backend name
+</span>    <span class='ivar'>@availability_checkers</span><span class='lbracket'>[</span><span class='id identifier rubyid_derived_backend'>derived_backend</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_callable'>callable</span>
+    <span class='comment'># Clear caches
+</span>    <span class='ivar'>@availability_cache</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='id identifier rubyid_derived_backend'>derived_backend</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Dynamically define the availability method on DependencyTags
+</span>  <span class='comment'># This happens outside the mutex to avoid potential deadlock
+</span>  <span class='id identifier rubyid_define_availability_method'>define_availability_method</span><span class='lparen'>(</span><span class='id identifier rubyid_derived_backend'>derived_backend</span><span class='comma'>,</span> <span class='id identifier rubyid_tag_sym'>tag_sym</span><span class='rparen'>)</span>
+
   <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -862,14 +1332,14 @@ the backend is available and can be used. The checker is called lazily<br />
       <pre class="lines">
 
 
-160
-161
-162
-163
-164</pre>
+245
+246
+247
+248
+249</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 160</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 245</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_registered?'>registered?</span><span class='lparen'>(</span><span class='id identifier rubyid_backend_name'>backend_name</span><span class='rparen'>)</span>
   <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
@@ -932,18 +1402,552 @@ the backend is available and can be used. The checker is called lazily<br />
       <pre class="lines">
 
 
-173
-174
-175
-176
-177</pre>
+258
+259
+260
+261
+262</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 173</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 258</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_registered_backends'>registered_backends</span>
   <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
     <span class='ivar'>@availability_checkers</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="registered_tags-class_method">
+  
+    .<strong>registered_tags</strong>  &#x21d2; <tt>Array&lt;Symbol&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get all registered tag names</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_registered_tags'>registered_tags</span>
+<span class='comment'># =&gt; [:commonmarker_backend, :markly_backend, :toml_gem, ...]</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Symbol&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>list of registered tag names</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+310
+311
+312
+313
+314</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 310</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_registered_tags'>registered_tags</span>
+  <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
+    <span class='ivar'>@tag_registry</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tag_available?-class_method">
+  
+    .<strong>tag_available?</strong>(tag_name)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if a tag’s dependency is available</p>
+
+<p>This method handles require paths: if the tag has a require_path, it will<br />
+attempt to load the gem before checking availability. This enables lazy<br />
+loading of external gems.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_tag_available?'>tag_available?</span><span class='lparen'>(</span><span class='symbol'>:commonmarker_backend</span><span class='rparen'>)</span>  <span class='comment'># =&gt; true/false</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>tag_name</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the tag name to check</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if the tag’s dependency is available</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 365</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tag_available?'>tag_available?</span><span class='lparen'>(</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_tag_sym'>tag_sym</span> <span class='op'>=</span> <span class='id identifier rubyid_tag_name'>tag_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
+
+  <span class='comment'># Get tag metadata
+</span>  <span class='id identifier rubyid_meta'>meta</span> <span class='op'>=</span> <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='lbrace'>{</span> <span class='ivar'>@tag_registry</span><span class='lbracket'>[</span><span class='id identifier rubyid_tag_sym'>tag_sym</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+
+  <span class='comment'># If tag not registered, check if it&#39;s a backend name with _backend suffix
+</span>  <span class='kw'>unless</span> <span class='id identifier rubyid_meta'>meta</span>
+    <span class='comment'># Try to derive backend name (e.g., :commonmarker_backend -&gt; :commonmarker)
+</span>    <span class='id identifier rubyid_backend_name'>backend_name</span> <span class='op'>=</span> <span class='id identifier rubyid_tag_sym'>tag_sym</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>_backend$</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_available?'>available?</span><span class='lparen'>(</span><span class='id identifier rubyid_backend_name'>backend_name</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_backend_name'>backend_name</span> <span class='op'>!=</span> <span class='id identifier rubyid_tag_sym'>tag_sym</span>
+    <span class='kw'>return</span> <span class='kw'>false</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Try to load the gem if require_path is specified
+</span>  <span class='kw'>if</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:require_path</span><span class='rbracket'>]</span>
+    <span class='kw'>begin</span>
+      <span class='id identifier rubyid_require'>require</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:require_path</span><span class='rbracket'>]</span>
+    <span class='kw'>rescue</span> <span class='const'>LoadError</span>
+      <span class='comment'># Gem not available
+</span>      <span class='kw'>return</span> <span class='kw'>false</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='comment'># Check availability using the backend name
+</span>  <span class='id identifier rubyid_available?'>available?</span><span class='lparen'>(</span><span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:backend_name</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tag_metadata-class_method">
+  
+    .<strong>tag_metadata</strong>(tag_name)  &#x21d2; <tt>Hash</tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get tag metadata</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_tag_metadata'>tag_metadata</span><span class='lparen'>(</span><span class='symbol'>:commonmarker_backend</span><span class='rparen'>)</span>
+<span class='comment'># =&gt; { category: :backend, backend_name: :commonmarker, require_path: &quot;commonmarker/merge&quot;, checker: #&lt;Proc&gt; }</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>tag_name</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the tag name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>tag metadata or nil if not registered</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+338
+339
+340
+341
+342</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 338</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tag_metadata'>tag_metadata</span><span class='lparen'>(</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='rparen'>)</span>
+  <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
+    <span class='ivar'>@tag_registry</span><span class='lbracket'>[</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rbracket'>]</span><span class='op'>&amp;.</span><span class='id identifier rubyid_dup'>dup</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tag_registered?-class_method">
+  
+    .<strong>tag_registered?</strong>(tag_name)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Check if a tag is registered</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>tag_name</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the tag name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>true if the tag is registered</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+348
+349
+350
+351
+352</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 348</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tag_registered?'>tag_registered?</span><span class='lparen'>(</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='rparen'>)</span>
+  <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
+    <span class='ivar'>@tag_registry</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_tag_name'>tag_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tag_summary-class_method">
+  
+    .<strong>tag_summary</strong>  &#x21d2; <tt>Hash{Symbol =&gt; Boolean}</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get a summary of all registered tags and their availability</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_tag_summary'>tag_summary</span>
+<span class='comment'># =&gt; { commonmarker_backend: true, markly_backend: false, ... }</span></code></pre>
+    
+  </div>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash{Symbol =&gt; Boolean}</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>map of tag name to availability</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+400
+401
+402
+403
+404</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 400</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tag_summary'>tag_summary</span>
+  <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='lbrace'>{</span> <span class='ivar'>@tag_registry</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='period'>.</span><span class='id identifier rubyid_dup'>dup</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_each_with_object'>each_with_object</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_tag'>tag</span><span class='comma'>,</span> <span class='id identifier rubyid_result'>result</span><span class='op'>|</span>
+    <span class='id identifier rubyid_result'>result</span><span class='lbracket'>[</span><span class='id identifier rubyid_tag'>tag</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_tag_available?'>tag_available?</span><span class='lparen'>(</span><span class='id identifier rubyid_tag'>tag</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="tags_by_category-class_method">
+  
+    .<strong>tags_by_category</strong>(category)  &#x21d2; <tt>Array&lt;Symbol&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>Get tags filtered by category</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h4 class="tag_title">Examples:</h4>
+    
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../TreeHaver.html" title="TreeHaver (module)">TreeHaver</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="TreeHaver::BackendRegistry (module)">BackendRegistry</a></span></span><span class='period'>.</span><span class='id identifier rubyid_tags_by_category'>tags_by_category</span><span class='lparen'>(</span><span class='symbol'>:backend</span><span class='rparen'>)</span>
+<span class='comment'># =&gt; [:commonmarker_backend, :markly_backend, :mri_backend, ...]</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>category</span>
+      
+      
+        <span class='type'>(<tt>Symbol</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>one of :backend, :gem, :parsing, :grammar, :engine, :other</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Symbol&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>list of tag names in that category</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+324
+325
+326
+327
+328</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/backend_registry.rb', line 324</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_tags_by_category'>tags_by_category</span><span class='lparen'>(</span><span class='id identifier rubyid_category'>category</span><span class='rparen'>)</span>
+  <span class='ivar'>@mutex</span><span class='period'>.</span><span class='id identifier rubyid_synchronize'>synchronize</span> <span class='kw'>do</span>
+    <span class='ivar'>@tag_registry</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid__'>_</span><span class='comma'>,</span> <span class='id identifier rubyid_meta'>meta</span><span class='op'>|</span> <span class='id identifier rubyid_meta'>meta</span><span class='lbracket'>[</span><span class='symbol'>:category</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='id identifier rubyid_category'>category</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -956,7 +1960,7 @@ the backend is available and can be used. The checker is called lazily<br />
 </div>
 
       <div id="footer">
-  Generated on Sun Jan 11 03:24:09 2026 by
+  Generated on Sun Jan 11 21:17:18 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

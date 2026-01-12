@@ -9,7 +9,7 @@
 #
 # This will load:
 # - Dependency tags for conditional test execution
-# - (Future) Additional test helpers as needed
+# - TestableNode for creating mock nodes in tests
 #
 # @example spec_helper.rb
 #   require "tree_haver/rspec"
@@ -18,6 +18,16 @@
 #     # Your additional configuration...
 #   end
 #
+# @example Using TestableNode
+#   node = TestableNode.create(
+#     type: :heading,
+#     text: "## My Heading",
+#     start_line: 1
+#   )
+#   expect(node.type).to eq("heading")
+#
 # @see TreeHaver::RSpec::DependencyTags
+# @see TreeHaver::RSpec::TestableNode
 
 require_relative "rspec/dependency_tags"
+require_relative "rspec/testable_node"
