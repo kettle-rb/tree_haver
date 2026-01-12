@@ -72,6 +72,23 @@ Please file a bug if you notice a violation of semantic versioning.</p>
 
 <h3 id="added">Added</h3>
 
+<ul>
+  <li>
+<strong><code>:json_parsing</code> and <code>:jsonc_parsing</code> RSpec dependency tags</strong>: Added missing parsing capability tags<br>
+for JSON and JSONC (JSON with Comments) languages
+    <ul>
+      <li>
+<code>any_json_backend_available?</code> - Checks if tree-sitter-json is available</li>
+      <li>
+<code>any_jsonc_backend_available?</code> - Checks if tree-sitter-jsonc is available</li>
+      <li>Tests tagged with <code>:jsonc_parsing</code> will now be properly skipped on TruffleRuby and other<br>
+platforms where tree-sitter backends are not available</li>
+      <li>Fixes issue where jsonc-merge specs were running on TruffleRuby and failing because<br>
+the tag was undefined and therefore not excluded</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="changed">Changed</h3>
 
 <h3 id="deprecated">Deprecated</h3>
@@ -2387,7 +2404,7 @@ which auto-discovers the best available backend (tree-sitter or Citrus fallback)
 </div></div>
 
       <div id="footer">
-  Generated on Sun Jan 11 21:46:21 2026 by
+  Generated on Mon Jan 12 14:55:51 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>

@@ -167,6 +167,12 @@ require "set"
 # [:markdown_parsing]
 #   At least one markdown parser (commonmarker OR markly) is available.
 #
+# [:json_parsing]
+#   At least one JSON parser (tree-sitter-json) is available.
+#
+# [:jsonc_parsing]
+#   At least one JSONC (JSON with Comments) parser (tree-sitter-jsonc) is available.
+#
 # [:rbs_parsing]
 #   At least one RBS parser (rbs gem OR tree-sitter-rbs) is available.
 #
@@ -748,6 +754,26 @@ module TreeHaver
             TreeHaver::BackendRegistry.tag_available?(:commonmarker_backend)
         end
 
+        # Check if at least one JSON parsing backend is available
+        #
+        # Currently only tree-sitter-json is supported for JSON parsing.
+        # Future backends (e.g., pure-Ruby JSON parsers) can be added here.
+        #
+        # @return [Boolean] true if any JSON parsing backend works
+        def any_json_backend_available?
+          tree_sitter_json_available?
+        end
+
+        # Check if at least one JSONC parsing backend is available
+        #
+        # Currently only tree-sitter-jsonc is supported for JSONC parsing.
+        # Future backends (e.g., pure-Ruby JSONC parsers) can be added here.
+        #
+        # @return [Boolean] true if any JSONC parsing backend works
+        def any_jsonc_backend_available?
+          tree_sitter_jsonc_available?
+        end
+
         def any_native_grammar_available?
           libtree_sitter_available? && (
             tree_sitter_bash_available? ||
@@ -872,6 +898,8 @@ module TreeHaver
           # Language parsing capabilities (*_parsing)
           result[:toml_parsing] = any_toml_backend_available?
           result[:markdown_parsing] = any_markdown_backend_available?
+          result[:json_parsing] = any_json_backend_available?
+          result[:jsonc_parsing] = any_jsonc_backend_available?
           result[:rbs_parsing] = any_rbs_backend_available?
 
           # Specific libraries (*_gem)
@@ -1311,6 +1339,8 @@ RSpec.configure do |config|
     # Language parsing capabilities
     config.filter_run_excluding(not_toml_parsing: true) if deps.any_toml_backend_available?
     config.filter_run_excluding(not_markdown_parsing: true) if deps.any_markdown_backend_available?
+    config.filter_run_excluding(not_json_parsing: true) if deps.any_json_backend_available?
+    config.filter_run_excluding(not_jsonc_parsing: true) if deps.any_jsonc_backend_available?
     config.filter_run_excluding(not_rbs_parsing: true) if deps.any_rbs_backend_available?
   end
 

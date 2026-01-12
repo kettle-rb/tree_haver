@@ -20,6 +20,15 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- **`:json_parsing` and `:jsonc_parsing` RSpec dependency tags**: Added missing parsing capability tags
+  for JSON and JSONC (JSON with Comments) languages
+  - `any_json_backend_available?` - Checks if tree-sitter-json is available
+  - `any_jsonc_backend_available?` - Checks if tree-sitter-jsonc is available
+  - Tests tagged with `:jsonc_parsing` will now be properly skipped on TruffleRuby and other
+    platforms where tree-sitter backends are not available
+  - Fixes issue where jsonc-merge specs were running on TruffleRuby and failing because
+    the tag was undefined and therefore not excluded
+
 ### Changed
 
 ### Deprecated
