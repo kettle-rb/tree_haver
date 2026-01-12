@@ -1100,7 +1100,7 @@ RSpec.configure do |config|
   builtin_backends = %i[mri rust ffi java prism psych citrus parslet rbs]
   builtin_backends.each do |backend|
     # Special case for ffi which uses ffi_available? not ffi_backend_available?
-    availability_method = backend == :ffi ? :ffi_available? : :"#{backend}_available?"
+    availability_method = (backend == :ffi) ? :ffi_available? : :"#{backend}_available?"
     # Special case for backends that use *_backend_available? naming
     availability_method = :"#{backend}_backend_available?" if %i[mri rust java rbs].include?(backend)
 

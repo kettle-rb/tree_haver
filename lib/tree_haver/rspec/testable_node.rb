@@ -49,7 +49,7 @@ module TreeHaver
       end
 
       def child(index)
-        return nil if index.nil? || index < 0 || index >= @children_data.length
+        return if index.nil? || index < 0 || index >= @children_data.length
 
         @children_data[index]
       end

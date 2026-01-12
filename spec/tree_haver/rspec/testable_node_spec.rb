@@ -189,66 +189,66 @@ RSpec.describe TreeHaver::RSpec::TestableNode do
       expect(node).to respond_to(:inner_node)
     end
   end
-end
 
-RSpec.describe TreeHaver::RSpec::MockInnerNode do
-  describe "#initialize" do
-    it "stores the type" do
-      node = described_class.new(type: :paragraph)
-      expect(node.type).to eq("paragraph")
+  describe TreeHaver::RSpec::MockInnerNode do
+    describe "#initialize" do
+      it "stores the type" do
+        node = described_class.new(type: :paragraph)
+        expect(node.type).to eq("paragraph")
+      end
+
+      it "stores text content" do
+        node = described_class.new(type: :paragraph, text: "Hello")
+        expect(node.text).to eq("Hello")
+        expect(node.string_content).to eq("Hello")
+      end
+
+      it "calculates end_byte from text" do
+        node = described_class.new(type: :paragraph, text: "Hello", start_byte: 10)
+        expect(node.end_byte).to eq(15)
+      end
     end
 
-    it "stores text content" do
-      node = described_class.new(type: :paragraph, text: "Hello")
-      expect(node.text).to eq("Hello")
-      expect(node.string_content).to eq("Hello")
+    describe "#start_point" do
+      it "returns a Point" do
+        node = described_class.new(type: :paragraph, start_row: 5, start_column: 10)
+        point = node.start_point
+        expect(point.row).to eq(5)
+        expect(point.column).to eq(10)
+      end
     end
 
-    it "calculates end_byte from text" do
-      node = described_class.new(type: :paragraph, text: "Hello", start_byte: 10)
-      expect(node.end_byte).to eq(15)
+    describe "#end_point" do
+      it "returns a Point" do
+        node = described_class.new(type: :paragraph, end_row: 8, end_column: 15)
+        point = node.end_point
+        expect(point.row).to eq(8)
+        expect(point.column).to eq(15)
+      end
+    end
+
+    describe "#named?" do
+      it "returns true" do
+        node = described_class.new(type: :paragraph)
+        expect(node.named?).to be true
+      end
+    end
+
+    describe "#child_count" do
+      it "returns the number of children" do
+        node = described_class.new(type: :document, children: [{}, {}, {}])
+        expect(node.child_count).to eq(3)
+      end
     end
   end
 
-  describe "#start_point" do
-    it "returns a Point" do
-      node = described_class.new(type: :paragraph, start_row: 5, start_column: 10)
-      point = node.start_point
-      expect(point.row).to eq(5)
-      expect(point.column).to eq(10)
+  describe "Top-level TestableNode constant" do
+    it "is available" do
+      expect(defined?(TestableNode)).to be_truthy
     end
-  end
 
-  describe "#end_point" do
-    it "returns a Point" do
-      node = described_class.new(type: :paragraph, end_row: 8, end_column: 15)
-      point = node.end_point
-      expect(point.row).to eq(8)
-      expect(point.column).to eq(15)
+    it "references TreeHaver::RSpec::TestableNode" do
+      expect(TestableNode).to eq(TreeHaver::RSpec::TestableNode)
     end
-  end
-
-  describe "#named?" do
-    it "returns true" do
-      node = described_class.new(type: :paragraph)
-      expect(node.named?).to be true
-    end
-  end
-
-  describe "#child_count" do
-    it "returns the number of children" do
-      node = described_class.new(type: :document, children: [{}, {}, {}])
-      expect(node.child_count).to eq(3)
-    end
-  end
-end
-
-RSpec.describe "Top-level TestableNode constant" do
-  it "is available" do
-    expect(defined?(TestableNode)).to be_truthy
-  end
-
-  it "references TreeHaver::RSpec::TestableNode" do
-    expect(TestableNode).to eq(TreeHaver::RSpec::TestableNode)
   end
 end

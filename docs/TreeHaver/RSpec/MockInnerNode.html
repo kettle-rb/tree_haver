@@ -893,7 +893,7 @@
       <pre class="code"><span class="info file"># File 'lib/tree_haver/rspec/testable_node.rb', line 51</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_child'>child</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&lt;</span> <span class='int'>0</span> <span class='op'>||</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='ivar'>@children_data</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&lt;</span> <span class='int'>0</span> <span class='op'>||</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='ivar'>@children_data</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
 
   <span class='ivar'>@children_data</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
@@ -1478,7 +1478,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Jan 11 21:17:20 2026 by
+  Generated on Sun Jan 11 21:29:42 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.38 (ruby-4.0.0).
 </div>
