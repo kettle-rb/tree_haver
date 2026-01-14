@@ -275,14 +275,14 @@ module TreeHaver
 
         # Check instance methods by inspecting the class
         PARSER_INSTANCE_METHODS.each do |method|
-          unless klass.instance_methods.include?(method) || klass.private_instance_methods.include?(method)
+          unless klass.method_defined?(method) || klass.private_method_defined?(method)
             results[:errors] << "Parser missing instance method: #{method}"
             results[:valid] = false
           end
         end
 
         PARSER_OPTIONAL_METHODS.each do |method|
-          unless klass.instance_methods.include?(method)
+          unless klass.method_defined?(method)
             results[:warnings] << "Parser missing optional method: #{method}"
           end
         end
@@ -290,14 +290,14 @@ module TreeHaver
 
       def validate_tree(klass, results)
         TREE_INSTANCE_METHODS.each do |method|
-          unless klass.instance_methods.include?(method)
+          unless klass.method_defined?(method)
             results[:errors] << "Tree missing instance method: #{method}"
             results[:valid] = false
           end
         end
 
         TREE_OPTIONAL_METHODS.each do |method|
-          unless klass.instance_methods.include?(method)
+          unless klass.method_defined?(method)
             results[:warnings] << "Tree missing optional method: #{method}"
           end
         end
