@@ -305,9 +305,6 @@ JRuby runs on the JVM and **cannot load native `.so` extensions via Ruby's C API
 - **FFI**: Works\! JRuby has excellent FFI support
 - **Java**: Works\! The Java backend uses jtreesitter (requires \>= 0.26.0)
   JRuby users should use: **Java backend** (best performance, full API) or **FFI backend** for tree-sitter, plus **Prism**, **Psych**, **Citrus/Parslet** for other formats.
-  [ruby\_tree\_sitter][ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
-  [tree\_stump][tree_stump]: https://github.com/joker1007/tree\_stump
-  \[jtreesitter\]: https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter
 
 ### Why TreeHaver?
 
@@ -324,7 +321,7 @@ The `*-merge` gem family provides intelligent, AST-based merging for various fil
 
 | Gem                                      | Version                                                        | CI                                                           |          | Language<br>/ Format                                                                                  | Parser Backend(s)                                                                | Description |
 |------------------------------------------|----------------------------------------------------------------|--------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|-------------|
-| [tree_haver][tree_haver]                 | [![Version][tree_haver-gem-i]][tree_haver-gem]                 | [![Version][tree_haver-ci-i]][tree_haver-ci]                 | Multi    | MRI C, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus, Parslet                           | **Foundation**: Cross-Ruby adapter for parsing libraries (like Faraday for HTTP) |
+| [tree_haver][tree_haver]                 | [![Version][tree_haver-gem-i]][tree_haver-gem]                 | [![Version][tree_haver-ci-i]][tree_haver-ci]                 | Multi    | Supported Backends: MRI C, Rust, FFI, Java, Prism, Psych, Commonmarker, Markly, Citrus, Parslet       | **Foundation**: Cross-Ruby adapter for parsing libraries (like Faraday for HTTP) |
 | [ast-merge][ast-merge]                   | [![Version][ast-merge-gem-i]][ast-merge-gem]                   | [![Version][ast-merge-ci-i]][ast-merge-ci]                   | Text     | internal                                                                                              | **Infrastructure**: Shared base classes and merge logic for all `*-merge` gems   |
 | [bash-merge][bash-merge]                 | [![Version][bash-merge-gem-i]][bash-merge-gem]                 | [![Version][bash-merge-ci-i]][bash-merge-ci]                 | Bash     | [tree-sitter-bash][ts-bash] (via tree_haver)                                                          | Smart merge for Bash scripts                                                     |
 | [commonmarker-merge][commonmarker-merge] | [![Version][commonmarker-merge-gem-i]][commonmarker-merge-gem] | [![Version][commonmarker-merge-ci-i]][commonmarker-merge-ci] | Markdown | [Commonmarker][commonmarker] (via tree_haver)                                                         | Smart merge for Markdown (CommonMark via comrak Rust)                            |
@@ -342,18 +339,18 @@ The `*-merge` gem family provides intelligent, AST-based merging for various fil
 
 tree_haver supports multiple parsing backends, but not all backends work on all Ruby platforms:
 
-| Platform 👉️<br> TreeHaver Backend 👇️         | MRI | JRuby | TruffleRuby | Notes                                               |
-|------------------------------------------------|:---:|:-----:|:-----------:|-----------------------------------------------------|
-| **MRI** ([ruby_tree_sitter][ruby_tree_sitter]) |  ✅  |   ❌   |      ❌      | C extension, MRI only                               |
-| **Rust** ([tree_stump][tree_stump])            |  ✅  |   ❌   |      ❌      | Rust extension via magnus/rb-sys, MRI only          |
-| **FFI**                                        |  ✅  |   ✅   |      ❌      | TruffleRuby's FFI doesn't support `STRUCT_BY_VALUE` |
-| **Java** ([jtreesitter][jtreesitter])          |  ❌  |   ✅   |      ❌      | JRuby only, requires grammar JARs                   |
-| **Prism**                                      |  ✅  |   ✅   |      ✅      | Ruby parsing, stdlib in Ruby 3.4+                   |
-| **Psych**                                      |  ✅  |   ✅   |      ✅      | YAML parsing, stdlib                                |
-| **Citrus**                                     |  ✅  |   ✅   |      ✅      | Pure Ruby PEG parser, no native dependencies        |
-| **Parslet**                                    |  ✅  |   ✅   |      ✅      | Pure Ruby PEG parser, no native dependencies        |
-| **Commonmarker**                               |  ✅  |   ❌   |      ❓      | Rust extension for Markdown                         |
-| **Markly**                                     |  ✅  |   ❌   |      ❓      | C extension for Markdown                            |
+| Platform 👉️<br> TreeHaver Backend 👇️          | MRI | JRuby | TruffleRuby | Notes                                                                      |
+|-------------------------------------------------|:---:|:-----:|:-----------:|----------------------------------------------------------------------------|
+| **MRI** ([ruby_tree_sitter][ruby_tree_sitter])  |  ✅  |   ❌   |      ❌      | C extension, MRI only                                                      |
+| **Rust** ([tree_stump][tree_stump])             |  ✅  |   ❌   |      ❌      | Rust extension via magnus/rb-sys, MRI only                                 |
+| **FFI** ([ffi][ffi])                            |  ✅  |   ✅   |      ❌      | TruffleRuby's FFI doesn't support `STRUCT_BY_VALUE`                        |
+| **Java** ([jtreesitter][jtreesitter])           |  ❌  |   ✅   |      ❌      | JRuby only, requires grammar JARs                                          |
+| **Prism** ([prism][prism])                      |  ✅  |   ✅   |      ✅      | Ruby parsing, stdlib in Ruby 3.4+                                          |
+| **Psych** ([psych][psych])                      |  ✅  |   ✅   |      ✅      | YAML parsing, stdlib                                                       |
+| **Citrus** ([citrus][citrus])                   |  ✅  |   ✅   |      ✅      | Pure Ruby PEG parser, no native dependencies                               |
+| **Parslet** ([parslet][parslet])                |  ✅  |   ✅   |      ✅      | Pure Ruby PEG parser, no native dependencies                               |
+| **Commonmarker** ([commonmarker][commonmarker]) |  ✅  |   ❌   |      ❓      | Rust extension for Markdown (via [commonmarker-merge][commonmarker-merge]) |
+| **Markly** ([markly][markly])                   |  ✅  |   ❌   |      ❓      | C extension for Markdown  (via [markly-merge][markly-merge])               |
 
 **Legend**: ✅ = Works, ❌ = Does not work, ❓ = Untested
 
@@ -447,6 +444,7 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 [kettle-jem-ci]: https://github.com/kettle-rb/kettle-jem/actions/workflows/current.yml
 [prism]: https://github.com/ruby/prism
 [psych]: https://github.com/ruby/psych
+[ffi]: https://github.com/ffi/ffi
 [ts-json]: https://github.com/tree-sitter/tree-sitter-json
 [ts-jsonc]: https://gitlab.com/WhyNotHugo/tree-sitter-jsonc
 [ts-bash]: https://github.com/tree-sitter/tree-sitter-bash
@@ -461,6 +459,8 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 [ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
 [tree_stump]: https://github.com/joker1007/tree_stump
 [jtreesitter]: https://central.sonatype.com/artifact/io.github.tree-sitter/jtreesitter
+[citrus]: https://github.com/mjackson/citrus
+[parslet]: https://github.com/kschiess/parslet
 
 ### Comparison with Other Ruby AST / Parser Bindings
 
@@ -480,11 +480,6 @@ tree_haver supports multiple parsing backends, but not all backends work on all 
 | **Zero Native Deps**      | ⚡ Via Citrus/Parslet backend                    | ❌ No                                   | ❌ No                      | ✅ Yes            | ✅ Yes              |
 | **Minimum Ruby**          | 3.2+                                            | 3.0+                                   | 3.1+                      | 0+               | 0+                 |
 
-[ruby_tree_sitter]: https://github.com/Faveod/ruby-tree-sitter
-[tree_stump]: https://github.com/joker1007/tree_stump
-[citrus]: https://github.com/mjackson/citrus
-[parslet]: https://github.com/kschiess/parslet
-[tree_haver]: https://github.com/kettle-rb/tree_haver
 **Note:** Java backend works with grammar `.so` files built against tree-sitter 0.24+. The grammars must be rebuilt with `tree-sitter generate` if they were compiled against older tree-sitter versions. FFI is recommended for JRuby as it's easier to set up.
 
 **Note:** TreeHaver can use `ruby_tree_sitter` (MRI) or `tree_stump` (MRI) as backends, or `java-tree-sitter` / `jtreesitter` \>= 0.26.0 ([docs](https://tree-sitter.github.io/java-tree-sitter/), [maven][jtreesitter], [source](https://github.com/tree-sitter/java-tree-sitter), JRuby), or FFI on any backend, giving you TreeHaver's unified API, grammar discovery, and security features, plus full access to incremental parsing when using those backends.

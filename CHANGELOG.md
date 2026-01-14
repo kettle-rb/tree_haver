@@ -20,6 +20,7 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+- More documentation about the Merge Gem Family
 - **`:json_parsing` and `:jsonc_parsing` RSpec dependency tags**: Added missing parsing capability tags
   for JSON and JSONC (JSON with Comments) languages
   - `any_json_backend_available?` - Checks if tree-sitter-json is available
@@ -30,6 +31,8 @@ Please file a bug if you notice a violation of semantic versioning.
     the tag was undefined and therefore not excluded
 
 ### Changed
+
+- Restored README.md (was accidentally corrupted during the last release)
 
 ### Deprecated
 
