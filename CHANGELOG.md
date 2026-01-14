@@ -20,6 +20,25 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [5.0.2] - 2026-01-13
+
+- TAG: [v5.0.2][5.0.2t]
+- COVERAGE: 90.79% -- 2308/2542 lines in 30 files
+- BRANCH COVERAGE: 78.09% -- 930/1191 branches in 30 files
+- 94.78% documented
+
+### Added
+
 - More documentation about the Merge Gem Family
 - **`:json_parsing` and `:jsonc_parsing` RSpec dependency tags**: Added missing parsing capability tags
   for JSON and JSONC (JSON with Comments) languages
@@ -33,14 +52,6 @@ Please file a bug if you notice a violation of semantic versioning.
 ### Changed
 
 - Restored README.md (was accidentally corrupted during the last release)
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [5.0.1] - 2026-01-11
 
@@ -1271,7 +1282,9 @@ Despite the major version bump to 3.0.0 (following semver due to the breaking `L
 
 - Initial release
 
-[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v5.0.1...HEAD
+[Unreleased]: https://github.com/kettle-rb/tree_haver/compare/v5.0.2...HEAD
+[5.0.2]: https://github.com/kettle-rb/tree_haver/compare/v5.0.1...v5.0.2
+[5.0.2t]: https://github.com/kettle-rb/tree_haver/releases/tag/v5.0.2
 [5.0.1]: https://github.com/kettle-rb/tree_haver/compare/v5.0.0...v5.0.1
 [5.0.1t]: https://github.com/kettle-rb/tree_haver/releases/tag/v5.0.1
 [5.0.0]: https://github.com/kettle-rb/tree_haver/compare/v4.0.5...v5.0.0

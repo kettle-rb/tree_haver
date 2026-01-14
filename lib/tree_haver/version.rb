@@ -10,7 +10,7 @@ module TreeHaver
     # Current version of the tree_haver gem
     #
     # @return [String] the version string
-    VERSION = "5.0.1"
+    VERSION = "5.0.2"
   end
 
   # Traditional location for VERSION constant
