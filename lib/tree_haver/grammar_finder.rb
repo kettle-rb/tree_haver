@@ -264,12 +264,13 @@ module TreeHaver
 
           # Only tree-sitter backends are relevant here
           # Non-tree-sitter backends (Citrus, Prism, Psych, etc.) don't use grammar files
-          return false if mod.nil?
-          return false unless TREE_SITTER_BACKENDS.include?(mod)
-
-          # Try to instantiate a parser - this will fail if runtime isn't available
-          mod::Parser.new
-          true
+          if mod.nil? || !TREE_SITTER_BACKENDS.include?(mod)
+            false
+          else
+            # Try to instantiate a parser - this will fail if runtime isn't available
+            mod::Parser.new
+            true
+          end
         rescue NoMethodError, LoadError, NotAvailable => _e
           # Note: FFI::NotFoundError inherits from LoadError, so it's caught here too
           false

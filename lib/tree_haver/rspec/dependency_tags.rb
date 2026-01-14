@@ -497,9 +497,12 @@ module TreeHaver
         def libtree_sitter_available?
           return @libtree_sitter_available if defined?(@libtree_sitter_available)
           @libtree_sitter_available = begin
-            return false unless ffi_available?
-            TreeHaver::Backends::FFI::Native.try_load!
-            true
+            if !ffi_available?
+              false
+            else
+              TreeHaver::Backends::FFI::Native.try_load!
+              true
+            end
           rescue TreeHaver::NotAvailable, LoadError
             false
           rescue StandardError

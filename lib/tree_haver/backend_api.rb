@@ -234,12 +234,12 @@ module TreeHaver
       private
 
       def validate_module_methods(mod, results)
-        unless mod.respond_to?(:available?)
+        unless mod.singleton_class.method_defined?(:available?)
           results[:errors] << "Missing module method: available?"
           results[:valid] = false
         end
 
-        unless mod.respond_to?(:capabilities)
+        unless mod.singleton_class.method_defined?(:capabilities)
           results[:warnings] << "Missing module method: capabilities"
         end
       end
@@ -248,26 +248,26 @@ module TreeHaver
         # from_library is REQUIRED for all backends
         # Language-specific backends should implement it to ignore path/symbol
         # and return their single language (for API consistency)
-        unless klass.respond_to?(:from_library)
+        unless klass.singleton_class.method_defined?(:from_library)
           results[:errors] << "Language missing required class method: from_library"
           results[:valid] = false
         end
 
         # Check for optional convenience methods
-        optional_methods = LANGUAGE_OPTIONAL_CLASS_METHODS.select { |m| klass.respond_to?(m) }
+        optional_methods = LANGUAGE_OPTIONAL_CLASS_METHODS.select { |m| klass.singleton_class.method_defined?(m) }
         if optional_methods.any?
           results[:capabilities][:language_shortcuts] = optional_methods
         end
 
         results[:capabilities][:language] = {
-          class_methods: LANGUAGE_CLASS_METHODS.select { |m| klass.respond_to?(m) } +
+          class_methods: LANGUAGE_CLASS_METHODS.select { |m| klass.singleton_class.method_defined?(m) } +
             optional_methods,
         }
       end
 
       def validate_parser(klass, results)
         PARSER_CLASS_METHODS.each do |method|
-          unless klass.respond_to?(method)
+          unless klass.singleton_class.method_defined?(method)
             results[:errors] << "Parser missing class method: #{method}"
             results[:valid] = false
           end
@@ -330,11 +330,11 @@ module TreeHaver
       end
 
       def has_method_or_alias?(klass, method)
-        return true if klass.instance_methods.include?(method)
+        return true if klass.method_defined?(method)
 
         # Check aliases
         aliases = NODE_ALIASES[method] || []
-        aliases.any? { |alt| klass.instance_methods.include?(alt) }
+        aliases.any? { |alt| klass.method_defined?(alt) }
       end
 
       def responds_to_with_aliases?(obj, method)

@@ -808,7 +808,7 @@ RSpec.describe TreeHaver::Node do
       # Find a method that exists on inner_node but not on Node
       # Filter out methods that require arguments by checking arity
       backend_specific_method = root_node.inner_node.methods.find do |m|
-        next false if described_class.instance_methods.include?(m)
+        next false if described_class.method_defined?(m)
         begin
           method_obj = root_node.inner_node.method(m)
           # Only use methods with zero required arguments

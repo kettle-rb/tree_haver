@@ -414,7 +414,7 @@ RSpec.describe TreeHaver::Tree, :toml_parsing do
       # Find a method that exists on inner_tree but not on Tree
       # AND can be called with zero arguments (arity <= 0 or -1 for variable)
       backend_specific_method = tree.inner_tree.methods.find do |m|
-        next false if described_class.instance_methods.include?(m)
+        next false if described_class.method_defined?(m)
         begin
           method_obj = tree.inner_tree.method(m)
           # arity of 0 means no args, -1 means variable args (can be called with 0)
