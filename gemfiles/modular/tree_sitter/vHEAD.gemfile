@@ -11,7 +11,10 @@ platform :mri do
   # MRI Backend
   gem "ruby_tree_sitter", github: "Faveod/ruby-tree-sitter", require: false # DO NOT LOAD, because conflicts with FFI
   gem "markly", github: "ioquatix/markly"
-  gem "commonmarker", github: "gjtorikian/commonmarker"
+  # Bundler fails on git submodules in commonmarker:
+  # See: https://github.com/ruby/rubygems/issues/9001#issuecomment-3740868525
+  # gem "commonmarker", github: "gjtorikian/commonmarker"
+  gem "commonmarker"
   # Rust Backend
   gem "tree_stump",
     # path: "../../vendor/tree_stump"
