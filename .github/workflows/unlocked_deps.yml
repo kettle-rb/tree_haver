@@ -84,7 +84,6 @@ jobs:
           ore-install: true
 
       # Raw `bundle` will use the BUNDLE_GEMFILE set to matrix.gemfile (i.e. Appraisal.root)
-      # We need to do this first to get appraisal installed.
       # NOTE: This does not use the primary Gemfile at all.
       - name: Appraisal for ${{ matrix.ruby }}@${{ matrix.appraisal }}
         run: bundle exec appraisal ${{ matrix.appraisal }} bundle
