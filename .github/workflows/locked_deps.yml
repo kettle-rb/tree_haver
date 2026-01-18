@@ -83,13 +83,13 @@ jobs:
         with:
           grammar-toml: true
 
-      - name: Setup Ruby & RubyGems
-        uses: ruby/setup-ruby@v1
+      - name: Setup Ruby & Gems via rv & ore
+        uses: appraisal-rb/setup-ruby-flash@v1
         with:
-          ruby-version: ${{ matrix.ruby }}
-          rubygems: ${{ matrix.rubygems }}
-          bundler: ${{ matrix.bundler }}
-          bundler-cache: true
+          ruby-version: "${{ matrix.ruby }}"
+          rubygems: "${{ matrix.rubygems }}"
+          bundler: "${{ matrix.bundler }}"
+          ore-install: true
 
       - name: Checks the kitchen sink via ${{ matrix.exec_cmd }}
         run: bundle exec ${{ matrix.exec_cmd }}
