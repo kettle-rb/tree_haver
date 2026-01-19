@@ -30,6 +30,8 @@ jobs:
     continue-on-error: ${{ matrix.experimental || endsWith(matrix.ruby, 'head') }}
     env: # $BUNDLE_GEMFILE must be set at job level, so it is set for all steps
       BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}.gemfile
+      # Force Nokogiri to use system libraries instead of bundled ones
+      NOKOGIRI_USE_SYSTEM_LIBRARIES: "true"
     strategy:
       fail-fast: false
       matrix:
@@ -48,7 +50,7 @@ jobs:
         # tree_stump needs Rust toolchain (rustc/cargo)
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libxml2-dev libxslt1-dev liblzma-dev zlib1g-dev autoconf automake libtool
+          sudo apt-get install -y build-essential pkg-config libxml2-dev libxslt1-dev liblzma-dev zlib1g-dev libgumbo-dev autoconf automake libtool
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
