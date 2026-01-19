@@ -75,6 +75,10 @@ jobs:
             experimental: false
 
     steps:
+      - name: Install system dependencies
+        # Nokogiri needs `libxml2` and `libxslt` headers (thus *-dev)
+        run: sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt1-dev
+
       - name: Checkout
         uses: actions/checkout@v6
 
