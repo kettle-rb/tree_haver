@@ -60,11 +60,11 @@ jobs:
 
     steps:
       - name: Install system dependencies
-        # Nokogiri needs libxml2/libxslt headers, autoconf/automake for gumbo
+        # Nokogiri needs libxml2/libxslt headers, build tools for gumbo
         # tree_stump needs Rust toolchain (rustc/cargo)
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxml2-dev libxslt1-dev autoconf automake libtool
+          sudo apt-get install -y build-essential pkg-config libxml2-dev libxslt1-dev liblzma-dev zlib1g-dev autoconf automake libtool
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
