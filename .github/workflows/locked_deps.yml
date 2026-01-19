@@ -64,7 +64,7 @@ jobs:
       TREE_SITTER_RUNTIME_LIB: "/usr/lib/x86_64-linux-gnu/libtree-sitter.so.0"
       TREE_SITTER_TOML_PATH: "/usr/local/lib/libtree-sitter-toml.so"
       # Force Nokogiri to use system libraries instead of bundled ones
-      NOKOGIRI_USE_SYSTEM_LIBRARIES: "true"
+      BUNDLE_FORCE_RUBY_PLATFORM: "false"
     strategy:
       fail-fast: false
       matrix:
@@ -77,22 +77,14 @@ jobs:
             experimental: false
 
     steps:
-      - name: Install system dependencies
-        # Nokogiri needs libxml2/libxslt headers, build tools for gumbo
-        # tree_stump needs Rust toolchain (rustc/cargo)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libxml2-dev libxslt1-dev liblzma-dev zlib1g-dev libgumbo-dev autoconf automake libtool
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
       - name: Checkout
         uses: actions/checkout@v6
 
       - name: Install tree-sitter and toml grammar
         uses: kettle-rb/ts-grammar-action@main
         with:
-          grammar-toml: true
+          setup-rust: "true"
+          grammar-toml: "true"
 
       - name: Setup Ruby & Gems via rv & ore
         uses: appraisal-rb/setup-ruby-flash@v1
