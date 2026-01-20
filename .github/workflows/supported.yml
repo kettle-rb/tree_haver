@@ -78,12 +78,14 @@ jobs:
           grammar-toml: "true"
 
       - name: Setup Ruby & Gems via rv & ore
-        uses: appraisal-rb/setup-ruby-flash@v1
+        uses: appraisal-rb/setup-ruby-flash@main
         with:
           ruby-version: "${{ matrix.ruby }}"
           rubygems: "${{ matrix.rubygems }}"
           bundler: "${{ matrix.bundler }}"
           ore-install: true
+          rv-git-ref: "main"
+          ore-git-ref: "master"
 
       # Raw `bundle` will use the BUNDLE_GEMFILE set to matrix.gemfile (i.e. Appraisal.root)
       # NOTE: This does not use the primary Gemfile at all.
