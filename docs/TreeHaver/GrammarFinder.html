@@ -958,12 +958,12 @@ Other backends (Citrus, Prism, Psych, etc.) don’t use tree-sitter</p>
       <pre class="lines">
 
 
-282
 283
-284</pre>
+284
+285</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 282</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 283</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_runtime_check!'>reset_runtime_check!</span>
   <span class='id identifier rubyid_remove_instance_variable'>remove_instance_variable</span><span class='lparen'>(</span><span class='symbol'>:@tree_sitter_runtime_usable</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='kw'>defined?</span><span class='lparen'>(</span><span class='ivar'>@tree_sitter_runtime_usable</span><span class='rparen'>)</span>
@@ -1037,7 +1037,8 @@ Result is cached since this is expensive and won’t change during runtime.</p>
 274
 275
 276
-277</pre>
+277
+278</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 258</span>
@@ -1051,12 +1052,13 @@ Result is cached since this is expensive and won’t change during runtime.</p>
 
     <span class='comment'># Only tree-sitter backends are relevant here
 </span>    <span class='comment'># Non-tree-sitter backends (Citrus, Prism, Psych, etc.) don&#39;t use grammar files
-</span>    <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='id identifier rubyid_mod'>mod</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-    <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#TREE_SITTER_BACKENDS-constant" title="TreeHaver::GrammarFinder::TREE_SITTER_BACKENDS (constant)">TREE_SITTER_BACKENDS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_mod'>mod</span><span class='rparen'>)</span>
-
-    <span class='comment'># Try to instantiate a parser - this will fail if runtime isn&#39;t available
-</span>    <span class='id identifier rubyid_mod'>mod</span><span class='op'>::</span><span class='const'>Parser</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
-    <span class='kw'>true</span>
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_mod'>mod</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='const'><span class='object_link'><a href="#TREE_SITTER_BACKENDS-constant" title="TreeHaver::GrammarFinder::TREE_SITTER_BACKENDS (constant)">TREE_SITTER_BACKENDS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_mod'>mod</span><span class='rparen'>)</span>
+      <span class='kw'>false</span>
+    <span class='kw'>else</span>
+      <span class='comment'># Try to instantiate a parser - this will fail if runtime isn&#39;t available
+</span>      <span class='id identifier rubyid_mod'>mod</span><span class='op'>::</span><span class='const'>Parser</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+      <span class='kw'>true</span>
+    <span class='kw'>end</span>
   <span class='kw'>rescue</span> <span class='const'>NoMethodError</span><span class='comma'>,</span> <span class='const'>LoadError</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="NotAvailable.html" title="TreeHaver::NotAvailable (class)">NotAvailable</a></span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid__e'>_e</span>
     <span class='comment'># Note: FFI::NotFoundError inherits from LoadError, so it&#39;s caught here too
 </span>    <span class='kw'>false</span>
@@ -1198,12 +1200,12 @@ allowing clean fallback to alternative backends like Citrus.</p>
       <pre class="lines">
 
 
-291
 292
-293</pre>
+293
+294</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 291</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 292</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_available_safe?'>available_safe?</span>
   <span class='op'>!</span><span class='id identifier rubyid_find_library_path_safe'>find_library_path_safe</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1621,7 +1623,6 @@ custom installation locations.</p>
       <pre class="lines">
 
 
-337
 338
 339
 340
@@ -1638,10 +1639,11 @@ custom installation locations.</p>
 351
 352
 353
-354</pre>
+354
+355</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 337</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 338</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_not_found_message'>not_found_message</span>
   <span class='id identifier rubyid_msg'>msg</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tree-sitter </span><span class='embexpr_beg'>#{</span><span class='ivar'>@language_name</span><span class='embexpr_end'>}</span><span class='tstring_content'> grammar not found.</span><span class='tstring_end'>&quot;</span></span>
@@ -1749,7 +1751,6 @@ custom installation locations.</p>
       <pre class="lines">
 
 
-303
 304
 305
 306
@@ -1760,10 +1761,11 @@ custom installation locations.</p>
 311
 312
 313
-314</pre>
+314
+315</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 303</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 304</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_register!'>register!</span><span class='lparen'>(</span><span class='label'>raise_on_missing:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_path'>path</span> <span class='op'>=</span> <span class='id identifier rubyid_find_library_path'>find_library_path</span>
@@ -1824,7 +1826,6 @@ custom installation locations.</p>
       <pre class="lines">
 
 
-319
 320
 321
 322
@@ -1837,10 +1838,11 @@ custom installation locations.</p>
 329
 330
 331
-332</pre>
+332
+333</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 319</span>
+      <pre class="code"><span class="info file"># File 'lib/tree_haver/grammar_finder.rb', line 320</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_search_info'>search_info</span>
   <span class='id identifier rubyid_found'>found</span> <span class='op'>=</span> <span class='id identifier rubyid_find_library_path'>find_library_path</span> <span class='comment'># This populates @env_rejection_reason
@@ -2093,9 +2095,9 @@ custom installation locations.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Jan 13 18:44:58 2026 by
+  Generated on Tue Jan 20 13:17:45 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.38 (ruby-4.0.0).
+  0.9.38 (ruby-4.0.1).
 </div>
 
     </div>

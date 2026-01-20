@@ -31,7 +31,7 @@ User Code ← TreeHaver::Tree ←────┘
 Located in `lib/tree_haver/base/`:
 
 - `TreeHaver::Base::Parser` - Base class for backend Parser implementations
-- `TreeHaver::Base::Tree` - Base class for backend Tree implementations  
+- `TreeHaver::Base::Tree` - Base class for backend Tree implementations
 - `TreeHaver::Base::Node` - Base class for backend Node implementations (provides Position API)
 
 ### Top-Level Wrappers
