@@ -93,7 +93,7 @@ jobs:
           rubygems: "${{ matrix.rubygems }}"
           bundler: "${{ matrix.bundler }}"
           ore-install: true
-          rv-git-ref: "main"
+          rv-git-ref: "pboling:feat/github-token-authenticated-requests"
           ore-git-ref: "master"
 
       - name: Checks the kitchen sink via ${{ matrix.exec_cmd }}
