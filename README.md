@@ -148,7 +148,7 @@ The Rust backend uses [tree\_stump][tree_stump], which is a Rust native extensio
 
 ```ruby
 # Add to your Gemfile for Rust backend (MRI only)
-gem "tree_stump", github: "joker1007/tree_stump", branch: "main"
+gem "tree_stump", github: "pboling/tree_stump", branch: "feat/upgrade-tree-sitter"
 ```
 
 #### FFI Backend
