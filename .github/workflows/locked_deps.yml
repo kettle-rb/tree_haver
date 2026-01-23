@@ -59,6 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     env:
+      # $BUNDLE_GEMFILE must be set at job level, so it is set for all steps
+      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}.gemfile
       # tree-sitter library paths for FFI/MRI/Rust backend compatibility
       LD_LIBRARY_PATH: "/usr/local/lib:/usr/lib/x86_64-linux-gnu:/usr/lib"
       TREE_SITTER_RUNTIME_LIB: "/usr/lib/x86_64-linux-gnu/libtree-sitter.so.0"
@@ -72,6 +74,7 @@ jobs:
           # Ruby <whichever version is current, e.g., 3.4 as of 2025-07-12>
           - ruby: "ruby"
             exec_cmd: "rake"
+            gemfile: "Locked"
             rubygems: latest
             bundler: latest
             experimental: false
