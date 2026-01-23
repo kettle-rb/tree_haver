@@ -22,6 +22,7 @@ permissions:
 
 env:
   K_SOUP_COV_DO: false
+  ORE_DEBUG: true
 
 on:
   push:
