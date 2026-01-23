@@ -2,9 +2,7 @@
 /pkg/
 /tmp/
 *.gem
-/vendor/jars/
-/vendor/tree*
-/vendor/finitio
+/vendor/
 
 # Bundler
 /vendor/bundle/
