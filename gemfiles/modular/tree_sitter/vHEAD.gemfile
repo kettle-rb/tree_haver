@@ -18,6 +18,6 @@ platform :mri do
   # Rust Backend
   gem "tree_stump",
     # path: "../../vendor/tree_stump"
-      github: "pboling/tree_stump",
-      branch: "feat/upgrade-tree-sitter"
+    github: "pboling/tree_stump",
+    branch: "feat/upgrade-tree-sitter"
 end
