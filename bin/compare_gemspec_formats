@@ -294,40 +294,79 @@ puts "=" * 70
 puts "END DIAGNOSTIC"
 puts "=" * 70
 
+# Test what happens with a fresh Bundler state (like a new process would have)
+puts
+puts "=" * 70
+puts "FRESH BUNDLER STATE TEST (Bundler.reset!)"
+puts "=" * 70
+$stdout.flush
+
+if defined?(Bundler)
+  puts "Calling Bundler.reset! to simulate fresh process state..."
+  Bundler.reset!
+
+  puts "After reset, attempting Bundler.setup again..."
+  begin
+    Bundler.setup
+    puts "✅ Bundler.setup after reset succeeded!"
+  rescue Bundler::GemNotFound => e
+    puts "❌ Bundler.setup after reset FAILED!"
+    puts "   Error: #{e.message[0..500]}"
+    puts "   This would explain the bundle exec failure!"
+  rescue => e
+    puts "❌ Bundler.setup after reset FAILED with #{e.class}!"
+    puts "   Error: #{e.message[0..500]}"
+  end
+  $stdout.flush
+end
+
 # Now try the REAL test - spawn a subprocess with bundler/setup
 puts
 puts "=" * 70
 puts "SUBPROCESS TEST: Mimicking 'bundle exec'"
 puts "=" * 70
+$stdout.flush
 
 # This is EXACTLY what bundle exec does - it sets RUBYOPT to load bundler/setup
 # Let's test this in a subprocess
 test_script = <<~RUBY
+  $stdout.sync = true
+  $stderr.sync = true
+
   # This script mimics what happens when 'bundle exec' runs
   # RubyGems automatically loads bundler/setup via gem_prelude when RUBYOPT contains it
 
   begin
     puts "Testing require 'bundler/setup'..."
+    $stdout.flush
     require 'bundler/setup'
     puts "SUCCESS: bundler/setup loaded without error!"
+    $stdout.flush
 
     # Verify we can load a gem
     require 'rake'
     puts "SUCCESS: require 'rake' worked!"
+    $stdout.flush
   rescue Bundler::GemNotFound => e
-    puts "FAILED: GemNotFound - #{e.message[0..300]}"
+    $stderr.puts "FAILED: GemNotFound - \#{e.message[0..500]}"
+    $stderr.flush
     exit 1
   rescue LoadError => e
-    puts "FAILED: LoadError - #{e.message}"
+    $stderr.puts "FAILED: LoadError - \#{e.message}"
+    $stderr.flush
     exit 1
   rescue => e
-    puts "FAILED: #{e.class} - #{e.message}"
+    $stderr.puts "FAILED: \#{e.class} - \#{e.message}"
+    $stderr.puts e.backtrace.first(10).join("\\n")
+    $stderr.flush
     exit 1
   end
 RUBY
 
-# Write to temp file and execute
+# Write to temp file and execute with output capture
 require 'tempfile'
+require 'open3'
+
 Tempfile.create(['bundler_test', '.rb']) do |f|
   f.write(test_script)
   f.flush
@@ -335,15 +374,25 @@ Tempfile.create(['bundler_test', '.rb']) do |f|
   puts "Running subprocess test..."
   puts "  BUNDLE_GEMFILE: #{ENV['BUNDLE_GEMFILE']}"
   puts "  GEM_HOME: #{ENV['GEM_HOME']}"
+  puts "  Script path: #{f.path}"
+  $stdout.flush
 
   # Run without inheriting RUBYOPT to get a clean test
   env = ENV.to_h.reject { |k, _| k == 'RUBYOPT' }
-  result = system(env, RbConfig.ruby, f.path)
 
-  if result
+  stdout, stderr, status = Open3.capture3(env, RbConfig.ruby, f.path)
+
+  puts "--- Subprocess STDOUT ---"
+  puts stdout
+  puts "--- Subprocess STDERR ---"
+  puts stderr
+  puts "--- Subprocess exit status: #{status.exitstatus} ---"
+  $stdout.flush
+
+  if status.success?
     puts "✅ Subprocess test PASSED!"
   else
-    puts "❌ Subprocess test FAILED!"
+    puts "❌ Subprocess test FAILED with exit code #{status.exitstatus}!"
     puts "This explains why 'bundle exec' fails but our diagnostic succeeds."
   end
 end
