@@ -6,7 +6,7 @@
 
 require "fileutils"
 
-GEM_HOME = ENV["GEM_HOME"] || `ruby -e "puts Gem.user_dir"`.strip
+GEM_HOME = ENV["GEM_HOME"] || %x(ruby -e "puts Gem.user_dir").strip
 SPEC_DIR = File.join(GEM_HOME, "specifications")
 
 puts "=" * 70
@@ -15,10 +15,10 @@ puts "=" * 70
 puts
 puts "Environment:"
 puts "  GEM_HOME: #{GEM_HOME}"
-puts "  GEM_PATH: #{ENV['GEM_PATH']}"
-puts "  BUNDLE_PATH: #{ENV['BUNDLE_PATH']}"
+puts "  GEM_PATH: #{ENV["GEM_PATH"]}"
+puts "  BUNDLE_PATH: #{ENV["BUNDLE_PATH"]}"
 puts "  SPEC_DIR: #{SPEC_DIR}"
-puts "  BUNDLE_GEMFILE: #{ENV['BUNDLE_GEMFILE']}"
+puts "  BUNDLE_GEMFILE: #{ENV["BUNDLE_GEMFILE"]}"
 puts "  Ruby: #{RUBY_VERSION}"
 puts "  RubyGems: #{Gem::VERSION}"
 puts
@@ -36,7 +36,7 @@ begin
   puts "  Bundler.bundle_path: #{Bundler.bundle_path}"
   puts "  Bundler.rubygems.gem_dir: #{Bundler.rubygems.gem_dir}"
   puts "  Bundler.settings[:path]: #{Bundler.settings[:path].inspect}"
-  puts "  Bundler.settings['path.system']: #{Bundler.settings['path.system'].inspect}"
+  puts "  Bundler.settings['path.system']: #{Bundler.settings["path.system"].inspect}"
   configured_path = Bundler.configured_bundle_path
   puts "  configured_bundle_path.path: #{configured_path.path}"
   puts "  configured_bundle_path.use_system_gems?: #{configured_path.use_system_gems?}"
@@ -69,8 +69,8 @@ gemspecs.each do |path|
   has_installed_by = content.include?("installed_by_version")
   has_files = content.include?("s.files")
   has_metadata = content.include?("s.metadata")
-  has_cert_chain = content.include?("s.cert_chain")
-  has_date = content.include?("s.date")
+  content.include?("s.cert_chain")
+  content.include?("s.date")
 
   # Determine if this looks like a bundle-generated or ore-generated gemspec
   # Bundle gemspecs are typically larger and have more fields
@@ -88,7 +88,7 @@ gemspecs.each do |path|
 
   puts "#{status} #{origin} #{name}"
   puts "         #{bytes} bytes, #{lines} lines"
-  puts "         stub:#{has_stub ? '✓' : '✗'} installed_by:#{has_installed_by ? '✓' : '✗'} files:#{has_files ? '✓' : '✗'} metadata:#{has_metadata ? '✓' : '✗'}"
+  puts "         stub:#{has_stub ? "✓" : "✗"} installed_by:#{has_installed_by ? "✓" : "✗"} files:#{has_files ? "✓" : "✗"} metadata:#{has_metadata ? "✓" : "✗"}"
 
   # For minimal specs, show the full content
   if bytes < 1500
@@ -105,7 +105,7 @@ puts "BUNDLE EXEC TEST"
 puts "=" * 70
 
 # Read lockfile to get list of gems
-lockfile_path = ENV["BUNDLE_GEMFILE"] ? "#{ENV['BUNDLE_GEMFILE']}.lock" : "Gemfile.lock"
+lockfile_path = ENV["BUNDLE_GEMFILE"] ? "#{ENV["BUNDLE_GEMFILE"]}.lock" : "Gemfile.lock"
 if File.exist?(lockfile_path)
   puts "Reading lockfile: #{lockfile_path}"
   lockfile_content = File.read(lockfile_path)
@@ -223,7 +223,7 @@ test_gems.each do |gem_name|
       puts "      installation_missing?: #{missing}"
 
       if dir_exists
-        puts "      files in gem dir: #{Dir.entries(full_path).reject { |f| f.start_with?('.') }.first(5).join(', ')}"
+        puts "      files in gem dir: #{Dir.entries(full_path).reject { |f| f.start_with?(".") }.first(5).join(", ")}"
       end
     end
   end
