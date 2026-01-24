@@ -99,6 +99,7 @@ jobs:
           ore-install: true
           rv-git-ref: "main"
           ore-git-ref: "fix/skip-install"
+          cache-version: "v2"
 
       - name: Checks the kitchen sink via ${{ matrix.exec_cmd }}
         run: bundle exec ${{ matrix.exec_cmd }}
