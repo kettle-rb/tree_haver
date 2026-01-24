@@ -16,6 +16,7 @@ puts
 puts "Environment:"
 puts "  GEM_HOME: #{GEM_HOME}"
 puts "  GEM_PATH: #{ENV['GEM_PATH']}"
+puts "  BUNDLE_PATH: #{ENV['BUNDLE_PATH']}"
 puts "  SPEC_DIR: #{SPEC_DIR}"
 puts "  BUNDLE_GEMFILE: #{ENV['BUNDLE_GEMFILE']}"
 puts "  Ruby: #{RUBY_VERSION}"
@@ -27,6 +28,24 @@ puts "  Gem.path: #{Gem.path.inspect}"
 puts "  Gem.default_dir: #{Gem.default_dir}"
 puts "  Gem::Specification.dirs: #{Gem::Specification.dirs.inspect}"
 puts
+
+# Try to load Bundler and show its paths
+begin
+  require "bundler"
+  puts "Bundler paths:"
+  puts "  Bundler.bundle_path: #{Bundler.bundle_path}"
+  puts "  Bundler.rubygems.gem_dir: #{Bundler.rubygems.gem_dir}"
+  puts "  Bundler.settings[:path]: #{Bundler.settings[:path].inspect}"
+  puts "  Bundler.settings['path.system']: #{Bundler.settings['path.system'].inspect}"
+  configured_path = Bundler.configured_bundle_path
+  puts "  configured_bundle_path.path: #{configured_path.path}"
+  puts "  configured_bundle_path.use_system_gems?: #{configured_path.use_system_gems?}"
+  puts "  configured_bundle_path.base_path: #{configured_path.base_path}"
+  puts
+rescue LoadError => e
+  puts "Could not load Bundler: #{e.message}"
+  puts
+end
 
 unless File.exist?(SPEC_DIR)
   puts "ERROR: Specifications directory not found: #{SPEC_DIR}"
@@ -144,6 +163,69 @@ test_gems.each do |gem_name|
     matching.each { |s| puts "       - #{s.full_name} at #{s.loaded_from}" }
   else
     puts "  ❌ #{gem_name}: NOT FOUND in stubs"
+  end
+end
+
+puts
+puts "=" * 70
+puts "BUNDLER INSTALLED_SPECS TEST"
+puts "=" * 70
+
+if defined?(Bundler)
+  puts "Testing what Bundler.rubygems.installed_specs returns..."
+  begin
+    bundler_installed = Bundler.rubygems.installed_specs
+    puts "Found #{bundler_installed.count} installed specs via Bundler"
+
+    puts
+    puts "Checking for test gems in Bundler.rubygems.installed_specs:"
+    test_gems.each do |gem_name|
+      matching = bundler_installed.select { |s| s.name == gem_name }
+      if matching.any?
+        puts "  ✅ #{gem_name}: found #{matching.count} version(s)"
+        matching.each do |s|
+          puts "       - #{s.full_name}"
+          if s.respond_to?(:installation_missing?)
+            puts "         installation_missing?: #{s.installation_missing?}"
+          end
+        end
+      else
+        puts "  ❌ #{gem_name}: NOT FOUND in Bundler installed_specs"
+      end
+    end
+  rescue => e
+    puts "ERROR accessing Bundler.rubygems.installed_specs: #{e.message}"
+  end
+else
+  puts "Bundler not loaded, skipping"
+end
+
+puts
+puts "=" * 70
+puts "INSTALLATION MISSING TEST"
+puts "=" * 70
+
+puts "Testing spec.installation_missing? for gems bundler will load..."
+test_gems.each do |gem_name|
+  stubs_for_gem = Gem::Specification.stubs_for(gem_name)
+  if stubs_for_gem.empty?
+    puts "  ❌ #{gem_name}: no stubs found"
+  else
+    stubs_for_gem.each do |stub|
+      spec = stub.to_spec
+      full_path = spec.full_gem_path
+      dir_exists = File.directory?(full_path)
+      missing = spec.respond_to?(:installation_missing?) ? spec.installation_missing? : "N/A"
+
+      puts "  #{gem_name}-#{spec.version}:"
+      puts "      full_gem_path: #{full_path}"
+      puts "      directory exists: #{dir_exists}"
+      puts "      installation_missing?: #{missing}"
+
+      if dir_exists
+        puts "      files in gem dir: #{Dir.entries(full_path).reject { |f| f.start_with?('.') }.first(5).join(', ')}"
+      end
+    end
   end
 end
 
