@@ -32,7 +32,9 @@ puts
 # Try to load Bundler and show its paths
 begin
   require "bundler"
-  puts "Bundler paths:"
+  puts "Bundler info:"
+  puts "  Bundler::VERSION: #{Bundler::VERSION}"
+  puts "  Bundler source file: #{$LOADED_FEATURES.find { |f| f.include?("bundler.rb") }}"
   puts "  Bundler.bundle_path: #{Bundler.bundle_path}"
   puts "  Bundler.rubygems.gem_dir: #{Bundler.rubygems.gem_dir}"
   puts "  Bundler.settings[:path]: #{Bundler.settings[:path].inspect}"
@@ -195,6 +197,51 @@ if defined?(Bundler)
     end
   rescue => e
     puts "ERROR accessing Bundler.rubygems.installed_specs: #{e.message}"
+  end
+
+  # Now simulate what bundle exec actually does
+  puts
+  puts "=" * 70
+  puts "SIMULATING BUNDLE EXEC (Bundler.setup)"
+  puts "=" * 70
+
+  puts "Attempting to call Bundler.setup (what 'bundle exec' does)..."
+  begin
+    # This is what bundle exec actually calls
+    Bundler.setup
+    puts "✅ Bundler.setup succeeded!"
+
+    puts
+    puts "Bundler.definition.specs:"
+    Bundler.definition.specs.each do |spec|
+      puts "  - #{spec.full_name}"
+    end if Bundler.definition.specs.count < 50
+    puts "  (#{Bundler.definition.specs.count} specs total)"
+  rescue Bundler::GemNotFound => e
+    puts "❌ Bundler.setup FAILED with GemNotFound!"
+    puts "   Error: #{e.message[0..500]}"
+    puts
+    puts "This is the SAME error that 'bundle exec' will hit!"
+    puts
+    puts "Debugging the failure..."
+
+    # Try to understand WHY it failed
+    puts "Checking Bundler.definition.resolve..."
+    begin
+      resolve = Bundler.definition.send(:resolve)
+      puts "  resolve has #{resolve.count} specs"
+
+      # Check if local! was called
+      source = Bundler.definition.sources.rubygems_sources.first
+      puts "  source.allow_local: #{source.instance_variable_get(:@allow_local)}"
+      puts "  source.allow_cached: #{source.instance_variable_get(:@allow_cached)}"
+      puts "  source.allow_remote: #{source.instance_variable_get(:@allow_remote)}"
+    rescue => debug_e
+      puts "  Debug error: #{debug_e.message}"
+    end
+  rescue => e
+    puts "❌ Bundler.setup FAILED with #{e.class}!"
+    puts "   Error: #{e.message[0..500]}"
   end
 else
   puts "Bundler not loaded, skipping"
