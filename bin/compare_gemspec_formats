@@ -59,8 +59,8 @@ gemspecs = Dir.glob(File.join(SPEC_DIR, "*.gemspec")).sort
 puts "Found #{gemspecs.count} gemspec files in #{SPEC_DIR}"
 puts
 
-# Analyze each gemspec
-gemspecs.each do |path|
+# Analyze each gemspec (limit verbose output to first 3)
+gemspecs.each_with_index do |path, index|
   name = File.basename(path)
   content = File.read(path)
   lines = content.lines.count
@@ -92,8 +92,8 @@ gemspecs.each do |path|
   puts "         #{bytes} bytes, #{lines} lines"
   puts "         stub:#{has_stub ? "✓" : "✗"} installed_by:#{has_installed_by ? "✓" : "✗"} files:#{has_files ? "✓" : "✗"} metadata:#{has_metadata ? "✓" : "✗"}"
 
-  # For minimal specs, show the full content
-  if bytes < 1500
+  # Only show full content for FIRST 3 small specs to avoid log truncation
+  if bytes < 1500 && index < 3
     puts "         --- Content ---"
     content.lines.each { |l| puts "         #{l}" }
     puts "         --- End ---"
