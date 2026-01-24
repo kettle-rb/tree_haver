@@ -38,7 +38,7 @@
 # /misc.xml
 
 # Commit: VCS local mappings can be regenerated (optional). Comment to share settings.
-# /vcs.xml
+/vcs.xml
 
 # Commit: Dictionary files (local spellcheck customizations)
 # /dictionaries/
