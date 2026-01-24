@@ -98,7 +98,7 @@ jobs:
           bundler: "${{ matrix.bundler }}"
           ore-install: true
           rv-git-ref: "main"
-          ore-git-ref: "fix/skip-install"
+          ore-git-ref: "master"
           cache-version: "v2"
 
       - name: Diagnostic - Compare gemspec formats
