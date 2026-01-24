@@ -323,7 +323,7 @@ end
 # Now try the REAL test - spawn a subprocess with bundler/setup
 puts
 puts "=" * 70
-puts "SUBPROCESS TEST: Mimicking 'bundle exec'"
+puts "SUBPROCESS TEST 1: Manual require 'bundler/setup'"
 puts "=" * 70
 $stdout.flush
 
@@ -371,7 +371,7 @@ Tempfile.create(['bundler_test', '.rb']) do |f|
   f.write(test_script)
   f.flush
 
-  puts "Running subprocess test..."
+  puts "Running subprocess test 1..."
   puts "  BUNDLE_GEMFILE: #{ENV['BUNDLE_GEMFILE']}"
   puts "  GEM_HOME: #{ENV['GEM_HOME']}"
   puts "  Script path: #{f.path}"
@@ -390,9 +390,53 @@ Tempfile.create(['bundler_test', '.rb']) do |f|
   $stdout.flush
 
   if status.success?
-    puts "✅ Subprocess test PASSED!"
+    puts "✅ Subprocess test 1 PASSED!"
   else
-    puts "❌ Subprocess test FAILED with exit code #{status.exitstatus}!"
-    puts "This explains why 'bundle exec' fails but our diagnostic succeeds."
+    puts "❌ Subprocess test 1 FAILED with exit code #{status.exitstatus}!"
+  end
+end
+
+puts
+puts "=" * 70
+puts "SUBPROCESS TEST 2: Via RUBYOPT (Closer to bundle exec)"
+puts "=" * 70
+$stdout.flush
+
+test_script_2 = <<~RUBY
+  # This script assumes bundler/setup is already loaded via RUBYOPT
+  puts "Start of script 2"
+  begin
+    require 'rake'
+    puts "SUCCESS: require 'rake' worked!"
+  rescue LoadError => e
+    puts "FAILED: LoadError - \#{e.message}"
+    exit 1
+  rescue => e
+    puts "FAILED: \#{e.class} - \#{e.message}"
+    exit 1
+  end
+RUBY
+
+Tempfile.create(['bundler_test_opt', '.rb']) do |f|
+  f.write(test_script_2)
+  f.flush
+
+  puts "Running subprocess test 2..."
+  # Explicitly SET RUBYOPT to -rbundler/setup
+  env = ENV.to_h.merge('RUBYOPT' => '-rbundler/setup')
+
+  stdout, stderr, status = Open3.capture3(env, RbConfig.ruby, f.path)
+
+  puts "--- Subprocess STDOUT ---"
+  puts stdout
+  puts "--- Subprocess STDERR ---"
+  puts stderr
+  puts "--- Subprocess exit status: #{status.exitstatus} ---"
+  $stdout.flush
+
+  if status.success?
+    puts "✅ Subprocess test 2 PASSED!"
+  else
+    puts "❌ Subprocess test 2 FAILED with exit code #{status.exitstatus}!"
   end
 end
