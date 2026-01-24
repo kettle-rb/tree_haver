@@ -80,7 +80,7 @@ jobs:
           grammar-toml: "true"
 
       - name: Setup Ruby & Gems via rv & ore
-        uses: appraisal-rb/setup-ruby-flash@main
+        uses: appraisal-rb/setup-ruby-flash@feat/debugging-more
         with:
           ruby-version: "${{ matrix.ruby }}"
           rubygems: "${{ matrix.rubygems }}"
