@@ -46,6 +46,8 @@ jobs:
       LD_LIBRARY_PATH: "/usr/local/lib:/usr/lib/x86_64-linux-gnu:/usr/lib"
       TREE_SITTER_RUNTIME_LIB: "/usr/lib/x86_64-linux-gnu/libtree-sitter.so.0"
       TREE_SITTER_TOML_PATH: "/usr/local/lib/libtree-sitter-toml.so"
+      # Use native precompiled gems, don't compile from source
+      BUNDLE_FORCE_RUBY_PLATFORM: "false"
     strategy:
       fail-fast: false
       matrix:
@@ -65,21 +67,21 @@ jobs:
       - name: Install tree-sitter and toml grammar
         uses: kettle-rb/ts-grammar-action@main
         with:
-          grammar-toml: true
+          setup-rust: "true"
+          grammar-toml: "true"
 
-      - name: Setup Ruby & RubyGems
-        uses: ruby/setup-ruby@v1
+      - name: Setup Ruby & Gems via rv & ore
+        uses: appraisal-rb/setup-ruby-flash@main
         with:
           ruby-version: "${{ matrix.ruby }}"
           rubygems: "${{ matrix.rubygems }}"
           bundler: "${{ matrix.bundler }}"
-          bundler-cache: false
+          ore-install: true
+          rv-git-ref: "main"
+          ore-git-ref: "master"
 
       # Raw `bundle` will use the BUNDLE_GEMFILE set to matrix.gemfile (i.e. Appraisal.root)
-      # We need to do this first to get appraisal installed.
       # NOTE: This does not use the primary Gemfile at all.
-      - name: Install Root Appraisal
-        run: bundle install
       - name: Appraisal for ${{ matrix.appraisal }}
         run: bundle exec appraisal ${{ matrix.appraisal }} bundle
       - name: Tests for ${{ matrix.ruby }}@current via ${{ matrix.exec_cmd }}

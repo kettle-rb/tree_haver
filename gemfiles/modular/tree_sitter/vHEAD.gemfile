@@ -14,10 +14,10 @@ platform :mri do
   # Bundler fails on git submodules in commonmarker:
   # See: https://github.com/ruby/rubygems/issues/9001#issuecomment-3740868525
   # gem "commonmarker", github: "gjtorikian/commonmarker"
-  gem "commonmarker"
+  # gem "commonmarker" # Not yet compatible with ruby-head
   # Rust Backend
   gem "tree_stump",
     # path: "../../vendor/tree_stump"
-    github: "joker1007/tree_stump",
-    branch: "main"
+    github: "pboling/tree_stump",
+    branch: "feat/upgrade-tree-sitter"
 end

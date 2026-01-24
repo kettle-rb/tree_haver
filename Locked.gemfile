@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+source "https://gem.coop"
+
+# This gemfile is used by the locked_deps.yml GHA workflow.
+gemspec

@@ -1004,6 +1004,20 @@ module TreeHaver
   end
 end
 
+# NOTE: Availability methods for dynamically registered backends (like markly, commonmarker)
+# are defined by BackendRegistry.define_availability_method when the backend registers via
+# register_tag. This happens automatically when gems like markly-merge load, AFTER this file
+# has been required. The define_availability_method in BackendRegistry checks if DependencyTags
+# is loaded and defines the *_available? method at registration time.
+#
+# Example flow for markly-merge:
+#   1. spec_helper loads tree_haver/rspec (this file) - DependencyTags module now exists
+#   2. spec_helper loads markly/merge - calls BackendRegistry.register_tag(:markly_backend)
+#   3. register_tag calls define_availability_method(:markly, :markly_backend)
+#   4. define_availability_method defines TreeHaver::RSpec::DependencyTags.markly_available?
+#
+# This means by the time RSpec.configure runs below, the methods are already defined.
+
 # Configure RSpec with dependency-based exclusion filters
 RSpec.configure do |config|
   deps = TreeHaver::RSpec::DependencyTags

@@ -32,6 +32,7 @@ env:
   K_SOUP_COV_DO: true
   K_SOUP_COV_MULTI_FORMATTERS: true
   K_SOUP_COV_COMMAND_NAME: "Test Coverage"
+  ORE_DEBUG: true
 
 on:
   push:
@@ -59,10 +60,14 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     env:
+      # $BUNDLE_GEMFILE must be set at job level, so it is set for all steps
+      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}.gemfile
       # tree-sitter library paths for FFI/MRI/Rust backend compatibility
       LD_LIBRARY_PATH: "/usr/local/lib:/usr/lib/x86_64-linux-gnu:/usr/lib"
       TREE_SITTER_RUNTIME_LIB: "/usr/lib/x86_64-linux-gnu/libtree-sitter.so.0"
       TREE_SITTER_TOML_PATH: "/usr/local/lib/libtree-sitter-toml.so"
+      # Force Nokogiri to use system libraries instead of bundled ones
+      BUNDLE_FORCE_RUBY_PLATFORM: "false"
     strategy:
       fail-fast: false
       matrix:
@@ -70,6 +75,7 @@ jobs:
           # Ruby <whichever version is current, e.g., 3.4 as of 2025-07-12>
           - ruby: "ruby"
             exec_cmd: "rake"
+            gemfile: "Locked"
             rubygems: latest
             bundler: latest
             experimental: false
@@ -81,15 +87,37 @@ jobs:
       - name: Install tree-sitter and toml grammar
         uses: kettle-rb/ts-grammar-action@main
         with:
-          grammar-toml: true
+          setup-rust: "true"
+          grammar-toml: "true"
 
-      - name: Setup Ruby & RubyGems
-        uses: ruby/setup-ruby@v1
+      - name: Setup Ruby & Gems via rv & ore
+        uses: appraisal-rb/setup-ruby-flash@feat/debugging-more
         with:
-          ruby-version: ${{ matrix.ruby }}
-          rubygems: ${{ matrix.rubygems }}
-          bundler: ${{ matrix.bundler }}
-          bundler-cache: true
+          ruby-version: "${{ matrix.ruby }}"
+          rubygems: "${{ matrix.rubygems }}"
+          bundler: "${{ matrix.bundler }}"
+          ore-install: true
+          rv-git-ref: "main"
+          ore-git-ref: "master"
+          cache-version: "v2"
+
+      - name: Diagnostic - Compare gemspec formats
+        run: ruby bin/compare_gemspec_formats
+
+      - name: Spy on Bundle Exec Environment
+        continue-on-error: true
+        run: |
+          bundle exec ruby -e "
+            puts '--- BUNDLE EXEC SPY ---'
+            puts 'GEM_HOME=' + ENV['GEM_HOME'].to_s
+            puts 'GEM_PATH=' + ENV['GEM_PATH'].to_s
+            puts 'BUNDLE_BIN_PATH=' + ENV['BUNDLE_BIN_PATH'].to_s
+            puts 'RUBYLIB=' + ENV['RUBYLIB'].to_s
+            puts 'RUBYOPT=' + ENV['RUBYOPT'].to_s
+            puts 'LOAD_PATH:'
+            puts \$LOAD_PATH
+            puts '-----------------------'
+          "
 
       - name: Checks the kitchen sink via ${{ matrix.exec_cmd }}
         run: bundle exec ${{ matrix.exec_cmd }}

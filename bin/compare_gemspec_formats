@@ -1,0 +1,442 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Compare gemspec formats between ore install and bundle install
+# This script helps diagnose why bundle exec might fail after ore install
+
+require "fileutils"
+
+GEM_HOME = ENV["GEM_HOME"] || %x(ruby -e "puts Gem.user_dir").strip
+SPEC_DIR = File.join(GEM_HOME, "specifications")
+
+puts "=" * 70
+puts "GEMSPEC DIAGNOSTIC REPORT"
+puts "=" * 70
+puts
+puts "Environment:"
+puts "  GEM_HOME: #{GEM_HOME}"
+puts "  GEM_PATH: #{ENV["GEM_PATH"]}"
+puts "  BUNDLE_PATH: #{ENV["BUNDLE_PATH"]}"
+puts "  SPEC_DIR: #{SPEC_DIR}"
+puts "  BUNDLE_GEMFILE: #{ENV["BUNDLE_GEMFILE"]}"
+puts "  Ruby: #{RUBY_VERSION}"
+puts "  RubyGems: #{Gem::VERSION}"
+puts
+puts "RubyGems paths:"
+puts "  Gem.dir: #{Gem.dir}"
+puts "  Gem.path: #{Gem.path.inspect}"
+puts "  Gem.default_dir: #{Gem.default_dir}"
+puts "  Gem::Specification.dirs: #{Gem::Specification.dirs.inspect}"
+puts
+
+# Try to load Bundler and show its paths
+begin
+  require "bundler"
+  puts "Bundler info:"
+  puts "  Bundler::VERSION: #{Bundler::VERSION}"
+  puts "  Bundler source file: #{$LOADED_FEATURES.find { |f| f.include?("bundler.rb") }}"
+  puts "  Bundler.bundle_path: #{Bundler.bundle_path}"
+  puts "  Bundler.rubygems.gem_dir: #{Bundler.rubygems.gem_dir}"
+  puts "  Bundler.settings[:path]: #{Bundler.settings[:path].inspect}"
+  puts "  Bundler.settings['path.system']: #{Bundler.settings["path.system"].inspect}"
+  configured_path = Bundler.configured_bundle_path
+  puts "  configured_bundle_path.path: #{configured_path.path}"
+  puts "  configured_bundle_path.use_system_gems?: #{configured_path.use_system_gems?}"
+  puts "  configured_bundle_path.base_path: #{configured_path.base_path}"
+  puts
+rescue LoadError => e
+  puts "Could not load Bundler: #{e.message}"
+  puts
+end
+
+unless File.exist?(SPEC_DIR)
+  puts "ERROR: Specifications directory not found: #{SPEC_DIR}"
+  exit 1
+end
+
+gemspecs = Dir.glob(File.join(SPEC_DIR, "*.gemspec")).sort
+
+puts "Found #{gemspecs.count} gemspec files in #{SPEC_DIR}"
+puts
+
+# Analyze each gemspec (limit verbose output to first 3)
+gemspecs.each_with_index do |path, index|
+  name = File.basename(path)
+  content = File.read(path)
+  lines = content.lines.count
+  bytes = content.bytesize
+
+  # Check for key fields
+  has_stub = content.include?("# stub:")
+  has_installed_by = content.include?("installed_by_version")
+  has_files = content.include?("s.files")
+  has_metadata = content.include?("s.metadata")
+  content.include?("s.cert_chain")
+  content.include?("s.date")
+
+  # Determine if this looks like a bundle-generated or ore-generated gemspec
+  # Bundle gemspecs are typically larger and have more fields
+  looks_like_ore = bytes < 2000 && !has_files && !has_metadata
+
+  status = if has_installed_by && has_files
+    "✅ FULL"
+  elsif has_installed_by
+    "⚠️  PARTIAL (missing s.files)"
+  else
+    "❌ MINIMAL (missing installed_by_version)"
+  end
+
+  origin = looks_like_ore ? "[ore]" : "[bundle]"
+
+  puts "#{status} #{origin} #{name}"
+  puts "         #{bytes} bytes, #{lines} lines"
+  puts "         stub:#{has_stub ? "✓" : "✗"} installed_by:#{has_installed_by ? "✓" : "✗"} files:#{has_files ? "✓" : "✗"} metadata:#{has_metadata ? "✓" : "✗"}"
+
+  # Only show full content for FIRST 3 small specs to avoid log truncation
+  if bytes < 1500 && index < 3
+    puts "         --- Content ---"
+    content.lines.each { |l| puts "         #{l}" }
+    puts "         --- End ---"
+  end
+  puts
+end
+
+# Now test bundle exec
+puts "=" * 70
+puts "BUNDLE EXEC TEST"
+puts "=" * 70
+
+# Read lockfile to get list of gems
+lockfile_path = ENV["BUNDLE_GEMFILE"] ? "#{ENV["BUNDLE_GEMFILE"]}.lock" : "Gemfile.lock"
+if File.exist?(lockfile_path)
+  puts "Reading lockfile: #{lockfile_path}"
+  lockfile_content = File.read(lockfile_path)
+
+  # Extract gem names from lockfile (simple parser)
+  gems_in_lockfile = []
+  in_specs = false
+  lockfile_content.each_line do |line|
+    if line.strip == "specs:"
+      in_specs = true
+      next
+    end
+    if in_specs && line =~ /^\s{4}(\S+)\s+\(([^)]+)\)/
+      gems_in_lockfile << [$1, $2]
+    end
+    in_specs = false if in_specs && !line.start_with?("  ")
+  end
+
+  puts "Gems in lockfile: #{gems_in_lockfile.count}"
+  puts
+
+  # Check each gem
+  gems_in_lockfile.first(10).each do |gem_name, gem_version|
+    spec_path = File.join(SPEC_DIR, "#{gem_name}-#{gem_version}.gemspec")
+    if File.exist?(spec_path)
+      content = File.read(spec_path)
+      status = content.include?("installed_by_version") ? "✅" : "❌"
+      size = content.bytesize
+      puts "  #{status} #{gem_name}-#{gem_version} (#{size} bytes)"
+    else
+      puts "  ❓ #{gem_name}-#{gem_version} - NO GEMSPEC FOUND"
+    end
+  end
+else
+  puts "No lockfile found at #{lockfile_path}"
+end
+
+puts
+puts "=" * 70
+puts "RUBYGEMS STUBS TEST"
+puts "=" * 70
+
+puts "Testing what Gem::Specification.stubs returns..."
+stubs = Gem::Specification.stubs
+puts "Found #{stubs.count} stubs"
+
+# Check if specific gems are in stubs
+test_gems = %w[kettle-dev kettle-test rake version_gem gitmoji-regex]
+puts
+puts "Checking for test gems in stubs:"
+test_gems.each do |gem_name|
+  matching = stubs.select { |s| s.name == gem_name }
+  if matching.any?
+    puts "  ✅ #{gem_name}: found #{matching.count} version(s)"
+    matching.each { |s| puts "       - #{s.full_name} at #{s.loaded_from}" }
+  else
+    puts "  ❌ #{gem_name}: NOT FOUND in stubs"
+  end
+end
+
+puts
+puts "=" * 70
+puts "BUNDLER INSTALLED_SPECS TEST"
+puts "=" * 70
+
+if defined?(Bundler)
+  puts "Testing what Bundler.rubygems.installed_specs returns..."
+  begin
+    bundler_installed = Bundler.rubygems.installed_specs
+    puts "Found #{bundler_installed.count} installed specs via Bundler"
+
+    puts
+    puts "Checking for test gems in Bundler.rubygems.installed_specs:"
+    test_gems.each do |gem_name|
+      matching = bundler_installed.select { |s| s.name == gem_name }
+      if matching.any?
+        puts "  ✅ #{gem_name}: found #{matching.count} version(s)"
+        matching.each do |s|
+          puts "       - #{s.full_name}"
+          if s.respond_to?(:installation_missing?)
+            puts "         installation_missing?: #{s.installation_missing?}"
+          end
+        end
+      else
+        puts "  ❌ #{gem_name}: NOT FOUND in Bundler installed_specs"
+      end
+    end
+  rescue => e
+    puts "ERROR accessing Bundler.rubygems.installed_specs: #{e.message}"
+  end
+
+  # Now simulate what bundle exec actually does
+  puts
+  puts "=" * 70
+  puts "SIMULATING BUNDLE EXEC (Bundler.setup)"
+  puts "=" * 70
+
+  # First, check what state bundler sees BEFORE we call setup
+  puts "Before Bundler.setup:"
+  puts "  Bundler.bundle_path: #{Bundler.bundle_path}"
+  puts "  Bundler.default_gemfile: #{Bundler.default_gemfile}"
+  puts "  Bundler.default_lockfile: #{Bundler.default_lockfile}"
+  puts "  Gem.paths.home: #{Gem.paths.home}"
+  puts "  Gem.paths.path: #{Gem.paths.path}"
+  puts "  Gem.dir: #{Gem.dir}"
+  puts "  ENV['GEM_HOME']: #{ENV["GEM_HOME"]}"
+  puts "  ENV['GEM_PATH']: #{ENV["GEM_PATH"]}"
+  puts "  ENV['BUNDLE_PATH']: #{ENV["BUNDLE_PATH"]}"
+  puts "  ENV['BUNDLE_GEMFILE']: #{ENV["BUNDLE_GEMFILE"]}"
+
+  puts "Attempting to call Bundler.setup (what 'bundle exec' does)..."
+  begin
+    # This is what bundle exec actually calls
+    Bundler.setup
+    puts "✅ Bundler.setup succeeded!"
+
+    puts
+    puts "Bundler.definition.specs:"
+    Bundler.definition.specs.each do |spec|
+      puts "  - #{spec.full_name}"
+    end if Bundler.definition.specs.count < 50
+    puts "  (#{Bundler.definition.specs.count} specs total)"
+  rescue Bundler::GemNotFound => e
+    puts "❌ Bundler.setup FAILED with GemNotFound!"
+    puts "   Error: #{e.message[0..500]}"
+    puts
+    puts "This is the SAME error that 'bundle exec' will hit!"
+    puts
+    puts "Debugging the failure..."
+
+    # Try to understand WHY it failed
+    puts "Checking Bundler.definition.resolve..."
+    begin
+      resolve = Bundler.definition.send(:resolve)
+      puts "  resolve has #{resolve.count} specs"
+
+      # Check if local! was called
+      source = Bundler.definition.sources.rubygems_sources.first
+      puts "  source.allow_local: #{source.instance_variable_get(:@allow_local)}"
+      puts "  source.allow_cached: #{source.instance_variable_get(:@allow_cached)}"
+      puts "  source.allow_remote: #{source.instance_variable_get(:@allow_remote)}"
+    rescue => debug_e
+      puts "  Debug error: #{debug_e.message}"
+    end
+  rescue => e
+    puts "❌ Bundler.setup FAILED with #{e.class}!"
+    puts "   Error: #{e.message[0..500]}"
+  end
+else
+  puts "Bundler not loaded, skipping"
+end
+
+puts
+puts "=" * 70
+puts "INSTALLATION MISSING TEST"
+puts "=" * 70
+
+puts "Testing spec.installation_missing? for gems bundler will load..."
+test_gems.each do |gem_name|
+  stubs_for_gem = Gem::Specification.stubs_for(gem_name)
+  if stubs_for_gem.empty?
+    puts "  ❌ #{gem_name}: no stubs found"
+  else
+    stubs_for_gem.each do |stub|
+      spec = stub.to_spec
+      full_path = spec.full_gem_path
+      dir_exists = File.directory?(full_path)
+      missing = spec.respond_to?(:installation_missing?) ? spec.installation_missing? : "N/A"
+
+      puts "  #{gem_name}-#{spec.version}:"
+      puts "      full_gem_path: #{full_path}"
+      puts "      directory exists: #{dir_exists}"
+      puts "      installation_missing?: #{missing}"
+
+      if dir_exists
+        puts "      files in gem dir: #{Dir.entries(full_path).reject { |f| f.start_with?(".") }.first(5).join(", ")}"
+      end
+    end
+  end
+end
+
+puts
+puts "=" * 70
+puts "END DIAGNOSTIC"
+puts "=" * 70
+
+# Test what happens with a fresh Bundler state (like a new process would have)
+puts
+puts "=" * 70
+puts "FRESH BUNDLER STATE TEST (Bundler.reset!)"
+puts "=" * 70
+$stdout.flush
+
+if defined?(Bundler)
+  puts "Calling Bundler.reset! to simulate fresh process state..."
+  Bundler.reset!
+
+  puts "After reset, attempting Bundler.setup again..."
+  begin
+    Bundler.setup
+    puts "✅ Bundler.setup after reset succeeded!"
+  rescue Bundler::GemNotFound => e
+    puts "❌ Bundler.setup after reset FAILED!"
+    puts "   Error: #{e.message[0..500]}"
+    puts "   This would explain the bundle exec failure!"
+  rescue => e
+    puts "❌ Bundler.setup after reset FAILED with #{e.class}!"
+    puts "   Error: #{e.message[0..500]}"
+  end
+  $stdout.flush
+end
+
+# Now try the REAL test - spawn a subprocess with bundler/setup
+puts
+puts "=" * 70
+puts "SUBPROCESS TEST 1: Manual require 'bundler/setup'"
+puts "=" * 70
+$stdout.flush
+
+# This is EXACTLY what bundle exec does - it sets RUBYOPT to load bundler/setup
+# Let's test this in a subprocess
+test_script = <<~RUBY
+  $stdout.sync = true
+  $stderr.sync = true
+
+  # This script mimics what happens when 'bundle exec' runs
+  # RubyGems automatically loads bundler/setup via gem_prelude when RUBYOPT contains it
+
+  begin
+    puts "Testing require 'bundler/setup'..."
+    $stdout.flush
+    require 'bundler/setup'
+    puts "SUCCESS: bundler/setup loaded without error!"
+    $stdout.flush
+
+    # Verify we can load a gem
+    require 'rake'
+    puts "SUCCESS: require 'rake' worked!"
+    $stdout.flush
+  rescue Bundler::GemNotFound => e
+    $stderr.puts "FAILED: GemNotFound - \#{e.message[0..500]}"
+    $stderr.flush
+    exit 1
+  rescue LoadError => e
+    $stderr.puts "FAILED: LoadError - \#{e.message}"
+    $stderr.flush
+    exit 1
+  rescue => e
+    $stderr.puts "FAILED: \#{e.class} - \#{e.message}"
+    $stderr.puts e.backtrace.first(10).join("\\n")
+    $stderr.flush
+    exit 1
+  end
+RUBY
+
+# Write to temp file and execute with output capture
+require "tempfile"
+require "open3"
+
+Tempfile.create(["bundler_test", ".rb"]) do |f|
+  f.write(test_script)
+  f.flush
+
+  puts "Running subprocess test 1..."
+  puts "  BUNDLE_GEMFILE: #{ENV["BUNDLE_GEMFILE"]}"
+  puts "  GEM_HOME: #{ENV["GEM_HOME"]}"
+  puts "  Script path: #{f.path}"
+  $stdout.flush
+
+  # Run without inheriting RUBYOPT to get a clean test
+  env = ENV.to_h.reject { |k, _| k == "RUBYOPT" }
+
+  stdout, stderr, status = Open3.capture3(env, RbConfig.ruby, f.path)
+
+  puts "--- Subprocess STDOUT ---"
+  puts stdout
+  puts "--- Subprocess STDERR ---"
+  puts stderr
+  puts "--- Subprocess exit status: #{status.exitstatus} ---"
+  $stdout.flush
+
+  if status.success?
+    puts "✅ Subprocess test 1 PASSED!"
+  else
+    puts "❌ Subprocess test 1 FAILED with exit code #{status.exitstatus}!"
+  end
+end
+
+puts
+puts "=" * 70
+puts "SUBPROCESS TEST 2: Via RUBYOPT (Closer to bundle exec)"
+puts "=" * 70
+$stdout.flush
+
+test_script_2 = <<~RUBY
+  # This script assumes bundler/setup is already loaded via RUBYOPT
+  puts "Start of script 2"
+  begin
+    require 'rake'
+    puts "SUCCESS: require 'rake' worked!"
+  rescue LoadError => e
+    puts "FAILED: LoadError - \#{e.message}"
+    exit 1
+  rescue => e
+    puts "FAILED: \#{e.class} - \#{e.message}"
+    exit 1
+  end
+RUBY
+
+Tempfile.create(["bundler_test_opt", ".rb"]) do |f|
+  f.write(test_script_2)
+  f.flush
+
+  puts "Running subprocess test 2..."
+  # Explicitly SET RUBYOPT to -rbundler/setup
+  env = ENV.to_h.merge("RUBYOPT" => "-rbundler/setup")
+
+  stdout, stderr, status = Open3.capture3(env, RbConfig.ruby, f.path)
+
+  puts "--- Subprocess STDOUT ---"
+  puts stdout
+  puts "--- Subprocess STDERR ---"
+  puts stderr
+  puts "--- Subprocess exit status: #{status.exitstatus} ---"
+  $stdout.flush
+
+  if status.success?
+    puts "✅ Subprocess test 2 PASSED!"
+  else
+    puts "❌ Subprocess test 2 FAILED with exit code #{status.exitstatus}!"
+  end
+end
