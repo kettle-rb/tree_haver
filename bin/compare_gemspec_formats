@@ -213,10 +213,10 @@ if defined?(Bundler)
   puts "  Gem.paths.home: #{Gem.paths.home}"
   puts "  Gem.paths.path: #{Gem.paths.path}"
   puts "  Gem.dir: #{Gem.dir}"
-  puts "  ENV['GEM_HOME']: #{ENV['GEM_HOME']}"
-  puts "  ENV['GEM_PATH']: #{ENV['GEM_PATH']}"
-  puts "  ENV['BUNDLE_PATH']: #{ENV['BUNDLE_PATH']}"
-  puts "  ENV['BUNDLE_GEMFILE']: #{ENV['BUNDLE_GEMFILE']}"
+  puts "  ENV['GEM_HOME']: #{ENV["GEM_HOME"]}"
+  puts "  ENV['GEM_PATH']: #{ENV["GEM_PATH"]}"
+  puts "  ENV['BUNDLE_PATH']: #{ENV["BUNDLE_PATH"]}"
+  puts "  ENV['BUNDLE_GEMFILE']: #{ENV["BUNDLE_GEMFILE"]}"
 
   puts "Attempting to call Bundler.setup (what 'bundle exec' does)..."
   begin
@@ -364,21 +364,21 @@ test_script = <<~RUBY
 RUBY
 
 # Write to temp file and execute with output capture
-require 'tempfile'
-require 'open3'
+require "tempfile"
+require "open3"
 
-Tempfile.create(['bundler_test', '.rb']) do |f|
+Tempfile.create(["bundler_test", ".rb"]) do |f|
   f.write(test_script)
   f.flush
 
   puts "Running subprocess test 1..."
-  puts "  BUNDLE_GEMFILE: #{ENV['BUNDLE_GEMFILE']}"
-  puts "  GEM_HOME: #{ENV['GEM_HOME']}"
+  puts "  BUNDLE_GEMFILE: #{ENV["BUNDLE_GEMFILE"]}"
+  puts "  GEM_HOME: #{ENV["GEM_HOME"]}"
   puts "  Script path: #{f.path}"
   $stdout.flush
 
   # Run without inheriting RUBYOPT to get a clean test
-  env = ENV.to_h.reject { |k, _| k == 'RUBYOPT' }
+  env = ENV.to_h.reject { |k, _| k == "RUBYOPT" }
 
   stdout, stderr, status = Open3.capture3(env, RbConfig.ruby, f.path)
 
@@ -417,13 +417,13 @@ test_script_2 = <<~RUBY
   end
 RUBY
 
-Tempfile.create(['bundler_test_opt', '.rb']) do |f|
+Tempfile.create(["bundler_test_opt", ".rb"]) do |f|
   f.write(test_script_2)
   f.flush
 
   puts "Running subprocess test 2..."
   # Explicitly SET RUBYOPT to -rbundler/setup
-  env = ENV.to_h.merge('RUBYOPT' => '-rbundler/setup')
+  env = ENV.to_h.merge("RUBYOPT" => "-rbundler/setup")
 
   stdout, stderr, status = Open3.capture3(env, RbConfig.ruby, f.path)
 

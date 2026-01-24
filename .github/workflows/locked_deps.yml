@@ -104,5 +104,20 @@ jobs:
       - name: Diagnostic - Compare gemspec formats
         run: ruby bin/compare_gemspec_formats
 
+      - name: Spy on Bundle Exec Environment
+        continue-on-error: true
+        run: |
+          bundle exec ruby -e "
+            puts '--- BUNDLE EXEC SPY ---'
+            puts 'GEM_HOME=' + ENV['GEM_HOME'].to_s
+            puts 'GEM_PATH=' + ENV['GEM_PATH'].to_s
+            puts 'BUNDLE_BIN_PATH=' + ENV['BUNDLE_BIN_PATH'].to_s
+            puts 'RUBYLIB=' + ENV['RUBYLIB'].to_s
+            puts 'RUBYOPT=' + ENV['RUBYOPT'].to_s
+            puts 'LOAD_PATH:'
+            puts \$LOAD_PATH
+            puts '-----------------------'
+          "
+
       - name: Checks the kitchen sink via ${{ matrix.exec_cmd }}
         run: bundle exec ${{ matrix.exec_cmd }}
