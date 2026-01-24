@@ -101,5 +101,8 @@ jobs:
           ore-git-ref: "fix/skip-install"
           cache-version: "v2"
 
+      - name: Diagnostic - Compare gemspec formats
+        run: ruby bin/compare_gemspec_formats
+
       - name: Checks the kitchen sink via ${{ matrix.exec_cmd }}
         run: bundle exec ${{ matrix.exec_cmd }}

@@ -1,0 +1,123 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Compare gemspec formats between ore install and bundle install
+# This script helps diagnose why bundle exec might fail after ore install
+
+require "fileutils"
+
+GEM_HOME = ENV["GEM_HOME"] || `ruby -e "puts Gem.user_dir"`.strip
+SPEC_DIR = File.join(GEM_HOME, "specifications")
+
+puts "=" * 70
+puts "GEMSPEC DIAGNOSTIC REPORT"
+puts "=" * 70
+puts
+puts "Environment:"
+puts "  GEM_HOME: #{GEM_HOME}"
+puts "  SPEC_DIR: #{SPEC_DIR}"
+puts "  BUNDLE_GEMFILE: #{ENV['BUNDLE_GEMFILE']}"
+puts "  Ruby: #{RUBY_VERSION}"
+puts "  RubyGems: #{Gem::VERSION}"
+puts
+
+unless File.exist?(SPEC_DIR)
+  puts "ERROR: Specifications directory not found: #{SPEC_DIR}"
+  exit 1
+end
+
+gemspecs = Dir.glob(File.join(SPEC_DIR, "*.gemspec")).sort
+
+puts "Found #{gemspecs.count} gemspec files in #{SPEC_DIR}"
+puts
+
+# Analyze each gemspec
+gemspecs.each do |path|
+  name = File.basename(path)
+  content = File.read(path)
+  lines = content.lines.count
+  bytes = content.bytesize
+
+  # Check for key fields
+  has_stub = content.include?("# stub:")
+  has_installed_by = content.include?("installed_by_version")
+  has_files = content.include?("s.files")
+  has_metadata = content.include?("s.metadata")
+  has_cert_chain = content.include?("s.cert_chain")
+  has_date = content.include?("s.date")
+
+  # Determine if this looks like a bundle-generated or ore-generated gemspec
+  # Bundle gemspecs are typically larger and have more fields
+  looks_like_ore = bytes < 2000 && !has_files && !has_metadata
+
+  status = if has_installed_by && has_files
+    "✅ FULL"
+  elsif has_installed_by
+    "⚠️  PARTIAL (missing s.files)"
+  else
+    "❌ MINIMAL (missing installed_by_version)"
+  end
+
+  origin = looks_like_ore ? "[ore]" : "[bundle]"
+
+  puts "#{status} #{origin} #{name}"
+  puts "         #{bytes} bytes, #{lines} lines"
+  puts "         stub:#{has_stub ? '✓' : '✗'} installed_by:#{has_installed_by ? '✓' : '✗'} files:#{has_files ? '✓' : '✗'} metadata:#{has_metadata ? '✓' : '✗'}"
+
+  # For minimal specs, show the full content
+  if bytes < 1500
+    puts "         --- Content ---"
+    content.lines.each { |l| puts "         #{l}" }
+    puts "         --- End ---"
+  end
+  puts
+end
+
+# Now test bundle exec
+puts "=" * 70
+puts "BUNDLE EXEC TEST"
+puts "=" * 70
+
+# Read lockfile to get list of gems
+lockfile_path = ENV["BUNDLE_GEMFILE"] ? "#{ENV['BUNDLE_GEMFILE']}.lock" : "Gemfile.lock"
+if File.exist?(lockfile_path)
+  puts "Reading lockfile: #{lockfile_path}"
+  lockfile_content = File.read(lockfile_path)
+
+  # Extract gem names from lockfile (simple parser)
+  gems_in_lockfile = []
+  in_specs = false
+  lockfile_content.each_line do |line|
+    if line.strip == "specs:"
+      in_specs = true
+      next
+    end
+    if in_specs && line =~ /^\s{4}(\S+)\s+\(([^)]+)\)/
+      gems_in_lockfile << [$1, $2]
+    end
+    in_specs = false if in_specs && !line.start_with?("  ")
+  end
+
+  puts "Gems in lockfile: #{gems_in_lockfile.count}"
+  puts
+
+  # Check each gem
+  gems_in_lockfile.first(10).each do |gem_name, gem_version|
+    spec_path = File.join(SPEC_DIR, "#{gem_name}-#{gem_version}.gemspec")
+    if File.exist?(spec_path)
+      content = File.read(spec_path)
+      status = content.include?("installed_by_version") ? "✅" : "❌"
+      size = content.bytesize
+      puts "  #{status} #{gem_name}-#{gem_version} (#{size} bytes)"
+    else
+      puts "  ❓ #{gem_name}-#{gem_version} - NO GEMSPEC FOUND"
+    end
+  end
+else
+  puts "No lockfile found at #{lockfile_path}"
+end
+
+puts
+puts "=" * 70
+puts "END DIAGNOSTIC"
+puts "=" * 70
