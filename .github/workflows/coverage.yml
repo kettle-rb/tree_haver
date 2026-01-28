@@ -78,7 +78,7 @@ jobs:
           bundler: "${{ matrix.bundler }}"
           ore-install: true
           rv-git-ref: "main"
-          ore-git-ref: "master"
+          ore-git-ref: "v0.20.2"
 
       # Raw `bundle` will use the BUNDLE_GEMFILE set to matrix.gemfile (i.e. Appraisal.root)
       # NOTE: This does not use the primary Gemfile at all.
