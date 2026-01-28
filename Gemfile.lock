@@ -162,7 +162,7 @@ GEM
       pdf-core (~> 0.10.0)
       ttfunk (~> 1.8)
     prettyprint (0.2.0)
-    prism (1.8.0)
+    prism (1.9.0)
     psych (5.3.1)
       date
       stringio
@@ -293,7 +293,7 @@ GEM
     simplecov-rcov (0.3.7)
       simplecov (>= 0.4.1)
     simplecov_json_formatter (0.1.4)
-    sorbet-runtime (0.6.12897)
+    sorbet-runtime (0.6.12903)
     standard (1.53.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -480,7 +480,7 @@ CHECKSUMS
   pp (0.6.3) sha256=2951d514450b93ccfeb1df7d021cae0da16e0a7f95ee1e2273719669d0ab9df6
   prawn (2.5.0) sha256=f4e20e3b4f30bf5b9ae37dad15eb421831594553aa930b2391b0fa0a99c43cb6
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
-  prism (1.8.0) sha256=84453a16ef5530ea62c5f03ec16b52a459575ad4e7b9c2b360fd8ce2c39c1254
+  prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
   psych (5.3.1) sha256=eb7a57cef10c9d70173ff74e739d843ac3b2c019a003de48447b2963d81b1974
   public_suffix (7.0.2) sha256=9114090c8e4e7135c1fd0e7acfea33afaab38101884320c65aaa0ffb8e26a857
   racc (1.8.1) sha256=4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f
@@ -529,7 +529,7 @@ CHECKSUMS
   simplecov-lcov (0.9.0) sha256=7a77a31e200a595ed4b0249493056efd0c920601f53d2ef135ca34ee796346cd
   simplecov-rcov (0.3.7) sha256=372f50bf6df6b6350b7d0c840f2f8bdabe021861a43c26877b747c9ac96139fc
   simplecov_json_formatter (0.1.4) sha256=529418fbe8de1713ac2b2d612aa3daa56d316975d307244399fa4838c601b428
-  sorbet-runtime (0.6.12897) sha256=0348ab8803c4c3646977fee298083ded9b7e74d5b34b50c567c63eb7e36eb286
+  sorbet-runtime (0.6.12903) sha256=c23968c0dcf5a5db57f32c003fe3db7fb588c168cdd57d92ea4dceaba063118a
   standard (1.53.0) sha256=f3c9493385db7079d0abce6f7582f553122156997b81258cd361d3480eeacf9c
   standard-custom (1.0.2) sha256=424adc84179a074f1a2a309bb9cf7cd6bfdb2b6541f20c6bf9436c0ba22a652b
   standard-performance (1.9.0) sha256=49483d31be448292951d80e5e67cdcb576c2502103c7b40aec6f1b6e9c88e3f2

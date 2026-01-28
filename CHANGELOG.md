@@ -22,24 +22,17 @@ Please file a bug if you notice a violation of semantic versioning.
 
 ### Changed
 
+- test against Prism v1.9.0
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-### Security
-
-## [5.0.3] - 2026-01-20
-
-- TAG: [v5.0.3][5.0.3t]
-- COVERAGE: 90.79% -- 2308/2542 lines in 30 files
-- BRANCH COVERAGE: 78.05% -- 928/1189 branches in 30 files
-- 94.78% documented
-
-### Fixed
-
 - Documentation fixes related to gem family section
+
+### Security
 
 ## [5.0.2] - 2026-01-13
 
