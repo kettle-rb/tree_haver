@@ -55,7 +55,7 @@ read_file("/home/pboling/src/kettle-rb/ast-merge/vendor/markdown-merge/lib/markd
 ```
 # Search recursively within a directory (use ** for recursive)
 includePattern: "vendor/**"           # All files under vendor/
-includePattern: "vendor/kettle-dev/**" # All files under vendor/kettle-dev/
+includePattern: "vendor/tree_haver/**" # All files under vendor/tree_haver/
 
 # Search a specific file
 includePattern: "vendor/prism-merge/README.md"
@@ -68,7 +68,7 @@ includePattern: "spec/**"              # All spec files recursively
 ❌ **DOES NOT WORK** - Avoid these:
 ```
 # The | character does NOT work for alternation in includePattern
-includePattern: "vendor/prism-merge/**|vendor/kettle-dev/**"
+includePattern: "vendor/prism-merge/**|vendor/tree_haver/**"
 
 # Cannot use ** in the middle of a path with file extension
 includePattern: "vendor/**/spec/**/*.rb"  # Too complex, may fail
