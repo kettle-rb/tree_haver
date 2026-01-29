@@ -144,6 +144,10 @@ jobs:
           ruby -e "require 'bundler'; Bundler.definition.specs; puts 'Bundler.definition.specs ok'" || true
           echo "--- PRE-FLIGHT RUBYOPT -rbundler/setup ---"
           RUBYOPT="-rbundler/setup" ruby -e "require 'bundler'; puts 'Bundler.setup via RUBYOPT ok'" || true
+          echo "--- PRE-FLIGHT ruby -rbundler/setup -S rake ---"
+          ruby -rbundler/setup -S rake -T || true
+          echo "--- PRE-FLIGHT bundle shim ---"
+          ruby -e "require 'rubygems'; path = Gem.bin_path('bundler','bundle'); puts 'bundle path=' + path; puts File.read(path)" || true
           echo "--- PRE-FLIGHT bundle exec sanity ---"
           bundle exec ruby -e "require 'bundler'; puts 'Bundler.default_gemfile=' + Bundler.default_gemfile.to_s; puts 'Bundler.default_lockfile=' + Bundler.default_lockfile.to_s" || true
           bundle exec ${{ matrix.exec_cmd }}
