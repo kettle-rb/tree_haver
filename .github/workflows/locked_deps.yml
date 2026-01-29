@@ -168,6 +168,15 @@ jobs:
           bundle exec ruby -e "require 'rubygems'; puts 'Gem::Specification.stubs=' + Gem::Specification.stubs.size.to_s; puts 'Gem::Specification.default_stubs=' + Gem::Specification.default_stubs.size.to_s" || true
           echo "--- PRE-FLIGHT bundle exec gem presence snapshot ---"
           bundle exec ruby -e "require 'rubygems'; require 'bundler'; specs = Bundler.rubygems.installed_specs; %w[kettle-dev rake bundler-audit].each { |g| hits = specs.select { |s| s.name == g }; hits.each { |s| path = s.full_gem_path; missing = s.respond_to?(:installation_missing?) ? s.installation_missing? : 'n/a'; puts g + ': ' + s.full_name + ' missing=' + missing.to_s + ' path=' + path } }" || true
+          echo "--- PRE-FLIGHT bundle exec definition.specs ---"
+          bundle exec ruby -e "require 'bundler'; begin; Bundler.definition.specs; puts 'Bundler.definition.specs ok (bundle exec)'; rescue => e; warn e.class.to_s + ': ' + e.message; warn e.backtrace.first(10).join(\"\\n\"); end" || true
+          echo "--- PRE-FLIGHT bundle exec kernel_load probe ---"
+          cat > .bundle_exec_probe <<'RUBY'
+          #!/usr/bin/env ruby
+          puts "bundle exec kernel_load probe ok"
+          RUBY
+          chmod +x .bundle_exec_probe
+          bundle exec ./.bundle_exec_probe || true
           echo "--- PRE-FLIGHT manual bundle exec env replay ---"
           BUNDLE_BIN_PATH="$GEM_HOME/gems/bundler-4.0.5/exe/bundle" \
             BUNDLE_GEMFILE="$BUNDLE_GEMFILE" \
