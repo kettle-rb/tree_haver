@@ -150,4 +150,6 @@ jobs:
           ruby -e "require 'rubygems'; path = Gem.bin_path('bundler','bundle'); puts 'bundle path=' + path; puts File.read(path)" || true
           echo "--- PRE-FLIGHT bundle exec sanity (debug) ---"
           BUNDLE_DEBUG=1 BUNDLE_VERBOSE=1 bundle exec ruby -e "require 'bundler'; puts 'Bundler.default_gemfile=' + Bundler.default_gemfile.to_s; puts 'Bundler.default_lockfile=' + Bundler.default_lockfile.to_s" || true
+          echo "--- PRE-FLIGHT bundle exec sanity (BUNDLE_PATH=GEM_HOME) ---"
+          BUNDLE_PATH="$GEM_HOME" bundle exec ruby -e "require 'bundler'; puts 'Bundler.default_gemfile=' + Bundler.default_gemfile.to_s; puts 'Bundler.default_lockfile=' + Bundler.default_lockfile.to_s" || true
           bundle exec ${{ matrix.exec_cmd }}
