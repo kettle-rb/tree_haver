@@ -129,9 +129,13 @@ jobs:
       - name: Checks the kitchen sink via ${{ matrix.exec_cmd }}
         run: |
           echo "--- PRE-FLIGHT ENV (GEM_*, BUNDLE_*) ---"
-          env | sort | rg '^(GEM_|BUNDLE_)' || true
+          env | sort | grep -E '^(GEM_|BUNDLE_)' || true
           echo "--- PRE-FLIGHT bundle env ---"
           bundle env || true
           echo "--- PRE-FLIGHT ruby gem env ---"
           ruby -e "require 'rubygems'; puts 'Gem.dir=' + Gem.dir; puts 'Gem.path=' + Gem.path.join(':')"
+          echo "--- PRE-FLIGHT bundle check ---"
+          bundle check || true
+          echo "--- PRE-FLIGHT bundle exec sanity ---"
+          bundle exec ruby -e "require 'bundler'; puts 'Bundler.default_gemfile=' + Bundler.default_gemfile.to_s; puts 'Bundler.default_lockfile=' + Bundler.default_lockfile.to_s" || true
           bundle exec ${{ matrix.exec_cmd }}
