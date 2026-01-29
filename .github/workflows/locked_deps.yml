@@ -142,6 +142,8 @@ jobs:
           ruby -e "require 'rubygems'; puts 'Gem::Specification.stubs=' + Gem::Specification.stubs.size.to_s; %w[kettle-dev rake].each { |g| specs = Gem::Specification.stubs.select { |s| s.name == g }; puts g + ': ' + specs.map(&:full_name).join(', ') }"
           echo "--- PRE-FLIGHT bundler definition specs ---"
           ruby -e "require 'bundler'; Bundler.definition.specs; puts 'Bundler.definition.specs ok'" || true
+          echo "--- PRE-FLIGHT RUBYOPT -rbundler/setup ---"
+          RUBYOPT="-rbundler/setup" ruby -e "require 'bundler'; puts 'Bundler.setup via RUBYOPT ok'" || true
           echo "--- PRE-FLIGHT bundle exec sanity ---"
           bundle exec ruby -e "require 'bundler'; puts 'Bundler.default_gemfile=' + Bundler.default_gemfile.to_s; puts 'Bundler.default_lockfile=' + Bundler.default_lockfile.to_s" || true
           bundle exec ${{ matrix.exec_cmd }}
