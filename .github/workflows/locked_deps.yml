@@ -127,4 +127,11 @@ jobs:
           ruby -e "require 'rubygems'; puts 'Gem.dir=' + Gem.dir; puts 'Gem.path=' + Gem.path.join(':')"
 
       - name: Checks the kitchen sink via ${{ matrix.exec_cmd }}
-        run: bundle exec ${{ matrix.exec_cmd }}
+        run: |
+          echo "--- PRE-FLIGHT ENV (GEM_*, BUNDLE_*) ---"
+          env | sort | rg '^(GEM_|BUNDLE_)' || true
+          echo "--- PRE-FLIGHT bundle env ---"
+          bundle env || true
+          echo "--- PRE-FLIGHT ruby gem env ---"
+          ruby -e "require 'rubygems'; puts 'Gem.dir=' + Gem.dir; puts 'Gem.path=' + Gem.path.join(':')"
+          bundle exec ${{ matrix.exec_cmd }}
