@@ -157,7 +157,7 @@ jobs:
           echo "--- PRE-FLIGHT bundle exec rubygems/bundler snapshot ---"
           bundle exec ruby -e "require 'rubygems'; require 'bundler'; puts 'Gem.path=' + Gem.path.join(':'); puts 'Bundler.rubygems.installed_specs=' + Bundler.rubygems.installed_specs.size.to_s" || true
           echo "--- PRE-FLIGHT bundle exec gem presence snapshot ---"
-          bundle exec ruby -e "require 'rubygems'; require 'bundler'; specs = Bundler.rubygems.installed_specs; %w[kettle-dev rake bundler-audit].each { |g| hits = specs.select { |s| s.name == g }; puts g + ': ' + hits.map(&:full_name).join(', ') }" || true
+          bundle exec ruby -e "require 'rubygems'; require 'bundler'; specs = Bundler.rubygems.installed_specs; %w[kettle-dev rake bundler-audit].each { |g| hits = specs.select { |s| s.name == g }; hits.each { |s| path = s.full_gem_path; missing = s.respond_to?(:installation_missing?) ? s.installation_missing? : 'n/a'; puts g + ': ' + s.full_name + ' missing=' + missing.to_s + ' path=' + path } }" || true
           echo "--- PRE-FLIGHT manual bundle exec env replay ---"
           BUNDLE_BIN_PATH="$GEM_HOME/gems/bundler-4.0.5/exe/bundle" \
             BUNDLE_GEMFILE="$BUNDLE_GEMFILE" \
