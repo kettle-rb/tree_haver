@@ -136,6 +136,10 @@ jobs:
           ruby -e "require 'rubygems'; puts 'Gem.dir=' + Gem.dir; puts 'Gem.path=' + Gem.path.join(':')"
           echo "--- PRE-FLIGHT bundle check ---"
           bundle check || true
+          echo "--- PRE-FLIGHT bundler settings snapshot ---"
+          ruby -e "require 'bundler'; puts 'Bundler.settings[:path]=' + Bundler.settings[:path].inspect; puts 'Bundler.settings[\"path.system\"]=' + Bundler.settings['path.system'].inspect; puts 'Bundler.bundle_path=' + Bundler.bundle_path.to_s; puts 'Bundler.rubygems.installed_specs=' + Bundler.rubygems.installed_specs.size.to_s"
+          echo "--- PRE-FLIGHT rubygems spec snapshot ---"
+          ruby -e "require 'rubygems'; puts 'Gem::Specification.stubs=' + Gem::Specification.stubs.size.to_s; %w[kettle-dev rake].each { |g| specs = Gem::Specification.stubs.select { |s| s.name == g }; puts g + ': ' + specs.map(&:full_name).join(', ') }"
           echo "--- PRE-FLIGHT bundle exec sanity ---"
           bundle exec ruby -e "require 'bundler'; puts 'Bundler.default_gemfile=' + Bundler.default_gemfile.to_s; puts 'Bundler.default_lockfile=' + Bundler.default_lockfile.to_s" || true
           bundle exec ${{ matrix.exec_cmd }}
