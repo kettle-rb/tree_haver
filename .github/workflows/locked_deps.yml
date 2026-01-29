@@ -177,6 +177,10 @@ jobs:
           RUBY
           chmod +x .bundle_exec_probe
           bundle exec ./.bundle_exec_probe || true
+          echo "--- PRE-FLIGHT bundle exec rake path ---"
+          bundle exec ruby -e "require 'bundler'; path = Bundler.which('rake'); puts 'rake path=' + path.to_s; if path && File.exist?(path); puts File.read(path).lines.first(5).join; end" || true
+          echo "--- PRE-FLIGHT bundle exec ruby -S rake ---"
+          bundle exec ruby -S rake -T || true
           echo "--- PRE-FLIGHT manual bundle exec env replay ---"
           BUNDLE_BIN_PATH="$GEM_HOME/gems/bundler-4.0.5/exe/bundle" \
             BUNDLE_GEMFILE="$BUNDLE_GEMFILE" \
