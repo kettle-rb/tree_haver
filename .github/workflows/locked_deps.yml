@@ -164,4 +164,15 @@ jobs:
             BUNDLE_LOCKFILE="$BUNDLE_GEMFILE.lock" \
             RUBYOPT="-rbundler/setup" \
             ruby -e "require 'bundler'; puts 'Bundler.setup via manual env ok'" || true
+          echo "--- PRE-FLIGHT manual env replay (no BUNDLE_LOCKFILE) ---"
+          BUNDLE_BIN_PATH="$GEM_HOME/gems/bundler-4.0.5/exe/bundle" \
+            BUNDLE_GEMFILE="$BUNDLE_GEMFILE" \
+            BUNDLE_LOCKFILE="" \
+            RUBYOPT="-rbundler/setup" \
+            ruby -e "require 'bundler'; puts 'Bundler.setup ok (no BUNDLE_LOCKFILE)'" || true
+          echo "--- PRE-FLIGHT manual env replay (no BUNDLE_BIN_PATH) ---"
+          BUNDLE_GEMFILE="$BUNDLE_GEMFILE" \
+            BUNDLE_LOCKFILE="$BUNDLE_GEMFILE.lock" \
+            RUBYOPT="-rbundler/setup" \
+            ruby -e "require 'bundler'; puts 'Bundler.setup ok (no BUNDLE_BIN_PATH)'" || true
           bundle exec ${{ matrix.exec_cmd }}
