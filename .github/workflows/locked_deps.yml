@@ -98,8 +98,8 @@ jobs:
           bundler: "${{ matrix.bundler }}"
           ore-install: true
           rv-git-ref: "main"
-          ore-git-ref: "v0.20.2"
-          cache-version: "v2"
+          ore-git-ref: "fix/unable-to-find-gems"
+          cache-version: "v3"
 
       - name: Diagnostic - Compare gemspec formats
         run: ruby bin/compare_gemspec_formats
@@ -118,6 +118,13 @@ jobs:
             puts \$LOAD_PATH
             puts '-----------------------'
           "
+
+      - name: Debug env before bundle exec
+        run: |
+          echo "--- bundle env ---"
+          bundle env || true
+          echo "--- ruby gem env ---"
+          ruby -e "require 'rubygems'; puts 'Gem.dir=' + Gem.dir; puts 'Gem.path=' + Gem.path.join(':')"
 
       - name: Checks the kitchen sink via ${{ matrix.exec_cmd }}
         run: bundle exec ${{ matrix.exec_cmd }}
