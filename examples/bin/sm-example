@@ -1,0 +1,101 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "optparse"
+require "open3"
+require "yaml"
+
+EXAMPLES_ROOT = File.expand_path("..", __dir__)
+SPEC_ROOT = File.expand_path("..", EXAMPLES_ROOT)
+STRUCTUREDMERGE_ROOT = File.expand_path("..", SPEC_ROOT)
+SCENARIOS_ROOT = File.join(EXAMPLES_ROOT, "scenarios")
+IMPLEMENTATIONS = %w[ruby go rust typescript].freeze
+
+def scenarios
+  Dir.children(SCENARIOS_ROOT).sort.select do |entry|
+    File.file?(File.join(SCENARIOS_ROOT, entry, "manifest.yml"))
+  end
+end
+
+def scenario_manifest(name)
+  YAML.load_file(File.join(SCENARIOS_ROOT, name, "manifest.yml"))
+end
+
+def run_ruby_scenario(name)
+  scenario_dir = File.join(SCENARIOS_ROOT, name)
+  ruby_root = File.join(STRUCTUREDMERGE_ROOT, "ruby")
+  command = [
+    "mise",
+    "exec",
+    "-C",
+    ruby_root,
+    "--",
+    "bundle",
+    "exec",
+    "ruby",
+    "examples/bin/run-scenario",
+    "--scenario",
+    scenario_dir,
+    "--check"
+  ]
+  Open3.popen2e({"BUNDLE_GEMFILE" => File.join(ruby_root, "Gemfile")}, *command, chdir: STRUCTUREDMERGE_ROOT) do |_stdin, output, wait_thread|
+    output.each { |line| print line }
+    wait_thread.value.success?
+  end
+end
+
+def run_scenario(name, implementation)
+  case implementation
+  when "ruby"
+    run_ruby_scenario(name)
+  else
+    warn "#{implementation}: #{name}: no adapter yet"
+    false
+  end
+end
+
+command = ARGV.shift
+
+case command
+when "list"
+  scenarios.each do |name|
+    manifest = scenario_manifest(name)
+    puts "#{name}\t#{manifest.fetch("family")}\t#{manifest.fetch("title")}"
+  end
+when "run"
+  target = ARGV.shift || "all"
+  options = { impl: "ruby" }
+  OptionParser.new do |parser|
+    parser.on("--impl NAME", "Implementation: ruby, go, rust, typescript, all") { |value| options[:impl] = value }
+  end.parse!(ARGV)
+
+  selected_scenarios = target == "all" ? scenarios : [target]
+  selected_impls = options.fetch(:impl) == "all" ? IMPLEMENTATIONS : [options.fetch(:impl)]
+  unknown_scenarios = selected_scenarios - scenarios
+  unknown_impls = selected_impls - IMPLEMENTATIONS
+
+  unless unknown_scenarios.empty? && unknown_impls.empty?
+    warn "Unknown scenario(s): #{unknown_scenarios.join(", ")}" unless unknown_scenarios.empty?
+    warn "Unknown implementation(s): #{unknown_impls.join(", ")}" unless unknown_impls.empty?
+    exit 2
+  end
+
+  failures = []
+  selected_scenarios.each do |scenario|
+    selected_impls.each do |implementation|
+      puts "\n== #{implementation}: #{scenario} =="
+      failures << [implementation, scenario] unless run_scenario(scenario, implementation)
+    end
+  end
+
+  unless failures.empty?
+    warn "\nFailed examples:"
+    failures.each { |implementation, scenario| warn "  #{implementation}: #{scenario}" }
+    exit 1
+  end
+else
+  warn "Usage:"
+  warn "  examples/bin/sm-example list"
+  warn "  examples/bin/sm-example run SCENARIO|all --impl ruby|go|rust|typescript|all"
+  exit 2
+end

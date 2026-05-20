@@ -1,0 +1,9 @@
+---
+id: json_package_manifest
+title: Merge a package-style JSON manifest
+family: json
+dialect: json
+template: template.json
+destination: destination.json
+expected: expected.json
+

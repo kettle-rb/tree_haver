@@ -1,0 +1,1 @@
+{"name":"customer-package","version":"1.4.3","private":true,"scripts":{"test":"bundle exec rspec","lint":"bundle exec rubocop","release":"bundle exec rake release"},"structuredMerge":{"families":["json","markdown","ruby"]}}

@@ -1,0 +1,9 @@
+---
+id: markdown_readme_sections
+title: Apply README template sections while preserving destination-owned sections
+family: markdown
+dialect: markdown
+template: template.md
+destination: destination.md
+expected: expected.md
+

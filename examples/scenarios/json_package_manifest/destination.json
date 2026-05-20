@@ -1,0 +1,9 @@
+{
+  "name": "customer-package",
+  "version": "1.4.3",
+  "scripts": {
+    "test": "bundle exec rspec",
+    "release": "bundle exec rake release"
+  }
+}
+
