@@ -3,28 +3,31 @@
 ## Goal
 
 Classify the old Ruby `tree_haver` backend implementation files and aliases
-against the active StructuredMerge backend substrate.
+against the active StructuredMerge backend substrate, and identify which prior
+backend code is restored.
 
 ## Contract
 
 Surviving active backend families:
 
-- `tree-sitter-language-pack` is the active generic tree-sitter backend surface;
+- `tslp` is the default generic `tree-sitter-language-pack` backend surface;
+- `kreuzberg-language-pack` remains a compatibility backend id for the same
+  language-pack surface;
+- `mri`, `rust`, `ffi`, and `java` are explicit parser-capable native
+  tree-sitter backends restored from the reference implementation;
 - PEG backends survive as explicit Citrus and Parslet adapter primitives;
 - Kaitai survives as the binary/schema tree substrate;
 - native/source providers survive through capability reports, normalized tree
   projection, metadata, diagnostics, and provider-local parsers.
 
-Retired shared backend paths:
+Retired shared backend paths and aliases:
 
-- old MRI, Rust, FFI, and Java tree-sitter backends are not copied into the
-  active shared Ruby substrate;
-- old Prism and Psych tree-haver backends are replaced by provider-local Ruby
-  and YAML implementations that project normalized trees and provider
-  capability reports;
 - old compatibility aliases such as `TreeSitter::*` shims are retired;
-- old grammar finder and path validator implementation details are deferred to
-  the grammar/library path security slice.
+- old Prism and Psych tree-haver backends remain provider-local Ruby and YAML
+  implementations that project normalized trees and provider capability
+  reports;
+- grammar finder and path validator primitives remain active because restored
+  native backends need guarded shared-library discovery.
 
 Rule:
 
