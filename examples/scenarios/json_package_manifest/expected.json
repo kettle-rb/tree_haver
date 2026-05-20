@@ -4,14 +4,10 @@
   "private": true,
   "scripts": {
     "test": "bundle exec rspec",
-    "lint": "bundle exec rubocop",
-    "release": "bundle exec rake release"
+    "release": "bundle exec rake release",
+    "lint": "bundle exec rubocop"
   },
   "structuredMerge": {
-    "families": [
-      "json",
-      "markdown",
-      "ruby"
-    ]
+    "families": ["json", "markdown", "ruby"]
   }
 }
