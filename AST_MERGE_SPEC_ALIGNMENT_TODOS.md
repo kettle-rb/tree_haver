@@ -81,14 +81,14 @@ and which behaviors need native-parser-specific treatment.
   - [x] Make `ast-template` prefer the native Markly adapter for Markdown directory sessions, with TSLP-backed `markdown-merge` retained only as an optional fallback when `markly-merge` is absent.
 - [x] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
 - [x] Audit non-Ruby implementations for regex-backed source-structure matching and prioritize parser-native replacements.
-- [ ] Replace import-source normalization regexes in generic TSLP packages with TreeHaver process-record fields, and fail closed when the binding only exposes raw source text.
+- [x] Replace import-source normalization regexes in generic TSLP packages with TreeHaver process-record fields, and fail closed when the binding only exposes raw source text.
   - [x] TypeScript implementation generic TSLP packages: `typescript-merge`, `javascript-merge`, `python-merge`, `go-merge`, and `java-merge`.
   - [x] TypeScript implementation TreeHaver boundary: import process records now distinguish structured module fields from raw source text so callers can fail closed.
   - [x] TypeScript implementation native/fallback packages: `csharp-merge`, `c-merge`, and `cpp-merge`.
   - [x] Rust implementation: generic `go-merge`, `rust-merge`, `typescript-merge`, and TreeHaver process import normalization.
   - [x] Go implementation: generic `gomerge`, `rustmerge`, `typescriptmerge`, and TreeHaver process import normalization.
 - [ ] Replace generic Markdown heading/fence regex owner discovery in Go, Rust, and TypeScript with TreeHaver / TSLP Markdown process records once the binding exposes the needed section and fenced-code records; until then, native Markdown packages remain the preferred parser-backed path.
-- [ ] Replace native C/C++/C# import extraction regexes in TypeScript implementation packages with native parser records or fail-closed diagnostics; these packages must not silently supplement missing TSLP records with text scanners.
+- [x] Replace native C/C++/C# import extraction regexes in TypeScript implementation packages with native parser records or fail-closed diagnostics; these packages must not silently supplement missing TSLP records with text scanners.
 - [ ] Replace native Go source-location fallbacks in Go implementation packages (`goparsermerge`, `godstmerge`) with parser position data for imports and declarations, and keep `decls[n]` path parsing classified as scalar target-path validation.
 - [ ] Replace or explicitly quarantine Rust native backend fallback scanners in `rust-merge`; the `syn` path should use `syn` item records and spans where available, and should fail closed when spans are not available rather than searching source text.
 
