@@ -60,6 +60,8 @@ and which behaviors need native-parser-specific treatment.
   - [x] Replace `.kettle-jem.yml` bootstrap emoji/license rewrites with Psych YAML node records.
   - [x] Replace README project emoji discovery and funding YAML key sync with Markly/Psych records.
   - [x] Replace template checksum YAML block replacement with Psych YAML node records.
+  - [x] Replace README compatibility/workflow link definition discovery and deletion with `ast-crispr-markdown-markly` link definition owners.
+  - [ ] Replace or justify README badge-cloud inline reference scans and badge occurrence deletion; Markly currently exposes link definitions but not inline image/link reference-label owners.
 - [x] Route `ruby-merge` parsing through TreeHaver / TSLP process analysis and use process records first for Ruby declaration discovery.
 - [x] Fix upstream `tree-sitter-language-pack` Ruby structure extraction so TSLP emits Ruby module, class, instance method, and singleton method records.
 - [x] Decide the downstream TreeHaver behavior for unreadable or too-old TSLP Ruby bindings: fail closed with an upstream bug-report diagnostic.
