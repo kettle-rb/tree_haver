@@ -54,6 +54,7 @@ and which behaviors need native-parser-specific treatment.
   - [x] Replace GitHub Actions matrix pruning line scanner with Psych YAML AST mapping records.
   - [x] Replace Appraisal `eval_gemfile` exclusion discovery with Prism call records.
   - [x] Replace GitHub Actions top-level section insertion with Psych YAML AST key records.
+  - [x] Replace GitHub Actions action pin rewrites with Psych YAML scalar records.
 - [x] Route `ruby-merge` parsing through TreeHaver / TSLP process analysis and use process records first for Ruby declaration discovery.
 - [x] Fix upstream `tree-sitter-language-pack` Ruby structure extraction so TSLP emits Ruby module, class, instance method, and singleton method records.
 - [x] Decide the downstream TreeHaver behavior for unreadable or too-old TSLP Ruby bindings: fail closed with an upstream bug-report diagnostic.
