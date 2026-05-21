@@ -45,7 +45,7 @@ and which behaviors need native-parser-specific treatment.
 - [x] Replace Gemfile `%w[...]` dependency list discovery/removal and local-gem overrides with Prism records.
 - [x] Replace version entrypoint namespace and constant discovery with Prism records.
 - [x] Replace Rakefile orphaned require cleanup with Prism top-level require records.
-- [ ] Replace or justify remaining source-structure regex collectors in kettle-jem.
+- [x] Replace or justify remaining source-structure regex collectors in kettle-jem.
   - [x] Replace install-task gemspec development dependency extraction with Prism-backed gemspec dependency records.
   - [x] Replace install-task gemspec summary/description grapheme rewrites with Prism string assignment records.
   - [x] Replace install-task gemspec homepage repair with Prism assignment records.
@@ -62,6 +62,7 @@ and which behaviors need native-parser-specific treatment.
   - [x] Replace template checksum YAML block replacement with Psych YAML node records.
   - [x] Replace README compatibility/workflow link definition discovery and deletion with `ast-crispr-markdown-markly` link definition owners.
   - [x] Replace README badge-cloud inline reference scans and badge occurrence deletion with `ast-crispr-markdown-markly` inline reference owners.
+  - [x] Replace README compatibility row pruning with `ast-crispr-markdown-markly` table/loose-pipe row owners; remaining README postprocessor regexes are scalar label/version parsing or whitespace formatting.
 - [x] Route `ruby-merge` parsing through TreeHaver / TSLP process analysis and use process records first for Ruby declaration discovery.
 - [x] Fix upstream `tree-sitter-language-pack` Ruby structure extraction so TSLP emits Ruby module, class, instance method, and singleton method records.
 - [x] Decide the downstream TreeHaver behavior for unreadable or too-old TSLP Ruby bindings: fail closed with an upstream bug-report diagnostic.
