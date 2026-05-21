@@ -75,6 +75,7 @@ and which behaviors need native-parser-specific treatment.
   - [x] Keep `Prism::Merge` reviewed nested Ruby merges on the Prism parent/discovery path instead of delegating back to TSLP-backed `Ruby::Merge`.
   - [x] Make Prism's public Ruby merge honor the shared plain-Ruby policy: destination-owned requires win by default, and template-only declarations append after destination-owned top-level nodes.
   - [x] Delete the unused `ruby-merge` top-level DSL, Rakefile scaffold, and `:nocov:` require-block scanners now owned by Prism-backed templating paths.
+  - [x] Use TSLP import records for parser-backed Ruby require owners and drop the unused public `collect_ruby_require_entries` scanner.
 - [x] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
   - [x] Fix Markly README reapply idempotence by preserving cross-source paragraph boundaries and fenced-code trailing newlines in the shared Markdown merge substrate.
   - [x] Make `ast-template` prefer the native Markly adapter for Markdown directory sessions, with TSLP-backed `markdown-merge` retained only as an optional fallback when `markly-merge` is absent.
@@ -90,7 +91,7 @@ not to bless every regex permanently.
 
 - `ruby-merge`: `declaration_for_line`, `REQUIRE_PATTERN`, `DEF_PATTERN`,
   constant assignment detection, and block-depth detection are still used by
-  owner discovery, require discovery, direct body child extraction, and Ruby
+  legacy no-process owner discovery, direct body child extraction, and Ruby
   source-region generation. These are the next high-risk targets. The preferred
   direction is Prism for native Ruby templating paths and TreeHaver / TSLP
   process records for the generic `ruby-merge` substrate.
