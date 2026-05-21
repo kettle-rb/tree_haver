@@ -35,7 +35,7 @@ and which behaviors need native-parser-specific treatment.
 - [x] Preserve plain Ruby's existing “do not add template-only requires” policy with Prism call records.
 - [x] Preserve Gemfile commented dependency policy with Prism call/comment records instead of line regexes.
 - [x] Update the workspace Ruby templating runner to run with `K_JEM_TEMPLATING=true` and normalize lockfiles afterward without templating/local-path env.
-- [ ] Classify remaining Ruby regex usage as source-structure, parser fallback, comment/trivia lexing, scalar validation, path/config parsing, test-only assertion, or documentation/example.
+- [x] Classify remaining Ruby regex usage as source-structure, parser fallback, comment/trivia lexing, scalar validation, path/config parsing, test-only assertion, or documentation/example.
 - [x] Replace Gemfile eval bucket discovery with Prism call records and path-segment normalization.
 - [x] Replace Appraisals block discovery and minimum-Ruby pruning with Prism call records.
 - [x] Replace Rakefile scaffold cleanup with Prism top-level call records.
@@ -54,6 +54,49 @@ and which behaviors need native-parser-specific treatment.
 - [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
 - [ ] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
 - [ ] Audit non-Ruby implementations for regex-backed source-structure matching and prioritize parser-native replacements.
+
+### Ruby Regex Classification Snapshot
+
+This snapshot is intentionally coarse-grained. It exists to guide removal order,
+not to bless every regex permanently.
+
+**Source-structure / parser-backed replacement required**
+
+- `ruby-merge`: `declaration_for_line`, `REQUIRE_PATTERN`, `DSL_CALL_PATTERN`,
+  `DEF_PATTERN`, constant assignment detection, and block-depth detection are
+  still used by owner discovery, require discovery, DSL entry discovery, direct
+  body child extraction, and Ruby source-region generation. These are the next
+  high-risk targets. The preferred direction is Prism for native Ruby templating
+  paths and TreeHaver / TSLP process records for the generic `ruby-merge`
+  substrate.
+- `go-merge` and `rust-merge`: current import source cleanup uses text patterns.
+  These should move behind TreeHaver / TSLP record normalization when backend
+  process records are available.
+- `markdown-merge`: fallback heading/fence parsing in the generic markdown
+  package should be replaced by TreeHaver / TSLP Markdown records where that
+  package is acting as the generic substrate. Native markdown parser packages
+  should keep delegating shared behavior down rather than reimplementing it.
+
+**Comment/trivia lexing, retained unless a parser can expose equivalent trivia**
+
+- `prism-merge`, `rbs-merge`, `toml-merge`, `json-merge`, and
+  `markdown-merge` still use regexes for freeze markers, comment delimiters,
+  link reference text, markdown container spacing, and generated corruption
+  cleanup. These are text/trivia policies rather than source ownership
+  discovery. Remove them only when parser records expose the same trivia with
+  enough fidelity.
+
+**Scalar validation / path and config parsing, acceptable**
+
+- `ast-crispr` cardinality specs, ruleset token parsing, path validators,
+  extension checks, SPDX / URL / badge label cleanup, generated slugging, and
+  version bucket parsing are scalar text operations. These can remain regex
+  backed unless they start driving source ownership or merge structure.
+
+**Test-only assertions and docs/examples, acceptable**
+
+- Specs that count emitted strings, assert diagnostics, or describe APIs may use
+  regexes. They do not participate in runtime merge decisions.
 
 ## Immediate wins
 
