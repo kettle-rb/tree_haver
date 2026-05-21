@@ -51,6 +51,7 @@ and which behaviors need native-parser-specific treatment.
   - [x] Replace install-task gemspec homepage repair with Prism assignment records.
   - [x] Replace README H1 project/grapheme rewrites with `ast-crispr-markdown-markly` heading owners.
   - [x] Replace kettle-jem README section collection with `ast-crispr-markdown-markly` heading owners.
+  - [x] Replace GitHub Actions matrix pruning line scanner with Psych YAML AST mapping records.
 - [x] Route `ruby-merge` parsing through TreeHaver / TSLP process analysis and use process records first for Ruby declaration discovery.
 - [x] Fix upstream `tree-sitter-language-pack` Ruby structure extraction so TSLP emits Ruby module, class, instance method, and singleton method records.
 - [x] Decide the downstream TreeHaver behavior for unreadable or too-old TSLP Ruby bindings: fail closed with an upstream bug-report diagnostic.
