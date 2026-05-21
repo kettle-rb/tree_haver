@@ -30,7 +30,8 @@ parser-backed API can answer the question.
 - [x] Update the workspace Ruby templating runner to run with `K_JEM_TEMPLATING=true` and normalize lockfiles afterward without templating/local-path env.
 - [ ] Classify remaining Ruby regex usage as source-structure, parser fallback, comment/trivia lexing, scalar validation, path/config parsing, test-only assertion, or documentation/example.
 - [x] Replace Gemfile eval bucket discovery with Prism call records and path-segment normalization.
-- [ ] Replace or justify remaining source-structure regex collectors in kettle-jem, starting with Appraisals, gemspec dependency insertion, and Rakefile scaffold cleanup.
+- [x] Replace Appraisals block discovery and minimum-Ruby pruning with Prism call records.
+- [ ] Replace or justify remaining source-structure regex collectors in kettle-jem, starting with gemspec dependency insertion and Rakefile scaffold cleanup.
 - [ ] Replace or justify source-structure regex collectors in `ruby-merge` itself, or narrow that gem to explicit TSLP backend parity paths where Prism is not the active default.
 - [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
 - [ ] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
