@@ -48,8 +48,8 @@ and which behaviors need native-parser-specific treatment.
 - [ ] Replace or justify remaining source-structure regex collectors in kettle-jem.
 - [x] Route `ruby-merge` parsing through TreeHaver / TSLP process analysis and use process records first for Ruby declaration discovery.
 - [x] Fix upstream `tree-sitter-language-pack` Ruby structure extraction so TSLP emits Ruby module, class, instance method, and singleton method records.
-- [ ] Decide the downstream TreeHaver behavior for unreadable or too-old TSLP Ruby bindings: explicit backend failure, native-parser fallback at merge-gem selection, or release-order gating.
-- [ ] Once the TSLP Ruby binding result contract is available through a released gem, remove TreeHaver's regex-backed language-pack process fallback and require readable process records for TSLP-backed merge paths.
+- [x] Decide the downstream TreeHaver behavior for unreadable or too-old TSLP Ruby bindings: fail closed with an upstream bug-report diagnostic.
+- [x] Remove TreeHaver's regex-backed language-pack process fallback and require readable process records for TSLP-backed merge paths.
 - [ ] Replace or justify source-structure regex collectors in `ruby-merge` itself, or narrow that gem to explicit TSLP backend parity paths where Prism is not the active default.
 - [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
 - [ ] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
