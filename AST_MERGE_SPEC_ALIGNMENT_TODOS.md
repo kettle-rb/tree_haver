@@ -37,6 +37,7 @@ parser-backed API can answer the question.
 - [x] Replace gemspec assignment rewrite and insertion helpers with Prism records.
 - [x] Replace Gemfile `%w[...]` dependency list discovery/removal and local-gem overrides with Prism records.
 - [x] Replace version entrypoint namespace and constant discovery with Prism records.
+- [x] Replace Rakefile orphaned require cleanup with Prism top-level require records.
 - [ ] Replace or justify remaining source-structure regex collectors in kettle-jem.
 - [ ] Replace or justify source-structure regex collectors in `ruby-merge` itself, or narrow that gem to explicit TSLP backend parity paths where Prism is not the active default.
 - [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
