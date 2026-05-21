@@ -28,8 +28,8 @@ replace it. The purpose of the TSLP layer is partly operational and partly
 architectural: it exposes which merge behaviors are common across parser records
 and which behaviors need native-parser-specific treatment.
 
-- [x] Document the AST-first rule in the kettle-jem template-managed agent guide.
-- [x] Document the TreeHaver / TSLP substrate boundary in the kettle-jem template-managed agent guide.
+- [x] Document the AST-first rule in the workspace agent guide.
+- [x] Document the TreeHaver / TSLP substrate boundary in the workspace agent guide.
 - [x] Make Ruby Gemfile templating use `prism-merge` by default, including modifier `if` DSL calls.
 - [x] Make Ruby and Rakefile templating use `prism-merge` by default instead of the TSLP-backed `ruby-merge` path.
 - [x] Preserve plain Ruby's existing “do not add template-only requires” policy with Prism call records.
