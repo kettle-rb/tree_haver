@@ -51,6 +51,7 @@ and which behaviors need native-parser-specific treatment.
 - [x] Decide the downstream TreeHaver behavior for unreadable or too-old TSLP Ruby bindings: fail closed with an upstream bug-report diagnostic.
 - [x] Remove TreeHaver's regex-backed language-pack process fallback and require readable process records for TSLP-backed merge paths.
 - [ ] Replace or justify source-structure regex collectors in `ruby-merge` itself, or narrow that gem to explicit TSLP backend parity paths where Prism is not the active default.
+  - [x] Stop mixing legacy regex declaration discovery into parser-backed Ruby structure when TSLP process records are present.
 - [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
 - [ ] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
 - [ ] Audit non-Ruby implementations for regex-backed source-structure matching and prioritize parser-native replacements.
