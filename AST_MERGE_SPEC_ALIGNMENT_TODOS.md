@@ -13,6 +13,28 @@ The guiding principle is:
 3. Keep `ast-merge` usable as a reference implementation without making it even more monolithic.
 4. Separate runtime substrate from conformance artifacts and implementation-specific extras when the seams become clear.
 
+## Regex removal and native parser defaults
+
+The StructuredMerge stack should prefer native parser-backed structural logic over
+regular expressions. Regex remains acceptable for scalar validation, simple path
+normalization, generated badge/link text handling, or deliberately documented
+fallbacks, but it should not drive source ownership, node discovery, dependency
+discovery, require/import discovery, block boundaries, or merge ownership when a
+parser-backed API can answer the question.
+
+- [x] Document the AST-first rule in the kettle-jem template-managed agent guide.
+- [x] Make Ruby Gemfile templating use `prism-merge` by default, including modifier `if` DSL calls.
+- [x] Make Ruby and Rakefile templating use `prism-merge` by default instead of the TSLP-backed `ruby-merge` path.
+- [x] Preserve plain Ruby's existing “do not add template-only requires” policy with Prism call records.
+- [x] Preserve Gemfile commented dependency policy with Prism call/comment records instead of line regexes.
+- [x] Update the workspace Ruby templating runner to run with `K_JEM_TEMPLATING=true` and normalize lockfiles afterward without templating/local-path env.
+- [ ] Classify remaining Ruby regex usage as source-structure, parser fallback, comment/trivia lexing, scalar validation, path/config parsing, test-only assertion, or documentation/example.
+- [ ] Replace or justify remaining source-structure regex collectors in kettle-jem, starting with Gemfile eval buckets, Appraisals, gemspec dependency insertion, and Rakefile scaffold cleanup.
+- [ ] Replace or justify source-structure regex collectors in `ruby-merge` itself, or narrow that gem to explicit TSLP backend parity paths where Prism is not the active default.
+- [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
+- [ ] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
+- [ ] Audit non-Ruby implementations for regex-backed source-structure matching and prioritize parser-native replacements.
+
 ## Immediate wins
 
 ### Terminology alignment
