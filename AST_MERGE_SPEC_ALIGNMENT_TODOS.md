@@ -47,6 +47,7 @@ and which behaviors need native-parser-specific treatment.
 - [x] Replace Rakefile orphaned require cleanup with Prism top-level require records.
 - [ ] Replace or justify remaining source-structure regex collectors in kettle-jem.
   - [x] Replace install-task gemspec development dependency extraction with Prism-backed gemspec dependency records.
+  - [x] Replace install-task gemspec summary/description grapheme rewrites with Prism string assignment records.
 - [x] Route `ruby-merge` parsing through TreeHaver / TSLP process analysis and use process records first for Ruby declaration discovery.
 - [x] Fix upstream `tree-sitter-language-pack` Ruby structure extraction so TSLP emits Ruby module, class, instance method, and singleton method records.
 - [x] Decide the downstream TreeHaver behavior for unreadable or too-old TSLP Ruby bindings: fail closed with an upstream bug-report diagnostic.
