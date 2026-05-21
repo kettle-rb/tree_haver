@@ -89,7 +89,7 @@ and which behaviors need native-parser-specific treatment.
   - [x] Go implementation: generic `gomerge`, `rustmerge`, `typescriptmerge`, and TreeHaver process import normalization.
 - [ ] Replace generic Markdown heading/fence regex owner discovery in Go, Rust, and TypeScript with TreeHaver / TSLP Markdown process records once the binding exposes the needed section and fenced-code records; until then, native Markdown packages remain the preferred parser-backed path.
 - [x] Replace native C/C++/C# import extraction regexes in TypeScript implementation packages with native parser records or fail-closed diagnostics; these packages must not silently supplement missing TSLP records with text scanners.
-- [ ] Replace native Go source-location fallbacks in Go implementation packages (`goparsermerge`, `godstmerge`) with parser position data for imports and declarations, and keep `decls[n]` path parsing classified as scalar target-path validation.
+- [x] Replace native Go source-location fallbacks in Go implementation packages (`goparsermerge`, `godstmerge`) with parser position data for imports and declarations, and keep `decls[n]` path parsing classified as scalar target-path validation.
 - [ ] Replace or explicitly quarantine Rust native backend fallback scanners in `rust-merge`; the `syn` path should use `syn` item records and spans where available, and should fail closed when spans are not available rather than searching source text.
 
 ### Ruby Regex Classification Snapshot
