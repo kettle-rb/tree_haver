@@ -32,7 +32,8 @@ parser-backed API can answer the question.
 - [x] Replace Gemfile eval bucket discovery with Prism call records and path-segment normalization.
 - [x] Replace Appraisals block discovery and minimum-Ruby pruning with Prism call records.
 - [x] Replace Rakefile scaffold cleanup with Prism top-level call records.
-- [ ] Replace or justify remaining source-structure regex collectors in kettle-jem, starting with gemspec dependency insertion.
+- [x] Replace gemspec block parameter and dependency discovery/removal with Prism records.
+- [ ] Replace or justify remaining source-structure regex collectors in kettle-jem, including gemspec assignment and metadata extraction.
 - [ ] Replace or justify source-structure regex collectors in `ruby-merge` itself, or narrow that gem to explicit TSLP backend parity paths where Prism is not the active default.
 - [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
 - [ ] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
