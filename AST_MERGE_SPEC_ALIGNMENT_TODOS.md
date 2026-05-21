@@ -32,6 +32,7 @@ and which behaviors need native-parser-specific treatment.
 - [x] Document the TreeHaver / TSLP substrate boundary in the workspace agent guide.
 - [x] Make Ruby Gemfile templating use `prism-merge` by default, including modifier `if` DSL calls.
 - [x] Make Ruby and Rakefile templating use `prism-merge` by default instead of the TSLP-backed `ruby-merge` path.
+- [x] Make `ast-template` prefer the native Prism adapter for Ruby directory sessions, with TSLP-backed `ruby-merge` retained only as an optional fallback when `prism-merge` is absent.
 - [x] Preserve plain Ruby's existing “do not add template-only requires” policy with Prism call records.
 - [x] Preserve Gemfile commented dependency policy with Prism call/comment records instead of line regexes.
 - [x] Update the workspace Ruby templating runner to run with `K_JEM_TEMPLATING=true` and normalize lockfiles afterward without templating/local-path env.
@@ -70,6 +71,7 @@ and which behaviors need native-parser-specific treatment.
 - [ ] Replace or justify source-structure regex collectors in `ruby-merge` itself, or narrow that gem to explicit TSLP backend parity paths where Prism is not the active default.
   - [x] Stop mixing legacy regex declaration discovery into parser-backed Ruby structure when TSLP process records are present.
 - [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
+  - [ ] Before switching `ast-template` Markdown sessions to `markly-merge`, fix or prove Markly README reapply idempotence; the current native SmartMerger path re-adds template-only body text in the template directory fixture.
 - [ ] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
 - [ ] Audit non-Ruby implementations for regex-backed source-structure matching and prioritize parser-native replacements.
 
