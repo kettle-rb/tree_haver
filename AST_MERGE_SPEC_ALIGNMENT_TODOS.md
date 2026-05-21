@@ -74,7 +74,7 @@ and which behaviors need native-parser-specific treatment.
   - [x] Replace `Prism::Merge.parse_ruby`'s dependency on `Ruby::Merge.analyze_ruby_document` with Prism-node-backed shared analysis owners and YARD surface discovery.
   - [x] Keep `Prism::Merge` reviewed nested Ruby merges on the Prism parent/discovery path instead of delegating back to TSLP-backed `Ruby::Merge`.
   - [x] Make Prism's public Ruby merge honor the shared plain-Ruby policy: destination-owned requires win by default, and template-only declarations append after destination-owned top-level nodes.
-- [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
+- [x] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
   - [x] Fix Markly README reapply idempotence by preserving cross-source paragraph boundaries and fenced-code trailing newlines in the shared Markdown merge substrate.
   - [x] Make `ast-template` prefer the native Markly adapter for Markdown directory sessions, with TSLP-backed `markdown-merge` retained only as an optional fallback when `markly-merge` is absent.
 - [ ] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
