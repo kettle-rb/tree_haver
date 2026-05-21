@@ -85,7 +85,7 @@ and which behaviors need native-parser-specific treatment.
   - [x] TypeScript implementation generic TSLP packages: `typescript-merge`, `javascript-merge`, `python-merge`, `go-merge`, and `java-merge`.
   - [x] TypeScript implementation TreeHaver boundary: import process records now distinguish structured module fields from raw source text so callers can fail closed.
   - [ ] TypeScript implementation native/fallback packages: `csharp-merge`, `c-merge`, and `cpp-merge`.
-  - [ ] Rust implementation: generic `go-merge`, `rust-merge`, `typescript-merge`, and TreeHaver process import normalization.
+  - [x] Rust implementation: generic `go-merge`, `rust-merge`, `typescript-merge`, and TreeHaver process import normalization.
   - [ ] Go implementation: generic `gomerge`, `rustmerge`, `typescriptmerge`, and TreeHaver process import normalization.
 - [ ] Replace generic Markdown heading/fence regex owner discovery in Go, Rust, and TypeScript with TreeHaver / TSLP Markdown process records once the binding exposes the needed section and fenced-code records; until then, native Markdown packages remain the preferred parser-backed path.
 - [ ] Replace native C/C++/C# import extraction regexes in TypeScript implementation packages with native parser records or fail-closed diagnostics; these packages must not silently supplement missing TSLP records with text scanners.
