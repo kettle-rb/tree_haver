@@ -58,6 +58,7 @@ and which behaviors need native-parser-specific treatment.
   - [x] Replace GitHub Actions coverage-step insertion with Psych YAML sequence records.
   - [x] Replace changelog heading normalization with `ast-crispr-markdown-markly` heading owners.
   - [x] Replace `.kettle-jem.yml` bootstrap emoji/license rewrites with Psych YAML node records.
+  - [x] Replace README project emoji discovery and funding YAML key sync with Markly/Psych records.
 - [x] Route `ruby-merge` parsing through TreeHaver / TSLP process analysis and use process records first for Ruby declaration discovery.
 - [x] Fix upstream `tree-sitter-language-pack` Ruby structure extraction so TSLP emits Ruby module, class, instance method, and singleton method records.
 - [x] Decide the downstream TreeHaver behavior for unreadable or too-old TSLP Ruby bindings: fail closed with an upstream bug-report diagnostic.
