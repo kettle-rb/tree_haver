@@ -70,6 +70,7 @@ and which behaviors need native-parser-specific treatment.
 - [x] Remove TreeHaver's regex-backed language-pack process fallback and require readable process records for TSLP-backed merge paths.
 - [ ] Replace or justify source-structure regex collectors in `ruby-merge` itself, or narrow that gem to explicit TSLP backend parity paths where Prism is not the active default.
   - [x] Stop mixing legacy regex declaration discovery into parser-backed Ruby structure when TSLP process records are present.
+  - [x] Narrow `Ruby::Merge.merge_ruby` to the TSLP-record-backed top-level declaration/import subset; unmodeled top-level Ruby content now fails closed with a `prism-merge`/upstream TSLP diagnostic instead of using legacy scanners.
 - [ ] Add native-parser default contract fixtures so each implementation can declare its preferred parser per language family.
   - [ ] Before switching `ast-template` Markdown sessions to `markly-merge`, fix or prove Markly README reapply idempotence; the current native SmartMerger path re-adds template-only body text in the template directory fixture.
 - [ ] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
