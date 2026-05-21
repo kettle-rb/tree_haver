@@ -80,7 +80,15 @@ and which behaviors need native-parser-specific treatment.
   - [x] Fix Markly README reapply idempotence by preserving cross-source paragraph boundaries and fenced-code trailing newlines in the shared Markdown merge substrate.
   - [x] Make `ast-template` prefer the native Markly adapter for Markdown directory sessions, with TSLP-backed `markdown-merge` retained only as an optional fallback when `markly-merge` is absent.
 - [x] Propagate the marker/slice replacement change away from regex/index logic in the Rust, TypeScript, and Go implementations.
-- [ ] Audit non-Ruby implementations for regex-backed source-structure matching and prioritize parser-native replacements.
+- [x] Audit non-Ruby implementations for regex-backed source-structure matching and prioritize parser-native replacements.
+- [ ] Replace import-source normalization regexes in generic TSLP packages with TreeHaver process-record fields, and fail closed when the binding only exposes raw source text.
+  - [ ] TypeScript implementation: `javascript-merge`, `python-merge`, `go-merge`, `java-merge`, `csharp-merge`, `c-merge`, `cpp-merge`, and TreeHaver's TypeScript import normalization.
+  - [ ] Rust implementation: generic `go-merge`, `rust-merge`, `typescript-merge`, and TreeHaver process import normalization.
+  - [ ] Go implementation: generic `gomerge`, `rustmerge`, `typescriptmerge`, and TreeHaver process import normalization.
+- [ ] Replace generic Markdown heading/fence regex owner discovery in Go, Rust, and TypeScript with TreeHaver / TSLP Markdown process records once the binding exposes the needed section and fenced-code records; until then, native Markdown packages remain the preferred parser-backed path.
+- [ ] Replace native C/C++/C# import extraction regexes in TypeScript implementation packages with native parser records or fail-closed diagnostics; these packages must not silently supplement missing TSLP records with text scanners.
+- [ ] Replace native Go source-location fallbacks in Go implementation packages (`goparsermerge`, `godstmerge`) with parser position data for imports and declarations, and keep `decls[n]` path parsing classified as scalar target-path validation.
+- [ ] Replace or explicitly quarantine Rust native backend fallback scanners in `rust-merge`; the `syn` path should use `syn` item records and spans where available, and should fail closed when spans are not available rather than searching source text.
 
 ### Ruby Regex Classification Snapshot
 
@@ -102,6 +110,59 @@ not to bless every regex permanently.
   package should be replaced by TreeHaver / TSLP Markdown records where that
   package is acting as the generic substrate. Native markdown parser packages
   should keep delegating shared behavior down rather than reimplementing it.
+
+### Non-Ruby Regex Audit Snapshot
+
+**Source-structure / parser-backed replacement required**
+
+- TypeScript implementation:
+  - `go-merge`, `java-merge`, `javascript-merge`, `python-merge`, and
+    `csharp-merge` normalize import match keys with source-text regexes even
+    though they already depend on TreeHaver process import records.
+  - `c-merge` and `cpp-merge` extract `#include` lines and C/C++ function names
+    with source-text regexes. Those packages should use parser records or fail
+    closed when TSLP/native records do not expose include/function identity.
+  - `markdown-merge` parses ATX headings and fenced-code blocks with regexes.
+    The replacement is TreeHaver / TSLP Markdown section and code-fence records,
+    with `markdown-it-merge` as the native preferred path where available.
+  - `tree-haver` normalizes TypeScript imports from raw source text. The
+    TreeHaver process boundary should prefer structured import fields from the
+    language-pack binding and report missing fields as a backend deficiency.
+- Rust implementation:
+  - `ruby-merge` still mirrors old regex-based Ruby helper behavior; the generic
+    Ruby path should stay TSLP-record-only and native Ruby behavior belongs in
+    `prism-merge`.
+  - `rust-merge` native `syn` backend extracts imports and fallback declaration
+    spans from source text. The native backend should use parser item identity
+    and fail closed where span information is unavailable.
+  - Generic `go-merge`, `rust-merge`, and `typescript-merge` use process records
+    for spans but still clean import match keys from source text. That belongs
+    at the TreeHaver process-record boundary.
+  - `markdown-merge` parses headings and fenced-code blocks directly. Replace
+    with TreeHaver / TSLP records once the process binding exposes them.
+- Go implementation:
+  - `gomerge`, `rustmerge`, and `typescriptmerge` use process records for spans
+    but still clean import match keys from source text. That belongs at the
+    TreeHaver process-record boundary.
+  - `goparsermerge` and `godstmerge` are native parser paths, but fallback
+    source searches for import/declaration text should be replaced with native
+    parser positions.
+  - `markdownmerge` parses headings and fenced-code blocks directly. Replace
+    with TreeHaver / TSLP records once the process binding exposes them.
+
+**Scalar validation / path and generated-text parsing, acceptable**
+
+- Compact ruleset identifiers, structured-edit selector limits, TreeHaver
+  language/library/path validators, generated token replacement delimiters,
+  gitattributes-style wildcard parsing, ZIP path safety checks, and edit
+  projection target paths such as `decls[n]` are scalar/config operations. They
+  can remain regex-backed unless they begin determining source ownership.
+
+**Conflict marker and test assertions, acceptable**
+
+- Conflict-marker parsing/rendering and fixture assertions that only count or
+  locate emitted text are not source-structure discovery. They can remain simple
+  string or regex checks.
 
 **Comment/trivia lexing, retained unless a parser can expose equivalent trivia**
 
