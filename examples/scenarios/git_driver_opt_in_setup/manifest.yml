@@ -1,0 +1,8 @@
+---
+id: git_driver_opt_in_setup
+title: Plan opt-in Git diff driver setup
+family: git
+dialect: git-driver-install
+input: input.json
+expected: expected.json
+

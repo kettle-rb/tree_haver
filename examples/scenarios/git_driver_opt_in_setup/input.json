@@ -1,0 +1,21 @@
+{
+  "project_files": {
+    ".structuredmerge/git-drivers.toml": "version = 1\n",
+    ".gitattributes": "*.md diff=markdown\n"
+  },
+  "request": {
+    "profile": "semantic-diff",
+    "scope": "local",
+    "mode": "plan"
+  },
+  "drivers": [
+    {
+      "language": "ruby",
+      "pattern": "*.rb",
+      "diff": "smorg-ruby",
+      "merge": "smorg-ruby",
+      "command": "smorg-ruby diff-driver"
+    }
+  ]
+}
+

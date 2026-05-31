@@ -1,0 +1,23 @@
+{
+  "plan": {
+    "profile": "semantic-diff",
+    "scope": "local",
+    "mode": "plan",
+    "attribute_updates": [
+      {
+        "path": ".gitattributes",
+        "managed_block": "structuredmerge:git-drivers",
+        "pattern": "*.rb",
+        "attributes": {
+          "diff": "smorg-ruby"
+        }
+      }
+    ],
+    "config_updates": [],
+    "diagnostics": []
+  },
+  "rendered_files": {
+    ".gitattributes": "*.md diff=markdown\n# <<structuredmerge:git-drivers>> do not edit below this line\n*.rb diff=smorg-ruby\n# <</structuredmerge:git-drivers>>\n"
+  }
+}
+
