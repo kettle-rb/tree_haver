@@ -167,7 +167,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument(
         "--workspace-root",
         type=Path,
-        help="Override the inferred kettle-rb workspace root.",
+        help="Override the inferred kettle-dev workspace root.",
     )
     parser.add_argument(
         "--json",

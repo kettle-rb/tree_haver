@@ -137,7 +137,7 @@ Initial shared-compliance landing:
 - aligned repo-facing Markdown-family README / PLAN / changelog wording with the landed top-level-only removal-mode contract and reran the focused Markdown-family removal-mode / smart-merger evidence set (`markdown-merge`: `58 examples, 0 failures, 4 pending`; `markly-merge`: `129 examples, 0 failures, 4 pending`; `commonmarker-merge`: `53 examples, 0 failures, 4 pending`)
 - fixed `rbs-merge` destination-relative alignment ordering so promoted removed declaration docs can remain ahead of later matched declarations without regressing freeze-block ordering
 - fixed a JSONC removal-mode spacing/idempotence gap so promoted removed-node comments now preserve internal separator blank lines before the next kept comment block or node
-- revalidated the shared-example self-tests plus focused removal-mode compliance specs for `prism-merge`, `psych-merge`, `jsonc-merge`, `rbs-merge`, `toml-merge`, `bash-merge`, and `markdown-merge`, plus full-suite markdown family validation (`markdown-merge`, `markly-merge`, `commonmarker-merge`) in sibling workspace mode under `KETTLE_RB_DEV=/home/pboling/src/kettle-rb`
+- revalidated the shared-example self-tests plus focused removal-mode compliance specs for `prism-merge`, `psych-merge`, `jsonc-merge`, `rbs-merge`, `toml-merge`, `bash-merge`, and `markdown-merge`, plus full-suite markdown family validation (`markdown-merge`, `markly-merge`, `commonmarker-merge`) in sibling workspace mode under `KETTLE_DEV_DEV=/home/pboling/src/kettle-dev`
 
 Minimum shared cases:
 
