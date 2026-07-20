@@ -12,9 +12,9 @@
     {
       "language": "ruby",
       "pattern": "*.rb",
-      "diff": "smorg-ruby",
-      "merge": "smorg-ruby",
-      "command": "smorg-ruby diff-driver"
+      "diff": "smorg-rb",
+      "merge": "smorg-rb",
+      "command": "smorg-rb diff-driver"
     }
   ]
 }

@@ -9,7 +9,7 @@
         "managed_block": "structuredmerge:git-drivers",
         "pattern": "*.rb",
         "attributes": {
-          "diff": "smorg-ruby"
+          "diff": "smorg-rb"
         }
       }
     ],
@@ -17,7 +17,7 @@
     "diagnostics": []
   },
   "rendered_files": {
-    ".gitattributes": "*.md diff=markdown\n# <<structuredmerge:git-drivers>> do not edit below this line\n*.rb diff=smorg-ruby\n# <</structuredmerge:git-drivers>>\n"
+    ".gitattributes": "*.md diff=markdown\n# <<structuredmerge:git-drivers>> do not edit below this line\n*.rb diff=smorg-rb\n# <</structuredmerge:git-drivers>>\n"
   }
 }
 

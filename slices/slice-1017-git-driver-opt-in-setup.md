@@ -55,7 +55,7 @@ Attribute entries contain:
 Git config entries contain:
 
 - `scope`: `global` for executable driver registrations.
-- `key`: Git config key such as `diff.smorg-ruby.command`.
+- `key`: Git config key such as `diff.smorg-rb.command`.
 - `value`: one argv-safe string value passed to `git config`.
 
 Committed manifests MUST reject shell interpolation and MUST NOT rely on shell
@@ -67,7 +67,7 @@ Installers update `.gitattributes` through managed blocks:
 
 ```gitattributes
 # <<structuredmerge:git-drivers>> do not edit below this line
-*.rb diff=smorg-ruby merge=smorg-ruby conflict-marker-size=32
+*.rb diff=smorg-rb merge=smorg-rb conflict-marker-size=32
 # <</structuredmerge:git-drivers>>
 ```
 
@@ -92,7 +92,7 @@ Install planning returns a `GitDriverInstallPlan` object:
       "path": ".gitattributes",
       "managed_block": "structuredmerge:git-drivers",
       "pattern": "*.rb",
-      "attributes": {"diff": "smorg-ruby"}
+      "attributes": {"diff": "smorg-rb"}
     }
   ],
   "config_updates": [],
@@ -108,9 +108,9 @@ entries:
   "scope": "global",
   "config_updates": [
     {
-      "key": "diff.smorg-ruby.command",
-      "value": "smorg-ruby diff-driver",
-      "argv": ["git", "config", "--global", "diff.smorg-ruby.command", "smorg-ruby diff-driver"]
+      "key": "diff.smorg-rb.command",
+      "value": "smorg-rb diff-driver",
+      "argv": ["git", "config", "--global", "diff.smorg-rb.command", "smorg-rb diff-driver"]
     }
   ]
 }
