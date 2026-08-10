@@ -31,8 +31,8 @@ license evidence URL, and oracle rationale. Every case records:
 
 Ambiguous, excluded, false-auto-merge-unreviewed, and provider-unsupported
 cases are never score eligible. Admission and score eligibility are separate:
-reviewed TypeScript and Bash cases remain useful unscored coverage evidence,
-while the reviewed Ruby conflict is score eligible. Backlog entries therefore
+reviewed Ruby and TypeScript conflicts are score eligible, while Bash remains
+useful unscored coverage evidence. Backlog entries therefore
 have meaningful `blocked`, `admitted`, or `resolved` status rather than
 implying that every reviewed candidate remains blocked.
 
@@ -82,6 +82,8 @@ no scalar score, and false auto-merge is non-compensable.
 Canonical manifests contain metadata and Git object IDs, not external source
 trees or excerpts. The Ruby manifest retains three clean-history seeds and adds
 one reviewed, provider-supported conflict-resolution oracle. Separate
-TypeScript and Git/Bash manifests admit reviewed conflict resolutions as
-unscored cases because current providers respectively report unsupported
-parsing and unproven AST ownership. These cases make no quality claim.
+TypeScript and Git/Bash manifests admit reviewed conflict resolutions.
+TypeScript is score eligible through conservative ownership of a top-level
+named call with a literal string identity. Bash remains unscored because its
+provider reports unproven AST ownership. These cases make no aggregate quality
+claim.
