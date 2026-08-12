@@ -40,21 +40,32 @@ never semantic equivalence. Ambiguous admission is excluded rather than guessed.
 Neighbor order is SHA-256 of `seed + NUL + case_id`, then case ID. Selection
 reports every changed path, inferred capability, direct case, sentinel, neighbor
 population, ordering algorithm, seed, selected ID, exclusion, and unsupported
-operation. Budgets are explicit and are never silently extended.
+operation. `merge3` and `metamorphic` are executable; `diff` remains
+selection-only. Budgets are explicit and are never silently extended.
 
 ## Paired execution and classification
 
-Each selected `merge3` case is materialized beneath the gem-local `tmp/`
-directory. The runner executes `git merge-file -p ours base theirs`, then the
-installed `ast-merge-git` executable with the case's exact provider selector.
-The candidate process runs from the materialized Git working directory and the
-runner proves that its own cwd is unchanged.
+Each selected case is materialized beneath the gem-local `tmp/` directory.
+For `merge3`, the runner executes `git merge-file -p ours base theirs`, then
+the installed `ast-merge-git` executable with the case's exact provider
+selector. The candidate process runs from the materialized Git working
+directory and the runner proves that its own cwd is unchanged.
+
+For `metamorphic`, the baseline is `git diff --no-index` over the exact authored
+source and transformed bytes. The candidate is the selected installed
+provider's `diff2` operation. A shared invariant oracle separately verifies
+JSON-family semantic equality and JSONC AST comment retention; adapter output
+determines whether semantic edit units were emitted. The initial reorder,
+formatting, and comment transformations require no semantic edit. Git's
+non-empty textual edits are therefore false conflicts, while empty provider
+changes are correct clean results. Generator identity, version, seed,
+transformation IDs, and verified authored-byte digests remain in each result.
 
 Raw records retain status, stdout, stderr, selected output, byte length,
 SHA-256, diagnostics, conflict regions, exact and structural checks,
 independent-edit evidence, provenance, and runtime as separate fields.
-`metamorphic` and `diff` cases are selection-only until a correct installed
-adapter exists and are reported `unsupported`, reducing coverage only.
+`diff` cases are selection-only until a correct installed adapter exists and
+are reported `unsupported`, reducing coverage only.
 
 Outcomes are the Slice 1022 matrix: `correct_clean`, `false_conflict`,
 `true_conflict`, `false_auto_merge`, `error`, `unsupported`, and
@@ -74,6 +85,11 @@ canonical corpus bytes, profile and selection, and normalized environment
 identity. No persistent cache is introduced. A deterministic rerun compares
 correctness records with runtime removed; runtime is never used to vote on
 correctness.
+
+The initial executable metamorphic pair is deterministic: both Git textual
+baselines are false conflicts and both StructuredMerge provider diffs are
+correct clean results. This is development evidence only; it does not authorize
+an aggregate quality claim.
 
 ## CLI
 
