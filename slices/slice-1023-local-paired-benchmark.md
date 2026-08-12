@@ -91,9 +91,33 @@ baselines are false conflicts and both StructuredMerge provider diffs are
 correct clean results. This is development evidence only; it does not authorize
 an aggregate quality claim.
 
+## Pinned structural competitor
+
+The corpus pins Mergiraf source revision
+`13b813c02da9511c7433131aed142473ffe62d52`, version `0.18.0`, GPL-3.0-only
+reference-only reuse posture, Rust 1.91.0 toolchain, build command, merge3-only
+operation coverage, and supported dialects. Competitive execution is optional
+and requires an explicit `--mergiraf PATH`; no binary or vendor source is
+embedded in the corpus.
+
+The runner verifies the reported version, records the binary SHA-256 and path,
+executes the same exact base/ours/theirs bytes with bounded child-process
+handling, and evaluates output with the same oracle and preservation checks.
+Unsupported operations and dialects are coverage, not quality failures.
+Competitor false auto-merges are surfaced separately and never alter the
+StructuredMerge candidate safety gate.
+
+At the pinned revision, built from the tracked source with Rust 1.91.0, the
+10-case JSON-affected dev selection produced two `correct_clean`, two
+`true_conflict`, one `false_conflict`, one `false_auto_merge`, and four
+`unsupported` Mergiraf results. The false auto-merge is the reviewed duplicate
+JSON identity case; this is a non-compensable competitor safety finding, not a
+ranking or aggregate quality claim.
+
 ## CLI
 
 `ast-merge-git benchmark validate|select|run|report --corpus PATH` emits JSON.
 `select`, `run`, and `report` accept `--profile micro|dev` and repeatable
-`--changed-path PATH`; `run` and `report` accept an installed `--driver`.
-Network and external services are denied by contract.
+`--changed-path PATH`; `run` and `report` accept an installed `--driver` and an
+optional pinned `--mergiraf PATH`. Network and external services are denied by
+contract.
