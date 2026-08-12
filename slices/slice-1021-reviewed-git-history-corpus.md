@@ -31,10 +31,9 @@ license evidence URL, and oracle rationale. Every case records:
 
 Ambiguous, excluded, false-auto-merge-unreviewed, and provider-unsupported
 cases are never score eligible. Admission and score eligibility are separate:
-reviewed Ruby and TypeScript conflicts are score eligible, while Bash remains
-useful unscored coverage evidence. Backlog entries therefore
-have meaningful `blocked`, `admitted`, or `resolved` status rather than
-implying that every reviewed candidate remains blocked.
+reviewed Ruby, TypeScript, and Bash conflicts are score eligible. Backlog
+entries therefore have meaningful `blocked`, `admitted`, or `resolved` status
+rather than implying that every reviewed candidate remains blocked.
 
 ## Runner contract
 
@@ -84,6 +83,8 @@ trees or excerpts. The Ruby manifest retains three clean-history seeds and adds
 one reviewed, provider-supported conflict-resolution oracle. Separate
 TypeScript and Git/Bash manifests admit reviewed conflict resolutions.
 TypeScript is score eligible through conservative ownership of a top-level
-named call with a literal string identity. Bash remains unscored because its
-provider reports unproven AST ownership. These cases make no aggregate quality
-claim.
+named call with a literal string identity. Bash is score eligible through
+AST-proven `test_expect_success` ownership keyed by literal title and optional
+literal prerequisite. Test membership changes remain full-file conflicts until
+the renderer can prove insertion order, preventing a branch's new test from
+moving after `test_done`. These cases make no aggregate quality claim.
