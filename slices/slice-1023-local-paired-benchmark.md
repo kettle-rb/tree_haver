@@ -86,6 +86,23 @@ identity. No persistent cache is introduced. A deterministic rerun compares
 correctness records with runtime removed; runtime is never used to vote on
 correctness.
 
+## Family CI calibration
+
+The Ruby family CI executes the `dev` profile on every push and pull request.
+It derives repeatable `--changed-path` inputs from the merge-base range, so
+capability selection, sentinels, and deterministic neighbors use the same
+algorithm as local development. A separate lock pins the benchmark corpus
+repository, full revision, and corpus path; CI verifies the detached checkout
+before execution.
+
+The aggregate JSON report is retained as a CI artifact and a concise
+non-scalar summary is written to the job summary. CI fails for runner errors,
+timeouts, or the existing non-compensable candidate false-auto-merge gate.
+Performance observations, competitor outcomes, unsupported coverage, and
+aggregate effectiveness counts do not independently gate during calibration.
+This `dev` execution establishes stable artifact and variance history before a
+larger `pr` profile or any Azure orchestration is admitted.
+
 The initial executable metamorphic pair is deterministic: both Git textual
 baselines are false conflicts and both StructuredMerge provider diffs are
 correct clean results. This is development evidence only; it does not authorize
